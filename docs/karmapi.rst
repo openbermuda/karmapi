@@ -170,3 +170,16 @@ Karma Pi is about open data.  Data that people want to share.
 
 Data that can help them understand their world.
 
+Astro Pi
+========
+
+The astro pi plugs into a raspberry pi and has pressure, humidity and
+temperature sensors.
+
+It also has a compass, accelerometer, an 8x8 screen and a tiny
+joy-stick.
+
+They make simple, mobile weather stations.
+
+The plan is to store astro pi data here, or rather the tools here will
+make that easy.
