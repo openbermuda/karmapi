@@ -153,3 +153,20 @@ build(path)
 -----------
 
 Build data at path
+
+Security
+========
+
+This is not a focus of the project.  The aim is to run it on pi's, so
+the security just comes from physical access to the pi.
+
+Data integrity, trust and collaborative sharing of data will be more
+of a focus.  Trust across networks.
+
+Privacy
+=======
+
+Karma Pi is about open data.  Data that people want to share.
+
+Data that can help them understand their world.
+
