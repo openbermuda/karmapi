@@ -13,6 +13,15 @@ Contents:
 
    karmapi
 
+Astro pi
+========
+
+.. toctree::
+   :maxdepth: 2
+
+   astro_pi
+
+
 Indices and tables
 ==================
 

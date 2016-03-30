@@ -170,6 +170,15 @@ Karma Pi is about open data.  Data that people want to share.
 
 Data that can help them understand their world.
 
+Karma pi privacy and security
+=============================
+
+Be nice.
+
+Collaborative computing.
+
+Find good ways to use the resources available.
+
 Astro Pi
 ========
 
