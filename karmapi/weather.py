@@ -33,9 +33,17 @@ BUILD_PATHS = dict(
     "year/{year}/{month}/{day}/{field}": build_day,
     "year/{year}/{month}/{field}": build_month,
     "year/{year}/{field}": build_year,
+
+    "space/{lat}/{lon}/{field}": not_yet_implemented,
+
+    "baseline/{year}/{month}/{day}/{field}": not_yet_implemented,
+    "baseline/{year}/{month}/{field}": not_yet_implemented,
+    "baseline/{year}/{field}": not_yet_implemented,
     )
 
-
+def not_yet_implemented(path):
+    
+    raise NotImplemented(path)
 
 class RawWeather:
 
