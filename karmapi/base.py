@@ -8,25 +8,31 @@ def find_path(path, paths):
     """ Find first matching path in paths """
     for target in paths:
 
-        parms = match_path(path, target):
+        parms = match_path(path, target)
 
         if parms:
             return target, parms
 
     return False
 
+CASTS = dict(int=int, float=float)
 
 def match_path(path, target_path):
     """ See if path matches target """
     fields = path.split('/')
     target_fields = target_path.split('/')
-    
+
     parms = Parms()
     for field, target in zip(fields, target_fields):
-        if target.startswith('{'):
+        if target.startswith('<'):
 
-            # drop the {}'s
+            # drop the <>'s
             name = target[1:-1]
+
+            if ':' in name:
+                typehint, name = name.split(':')
+
+                field = CASTS.get(typehint, str)(field)
 
             setattr(parms, name, field)
 
@@ -54,7 +60,16 @@ def build(path):
 
 def get_data(path):
     """ Get data for a path """
-    raise NotImplemented
+    if not os.path.exists(path):
+        raise AttributeError
+
+    # get the meta data
+    meta = get_meta_data(path)
+
+    # Now figure out the module to use
+    # Find the function to call
+    # call it
+    
 
 def get_meta_data(path):
     """ Spin along a path gathering up meta data """

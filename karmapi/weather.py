@@ -34,11 +34,11 @@ BUILD_PATHS = dict(
     "year/{year}/{month}/{field}": build_month,
     "year/{year}/{field}": build_year,
 
-    "space/{lat}/{lon}/{field}": not_yet_implemented,
+    "space/{lon}/{field}": not_yet_implemented,
 
-    "baseline/{year}/{month}/{day}/{field}": not_yet_implemented,
-    "baseline/{year}/{month}/{field}": not_yet_implemented,
-    "baseline/{year}/{field}": not_yet_implemented,
+    "total/{year}/{month}/{field}": not_yet_implemented,
+    "total/{year}/{field}": not_yet_implemented,
+    "baseline/{month}/{day}/{field}": not_yet_implemented,
     )
 
 def not_yet_implemented(path):
@@ -168,9 +168,9 @@ def build_day(path):
 
     print(source_meta)
 
-    raw = RawWeather()
+    raw = RawWeather(source_meta)
 
-    data = raw.get_data(datetime.date(year, month, day))
+    data = raw.get_data(datetime.date(year, month, day), open(source))
 
     # Write the data out
     pack = stuct.Struct("{}f".format(len(data)))
@@ -183,7 +183,12 @@ def build_month(path):
 
     Create some stats on the totals
     """
+    target = "year/{year}/{month}/{day}/{field}"
+    # load meta data for raw file
+    parms, path = match_path(path, target)
+
     raise NotImplemented
+
 
 def build_year(path):
     """ Sum all the days in the year """
