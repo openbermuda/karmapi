@@ -25,21 +25,11 @@ START_DAY = datetime.date(1979, 1, 1)
 END_DAY = datetime.date(2016, 1, 1)
 
 DELTA = 0.75
+DELTA_LATITUDE = DELTA_LONGITUDE = DELTA
 
 LATITUDE_START = 90.0
 LONGITUDE_START = 0.0
 
-BUILD_PATHS = dict(
-    "year/{year}/{month}/{day}/{field}": build_day,
-    "year/{year}/{month}/{field}": build_month,
-    "year/{year}/{field}": build_year,
-
-    "space/{lon}/{field}": not_yet_implemented,
-
-    "total/{year}/{month}/{field}": not_yet_implemented,
-    "total/{year}/{field}": not_yet_implemented,
-    "baseline/{month}/{day}/{field}": not_yet_implemented,
-    )
 
 def not_yet_implemented(path):
     
@@ -65,15 +55,35 @@ class RawWeather:
     def records_per_day(self):
         """ One record per lat and lon """
         
-        return longitudes() * latitudes()
+        return number_of_longitudes() * number_of_latitudes()
 
-    def longitudes():
+    def number_of_longitudes():
         """ Number of longitudes in the grid """
         return int(360 / self.delta_longitude)
      
-    def latitudes():
+    def number_of_latitudes():
         """ Number of latitudes in the grid """
         return int(1 + (180 / self.delta_latitude))
+
+    def longitudes(self):
+        """ Return list of longitudes """
+        lons = []
+
+        lon = 0.0
+        while lon < 360.0:
+            lons.append(lon)
+            lon += self.delta_longitude
+        return lons
+
+    def latitudes(self):
+        """ Return list of longitudes """
+        lats = []
+
+        lat = 90.0
+        while lat >= -90.0:
+            lats.append(lat)
+            lat -= self.delta_latitude
+        return lats
 
     def latitude_index(lat):
         """ Convert a latitude to index in the grid 
@@ -128,7 +138,7 @@ class RawWeather:
 
 def day_to_numpy(data):
     
-    ndata = numpy.array(data])
+    ndata = numpy.array(data)
     ndata = ndata.reshape(longitudes(), latitudes()).T
     return ndata
 

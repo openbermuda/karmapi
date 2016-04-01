@@ -66,6 +66,7 @@ The flask_restful models work well with swagger.
 So the thought is to just generate some code to build all these
 endpoints.
 
+Turning the flask inside out.
 
 """
 
