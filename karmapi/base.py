@@ -1,14 +1,26 @@
 """ Karma Pi base 
+
+get(path): get data at path
+
+build(path):  build data at path
+
+get_meta(path):  get meta data for path
+
 """
 
 class Parms:
     pass
 
 def find_path(path, paths):
-    """ Find first matching path in paths """
-    for target in paths:
+    """ Find first matching path in paths 
 
-        parms = match_path(path, target)
+    Paths is a dictionary.
+
+    The values are dictionaries too, with a path key.
+    """
+    for key, target in paths.items():
+
+        parms = match_path(path, target['path'])
 
         if parms:
             return target, parms
@@ -48,28 +60,35 @@ def build(path):
 
     NB flask has already solved this.
     """
-    match = find_path(path, BUILD_PATHS)
-    
-    if not target_path:
-        raise AttributeError("Unrecognised path: {}".format(path))
+    meta = get_meta_data(path)
 
-    # Call the builder
-    target_path, parms = match
-    BUILD_PATHS[target_path](path)
+    return dispatch(path, meta.get('builds', {}))
 
-
-def get_data(path):
+def get(path):
     """ Get data for a path """
-    if not os.path.exists(path):
-        raise AttributeError
-
     # get the meta data
     meta = get_meta_data(path)
 
-    # Now figure out the module to use
-    # Find the function to call
-    # call it
+    return dispatch(path, meta.get('paths', {}))
     
+
+def dispatch(path, paths):
+    """  Dispatch a function call """
+    # match the path to meta data paths
+    match = find_path(path, paths)
+
+    if not match:
+        raise AttributeError("Unrecognised path: {}".format(path))
+
+    # unpack match return value
+    target, parms = match
+
+    # extract function to call
+    function = get_item(target.get('karma'))
+
+    # Call the function
+    return function(path)
+
 
 def get_meta_data(path):
     """ Spin along a path gathering up meta data """
@@ -91,4 +110,21 @@ def load_meta_path(path):
         with open(filename) as infile:
             return json.loads(infile)
 
+    # return empty dictionary if there is no meta data here
     return {}
+
+def get_item(path):
+    """ Given a path, return the item
+
+    Item is usually some sort of python callable.
+
+    It could be a function or a class name.
+    """
+    path = path.split('.')
+
+    module_name = '.'.join(path[:-1])
+
+    module = importlib.import_module(module_name)
+
+    return getattr(module, path[-1])
+    
