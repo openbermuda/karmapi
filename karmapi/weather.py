@@ -12,9 +12,12 @@ lon 0 to 359.25, 0.75
 
 Year, day, month.
 """
+import os
 import datetime
+import struct
+import numpy
 
-from .base import build, match_path, Parms, get_meta_data
+from .base import build, match_path, Parms, get_all_meta_data
 
 # FIXME -- the following constants belong in meta data
 
@@ -51,17 +54,30 @@ class RawWeather:
         self.delta_latitude = delta_latitude
         self.longitude_start = longitude_start
         self.latitude_start = latitude_start
+
+        if type(self.start_day) == str:
+            self.start_day = datetime.date(
+                self.start_year,
+                self.start_month,
+                self.start_day)
+            
+        if type(self.end_day) == str:
+            self.end_day = datetime.date(
+                self.end_year,
+                self.end_month,
+                self.end_day)
+
     
     def records_per_day(self):
         """ One record per lat and lon """
         
-        return number_of_longitudes() * number_of_latitudes()
+        return self.number_of_longitudes() * self.number_of_latitudes()
 
-    def number_of_longitudes():
+    def number_of_longitudes(self):
         """ Number of longitudes in the grid """
         return int(360 / self.delta_longitude)
      
-    def number_of_latitudes():
+    def number_of_latitudes(self):
         """ Number of latitudes in the grid """
         return int(1 + (180 / self.delta_latitude))
 
@@ -85,14 +101,14 @@ class RawWeather:
             lat -= self.delta_latitude
         return lats
 
-    def latitude_index(lat):
+    def latitude_index(self, lat):
         """ Convert a latitude to index in the grid 
 
         Returns index of nearest grid latitude to the north of given lat.
         """
         return int((self.latitude_start - lat) / self.delta_latitude)
 
-    def longitude_index(lon):
+    def longitude_index(self, lon):
         """ Convert a longitude to index in the grid
 
         Returns index of nearest grid longitude to the west of given lon.
@@ -100,24 +116,29 @@ class RawWeather:
 
         return int((lon - self.longitude_start) / self.delta_longitude)
 
-    def calculate_record_number(date, lat=90, lon=0.0, start=None):
+    def calculate_record_number(self, date, lat=90, lon=0.0, start=None):
         """  Calculate the record number for given date, lat, lon """
         if start is None:
-            start = self.START_DAY
+            start = self.start_day
+
+
+        print(start)
+
+        print(type(start))
 
         days = (date - start).days
 
-        lat_index = latitude_index(lat)
+        lat_index = self.latitude_index(lat)
 
-        lon_index = longitude_index(lon)
+        lon_index = self.longitude_index(lon)
 
-        number = days * records_per_day()
-        number += lon_index * latitudes()
+        number = days * self.records_per_day()
+        number += lon_index * self.number_of_latitudes()
         number += lat_index
 
         return number
 
-    def get_data(date, infile, size=9):
+    def get_data(self, date, infile, size=9):
         """ Pull out all data for the given date
 
         date: the date to pull data for
@@ -126,21 +147,22 @@ class RawWeather:
 
         size: number of bytes per value.
         """
-        pos = calculate_record_number(date)
+        pos = self.calculate_record_number(date)
 
         infile.seek(pos * size)
 
         # data is one value per csv line
-        data = infile.read(size * records_per_day())
+        data = infile.read(size * self.records_per_day())
 
         return [float(x) for x in data.split()]
 
 
-def day_to_numpy(data):
+    def day_to_numpy(self, data):
     
-    ndata = numpy.array(data)
-    ndata = ndata.reshape(longitudes(), latitudes()).T
-    return ndata
+        ndata = numpy.array(data)
+        ndata = ndata.reshape(self.number_of_longitudes(),
+                              self.number_of_latitudes()).T
+        return ndata
 
     
 def build_day_folders(start, end, path='.'):
@@ -148,22 +170,35 @@ def build_day_folders(start, end, path='.'):
     dday = datetime.timedelta(days=1)
     while day < end:
 
-        os.makedirs('{}/{}/{}/{}'.format(
-            path,
-            day.year,
-            day.month,
-            day.day))
+        build_day_folder(day, path)
 
     return
 
-def build_day(path):
-    """ Copy data over from raw files into day folders """
-    target = "year/{year}/{month}/{day}/{field}"
-    # load meta data for raw file
-    parms, path = match_path(path, target)
+def build_day_folder(day, path='.'):
+
+    os.makedirs('{}/{}/{}/{}'.format(
+        path,
+        day.year,
+        day.month,
+        day.day))
+
+    return
+
+
+def build_day(path, parms):
+    """ Copy data over from raw files into day folders 
+
+    Assume path is relative to current working directory.
+    """
+    folder, filename = os.path.split(path)
+
+    if folder:
+        if not os.path.exists(folder):
+            print('building', folder)
+            os.makedirs(folder)
 
     # read meta data
-    meta = get_meta_data(path)
+    meta = get_all_meta_data(path)
 
     # now do what we have to do
     year = int(parms.year)
@@ -171,21 +206,19 @@ def build_day(path):
     day = int(parms.day)
 
     # find info about source
-    source = meta.get('source', 'raw/{field}'.format(parms.field))
+    source = meta.get('source', 'raw/{field}').format(**parms.__dict__)
 
     # get the meta data for the source
-    source_meta = get_meta_data(source)
+    source_meta = get_all_meta_data(source)
+    raw = RawWeather(**source_meta)
 
-    print(source_meta)
-
-    raw = RawWeather(source_meta)
-
-    data = raw.get_data(datetime.date(year, month, day), open(source))
+    with open(source) as infile:
+        data = raw.get_data(datetime.date(year, month, day), infile)
 
     # Write the data out
-    pack = stuct.Struct("{}f".format(len(data)))
+    pack = struct.Struct("{}f".format(len(data)))
     with open(path, 'wb') as outfile:
-        outfile.write(pack.pack(data))
+        outfile.write(pack.pack(*data))
 
 
 def build_month(path):
@@ -204,7 +237,14 @@ def build_year(path):
     """ Sum all the days in the year """
     raise NotImplemented
 
+def get_day(path, parms):
 
+    with open(path, 'rb') as infile:
+        data = infile.read()
+
+    unpack = struct.Struct("{}f".format(int(len(data)/4)))
+
+    return unpack.unpack(data)
     
 def create_meta_data(path):
     """ Create meta data for top level folder 

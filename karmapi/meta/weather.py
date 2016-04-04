@@ -12,6 +12,7 @@ from karmapi.weather import RawWeather
 raw = RawWeather()
 
 meta = dict(
+    base = "euro",
     start_year = raw.start_day.year,
     start_month = raw.start_day.month,
     start_day = raw.start_day.day,
@@ -27,9 +28,10 @@ meta = dict(
 # Stuff we can build
 meta['builds'] = dict(
     day = dict(
-        path="time/{year}/{month}/{day}/{field}",
+        path="time/<int:year>/<int:month>/<int:day>/<field>",
         karma="karmapi.weather.build_day",
         model = "karmapi.models.lat_lon_grid.LatLonGrid",
+        source = "raw",
     )
 )
 
@@ -37,7 +39,7 @@ meta['builds'] = dict(
 # Stuff we can get
 meta['gets'] = dict(
     day = dict(
-        path="time/{year}/{month}/{day}/{field}",
+        path="time/<int:year>/<int:month>/<int:day>/<field>",
         karma="karmapi.weather.get_day",
         model = "karmapi.models.lat_lon_grid.LatLonGrid",
      )

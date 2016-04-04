@@ -7,6 +7,11 @@ build(path):  build data at path
 get_meta(path):  get meta data for path
 
 """
+import os
+import importlib
+import json
+
+BASE_FOLDER = '.'
 
 class Parms:
     pass
@@ -28,6 +33,7 @@ def find_path(path, paths):
     return False
 
 CASTS = dict(int=int, float=float)
+
 
 def match_path(path, target_path):
     """ See if path matches target """
@@ -55,51 +61,89 @@ def match_path(path, target_path):
     return parms
 
 
+def meta_data_match(path, key='gets'):
+    """ Work our way along path looking for a match """
+
+    folders = path.split('/')
+
+    bases = []
+    relatives = folders[1:]
+    
+    for folder in folders:
+        bases.insert(0, folder)
+    
+        base = '/'.join(bases)
+        relative_path = '/'.join(relatives)
+        del relatives[0]
+        
+        meta = load_meta_path(base)
+
+        match = find_path(relative_path, meta.get(key, {}))
+
+        if match:
+            target, parms = match
+            return dict(base=base,
+                        path=relative_path,
+                        target=target,
+                        parms=parms)
+    
 def build(path):
     """ Dispatch to the appropriate function 
 
     NB flask has already solved this.
     """
-    meta = get_meta_data(path)
-
-    return dispatch(path, meta.get('builds', {}))
+    return dispatch(path, key='builds')
 
 def get(path):
     """ Get data for a path """
-    # get the meta data
-    meta = get_meta_data(path)
-
-    return dispatch(path, meta.get('paths', {}))
+    return dispatch(path, key='gets')
     
 
-def dispatch(path, paths):
+def dispatch(path, key='gets'):
     """  Dispatch a function call """
-    # match the path to meta data paths
-    match = find_path(path, paths)
+
+    # work our way down path looking for a meta data match
+    match = meta_data_match(path, key)
 
     if not match:
         raise AttributeError("Unrecognised path: {}".format(path))
 
     # unpack match return value
-    target, parms = match
+    base = match['base']
+    target = match['target']
+    parms = match['parms']
+    relative_path = match['path']
 
-    # extract function to call
-    function = get_item(target.get('karma'))
+    print('BASE:', base)
+    print('Relative_path:', relative_path)
+
+    old_dir = os.getcwd()
+    try:
+        os.chdir(base)
+
+        # extract function to call
+        function = get_item(target.get('karma'))
+
+        result = function(relative_path, parms)
+        
+    finally:
+        os.chdir(old_dir)
 
     # Call the function
-    return function(path)
+    return result
 
 
-def get_meta_data(path):
-    """ Spin along a path gathering up meta data """
+def get_all_meta_data(path):
+    """ Spin along a path gathering up all meta data """
     meta = {}
 
     fields = path.split('/')
     path = []
     for field in fields:
         path.append(field)
-        
-        meta.update(load_meta_path('/'.join(path)))
+
+        meta_data = meta.update(
+            load_meta_path('/'.join(path)))
 
     return meta
         
@@ -108,7 +152,7 @@ def load_meta_path(path):
     filename = os.path.join(path, 'meta.json')
     if os.path.exists(filename):
         with open(filename) as infile:
-            return json.loads(infile)
+            return json.loads(infile.read())
 
     # return empty dictionary if there is no meta data here
     return {}
