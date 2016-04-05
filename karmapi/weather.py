@@ -242,6 +242,34 @@ def build_year(path):
     """ Sum all the days in the year """
     raise NotImplemented
 
+def build_longitude(path, parms):
+    """ Extract all the data for a given longitude.
+
+    This then allows us to get the data for any lat/lon
+    quickly
+    """
+    folder, filename = os.path.split(path)
+
+    if folder:
+        if not os.path.exists(folder):
+            print('building', folder)
+            os.makedirs(folder)
+
+    # read meta data
+    meta = get_all_meta_data('.')
+    meta.update(get_all_meta_data(path))
+    
+    # now do what we have to do
+    lon = int(parms.lon)
+
+    # get raw weather object
+    raw = RawWeather(**meta)
+    
+    print(raw.start_day)
+    print(raw.end_day)
+
+
+
 def get_day(path, parms):
 
     with open(path, 'rb') as infile:
@@ -250,7 +278,10 @@ def get_day(path, parms):
     unpack = struct.Struct("{}f".format(int(len(data)/4)))
 
     return unpack.unpack(data)
-    
+
+
+
+
 def create_meta_data(path):
     """ Create meta data for top level folder 
 
