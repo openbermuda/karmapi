@@ -82,6 +82,8 @@ def meta_data_match(path, key='gets'):
 
         if match:
             target, parms = match
+            parms.__dict__.update(target)
+            
             return dict(base=base,
                         path=relative_path,
                         target=target,

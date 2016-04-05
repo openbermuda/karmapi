@@ -198,7 +198,10 @@ def build_day(path, parms):
             os.makedirs(folder)
 
     # read meta data
-    meta = get_all_meta_data(path)
+    meta = get_all_meta_data('.')
+    meta.update(get_all_meta_data(path))
+    
+    print('meta', meta.keys())
 
     # now do what we have to do
     year = int(parms.year)
@@ -206,6 +209,8 @@ def build_day(path, parms):
     day = int(parms.day)
 
     # find info about source
+    # FIXME -- this is buried in the builds meta data
+    #          better to just add it to parms
     source = meta.get('source', 'raw/{field}').format(**parms.__dict__)
 
     # get the meta data for the source

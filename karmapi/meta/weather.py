@@ -31,7 +31,7 @@ meta['builds'] = dict(
         path="time/<int:year>/<int:month>/<int:day>/<field>",
         karma="karmapi.weather.build_day",
         model = "karmapi.models.lat_lon_grid.LatLonGrid",
-        source = "raw",
+        source = "raw/{field}",
     )
 )
 
