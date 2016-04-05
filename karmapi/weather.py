@@ -34,10 +34,6 @@ LATITUDE_START = 90.0
 LONGITUDE_START = 0.0
 
 
-def not_yet_implemented(path):
-    
-    raise NotImplemented(path)
-
 class RawWeather:
 
     def __init__(self,
@@ -55,13 +51,18 @@ class RawWeather:
         self.longitude_start = longitude_start
         self.latitude_start = latitude_start
 
-        if type(self.start_day) == str:
+
+    def from_dict(self, data):
+        """ Hack to build from meta data """
+        self.__dict__.update(data)
+        
+        if type(self.start_day) == int:
             self.start_day = datetime.date(
                 self.start_year,
                 self.start_month,
                 self.start_day)
             
-        if type(self.end_day) == str:
+        if type(self.end_day) == int:
             self.end_day = datetime.date(
                 self.end_year,
                 self.end_month,
@@ -263,11 +264,32 @@ def build_longitude(path, parms):
     lon = int(parms.lon)
 
     # get raw weather object
-    raw = RawWeather(**meta)
+    raw = RawWeather()
+    raw.from_dict(meta)
     
     print(raw.start_day)
     print(raw.end_day)
 
+    print(meta.keys())
+
+    # this is going to take a while
+    day = raw.start_day
+    aday = datetime.timedelta(days=1)
+
+    # figure out a template for the path to day data
+    path_parts = path.split('/')
+    inpath = '/'.join(path_parts[:-3]
+
+
+    with open(path, 'wb') as outfile:
+
+        while day < raw.end_day:
+            # Get the day's data
+            data = get_day()
+
+            # extract stuff for this longitude
+
+            # format it with struct and write to outfile
 
 
 def get_day(path, parms):

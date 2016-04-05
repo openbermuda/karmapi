@@ -173,4 +173,8 @@ def get_item(path):
     module = importlib.import_module(module_name)
 
     return getattr(module, path[-1])
+
+def not_yet_implemented(path):
     
+    raise NotImplemented(path)
+
