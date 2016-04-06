@@ -44,14 +44,14 @@ meta['builds'] = dict(
         karma="karmapi.weather.build_longitude",
         model = "karmapi.models.lists.ListFloat",
         source = "raw/{field}",
-    )
+    ),
     space = dict(
         doc="extract data from the day files for all lat/lons",
         path="space/<field>",
         karma="karmapi.weather.build_space",
         model = "karmapi.models.lists.ListFloat",
         source = "raw/{field}",
-    )
+    ),
 )
 
 
@@ -67,7 +67,7 @@ meta['gets'] = dict(
         karma="karmapi.weather.get_lat_lon",
         model = "karmapi.models.lists.ListFloat",
         source = "raw/{field}",
-    )
+    ),
 )
 
 
