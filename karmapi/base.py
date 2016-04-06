@@ -198,7 +198,6 @@ def create_folder_if_missing(path):
 
     if folder:
         if not os.path.exists(folder):
-            print('building', folder)
             os.makedirs(folder)
 
             
