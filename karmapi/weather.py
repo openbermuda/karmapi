@@ -108,27 +108,25 @@ class RawWeather:
     def latitude_index(self, lat):
         """ Convert a latitude to index in the grid 
 
-        Returns index of nearest grid latitude to the north of given lat.
+        Returns index of nearest grid latitude to the 
+        north of given lat.
         """
         return int((self.latitude_start - lat) / self.delta_latitude)
 
     def longitude_index(self, lon):
         """ Convert a longitude to index in the grid
 
-        Returns index of nearest grid longitude to the west of given lon.
+        Returns index of nearest grid longitude to the 
+        west of given lon.
         """
 
         return int((lon - self.longitude_start) / self.delta_longitude)
 
-    def calculate_record_number(self, date, lat=90, lon=0.0, start=None):
+    def calculate_record_number(self, date, lat=90, lon=0.0,
+                                start=None):
         """  Calculate the record number for given date, lat, lon """
         if start is None:
             start = self.start_day
-
-
-        print(start)
-
-        print(type(start))
 
         days = (date - start).days
 
@@ -168,25 +166,6 @@ class RawWeather:
                               self.number_of_latitudes()).T
         return ndata
 
-    
-def build_day_folders(start, end, path='.'):
-
-    dday = datetime.timedelta(days=1)
-    while day < end:
-
-        build_day_folder(day, path)
-
-    return
-
-def build_day_folder(day, path='.'):
-
-    os.makedirs('{}/{}/{}/{}'.format(
-        path,
-        day.year,
-        day.month,
-        day.day))
-
-    return
 
 def build_day(parms):
     """ Copy data over from raw files into day folders 
@@ -237,7 +216,9 @@ def build_longitude(parms):
     """ Extract all the data for a given longitude.
 
     This then allows us to get the data for any lat/lon
-    quickly
+    quickly.
+
+    Alternatively, use build_space and do everythng in one.
     """
     path = parms.path
     create_folder_if_missing(path)
@@ -250,10 +231,6 @@ def build_longitude(parms):
     raw = RawWeather()
     raw.from_dict(meta)
     
-    print(raw.start_day)
-    print(raw.end_day)
-    #raw.end_day = datetime.date(1979, 1, 6)
-
     nlats = raw.number_of_latitudes()
     lon_index = raw.longitude_index(parms.lon)
 
@@ -310,10 +287,6 @@ def build_space(parms):
         create_folder_if_missing(path)
         paths.append(path)
     
-    print(raw.start_day)
-    print(raw.end_day)
-    #raw.end_day = datetime.date(1979, 1, 6)
-
     nlats = raw.number_of_latitudes()
 
     # this is going to be slow, we have to read
@@ -355,13 +328,11 @@ def build_space(parms):
 
             
 def get_lat_lon(parms):
+    """  Get all the data for a given lat/lon and field """
 
     # Read the data for the lon
     path = "space/{lon}/{field}".format(
         lon=parms.lon, field=parms.field)
-
-    print(path)
-    print(parms.__dict__.keys())
 
     data = get_array_for_path(path)
 
@@ -395,33 +366,6 @@ def write_array(outfile, data):
     
     pack = struct.Struct("{}f".format(len(data)))
     outfile.write(pack.pack(*data))
-
-
-def create_meta_data(path):
-    """ Create meta data for top level folder 
-
-    FIXME
-    """
-    meta = {}
-
-    meta['start'] = start
-    meta['end'] = start
-
-    meta['parent'] = 'raw'
-        
-
-def create_meta_data(start, end, fields=[]):
-    """ Create meta data for top level folder """
-    meta = {}
-
-    meta['start'] = start
-    meta['end'] = start
-
-    meta['parent'] = 'raw'
-
-def create_day_meta_data(start, end, path='.'):
-
-    pass
 
 def write_lons_for_day(data, date, outfiles):
     
