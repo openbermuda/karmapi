@@ -17,7 +17,10 @@ import datetime
 import struct
 import numpy
 
-from .base import build, match_path, Parms, get_all_meta_data
+from .base import (
+    build, match_path, Parms, get_all_meta_data
+    create_folder_if_missing)
+                   
 
 # FIXME -- the following constants belong in meta data
 
@@ -185,46 +188,33 @@ def build_day_folder(day, path='.'):
 
     return
 
-
-def build_day(path, parms):
+def build_day(parms):
     """ Copy data over from raw files into day folders 
 
     Assume path is relative to current working directory.
     """
-    folder, filename = os.path.split(path)
-
-    if folder:
-        if not os.path.exists(folder):
-            print('building', folder)
-            os.makedirs(folder)
-
-    # read meta data
-    meta = get_all_meta_data('.')
-    meta.update(get_all_meta_data(path))
-    
-    print('meta', meta.keys())
+    path = parms.path
+    create_folder_if_missing(path)
 
     # now do what we have to do
-    year = int(parms.year)
-    month = int(parms.month)
-    day = int(parms.day)
+    day = datetime.date(int(parms.year),
+                        int(parms.month),
+                        int(parms.day))
 
-    # find info about source
-    # FIXME -- this is buried in the builds meta data
-    #          better to just add it to parms
-    source = meta.get('source', 'raw/{field}').format(**parms.__dict__)
+    # extract the source data from the parms
+    source = parms.target['source'].format(field=parms.field)
 
     # get the meta data for the source
     source_meta = get_all_meta_data(source)
     raw = RawWeather(**source_meta)
 
+    # Read the source data
     with open(source) as infile:
-        data = raw.get_data(datetime.date(year, month, day), infile)
+        data = raw.get_data(day, infile)
 
     # Write the data out
-    pack = struct.Struct("{}f".format(len(data)))
     with open(path, 'wb') as outfile:
-        outfile.write(pack.pack(*data))
+        write_array(outfile, data)
 
 
 def build_month(path):
@@ -243,56 +233,87 @@ def build_year(path):
     """ Sum all the days in the year """
     raise NotImplemented
 
-def build_longitude(path, parms):
+def build_longitude(parms):
     """ Extract all the data for a given longitude.
 
     This then allows us to get the data for any lat/lon
     quickly
     """
-    folder, filename = os.path.split(path)
+    path = parms.path
+    create_folder_if_missing(path)
 
-    if folder:
-        if not os.path.exists(folder):
-            print('building', folder)
-            os.makedirs(folder)
-
-    # read meta data
-    meta = get_all_meta_data('.')
-    meta.update(get_all_meta_data(path))
-    
     # now do what we have to do
     lon = int(parms.lon)
 
     # get raw weather object
+    meta = get_all_meta_data('.')
     raw = RawWeather()
     raw.from_dict(meta)
     
     print(raw.start_day)
     print(raw.end_day)
+    #raw.end_day = datetime.date(1979, 1, 6)
 
-    print(meta.keys())
+    nlats = raw.number_of_latitudes()
+    lon_index = raw.longitude_index(parms.lon)
 
-    # this is going to take a while
+    # this is going to be slow, we have to read
+    # the data for every day to get all the data for a longitude
     day = raw.start_day
     aday = datetime.timedelta(days=1)
 
     # figure out a template for the path to day data
     path_parts = path.split('/')
-    inpath = '/'.join(path_parts[:-3]
-
+    inpath = '/'.join(path_parts[:-3])
 
     with open(path, 'wb') as outfile:
 
         while day < raw.end_day:
+            print(day)
             # Get the day's data
-            data = get_day()
+            day_path = "time/{day:%Y/%m/%d}/{field}".format(
+                base=parms.base,
+                day=day,
+                field=parms.field)
+
+            data = get_array_for_path(day_path)
 
             # extract stuff for this longitude
+            lon_data = data[lon_index::nlats]
 
             # format it with struct and write to outfile
+            write_array(outfile, lon_data)
 
+            # go to next day
+            day += aday
 
-def get_day(path, parms):
+def get_lat_lon(parms):
+
+    # Read the data for the lon
+    path = "space/{lon}/{field}".format(
+        lon=parms.lon, field=parms.field)
+
+    print(path)
+    print(parms.__dict__.keys())
+
+    data = get_array_for_path(path)
+
+    # Now find the index for this lat
+    # get raw weather object
+    meta = get_all_meta_data('.')
+    raw = RawWeather()
+    raw.from_dict(meta)
+
+    latitude_index = raw.latitude_index(parms.lat)
+
+    return data[latitude_index::raw.number_of_latitudes()]
+
+            
+def get_array(parms):
+
+    return get_array_for_path(parms.path)
+
+def get_array_for_path(path):
 
     with open(path, 'rb') as infile:
         data = infile.read()
@@ -302,6 +323,11 @@ def get_day(path, parms):
     return unpack.unpack(data)
 
 
+def write_array(outfile, data):
+    """ Write out an array of floats """
+    
+    pack = struct.Struct("{}f".format(len(data)))
+    outfile.write(pack.pack(*data))
 
 
 def create_meta_data(path):

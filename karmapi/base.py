@@ -14,7 +14,16 @@ import json
 BASE_FOLDER = '.'
 
 class Parms:
-    pass
+
+    def __init__(self, data=None):
+
+        if data:
+            self.__dict__.update(data)
+
+    def update(self, data):
+
+        self.__dict__.update(data)
+        
 
 def find_path(path, paths):
     """ Find first matching path in paths 
@@ -28,7 +37,8 @@ def find_path(path, paths):
         parms = match_path(path, target['path'])
 
         if parms:
-            return target, parms
+            parms.update(dict(target=target))
+            return parms
 
     return False
 
@@ -70,24 +80,22 @@ def meta_data_match(path, key='gets'):
     relatives = folders[1:]
     
     for folder in folders:
-        bases.insert(0, folder)
+        bases.append(folder)
     
         base = '/'.join(bases)
         relative_path = '/'.join(relatives)
-        del relatives[0]
+
+        if relatives:
+            del relatives[0]
         
         meta = load_meta_path(base)
 
-        match = find_path(relative_path, meta.get(key, {}))
+        parms = find_path(relative_path, meta.get(key, {}))
 
-        if match:
-            target, parms = match
-            parms.__dict__.update(target)
-            
-            return dict(base=base,
-                        path=relative_path,
-                        target=target,
-                        parms=parms)
+        if parms:
+            parms.update(dict(base=base,
+                              path=relative_path))
+            return parms
     
 def build(path):
     """ Dispatch to the appropriate function 
@@ -111,10 +119,9 @@ def dispatch(path, key='gets'):
         raise AttributeError("Unrecognised path: {}".format(path))
 
     # unpack match return value
-    base = match['base']
-    target = match['target']
-    parms = match['parms']
-    relative_path = match['path']
+    base = match.base
+    target = match.target
+    relative_path = match.path
 
     print('BASE:', base)
     print('Relative_path:', relative_path)
@@ -126,7 +133,7 @@ def dispatch(path, key='gets'):
         # extract function to call
         function = get_item(target.get('karma'))
 
-        result = function(relative_path, parms)
+        result = function(match)
         
     finally:
         os.chdir(old_dir)
@@ -178,3 +185,18 @@ def not_yet_implemented(path):
     
     raise NotImplemented(path)
 
+
+def create_folder_if_missing(path):
+    """ Create a folder 
+    
+    path is a path to a file, we just want to create
+    the base folder if it is missing.
+    """
+    folder, filename = os.path.split(path)
+
+    if folder:
+        if not os.path.exists(folder):
+            print('building', folder)
+            os.makedirs(folder)
+
+            

@@ -29,6 +29,10 @@ meta = dict(
 meta['builds'] = dict(
     day = dict(
         path="time/<int:year>/<int:month>/<int:day>/<field>",
+
+        # use standard python format to build paths ???
+        path_format="time/{date:%Y/%m/%d}/{field}",
+
         karma="karmapi.weather.build_day",
         model = "karmapi.models.lat_lon_grid.LatLonGrid",
         source = "raw/{field}",
@@ -46,7 +50,7 @@ meta['builds'] = dict(
 meta['gets'] = dict(
     day = dict(
         path="time/<int:year>/<int:month>/<int:day>/<field>",
-        karma="karmapi.weather.get_day",
+        karma="karmapi.weather.get_array",
         model = "karmapi.models.lat_lon_grid.LatLonGrid",
      ),
     latlon = dict(
