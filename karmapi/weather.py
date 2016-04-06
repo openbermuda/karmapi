@@ -331,7 +331,7 @@ def get_lat_lon(parms):
     """  Get all the data for a given lat/lon and field """
 
     # Read the data for the lat
-    path = "space/{lat}/{field}".format(
+    path = "space/{lat:.2f}/{field}".format(
         lat=parms.lat, field=parms.field)
 
     data = get_array_for_path(path)
@@ -346,6 +346,16 @@ def get_lat_lon(parms):
 
     return data[latitude_index::raw.number_of_latitudes()]
 
+def get_all_for_lat_lon(parms):
+    """ Get all fields for a specific lat/lon """
+    meta = get_all_meta_data('.')
+
+    data = {}
+    for field in meta['fields']:
+        parms.field = field
+        data[field] = get_lat_lon(parms)
+
+    return data
             
 def get_array(parms):
 

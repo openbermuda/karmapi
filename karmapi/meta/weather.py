@@ -13,6 +13,7 @@ raw = RawWeather()
 
 meta = dict(
     base = "euro",
+    fields = ['tmax', 'tmin', 'precipitation', 'evaporation', 'photo'],
     start_year = raw.start_day.year,
     start_month = raw.start_day.month,
     start_day = raw.start_day.day,
@@ -56,15 +57,28 @@ meta['builds'] = dict(
 # Stuff we can get
 meta['gets'] = dict(
     day = dict(
+        doc="Data for a specific year/month/day",
         path="time/<int:year>/<int:month>/<int:day>/<field>",
         karma="karmapi.weather.get_array",
         model = "karmapi.models.lat_lon_grid.LatLonGrid",
-     ),
+        ),
+    all_day = dict(
+        doc="Data for a specific year/month/day",
+        path="time/<int:year>/<int:month>/<int:day>/",
+        karma="karmapi.weather.get_all_arrays",
+        model = "karmapi.models.lat_lon_grid.LatLonGrid",
+        ),
     latlon = dict(
+        doc="Data for a specific lat/lon",
         path="space/<float:lat>/<float:lon>/<field>",
         karma="karmapi.weather.get_lat_lon",
         model = "karmapi.models.lists.ListFloat",
-    ),
+        ),
+    all_latlon = dict(
+        path="space/<float:lat>/<float:lon>",
+        karma="karmapi.weather.get_all_for_lat_lon",
+        model = "karmapi.models.lists.ListFloat",
+        ),
 )
 
 
