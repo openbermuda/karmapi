@@ -50,6 +50,8 @@ def match_path(path, target_path):
     fields = path.split('/')
     target_fields = target_path.split('/')
 
+    if len(fields) != len(target_fields): return None
+    
     parms = Parms()
     for field, target in zip(fields, target_fields):
         if target.startswith('<'):

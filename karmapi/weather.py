@@ -296,9 +296,6 @@ def build_space(parms):
     path = parms.path
     create_folder_if_missing(path)
 
-    # now do what we have to do
-    lon = int(parms.lon)
-
     # get raw weather object
     meta = get_all_meta_data('.')
     raw = RawWeather()
@@ -309,7 +306,7 @@ def build_space(parms):
     for lon in raw.longitudes():
 
         path = "space/{lon:.2f}/{field}".format(
-            lon=lon, field=field)
+            lon=lon, field=parms.field)
         create_folder_if_missing(path)
         paths.append(path)
     
@@ -318,7 +315,6 @@ def build_space(parms):
     #raw.end_day = datetime.date(1979, 1, 6)
 
     nlats = raw.number_of_latitudes()
-    lon_index = raw.longitude_index(parms.lon)
 
     # this is going to be slow, we have to read
     # the data for every day to get all the data for a longitude
@@ -344,6 +340,7 @@ def build_space(parms):
 
         # extract stuff for this longitude
         for (outfile, lon) in zip(outfiles, raw.longitudes()):
+            lon_index = raw.longitude_index(lon)
             lon_data = data[lon_index::nlats]
 
             # format it with struct and write to outfile
