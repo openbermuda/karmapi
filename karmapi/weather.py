@@ -18,7 +18,7 @@ import struct
 import numpy
 
 from .base import (
-    build, match_path, Parms, get_all_meta_data
+    build, match_path, Parms, get_all_meta_data,
     create_folder_if_missing)
                    
 
