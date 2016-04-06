@@ -28,6 +28,7 @@ meta = dict(
 # Stuff we can build
 meta['builds'] = dict(
     day = dict(
+        doc="extract data for a day from the raw data",
         path="time/<int:year>/<int:month>/<int:day>/<field>",
 
         # use standard python format to build paths ???
@@ -38,8 +39,16 @@ meta['builds'] = dict(
         source = "raw/{field}",
     ),
     lon = dict(
+        doc="extract data from the day files for a specific longitude",
         path="space/<float:lon>/<field>",
         karma="karmapi.weather.build_longitude",
+        model = "karmapi.models.lists.ListFloat",
+        source = "raw/{field}",
+    )
+    space = dict(
+        doc="extract data from the day files for all lat/lons",
+        path="space/<field>",
+        karma="karmapi.weather.build_space",
         model = "karmapi.models.lists.ListFloat",
         source = "raw/{field}",
     )

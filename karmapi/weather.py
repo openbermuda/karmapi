@@ -287,6 +287,76 @@ def build_longitude(parms):
             # go to next day
             day += aday
 
+def build_space(parms):
+    """ Extract all the data for all longitudes.
+
+    This then allows us to get the data for any lat/lon
+    quickly
+    """
+    path = parms.path
+    create_folder_if_missing(path)
+
+    # now do what we have to do
+    lon = int(parms.lon)
+
+    # get raw weather object
+    meta = get_all_meta_data('.')
+    raw = RawWeather()
+    raw.from_dict(meta)
+
+    # create all the folders we need
+    paths = []
+    for lon in raw.longitudes():
+
+        path = "space/{lon:.2f}/{field}".format(
+            lon=lon, field=field)
+        create_folder_if_missing(path)
+        paths.append(path)
+    
+    print(raw.start_day)
+    print(raw.end_day)
+    #raw.end_day = datetime.date(1979, 1, 6)
+
+    nlats = raw.number_of_latitudes()
+    lon_index = raw.longitude_index(parms.lon)
+
+    # this is going to be slow, we have to read
+    # the data for every day to get all the data for a longitude
+    day = raw.start_day
+    aday = datetime.timedelta(days=1)
+
+    # figure out a template for the path to day data
+    path_parts = path.split('/')
+    inpath = '/'.join(path_parts[:-3])
+
+    outfiles = [open(path, 'wb') for path in paths]
+
+    while day < raw.end_day:
+
+        print(day)
+        # Get the day's data
+        day_path = "time/{day:%Y/%m/%d}/{field}".format(
+            base=parms.base,
+            day=day,
+            field=parms.field)
+
+        data = get_array_for_path(day_path)
+
+        # extract stuff for this longitude
+        for (outfile, lon) in zip(outfiles, raw.longitudes()):
+            lon_data = data[lon_index::nlats]
+
+            # format it with struct and write to outfile
+            write_array(outfile, lon_data)
+
+        # go to next day
+        day += aday
+
+    # now close the outfiles
+    for outfile in outfiles:
+        outfile.close()
+
+            
 def get_lat_lon(parms):
 
     # Read the data for the lon
