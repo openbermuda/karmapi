@@ -31,11 +31,14 @@ meta['builds'] = dict(
     day = dict(
         doc="extract data for a day from the raw data",
         path="time/<int:year>/<int:month>/<int:day>/<field>",
-
-        # use standard python format to build paths ???
-        path_format="time/{date:%Y/%m/%d}/{field}",
-
         karma="karmapi.weather.build_day",
+        model = "karmapi.models.lat_lon_grid.LatLonGrid",
+        source = "raw/{field}",
+    ),
+    time = dict(
+        doc="extract data for a day from the raw data",
+        path="time/<field>",
+        karma="karmapi.weather.build_time",
         model = "karmapi.models.lat_lon_grid.LatLonGrid",
         source = "raw/{field}",
     ),

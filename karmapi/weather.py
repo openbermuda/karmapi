@@ -195,6 +195,28 @@ def build_day(parms):
     with open(path, 'wb') as outfile:
         write_array(outfile, data)
 
+def build_time(parms):
+    """ Copy data over from raw files into day folders 
+
+    Assume path is relative to current working directory.
+    """
+    meta = get_all_meta_data('.')
+
+    raw = RawWeather()
+    raw.from_dict(meta)
+        
+    aday = datetime.timedelta(days=1)
+    day = raw.start_day
+    while day < raw.end_day:
+        parms.year = day.year
+        parms.month = day.month
+        parms.day = day.month
+
+        build_day(parms)
+
+        # go to next day
+        day += aday
+
 
 def build_month(path):
     """ Sum all the days in the month 
