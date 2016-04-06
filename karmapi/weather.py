@@ -212,8 +212,8 @@ def build_year(path):
     """ Sum all the days in the year """
     raise NotImplemented
 
-def build_longitude(parms):
-    """ Extract all the data for a given longitude.
+def build_latitude(parms):
+    """ Extract all the data for a given latitude.
 
     This then allows us to get the data for any lat/lon
     quickly.
@@ -224,18 +224,17 @@ def build_longitude(parms):
     create_folder_if_missing(path)
 
     # now do what we have to do
-    lon = int(parms.lon)
+    lat = int(parms.lat)
 
     # get raw weather object
     meta = get_all_meta_data('.')
     raw = RawWeather()
     raw.from_dict(meta)
     
-    nlats = raw.number_of_latitudes()
-    lon_index = raw.longitude_index(parms.lon)
+    lat_index = raw.latitude_index(parms.lat)
 
     # this is going to be slow, we have to read
-    # the data for every day to get all the data for a longitude
+    # the data for every day to get all the data for a latitude
     day = raw.start_day
     aday = datetime.timedelta(days=1)
 
@@ -243,6 +242,7 @@ def build_longitude(parms):
     path_parts = path.split('/')
     inpath = '/'.join(path_parts[:-3])
 
+    stride = raw.number_of_longitudes()
     with open(path, 'wb') as outfile:
 
         while day < raw.end_day:
@@ -255,19 +255,19 @@ def build_longitude(parms):
 
             data = get_array_for_path(day_path)
 
-            # extract stuff for this longitude
-            lon_data = data[lon_index::nlats]
+            # extract stuff for this latitude
+            lat_data = data[lat_index::stride]
 
             # format it with struct and write to outfile
-            write_array(outfile, lon_data)
+            write_array(outfile, lat_data)
 
             # go to next day
             day += aday
 
 def build_space(parms):
-    """ Extract all the data for all longitudes.
+    """ Extract all the data for all latitudes.
 
-    This then allows us to get the data for any lat/lon
+    This then allows us to get the data for any lat/lat
     quickly
     """
     path = parms.path
@@ -280,17 +280,17 @@ def build_space(parms):
 
     # create all the folders we need
     paths = []
-    for lon in raw.longitudes():
+    for lat in raw.latitudes():
 
-        path = "space/{lon:.2f}/{field}".format(
-            lon=lon, field=parms.field)
+        path = "space/{lat:.2f}/{field}".format(
+            lat=lat, field=parms.field)
         create_folder_if_missing(path)
         paths.append(path)
     
     nlats = raw.number_of_latitudes()
 
     # this is going to be slow, we have to read
-    # the data for every day to get all the data for a longitude
+    # the data for every day to get all the data for a latitude
     day = raw.start_day
     aday = datetime.timedelta(days=1)
 
@@ -311,13 +311,13 @@ def build_space(parms):
 
         data = get_array_for_path(day_path)
 
-        # extract stuff for this longitude
-        for (outfile, lon) in zip(outfiles, raw.longitudes()):
-            lon_index = raw.longitude_index(lon)
-            lon_data = data[lon_index::nlats]
+        # extract stuff for this latitude
+        for (outfile, lat) in zip(outfiles, raw.latitudes()):
+            lat_index = raw.latitude_index(lat)
+            lat_data = data[lat_index::nlats]
 
             # format it with struct and write to outfile
-            write_array(outfile, lon_data)
+            write_array(outfile, lat_data)
 
         # go to next day
         day += aday
@@ -330,9 +330,9 @@ def build_space(parms):
 def get_lat_lon(parms):
     """  Get all the data for a given lat/lon and field """
 
-    # Read the data for the lon
-    path = "space/{lon}/{field}".format(
-        lon=parms.lon, field=parms.field)
+    # Read the data for the lat
+    path = "space/{lat}/{field}".format(
+        lat=parms.lat, field=parms.field)
 
     data = get_array_for_path(path)
 
@@ -367,11 +367,11 @@ def write_array(outfile, data):
     pack = struct.Struct("{}f".format(len(data)))
     outfile.write(pack.pack(*data))
 
-def write_lons_for_day(data, date, outfiles):
+def write_lats_for_day(data, date, outfiles):
     
     packer = struct.Struct('{}f'.format(weather.latitudes()))
 
-    for ix in range(weather.longitudes()):
+    for ix in range(weather.latitudes()):
     
         col = data[:, ix]
         pdata = packer.pack(*col)
