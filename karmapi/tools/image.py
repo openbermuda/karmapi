@@ -19,6 +19,8 @@ parser.add_argument("--end")
 
 parser.add_argument("--source")
 
+parser.add_argument("-n", action="store_true")
+
 parser.add_argument("--karmapi", default='.')
 
 args = parser.parse_args()
@@ -44,6 +46,7 @@ parms = base.Parms()
 parms.source = args.source or 'euro'
     
 paths = args.path
+
 for field in args.field:
 
     parms.field = field
@@ -57,6 +60,7 @@ for field in args.field:
 for path in paths:
     
     print(path)
+    if args.n: continue
 
     # need meta data to config module properly
     meta = base.get_all_meta_data(path)
