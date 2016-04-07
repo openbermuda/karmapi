@@ -383,7 +383,18 @@ def get_all_for_lat_lon(parms):
         data[field] = get_lat_lon(parms)
 
     return data
-            
+
+def get_all_for_day(parms):
+    """ Get all fields for a specific lat/lon """
+    meta = get_all_meta_data('.')
+
+    data = {}
+    for field in meta['fields']:
+        parms.field = field
+        data[field] = get_day(parms)
+
+    return data
+
 def get_array(parms):
 
     return get_array_for_path(parms.path)

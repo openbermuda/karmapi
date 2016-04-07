@@ -68,7 +68,7 @@ meta['gets'] = dict(
     all_day = dict(
         doc="Data for a specific year/month/day",
         path="time/<int:year>/<int:month>/<int:day>/",
-        karma="karmapi.weather.get_all_arrays",
+        karma="karmapi.weather.get_all_for_day",
         model = "karmapi.models.lat_lon_grid.LatLonGrid",
         ),
     latlon = dict(

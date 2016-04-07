@@ -69,17 +69,33 @@ endpoints.
 Turning the flask inside out.
 
 """
+import sys
+import argparse
 
-RESOURCE_TEMPLATE =  '''
+from karmapi import base
 
+import json
+
+from flask import Flask, request
+from flask.ext.restplus import Resource, Api
+
+GET_RESOURCE_TEMPLATE =  '''
+
+@api.route('{path}')
 class {name}(Resource):
     """ {doc} """
-    @api.doc("{get_doc}")
-    @api.marshal_with({model})
-    def get(self, {get_args}):
-        """{get_doc}"""
-        return {get_function({get_args})}
 
+    @api.doc("{doc}")
+    @api.marshal_with({model})
+    def get(self, **kwargs):
+        """{doc}"""
+        parms = base.Parms(kwargs)
+        function = base.get_item('{karma}')
+
+        return function(parms)
+'''
+
+PUT_RESOURCE_TEMPLATE =  '''
     @api.doc("{post_doc}")
     @api.marshal_with({model})
     def post(self, {post_args}):
@@ -87,20 +103,66 @@ class {name}(Resource):
         return {post_function({post_args})}
 '''
 
-def build(parms):
+app = Flask(__name__)
+api = Api(app)
+
+
+
+
+def get_parser():
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--run', action='store_true')
+    parser.add_argument('--meta',
+                        type=argparse.FileType('r'),
+                        nargs='?', default=sys.stdin)
+
+    return parser
+
+
+def build(parms, template):
 
     result = ""
-    for item in module.PATHS:
-        # Each item in paths is a Flask resource
-        result += do_item(item)
 
-def do_item(item):
+    print(parms.karma)
+    function = base.get_item(parms.karma)
+    parms.doc = function.__doc__
+    print(function.__doc__)
 
-    return RESOURCE_TEMPLATE.format(item)
+    return template.format(**parms.__dict__)
         
 
-def main():
-    """ Build a klein bottle """
-    pass
-    
+def main(args):
+
+    # read meta data
+    meta = json.loads(args.meta.read())
+
+    # do the gets
+    for key, value in meta.get('gets', {}).items():
+
+        parms = base.Parms(value)
+
+        parms.name = 'get_' + key
+        # build the resource, then evaluate it
+        code = build(parms, GET_RESOURCE_TEMPLATE)
+
+        print(code)
+
+        # run the code
+        eval(compile(code, __file__, 'exec'))
+
+    if args.run:
+        app.run(debug=False)
+
+        
+
+if __name__ == '__main__':
+
+    parser = get_parser()
+    args = parser.parse_args()
+
+    main(args)
+
+
     
