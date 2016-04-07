@@ -208,10 +208,15 @@ def build_time(parms):
     aday = datetime.timedelta(days=1)
     day = raw.start_day
     while day < raw.end_day:
+        print(day)
         parms.year = day.year
         parms.month = day.month
-        parms.day = day.month
+        parms.day = day.day
 
+        parms.path = "time/{day:%Y/%m/%d}/{field}".format(
+            day=day,
+            field=parms.field)
+        print(parms.path)
         build_day(parms)
 
         # go to next day
