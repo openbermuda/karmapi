@@ -2,6 +2,7 @@
 Build a path
 """
 import argparse
+
 from datetime import date, datetime, timedelta
 
 from karmapi import base, weather
@@ -16,13 +17,13 @@ parser.add_argument("--field", nargs='*', default=[])
 parser.add_argument("--start")
 parser.add_argument("--end")
 
-parser.add_argument("--source", default='euro')
+parser.add_argument("--source")
 
 parser.add_argument("--karmapi", default='.')
 
 args = parser.parse_args()
 
-path_template = '{source}/{year}/{month}/{day}/{field}'
+path_template = '{source}/time/{date:%Y/%m/%d}/{field}'
 
 dates = []
 if args.start:
@@ -40,28 +41,22 @@ if args.end:
         day += aday
 
 parms = base.Parms()
-print(args.source)
-parms.source = args.source
-
+parms.source = args.source or 'euro'
+    
 paths = args.path
 for field in args.field:
 
     parms.field = field
     for day in dates:
 
-        parms.day = day.day
-        parms.month = day.month
-        parms.year = day.year
-
-        print(parms.__dict__.keys())
-        path = path_template.format(parms.__dict__)
+        parms.date = date(day.year, day.month, day.day)
+        path = path_template.format(**parms.__dict__)
         paths.append(path)
 
         
 for path in paths:
     
     print(path)
-    continue
 
     # need meta data to config module properly
     meta = base.get_all_meta_data(path)
