@@ -385,7 +385,7 @@ def get_all_for_lat_lon(parms):
     return data
 
 def get_all_for_day(parms):
-    """ Get all fields for a specific lat/lon """
+    """ Get all fields for a specific date """
     meta = get_all_meta_data('.')
 
     data = {}
@@ -399,8 +399,12 @@ def get_array(parms):
 
     return get_array_for_path(parms.path)
 
-def get_array_for_path(path):
+def get_array_as_dict(parms):
 
+    return dict(data=get_array_for_path(parms.path))
+
+def get_array_for_path(path):
+    """ Return data as an array """
     with open(path, 'rb') as infile:
         data = infile.read()
 

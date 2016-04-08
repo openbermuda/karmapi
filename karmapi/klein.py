@@ -79,29 +79,64 @@ import json
 from flask import Flask, request
 from flask.ext.restplus import Resource, Api
 
-GET_RESOURCE_TEMPLATE =  '''
+HEADER = """
+from karmapi import base
 
-@api.route('{path}')
+from flask import request
+from flask_restplus import Namespace, Resource, fields
+
+api = Namespace("{name}", description="{minidoc}")
+"""
+
+MODEL_TEMPLATE = '''
+from {model_module} import {model}
+{model} = api.model("{model}", {model})
+'''
+
+RESOURCE_TEMPLATE =  '''
+@api.route('/{path}')
 class {name}(Resource):
     """ {doc} """
 
-    @api.doc("{doc}")
+'''
+
+GET_RESOURCE_TEMPLATE =  '''
+
+    @api.doc("{name}")
     @api.marshal_with({model})
     def get(self, **kwargs):
-        """{doc}"""
+        """ {doc} """
         parms = base.Parms(kwargs)
+
+        parms = base.Parms(kwargs)
+
+        path = request.url.strip(request.url_root)
+        parms.path = path
+
         function = base.get_item('{karma}')
 
         return function(parms)
 '''
 
 PUT_RESOURCE_TEMPLATE =  '''
-    @api.doc("{post_doc}")
+
+    @api.doc("{name}")
     @api.marshal_with({model})
-    def post(self, {post_args}):
-        """{post_doc}"""
-        return {post_function({post_args})}
+    def post(self, **kwargs):
+        """{doc}"""
+        parms = base.Parms(kwargs)
+
+        path = request.url.strip(request.url_root)
+        parms.path = path
+
+        function = base.get_item('{karma}')
+
+        return function(parms)
 '''
+
+METHOD_TEMPLATES = dict(
+    get=GET_RESOURCE_TEMPLATE,
+    put=PUT_RESOURCE_TEMPLATE)
 
 def get_parser():
 
@@ -110,6 +145,12 @@ def get_parser():
     parser.add_argument('--meta',
                         type=argparse.FileType('r'),
                         nargs='?', default=sys.stdin)
+    parser.add_argument('--outfile',
+                        type=argparse.FileType('w'),
+                        nargs='?', default=sys.stdout)
+
+    parser.add_argument('--name')
+                        
 
     return parser
 
@@ -130,23 +171,61 @@ def main(args):
 
     # read meta data
     meta = json.loads(args.meta.read())
-
-    for template, items in [
-        [GET_RESOURCE_TEMPLATE,
-         list(meta.get('gets', {}).items())],
-        [GET_RESOURCE_TEMPLATE,
-         list(meta.get('builds', {}).items())]]:
-        
+    outfile = args.outfile
     
-        for key, value in items:
+    # do the header
+    minidoc = "api for {}".format(args.name)
+    print(HEADER.format(name=args.name,
+                        minidoc=minidoc), file=outfile)
 
-            parms = base.Parms(value)
+    # Join the gets and builds
+    resources = dict()
+    gets = list(meta.get('gets', {}).items())
+    for name, value in gets:
+        key = value['path']
+        value['name'] = name
+        resources[key] = dict(get=value)
 
-            parms.name = key
-            # build the resource, then evaluate it
-            code = build(parms, GET_RESOURCE_TEMPLATE)
+    puts = list(meta.get('builds', {}).items())
+    for name, value in puts:
+        key = value['path']
+        value['name'] = name
+        if key in resources:
+            resources[key]['put'] = value
+        else:
+            resources[key] = dict(put=value)
 
-            print(code)
+    for path, resource in resources.items():
+        print(path)
+        print(resource.keys())
+        # do models
+        method_code = []
+        for method in ['get', 'put']:
+            item = resource.get(method)
+            
+            if not item: continue
+                
+            # output model
+            parms = base.Parms(item)
+            print(item.keys())
+
+            model_path = parms.model.split('.')
+            parms.model = model_path[-1]
+            parms.model_module = '.'.join(model_path[:-1])
+
+            print(MODEL_TEMPLATE.format(**parms.__dict__),
+                  file=outfile)
+
+            method_code.append(build(parms, METHOD_TEMPLATES[method]))
+
+
+        print(RESOURCE_TEMPLATE.format(
+            **parms.__dict__), file=outfile)
+            
+        # print out the code for the methods
+        for code in method_code:
+            print(code, file=args.outfile)
+            
 
 
 if __name__ == '__main__':

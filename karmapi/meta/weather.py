@@ -32,27 +32,27 @@ meta['builds'] = dict(
         doc="extract data for a day from the raw data",
         path="time/<int:year>/<int:month>/<int:day>/<field>",
         karma="karmapi.weather.build_day",
-        model = "karmapi.models.lat_lon_grid.LatLonGrid",
+        model = "karmapi.models.lists.Array",
         source = "raw/{field}",
     ),
     time = dict(
         doc="extract data for a day from the raw data",
         path="time/<field>",
         karma="karmapi.weather.build_time",
-        model = "karmapi.models.lat_lon_grid.LatLonGrid",
+        model = "karmapi.models.lists.Array",
         source = "raw/{field}",
     ),
     lon = dict(
         doc="extract data from the day files for a specific latitude",
         path="space/<float:lat>/<field>",
         karma="karmapi.weather.build_latitude",
-        model = "karmapi.models.lists.ListFloat",
+        model = "karmapi.models.lists.Array",
     ),
     space = dict(
         doc="extract data from the day files for all lat/lons",
         path="space/<field>",
         karma="karmapi.weather.build_space",
-        model = "karmapi.models.lists.ListFloat",
+        model = "karmapi.models.lists.Array",
     ),
 )
 
@@ -62,8 +62,8 @@ meta['gets'] = dict(
     day = dict(
         doc="Data for a specific year/month/day",
         path="time/<int:year>/<int:month>/<int:day>/<field>",
-        karma="karmapi.weather.get_array",
-        model = "karmapi.models.lat_lon_grid.LatLonGrid",
+        karma="karmapi.weather.get_array_as_dict",
+        model = "karmapi.models.lists.Array",
         ),
     all_day = dict(
         doc="Data for a specific year/month/day",
@@ -75,12 +75,13 @@ meta['gets'] = dict(
         doc="Data for a specific lat/lon",
         path="space/<float:lat>/<float:lon>/<field>",
         karma="karmapi.weather.get_lat_lon",
-        model = "karmapi.models.lists.ListFloat",
+        model = "karmapi.models.lat_lon_grid.LatLonGrid",
         ),
     all_latlon = dict(
+        doc="Return all data for a given lat/lon",
         path="space/<float:lat>/<float:lon>",
         karma="karmapi.weather.get_all_for_lat_lon",
-        model = "karmapi.models.lists.ListFloat",
+        model = "karmapi.models.lists.Array",
         ),
 )
 

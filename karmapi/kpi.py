@@ -19,69 +19,78 @@ from datetime import date, datetime, timedelta
 from karmapi import base, weather
 from matplotlib import pyplot
 
-parser = argparse.ArgumentParser()
-
-parser.add_argument("path", nargs='*')
-
-parser.add_argument("--field", nargs='*', default=[])
-
-parser.add_argument("--start")
-parser.add_argument("--end")
-
-parser.add_argument("--source")
-
-parser.add_argument("-n", action="store_true")
-
-parser.add_argument("--karmapi", default='.')
-
-args = parser.parse_args()
-
-path_template = '{source}/time/{date:%Y/%m/%d}/{field}'
-
-dates = []
-if args.start:
-    start = date(*[int(x) for x in args.start.split('/')])
-    dates.append(start)
+def get_parser():
     
-if args.end:
-    end = date(*[int(x) for x in args.end.split('/')])
+    parser = argparse.ArgumentParser()
 
-    aday = timedelta(days=1)
-    day = start + aday
-    while day < end:
-        dates.append(day)
+    parser.add_argument("path", nargs='*')
 
-        day += aday
+    parser.add_argument("--field", nargs='*', default=[])
 
-parms = base.Parms()
-parms.source = args.source or 'euro'
-    
-paths = args.path
+    parser.add_argument("--start")
+    parser.add_argument("--end")
 
-for field in args.field:
+    parser.add_argument("--source")
 
-    parms.field = field
-    for day in dates:
+    parser.add_argument("-n", action="store_true")
 
-        parms.date = date(day.year, day.month, day.day)
-        path = path_template.format(**parms.__dict__)
-        paths.append(path)
+    parser.add_argument("--karmapi", default='.')
 
-        
-for path in paths:
-    
-    print(path)
-    if args.n: continue
+    return parser
 
-    # need meta data to config module properly
-    meta = base.get_all_meta_data(path)
+def main():
 
-    raw = weather.RawWeather()
-    raw.from_dict(meta)
+    args = parser.parse_args()
 
-    data = base.get(path)
+    path_template = '{source}/time/{date:%Y/%m/%d}/{field}'
 
-    ndata = raw.day_to_numpy(data)
+    dates = []
+    if args.start:
+        start = date(*[int(x) for x in args.start.split('/')])
+        dates.append(start)
 
-    pyplot.imsave(path.replace('/', '-') + '.png', ndata)
+    if args.end:
+        end = date(*[int(x) for x in args.end.split('/')])
 
+        aday = timedelta(days=1)
+        day = start + aday
+        while day < end:
+            dates.append(day)
+
+            day += aday
+
+    parms = base.Parms()
+    parms.source = args.source or 'euro'
+
+    paths = args.path
+
+    for field in args.field:
+
+        parms.field = field
+        for day in dates:
+
+            parms.date = date(day.year, day.month, day.day)
+            path = path_template.format(**parms.__dict__)
+            paths.append(path)
+
+
+    for path in paths:
+
+        print(path)
+        if args.n: continue
+
+        # need meta data to config module properly
+        meta = base.get_all_meta_data(path)
+
+        raw = weather.RawWeather()
+        raw.from_dict(meta)
+
+        data = base.get(path)
+
+        ndata = raw.day_to_numpy(data)
+
+        pyplot.imsave(path.replace('/', '-') + '.png', ndata)
+
+if __name__ == '__main__':
+
+    main()
