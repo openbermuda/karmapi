@@ -103,17 +103,10 @@ PUT_RESOURCE_TEMPLATE =  '''
         return {post_function({post_args})}
 '''
 
-app = Flask(__name__)
-api = Api(app)
-
-
-
-
 def get_parser():
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--run', action='store_true')
     parser.add_argument('--meta',
                         type=argparse.FileType('r'),
                         nargs='?', default=sys.stdin)
@@ -125,10 +118,10 @@ def build(parms, template):
 
     result = ""
 
-    print(parms.karma)
+    #print(parms.karma)
     function = base.get_item(parms.karma)
     parms.doc = function.__doc__
-    print(function.__doc__)
+    #print(function.__doc__)
 
     return template.format(**parms.__dict__)
         
@@ -138,24 +131,23 @@ def main(args):
     # read meta data
     meta = json.loads(args.meta.read())
 
-    # do the gets
-    for key, value in meta.get('gets', {}).items():
-
-        parms = base.Parms(value)
-
-        parms.name = 'get_' + key
-        # build the resource, then evaluate it
-        code = build(parms, GET_RESOURCE_TEMPLATE)
-
-        print(code)
-
-        # run the code
-        eval(compile(code, __file__, 'exec'))
-
-    if args.run:
-        app.run(debug=False)
-
+    for template, items in [
+        [GET_RESOURCE_TEMPLATE,
+         list(meta.get('gets', {}).items())],
+        [GET_RESOURCE_TEMPLATE,
+         list(meta.get('builds', {}).items())]]:
         
+    
+        for key, value in items:
+
+            parms = base.Parms(value)
+
+            parms.name = key
+            # build the resource, then evaluate it
+            code = build(parms, GET_RESOURCE_TEMPLATE)
+
+            print(code)
+
 
 if __name__ == '__main__':
 
