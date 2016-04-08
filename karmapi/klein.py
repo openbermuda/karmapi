@@ -106,16 +106,8 @@ GET_RESOURCE_TEMPLATE =  '''
     @api.marshal_with({model})
     def get(self, **kwargs):
         """ {doc} """
-        parms = base.Parms(kwargs)
-
-        parms = base.Parms(kwargs)
-
         path = request.url.strip(request.url_root)
-        parms.path = path
-
-        function = base.get_item('{karma}')
-
-        return function(parms)
+        return base.get(path)
 '''
 
 PUT_RESOURCE_TEMPLATE =  '''
@@ -124,14 +116,8 @@ PUT_RESOURCE_TEMPLATE =  '''
     @api.marshal_with({model})
     def post(self, **kwargs):
         """{doc}"""
-        parms = base.Parms(kwargs)
-
         path = request.url.strip(request.url_root)
-        parms.path = path
-
-        function = base.get_item('{karma}')
-
-        return function(parms)
+        return base.build(parms)
 '''
 
 METHOD_TEMPLATES = dict(

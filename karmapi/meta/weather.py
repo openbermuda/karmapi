@@ -8,6 +8,8 @@ from datetime import date
 import karmapi.weather
 from karmapi.weather import RawWeather
 
+from flask_restplus import fields
+
 # defaults are good
 raw = RawWeather()
 
@@ -25,6 +27,10 @@ meta = dict(
     lats = raw.latitudes(),
     lons = raw.longitudes(),
 )
+
+AllFields = {
+    (field, fields.List(fields.Float)) for field in meta['fields']}
+    
 
 # Stuff we can build
 meta['builds'] = dict(
@@ -81,7 +87,7 @@ meta['gets'] = dict(
         doc="Return all data for a given lat/lon",
         path="space/<float:lat>/<float:lon>",
         karma="karmapi.weather.get_all_for_lat_lon",
-        model = "karmapi.models.lists.Array",
+        model = "karmapi.meta.weather.AllFields",
         ),
 )
 
