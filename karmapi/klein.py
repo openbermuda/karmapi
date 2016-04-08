@@ -167,7 +167,10 @@ def build(parms, template):
     return template.format(**parms.__dict__)
         
 
-def main(args):
+def main():
+
+    parser = get_parser()
+    args = parser.parse_args()
 
     # read meta data
     meta = json.loads(args.meta.read())
@@ -230,10 +233,8 @@ def main(args):
 
 if __name__ == '__main__':
 
-    parser = get_parser()
-    args = parser.parse_args()
 
-    main(args)
+    main()
 
 
     
