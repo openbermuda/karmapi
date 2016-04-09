@@ -13,6 +13,16 @@ Contents:
 
    karmapi
 
+Karma Pi KPI
+============
+
+Karma Programming Interface:
+
+.. toctree::
+   :maxdepth: 2
+
+   kpi
+
 Astro pi
 ========
 
