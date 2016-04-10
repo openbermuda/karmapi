@@ -21,7 +21,7 @@ Karma Programming Interface:
 .. toctree::
    :maxdepth: 2
 
-   kpi
+   kpi/karmapi
 
 Astro pi
 ========

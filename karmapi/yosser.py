@@ -38,7 +38,7 @@ def build():
     """
     raise NotImplemented
     
-def sleep()
+def sleep():
     """ Even Yosser needs to sleep now and then """
     raise NotImplemented
 
