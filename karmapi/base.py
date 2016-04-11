@@ -13,6 +13,8 @@ import json
 
 BASE_FOLDER = '.'
 
+PEARS = []
+
 class Parms:
 
     def __init__(self, data=None):
@@ -108,8 +110,18 @@ def build(path):
 
 def get(path):
     """ Get data for a path """
-    return dispatch(path, key='gets')
-    
+    try:
+        result = dispatch(path, key='gets')
+    except:
+        # try a peer if we have any
+        for pear in PEARS:
+            try:
+                result = pear.get(path)
+                break
+            except:
+                continue
+
+    return result
 
 def dispatch(path, key='gets'):
     """  Dispatch a function call """
