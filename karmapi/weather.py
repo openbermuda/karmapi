@@ -429,3 +429,28 @@ def write_lats_for_day(data, date, outfiles):
         pdata = packer.pack(*col)
     
         outfiles[ix].write(pdata)
+
+
+def bermuda(parms):
+    """ Rough basemap notes on how to plot centred on Bermuda """
+    
+    # get data for path
+    data = get_array_for_path(path)
+
+    import basemap
+
+    m = basemap.Basemap(projection='ortho', lat_0=32.33, lon_0=64.8)
+
+    m.drawcoastlines()
+
+    lons, lats = numpy.meshgrid(meta['lons'], meta['lats'])
+
+    m.pcolor(lons, lats, xx, latlon=True)
+
+    
+
+    
+    
+
+    
+    
