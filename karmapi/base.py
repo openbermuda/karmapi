@@ -117,8 +117,14 @@ def get(path):
         for pear in PEARS:
             try:
                 result = pear.get(path)
+
+                # FIXME, save result so we don't have to fetch it again.
+                # Problem here is we need to be able to go from the model
+                # to the form stored on disk.  Might need a save or write
+                # method, split out from build.
                 break
             except:
+                # if an exception, just try next PEAR
                 continue
 
     return result
