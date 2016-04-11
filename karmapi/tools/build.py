@@ -4,4 +4,6 @@ Build a path
 import sys
 from karmapi import base
 
-base.build(sys.argv[1])
+if __name__ == '__main__':
+
+    base.build(sys.argv[1])
