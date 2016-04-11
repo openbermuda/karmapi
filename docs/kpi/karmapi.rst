@@ -46,18 +46,26 @@ karmapi.kpi module
     :undoc-members:
     :show-inheritance:
 
-karmapi.weather module
-----------------------
+karmapi.pear module
+-------------------
 
-.. automodule:: karmapi.weather
+.. automodule:: karmapi.pear
     :members:
     :undoc-members:
     :show-inheritance:
 
-karmapi.xx module
------------------
+karmapi.show module
+-------------------
 
-.. automodule:: karmapi.xx
+.. automodule:: karmapi.show
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+karmapi.weather module
+----------------------
+
+.. automodule:: karmapi.weather
     :members:
     :undoc-members:
     :show-inheritance:
