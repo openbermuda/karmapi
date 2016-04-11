@@ -431,8 +431,56 @@ def write_lats_for_day(data, date, outfiles):
         outfiles[ix].write(pdata)
 
 
-def bermuda(parms):
-    """ Rough basemap notes on how to plot centred on Bermuda """
+def location(parms):
+    """Rough notes on how to plot centred on a location using basemap
+
+    What I really want to do is implement a Karma Pi path something like
+    this:
+
+    locations/{location}/{item}
+
+    That will show you {item} from location's point of view.
+
+    Now {item} works best if it does not have and /'s, so for
+    the item parameter we'll convert /'s to -'s and see how that looks.
+
+    The idea is {item} will be a path to something in Karma Pi.
+
+    So here is how it might go:
+
+    >>> parms = base.Parms()
+    >>> parms.path = "locations/bermuda"
+    >>> parms.item = "time-2015-11-01-precipitation-image"
+
+    >>> data = location(parms)
+
+    In the background, some magic will read lat/lon for 
+    locations/bermuda, or rather read the meta data and hope the 
+    info is there.
+
+    It will find the data for the precipitation image and use it to 
+    create an image of the data using the "ortho" projection in basemap.
+
+    This shows a hemisphere of the world, centered on the location.
+
+    It would be good to offer other views.
+
+    This can be supported by adding different end points for each view
+
+    Eg:
+
+    >>> parms = base.Parms()
+    >>> parms.path = "locations/bermuda"
+    >>> parms.item = "time-2015-11-01-precipitation-mercator"
+    
+    Might return a mercator projection.
+
+    >>> parms = base.Parms()
+    >>> parms.path = "locations/bermuda"
+    >>> parms.item = "time-2015-11-01-precipitation-ten-degree"
+
+    Might return a 10 degree window around the location.
+    """
     
     # get data for path
     data = get_array_for_path(path)
