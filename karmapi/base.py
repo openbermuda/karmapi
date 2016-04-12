@@ -110,6 +110,9 @@ def build(path):
 
 def get(path):
     """ Get data for a path """
+    print("GET:", path)
+    print("CWD:", os.getcwd())
+    result = None
     try:
         result = dispatch(path, key='gets')
     except:
@@ -127,6 +130,9 @@ def get(path):
                 # if an exception, just try next PEAR
                 continue
 
+    if result is None:
+        raise AttributeError("Unrecognised path: {}".format(path))
+
     return result
 
 def dispatch(path, key='gets'):
@@ -135,6 +141,7 @@ def dispatch(path, key='gets'):
     # work our way down path looking for a meta data match
     match = meta_data_match(path, key)
 
+    print("MATCH", path, key, match)
     if not match:
         raise AttributeError("Unrecognised path: {}".format(path))
 
@@ -146,18 +153,12 @@ def dispatch(path, key='gets'):
     print('BASE:', base)
     print('Relative_path:', relative_path)
 
-    old_dir = os.getcwd()
-    try:
-        os.chdir(base)
+    # extract function to call
+    function = get_item(target.get('karma'))
 
-        # extract function to call
-        function = get_item(target.get('karma'))
-
-        result = function(match)
+    print("Calling:", target.get('karma'))
+    result = function(match)
         
-    finally:
-        os.chdir(old_dir)
-
     # Call the function
     return result
 
@@ -218,4 +219,7 @@ def create_folder_if_missing(path):
         if not os.path.exists(folder):
             os.makedirs(folder)
 
+def full_path(base, path):
+
+    return '/'.join([base, path])
             

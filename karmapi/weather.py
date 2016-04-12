@@ -18,8 +18,8 @@ import struct
 import numpy
 
 from .base import (
-    build, match_path, Parms, get_all_meta_data,
-    create_folder_if_missing)
+    get, build, match_path, Parms, get_all_meta_data,
+    create_folder_if_missing, full_path)
                    
 
 # FIXME -- the following constants belong in meta data
@@ -172,7 +172,7 @@ def build_day(parms):
 
     Assume path is relative to current working directory.
     """
-    path = parms.path
+    path = full_path(parms.base, parms.path)
     create_folder_if_missing(path)
 
     # now do what we have to do
@@ -184,7 +184,7 @@ def build_day(parms):
     source = parms.target['source'].format(field=parms.field)
 
     # get the meta data for the source
-    source_meta = get_all_meta_data(source)
+    source_meta = get_all_meta_data(full_path(parms.base, source))
     raw = RawWeather(**source_meta)
 
     # Read the source data
@@ -200,7 +200,7 @@ def build_time(parms):
 
     Assume path is relative to current working directory.
     """
-    meta = get_all_meta_data('.')
+    meta = get_all_meta_data(parms.base)
 
     raw = RawWeather()
     raw.from_dict(meta)
@@ -247,7 +247,7 @@ def build_latitude(parms):
 
     Alternatively, use build_space and do everythng in one.
     """
-    path = parms.path
+    path = full_path(parms.base, parms.path)
     create_folder_if_missing(path)
 
     # now do what we have to do
@@ -267,7 +267,6 @@ def build_latitude(parms):
 
     # figure out a template for the path to day data
     path_parts = path.split('/')
-    inpath = '/'.join(path_parts[:-3])
 
     stride = raw.number_of_longitudes()
     with open(path, 'wb') as outfile:
@@ -312,7 +311,7 @@ def build_space(parms):
         path = "space/{lat:.2f}/{field}".format(
             lat=lat, field=parms.field)
         create_folder_if_missing(path)
-        paths.append(path)
+        paths.append(full_path(parms.base, path))
     
     nlats = raw.number_of_latitudes()
 
@@ -323,7 +322,6 @@ def build_space(parms):
 
     # figure out a template for the path to day data
     path_parts = path.split('/')
-    inpath = '/'.join(path_parts[:-3])
 
     outfiles = [open(path, 'wb') for path in paths]
 
@@ -361,7 +359,7 @@ def get_lat_lon(parms):
     path = "space/{lat:.2f}/{field}".format(
         lat=parms.lat, field=parms.field)
 
-    data = get_array_for_path(path)
+    data = get_array_for_path(full_path(parms.base, path))
 
     # Now find the index for this lat
     # get raw weather object
@@ -375,7 +373,7 @@ def get_lat_lon(parms):
 
 def get_all_for_lat_lon(parms):
     """ Get all fields for a specific lat/lon """
-    meta = get_all_meta_data('.')
+    meta = get_all_meta_data(parms.base)
 
     data = {}
     for field in meta['fields']:
@@ -401,7 +399,8 @@ def get_array(parms):
 
 def get_array_as_dict(parms):
 
-    return dict(data=get_array_for_path(parms.path))
+    return dict(data=get_array_for_path(
+        full_path(parms.base, parms.path)))
 
 def get_array_for_path(path):
     """ Return data as an array """
@@ -477,28 +476,53 @@ def location(parms):
 
     >>> parms = base.Parms()
     >>> parms.path = "locations/bermuda"
-    >>> parms.item = "time-2015-11-01-precipitation-ten-degree"
+    >>> parms.item = "time-2015-11-01-precipitation-tendegree"
 
     Might return a 10 degree window around the location.
     """
     
     # get data for path
-    data = get_array_for_path(path)
+    item_path = parms.item.split('-')
+    
+    version = item_path[-1]
+    item = '/'.join(item_path[:-1])
 
-    import basemap
+    print(full_path(parms.base, item))
+    data = get(full_path(parms.base, item))
 
-    m = basemap.Basemap(projection='ortho', lat_0=32.33, lon_0=64.8)
+    location = get_all_meta_data(full_path(parms.base, parms.path))
+
+    builder = image_makers(version)
+
+    return builder(data['data'], location)
+
+
+def build_image(data, location):
+    
+    from mpl_toolkits import basemap
+
+    m = basemap.Basemap(projection='ortho',
+                        lat_0=location['lat'], lon_0=location['lon'])
 
     m.drawcoastlines()
 
     lons, lats = numpy.meshgrid(meta['lons'], meta['lats'])
 
-    m.pcolor(lons, lats, xx, latlon=True)
+    m.pcolor(lons, lats, data, latlon=True)
+
+    return m
+
+def image_makers(version):
+
+    versions = dict(
+        image=build_image,
+        )
+
+    return versions.get(version)
+    
 
     
-
-    
-    
+print('Importing weather')
 
     
     

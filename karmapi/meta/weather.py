@@ -30,6 +30,8 @@ meta = dict(
 
 AllFields = {
     (field, fields.List(fields.Float)) for field in meta['fields']}
+
+Image = dict(image=fields.String)
     
 
 # Stuff we can build
@@ -88,6 +90,13 @@ meta['gets'] = dict(
         path="space/<float:lat>/<float:lon>",
         karma="karmapi.weather.get_all_for_lat_lon",
         model = "karmapi.meta.weather.AllFields",
+        ),
+
+    location = dict(
+        doc="Return an image from location's perspective",
+        path="locations/<location>/<item>",
+        karma="karmapi.weather.location",
+        model = "karmapi.meta.weather.Image",
         ),
 )
 
