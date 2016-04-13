@@ -13,6 +13,14 @@ Contents:
 
    karmapi
 
+TO DO
+=====
+
+.. toctree::
+   :maxdepth: 2
+
+   todo
+
 Karma Pi KPI
 ============
 
