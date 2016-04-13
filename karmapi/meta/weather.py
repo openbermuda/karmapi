@@ -98,6 +98,7 @@ meta['gets'] = dict(
         karma="karmapi.weather.location",
         model = "karmapi.meta.weather.Image",
         ),
+
 )
 
 

@@ -15,6 +15,7 @@ Year, day, month.
 import os
 import datetime
 import struct
+from io import StringIO
 import numpy
 
 from .base import (
@@ -490,11 +491,20 @@ def location(parms):
     #print(full_path(parms.base, item))
     data = get(item)
 
-    location = get_all_meta_data(full_path(parms.base, parms.path))
+
+    location = get_all_meta_data(
+        full_path(parms.base, 'locations/' + parms.location))
+
+    print(location.keys())
+    location = Location(location)
+
+    # wrangle the data into a numpy grid
+    ndata = numpy.array(data['data']).reshape(
+        len(location.lons), len(location.lats)).T
 
     builder = image_makers(version)
 
-    return builder(data['data'], location)
+    return builder(ndata, location)
 
 
 class Location:
@@ -538,18 +548,27 @@ class Location:
 
 def build_image(data, location):
     """ Build an image for a location """
+    from matplotlib import pyplot
     from mpl_toolkits import basemap
 
     m = basemap.Basemap(projection='ortho',
-                        lat_0=location['lat'], lon_0=location['lon'])
+                        lat_0=location.lat, lon_0=location.lon)
 
     m.drawcoastlines()
 
-    lons, lats = numpy.meshgrid(meta['lons'], meta['lats'])
+    lons, lats = numpy.meshgrid(location.lons, location.lats)
 
+    
     m.pcolor(lons, lats, data, latlon=True)
 
-    return m
+    return m, lats, lons, data
+    
+    img = StringIO()
+    pyplot.savefig(img)
+
+    result = img.getvalue()
+    img.close()
+    return result
 
 def image_makers(version):
 
