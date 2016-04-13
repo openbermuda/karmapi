@@ -49,6 +49,7 @@ CASTS = dict(int=int, float=float)
 
 def match_path(path, target_path):
     """ See if path matches target """
+    
     fields = path.split('/')
     target_fields = target_path.split('/')
 
@@ -79,7 +80,7 @@ def meta_data_match(path, key='gets'):
     """ Work our way along path looking for a match """
 
     folders = path.split('/')
-
+    print(folders)
     bases = []
     relatives = folders[1:]
     
@@ -88,10 +89,10 @@ def meta_data_match(path, key='gets'):
     
         base = '/'.join(bases)
         relative_path = '/'.join(relatives)
-
+        
         if relatives:
             del relatives[0]
-        
+
         meta = load_meta_path(base)
 
         parms = find_path(relative_path, meta.get(key, {}))
@@ -113,9 +114,15 @@ def get(path):
     print("GET:", path)
     print("CWD:", os.getcwd())
     result = None
+    problem = None
+    
     try:
         result = dispatch(path, key='gets')
-    except:
+    except Exception as e:
+
+        print('OOOPS')
+        problem = e
+        
         # try a peer if we have any
         for pear in PEARS:
             try:
@@ -126,12 +133,16 @@ def get(path):
                 # to the form stored on disk.  Might need a save or write
                 # method, split out from build.
                 break
-            except:
+            except Exception as e:
                 # if an exception, just try next PEAR
                 continue
 
     if result is None:
-        raise AttributeError("Unrecognised path: {}".format(path))
+        if problem:
+            raise problem
+
+        else:
+            raise AttributeError("Unrecognised path: {}".format(path))
 
     return result
 
@@ -141,7 +152,6 @@ def dispatch(path, key='gets'):
     # work our way down path looking for a meta data match
     match = meta_data_match(path, key)
 
-    print("MATCH", path, key, match)
     if not match:
         raise AttributeError("Unrecognised path: {}".format(path))
 
@@ -149,9 +159,6 @@ def dispatch(path, key='gets'):
     base = match.base
     target = match.target
     relative_path = match.path
-
-    print('BASE:', base)
-    print('Relative_path:', relative_path)
 
     # extract function to call
     function = get_item(target.get('karma'))

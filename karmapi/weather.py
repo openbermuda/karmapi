@@ -441,7 +441,7 @@ def location(parms):
     That will show you {item} from location's point of view.
 
     Now {item} works best if it does not have and /'s, so for
-    the item parameter we'll convert /'s to -'s and see how that looks.
+    the item parameter we'll convert /'s to ,'s and see how that looks.
 
     The idea is {item} will be a path to something in Karma Pi.
 
@@ -449,7 +449,7 @@ def location(parms):
 
     >>> parms = base.Parms()
     >>> parms.path = "locations/bermuda"
-    >>> parms.item = "time-2015-11-01-precipitation-image"
+    >>> parms.item = "time,2015,11,01,precipitation,image"
 
     >>> data = location(parms)
 
@@ -470,25 +470,25 @@ def location(parms):
 
     >>> parms = base.Parms()
     >>> parms.path = "locations/bermuda"
-    >>> parms.item = "time-2015-11-01-precipitation-mercator"
+    >>> parms.item = "time,2015,11,01,precipitation,mercator"
     
     Might return a mercator projection.
 
     >>> parms = base.Parms()
     >>> parms.path = "locations/bermuda"
-    >>> parms.item = "time-2015-11-01-precipitation-tendegree"
+    >>> parms.item = "time,2015,11,01,precipitation,tendegree"
 
     Might return a 10 degree window around the location.
     """
     
     # get data for path
-    item_path = parms.item.split('-')
+    item_path = parms.item.split(',')
     
     version = item_path[-1]
     item = '/'.join(item_path[:-1])
 
-    print(full_path(parms.base, item))
-    data = get(full_path(parms.base, item))
+    #print(full_path(parms.base, item))
+    data = get(item)
 
     location = get_all_meta_data(full_path(parms.base, parms.path))
 
