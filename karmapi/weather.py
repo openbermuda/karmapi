@@ -497,8 +497,47 @@ def location(parms):
     return builder(data['data'], location)
 
 
+class Location:
+    """ A location
+
+    Should have a lat, lon, assuming we are on earth.
+    """
+
+    def __init__(self, meta):
+
+        self.__dict__.update(meta)
+
+        if 'latlon_degrees' in meta:
+            self.lat_lon_from_degrees()
+
+    def lat_lon_from_degrees(self):
+        """ Return lat lon from degrees
+        
+        Degrees is somethng like "32 18 N 64 47 W"
+        """
+
+        fields = self.latlon_degrees.split()
+
+        lat = float(fields[0])
+        lat += float(fields[1]) / 60.0
+
+        if fields[2].lower() == 's':
+            lat *= -1.0
+
+        lon = float(fields[3])
+        lon += float(fields[4]) / 60.0
+
+        if fields[5].lower() == 'w':
+            lon = 360.0 - lon
+
+        self.lat = lat
+        self.lon = lon
+        
+        return lat, lon
+
+
 def build_image(data, location):
-    
+    """ Build an image for a location """
     from mpl_toolkits import basemap
 
     m = basemap.Basemap(projection='ortho',
