@@ -10,6 +10,7 @@ get_meta(path):  get meta data for path
 import os
 import importlib
 import json
+import datetime
 
 BASE_FOLDER = '.'
 
@@ -229,4 +230,18 @@ def create_folder_if_missing(path):
 def full_path(base, path):
 
     return '/'.join([base, path])
-            
+
+def day_range(start, end):
+    """ Generate a range of days 
+
+    yields datetime.date(day) for each day from start to end, 
+    excluding end.
+
+    """
+    aday = datetime.timedelta(days=1)
+
+    day = start
+
+    while day < end:
+        yield day
+        day += aday
