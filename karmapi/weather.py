@@ -20,7 +20,7 @@ import numpy
 
 from .base import (
     get, build, match_path, Parms, get_all_meta_data,
-    create_folder_if_missing, full_path)
+    create_folder_if_missing, full_path, day_range)
                    
 
 # FIXME -- the following constants belong in meta data
@@ -206,9 +206,7 @@ def build_time(parms):
     raw = RawWeather()
     raw.from_dict(meta)
         
-    aday = datetime.timedelta(days=1)
-    day = raw.start_day
-    while day < raw.end_day:
+    for day in day_range(raw.start_day, raw.end_day):
         print(day)
         parms.year = day.year
         parms.month = day.month
@@ -219,9 +217,6 @@ def build_time(parms):
             field=parms.field)
         print(parms.path)
         build_day(parms)
-
-        # go to next day
-        day += aday
 
 
 def build_month(path):
@@ -263,16 +258,13 @@ def build_latitude(parms):
 
     # this is going to be slow, we have to read
     # the data for every day to get all the data for a latitude
-    day = raw.start_day
-    aday = datetime.timedelta(days=1)
-
     # figure out a template for the path to day data
     path_parts = path.split('/')
 
     stride = raw.number_of_longitudes()
     with open(path, 'wb') as outfile:
 
-        while day < raw.end_day:
+        for day in day_range(raw.start_day, raw.end_day):
             print(day)
             # Get the day's data
             day_path = "time/{day:%Y/%m/%d}/{field}".format(
@@ -288,8 +280,6 @@ def build_latitude(parms):
             # format it with struct and write to outfile
             write_array(outfile, lat_data)
 
-            # go to next day
-            day += aday
 
 def build_space(parms):
     """ Extract all the data for all latitudes.
@@ -318,15 +308,13 @@ def build_space(parms):
 
     # this is going to be slow, we have to read
     # the data for every day to get all the data for a latitude
-    day = raw.start_day
-    aday = datetime.timedelta(days=1)
 
     # figure out a template for the path to day data
     path_parts = path.split('/')
 
     outfiles = [open(path, 'wb') for path in paths]
 
-    while day < raw.end_day:
+    for day in day_range(raw.start_day, raw.end_day):
 
         print(day)
         # Get the day's data
@@ -344,9 +332,6 @@ def build_space(parms):
 
             # format it with struct and write to outfile
             write_array(outfile, lat_data)
-
-        # go to next day
-        day += aday
 
     # now close the outfiles
     for outfile in outfiles:
