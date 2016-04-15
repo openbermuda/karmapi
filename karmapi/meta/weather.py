@@ -68,7 +68,7 @@ meta['builds'] = dict(
 # Stuff we can get
 meta['gets'] = dict(
     day = dict(
-        doc="Data for a specific year/month/day",
+        doc="Data for a specific year/month/day and field",
         path="time/<int:year>/<int:month>/<int:day>/<field>",
         karma="karmapi.weather.get_array_as_dict",
         model = "karmapi.models.lists.Array",

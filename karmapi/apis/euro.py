@@ -7,6 +7,159 @@ from flask_restplus import Namespace, Resource, fields
 api = Namespace("euro", description="api for euro")
 
 
+from karmapi.meta.weather import AllFields
+AllFields = api.model("AllFields", AllFields)
+
+
+@api.route('/space/<float:lat>/<float:lon>')
+class all_latlon(Resource):
+    """  Get all fields for a specific lat/lon  """
+
+
+
+
+    @api.doc("all_latlon")
+    @api.marshal_with(AllFields)
+    def get(self, **kwargs):
+        """  Get all fields for a specific lat/lon  """
+        path = request.url.strip(request.url_root)
+        return base.get(path)
+
+
+from karmapi.meta.weather import Image
+Image = api.model("Image", Image)
+
+
+@api.route('/locations/<location>/<item>')
+class location(Resource):
+    """ Rough notes on how to plot centred on a location using basemap
+
+    What I really want to do is implement a Karma Pi path something like
+    this:
+
+    locations/{location}/{item}
+
+    That will show you {item} from location's point of view.
+
+    Now {item} works best if it does not have and /'s, so for
+    the item parameter we'll convert /'s to ,'s and see how that looks.
+
+    The idea is {item} will be a path to something in Karma Pi.
+
+    So here is how it might go:
+
+    >>> parms = base.Parms()
+    >>> parms.path = "locations/bermuda"
+    >>> parms.item = "time,2015,11,01,precipitation,image"
+
+    >>> data = location(parms)
+
+    In the background, some magic will read lat/lon for 
+    locations/bermuda, or rather read the meta data and hope the 
+    info is there.
+
+    It will find the data for the precipitation image and use it to 
+    create an image of the data using the "ortho" projection in basemap.
+
+    This shows a hemisphere of the world, centered on the location.
+
+    It would be good to offer other views.
+
+    This can be supported by adding different end points for each view
+
+    Eg:
+
+    >>> parms = base.Parms()
+    >>> parms.path = "locations/bermuda"
+    >>> parms.item = "time,2015,11,01,precipitation,mercator"
+    
+    Might return a mercator projection.
+
+    >>> parms = base.Parms()
+    >>> parms.path = "locations/bermuda"
+    >>> parms.item = "time,2015,11,01,precipitation,tendegree"
+
+    Might return a 10 degree window around the location.
+     """
+
+
+
+
+    @api.doc("location")
+    @api.marshal_with(Image)
+    def get(self, **kwargs):
+        """ Rough notes on how to plot centred on a location using basemap
+
+    What I really want to do is implement a Karma Pi path something like
+    this:
+
+    locations/{location}/{item}
+
+    That will show you {item} from location's point of view.
+
+    Now {item} works best if it does not have and /'s, so for
+    the item parameter we'll convert /'s to ,'s and see how that looks.
+
+    The idea is {item} will be a path to something in Karma Pi.
+
+    So here is how it might go:
+
+    >>> parms = base.Parms()
+    >>> parms.path = "locations/bermuda"
+    >>> parms.item = "time,2015,11,01,precipitation,image"
+
+    >>> data = location(parms)
+
+    In the background, some magic will read lat/lon for 
+    locations/bermuda, or rather read the meta data and hope the 
+    info is there.
+
+    It will find the data for the precipitation image and use it to 
+    create an image of the data using the "ortho" projection in basemap.
+
+    This shows a hemisphere of the world, centered on the location.
+
+    It would be good to offer other views.
+
+    This can be supported by adding different end points for each view
+
+    Eg:
+
+    >>> parms = base.Parms()
+    >>> parms.path = "locations/bermuda"
+    >>> parms.item = "time,2015,11,01,precipitation,mercator"
+    
+    Might return a mercator projection.
+
+    >>> parms = base.Parms()
+    >>> parms.path = "locations/bermuda"
+    >>> parms.item = "time,2015,11,01,precipitation,tendegree"
+
+    Might return a 10 degree window around the location.
+     """
+        path = request.url.strip(request.url_root)
+        return base.get(path)
+
+
+from karmapi.models.lat_lon_grid import LatLonGrid
+LatLonGrid = api.model("LatLonGrid", LatLonGrid)
+
+
+@api.route('/space/<float:lat>/<float:lon>/<field>')
+class latlon(Resource):
+    """   Get all the data for a given lat/lon and field  """
+
+
+
+
+    @api.doc("latlon")
+    @api.marshal_with(LatLonGrid)
+    def get(self, **kwargs):
+        """   Get all the data for a given lat/lon and field  """
+        path = request.url.strip(request.url_root)
+        return base.get(path)
+
+
 from karmapi.models.lists import Array
 Array = api.model("Array", Array)
 
@@ -38,6 +191,50 @@ from karmapi.models.lists import Array
 Array = api.model("Array", Array)
 
 
+@api.route('/time/<field>')
+class time(Resource):
+    """  Copy data over from raw files into day folders 
+
+    Assume path is relative to current working directory.
+     """
+
+
+
+
+    @api.doc("time")
+    @api.marshal_with(Array)
+    def post(self, **kwargs):
+        """ Copy data over from raw files into day folders 
+
+    Assume path is relative to current working directory.
+    """
+        path = request.url.strip(request.url_root)
+        return base.build(parms)
+
+
+from karmapi.models.lat_lon_grid import LatLonGrid
+LatLonGrid = api.model("LatLonGrid", LatLonGrid)
+
+
+@api.route('/time/<int:year>/<int:month>/<int:day>/')
+class all_day(Resource):
+    """  Get all fields for a specific date  """
+
+
+
+
+    @api.doc("all_day")
+    @api.marshal_with(LatLonGrid)
+    def get(self, **kwargs):
+        """  Get all fields for a specific date  """
+        path = request.url.strip(request.url_root)
+        return base.get(path)
+
+
+from karmapi.models.lists import Array
+Array = api.model("Array", Array)
+
+
 @api.route('/space/<float:lat>/<field>')
 class lon(Resource):
     """  Extract all the data for a given latitude.
@@ -60,50 +257,6 @@ class lon(Resource):
     quickly.
 
     Alternatively, use build_space and do everythng in one.
-    """
-        path = request.url.strip(request.url_root)
-        return base.build(parms)
-
-
-from karmapi.meta.weather import AllFields
-AllFields = api.model("AllFields", AllFields)
-
-
-@api.route('/space/<float:lat>/<float:lon>')
-class all_latlon(Resource):
-    """  Get all fields for a specific lat/lon  """
-
-
-
-
-    @api.doc("all_latlon")
-    @api.marshal_with(AllFields)
-    def get(self, **kwargs):
-        """  Get all fields for a specific lat/lon  """
-        path = request.url.strip(request.url_root)
-        return base.get(path)
-
-
-from karmapi.models.lists import Array
-Array = api.model("Array", Array)
-
-
-@api.route('/time/<field>')
-class time(Resource):
-    """  Copy data over from raw files into day folders 
-
-    Assume path is relative to current working directory.
-     """
-
-
-
-
-    @api.doc("time")
-    @api.marshal_with(Array)
-    def post(self, **kwargs):
-        """ Copy data over from raw files into day folders 
-
-    Assume path is relative to current working directory.
     """
         path = request.url.strip(request.url_root)
         return base.build(parms)
@@ -145,42 +298,4 @@ class day(Resource):
     """
         path = request.url.strip(request.url_root)
         return base.build(parms)
-
-
-from karmapi.models.lat_lon_grid import LatLonGrid
-LatLonGrid = api.model("LatLonGrid", LatLonGrid)
-
-
-@api.route('/space/<float:lat>/<float:lon>/<field>')
-class latlon(Resource):
-    """   Get all the data for a given lat/lon and field  """
-
-
-
-
-    @api.doc("latlon")
-    @api.marshal_with(LatLonGrid)
-    def get(self, **kwargs):
-        """   Get all the data for a given lat/lon and field  """
-        path = request.url.strip(request.url_root)
-        return base.get(path)
-
-
-from karmapi.models.lat_lon_grid import LatLonGrid
-LatLonGrid = api.model("LatLonGrid", LatLonGrid)
-
-
-@api.route('/time/<int:year>/<int:month>/<int:day>/')
-class all_day(Resource):
-    """  Get all fields for a specific date  """
-
-
-
-
-    @api.doc("all_day")
-    @api.marshal_with(LatLonGrid)
-    def get(self, **kwargs):
-        """  Get all fields for a specific date  """
-        path = request.url.strip(request.url_root)
-        return base.get(path)
 
