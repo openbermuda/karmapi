@@ -385,7 +385,10 @@ def get_array(parms):
     return get_array_for_path(full_path(parms.base, parms.path))
 
 def get_array_as_dict(parms):
+    """ Returns data for a path 
 
+    Assumes the data is just an array of floats.
+    """
     return dict(data=get_array_for_path(
         full_path(parms.base, parms.path)))
 

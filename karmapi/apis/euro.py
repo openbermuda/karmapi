@@ -7,23 +7,45 @@ from flask_restplus import Namespace, Resource, fields
 api = Namespace("euro", description="api for euro")
 
 
-from karmapi.meta.weather import AllFields
-AllFields = api.model("AllFields", AllFields)
+from karmapi.models.lists import Array
+Array = api.model("Array", Array)
 
 
-@api.route('/space/<float:lat>/<float:lon>')
-class all_latlon(Resource):
-    """  Get all fields for a specific lat/lon  """
+from karmapi.models.lists import Array
+Array = api.model("Array", Array)
+
+
+@api.route('/time/<int:year>/<int:month>/<int:day>/<field>')
+class day(Resource):
+    """  Copy data over from raw files into day folders 
+
+    Assume path is relative to current working directory.
+     """
 
 
 
 
-    @api.doc("all_latlon")
-    @api.marshal_with(AllFields)
+    @api.doc("day")
+    @api.marshal_with(Array)
     def get(self, **kwargs):
-        """  Get all fields for a specific lat/lon  """
+        """  Returns data for a path 
+
+    Assumes the data is just an array of floats.
+     """
         path = request.url.strip(request.url_root)
         return base.get(path)
+
+
+
+    @api.doc("day")
+    @api.marshal_with(Array)
+    def post(self, **kwargs):
+        """ Copy data over from raw files into day folders 
+
+    Assume path is relative to current working directory.
+    """
+        path = request.url.strip(request.url_root)
+        return base.build(parms)
 
 
 from karmapi.meta.weather import Image
@@ -141,52 +163,6 @@ class location(Resource):
         return base.get(path)
 
 
-from karmapi.models.lat_lon_grid import LatLonGrid
-LatLonGrid = api.model("LatLonGrid", LatLonGrid)
-
-
-@api.route('/space/<float:lat>/<float:lon>/<field>')
-class latlon(Resource):
-    """   Get all the data for a given lat/lon and field  """
-
-
-
-
-    @api.doc("latlon")
-    @api.marshal_with(LatLonGrid)
-    def get(self, **kwargs):
-        """   Get all the data for a given lat/lon and field  """
-        path = request.url.strip(request.url_root)
-        return base.get(path)
-
-
-from karmapi.models.lists import Array
-Array = api.model("Array", Array)
-
-
-@api.route('/space/<field>')
-class space(Resource):
-    """  Extract all the data for all latitudes.
-
-    This then allows us to get the data for any lat/lat
-    quickly
-     """
-
-
-
-
-    @api.doc("space")
-    @api.marshal_with(Array)
-    def post(self, **kwargs):
-        """ Extract all the data for all latitudes.
-
-    This then allows us to get the data for any lat/lat
-    quickly
-    """
-        path = request.url.strip(request.url_root)
-        return base.build(parms)
-
-
 from karmapi.models.lists import Array
 Array = api.model("Array", Array)
 
@@ -212,11 +188,30 @@ class time(Resource):
         return base.build(parms)
 
 
-from karmapi.models.lat_lon_grid import LatLonGrid
-LatLonGrid = api.model("LatLonGrid", LatLonGrid)
+from karmapi.meta.weather import AllFields
+AllFields = api.model("AllFields", AllFields)
 
 
-@api.route('/time/<int:year>/<int:month>/<int:day>/')
+@api.route('/space/<float:lat>/<float:lon>')
+class all_latlon(Resource):
+    """  Get all fields for a specific lat/lon  """
+
+
+
+
+    @api.doc("all_latlon")
+    @api.marshal_with(AllFields)
+    def get(self, **kwargs):
+        """  Get all fields for a specific lat/lon  """
+        path = request.url.strip(request.url_root)
+        return base.get(path)
+
+
+from karmapi.meta.weather import Allfields
+Allfields = api.model("Allfields", Allfields)
+
+
+@api.route('/time/<int:year>/<int:month>/<int:day>')
 class all_day(Resource):
     """  Get all fields for a specific date  """
 
@@ -224,9 +219,28 @@ class all_day(Resource):
 
 
     @api.doc("all_day")
-    @api.marshal_with(LatLonGrid)
+    @api.marshal_with(Allfields)
     def get(self, **kwargs):
         """  Get all fields for a specific date  """
+        path = request.url.strip(request.url_root)
+        return base.get(path)
+
+
+from karmapi.models.lat_lon_grid import LatLonGrid
+LatLonGrid = api.model("LatLonGrid", LatLonGrid)
+
+
+@api.route('/space/<float:lat>/<float:lon>/<field>')
+class latlon(Resource):
+    """   Get all the data for a given lat/lon and field  """
+
+
+
+
+    @api.doc("latlon")
+    @api.marshal_with(LatLonGrid)
+    def get(self, **kwargs):
+        """   Get all the data for a given lat/lon and field  """
         path = request.url.strip(request.url_root)
         return base.get(path)
 
@@ -266,35 +280,24 @@ from karmapi.models.lists import Array
 Array = api.model("Array", Array)
 
 
-from karmapi.models.lists import Array
-Array = api.model("Array", Array)
+@api.route('/space/<field>')
+class space(Resource):
+    """  Extract all the data for all latitudes.
 
-
-@api.route('/time/<int:year>/<int:month>/<int:day>/<field>')
-class day(Resource):
-    """  Copy data over from raw files into day folders 
-
-    Assume path is relative to current working directory.
+    This then allows us to get the data for any lat/lat
+    quickly
      """
 
 
 
 
-    @api.doc("day")
-    @api.marshal_with(Array)
-    def get(self, **kwargs):
-        """ None """
-        path = request.url.strip(request.url_root)
-        return base.get(path)
-
-
-
-    @api.doc("day")
+    @api.doc("space")
     @api.marshal_with(Array)
     def post(self, **kwargs):
-        """ Copy data over from raw files into day folders 
+        """ Extract all the data for all latitudes.
 
-    Assume path is relative to current working directory.
+    This then allows us to get the data for any lat/lat
+    quickly
     """
         path = request.url.strip(request.url_root)
         return base.build(parms)
