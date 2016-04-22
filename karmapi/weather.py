@@ -16,6 +16,8 @@ import os
 import datetime
 import struct
 from io import StringIO
+from functools import wraps
+
 import numpy
 
 from .base import (
@@ -356,6 +358,24 @@ def get_lat_lon(parms):
     latitude_index = raw.latitude_index(parms.lat)
 
     return data[latitude_index::raw.number_of_latitudes()]
+
+def array_to_dict(f, keyword='data', *args, **kwargs):
+    """ Decorator that wraps a function that returns an array 
+
+    This is just a utility that allows us to wrap functions
+    that return arrays but have the docstring of the original
+    function to be preserved.
+    """
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+
+        result = f(*args, **kwargs)
+
+        return {keyword: result}
+    
+    return wrapper
+
+get_lat_lon_field = array_to_dict(get_lat_lon)
 
 def get_all_for_lat_lon(parms):
     """ Get all fields for a specific lat/lon """

@@ -77,13 +77,13 @@ meta['gets'] = dict(
         doc="All data for a specific year/month/day",
         path="time/<int:year>/<int:month>/<int:day>",
         karma="karmapi.weather.get_all_for_day",
-        model = "karmapi.meta.weather.Allfields",
+        model = "karmapi.meta.weather.AllFields",
         ),
     latlon = dict(
         doc="Data for a specific lat/lon",
         path="space/<float:lat>/<float:lon>/<field>",
-        karma="karmapi.weather.get_lat_lon",
-        model = "karmapi.models.lat_lon_grid.LatLonGrid",
+        karma="karmapi.weather.get_lat_lon_field",
+        model = "karmapi.models.lists.Array",
         ),
     all_latlon = dict(
         doc="Return all data for a given lat/lon",
