@@ -26,9 +26,9 @@ class Pear:
 
     def get(self, path):
 
-        return get(self.url + path)
+        return get(self.url + path).json()
 
     def put(self, path):
 
-        return pet(self.url + path)
+        return put(self.url + path).json()
     
