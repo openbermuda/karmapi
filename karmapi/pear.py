@@ -5,7 +5,7 @@ couple of choices.
 
 If it has the stuff needed to build it then it can do just that.
 
-If there is another karma pi that already has t he data it can just
+If there is another karma pi that already has the data it can just
 ask for a copy,
 
 So any karma pi can have one or more peers that it gets and shares
