@@ -167,7 +167,6 @@ def dispatch(path, key='gets'):
     print("Calling:", target.get('karma'))
     result = function(match)
         
-    # Call the function
     return result
 
 

@@ -106,7 +106,7 @@ GET_RESOURCE_TEMPLATE =  '''
     @api.marshal_with({model})
     def get(self, **kwargs):
         """ {doc} """
-        path = request.url.strip(request.url_root)
+        path = request.url[len(request.url_root):]
         return base.get(path)
 '''
 
@@ -116,7 +116,7 @@ PUT_RESOURCE_TEMPLATE =  '''
     @api.marshal_with({model})
     def post(self, **kwargs):
         """{doc}"""
-        path = request.url.strip(request.url_root)
+        path = request.url[len(request.url_root):]
         return base.build(parms)
 '''
 
