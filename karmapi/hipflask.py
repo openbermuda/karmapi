@@ -18,12 +18,13 @@ def get_parser():
 
     parser.add_argument('--no-debug', action='store_true',
                         default=False)
+    parser.add_argument('--host')
 
     return parser
 
 def main(args):
 
-    app.run(debug=not args.no_debug)
+    app.run(debug=not args.no_debug, host=args.host)
 
 if __name__ == '__main__':
 
