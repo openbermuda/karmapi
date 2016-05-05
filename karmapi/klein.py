@@ -103,7 +103,7 @@ class {name}(Resource):
 GET_RESOURCE_TEMPLATE =  '''
 
     @api.doc("{name}")
-    @api.marshal_with({model})
+    @api.marshal_with({model}, as_list={as_list})
     def get(self, **kwargs):
         """ {doc} """
         path = request.url[len(request.url_root):]
@@ -113,7 +113,7 @@ GET_RESOURCE_TEMPLATE =  '''
 PUT_RESOURCE_TEMPLATE =  '''
 
     @api.doc("{name}")
-    @api.marshal_with({model})
+    @api.marshal_with({model}, as_list={as_list})
     def post(self, **kwargs):
         """{doc}"""
         path = request.url[len(request.url_root):]
@@ -197,6 +197,9 @@ def main():
             # output model
             parms = base.Parms(item)
             print(item.keys())
+
+            if 'as_list' not in item:
+                parms.as_list = False
 
             model_path = parms.model.split('.')
             parms.model = model_path[-1]
