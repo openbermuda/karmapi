@@ -122,6 +122,7 @@ def get(path):
     except Exception as e:
 
         print('OOOPS')
+        print(e)
         problem = e
         
         # try a peer if we have any
