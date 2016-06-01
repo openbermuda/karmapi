@@ -134,6 +134,8 @@ def get_parser():
     parser.add_argument('--outfile',
                         type=argparse.FileType('w'),
                         nargs='?', default=sys.stdout)
+    parser.add_argument('--nobuild', action='store_true',
+                        help="do not include builds in api")
 
     parser.add_argument('--name')
                         
@@ -176,6 +178,11 @@ def main():
         resources[key] = dict(get=value)
 
     puts = list(meta.get('builds', {}).items())
+
+    # Don't include builds if --nobuild flag was passed
+    if args.nobuild:
+        puts = []
+        
     for name, value in puts:
         key = value['path']
         value['name'] = name
