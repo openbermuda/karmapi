@@ -377,7 +377,13 @@ def get_grid(parms):
     max_lat = raw.latitude_index(parms.max_lat)
     min_lon = raw.longitude_index(parms.min_lon)
     max_lon = raw.longitude_index(parms.max_lon)
-    
+
+    if min_lat > max_lat:
+        min_lat, max_lat = max_lat, min_lat
+
+    if min_lon > max_lon:
+        min_lon, max_lon = max_lon, min_lon
+
     field = parms.field
 
     result = {}
@@ -390,10 +396,10 @@ def get_grid(parms):
     # loop round required latitudues
     data = []
     for lat in raw.latitudes()[min_lat:max_lat]:
-        lat_data = get_lat(lat, field)
+        lat_data = get_lat(lat, field, parms.base)
 
         for lon in range(min_lon, max_lon):
-            data += lat_data[lon::raw.number_of_longitudes]
+            data += lat_data[lon::raw.number_of_longitudes()]
 
     result['values'] = data
 
