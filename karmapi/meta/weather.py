@@ -41,7 +41,7 @@ Observation = dict(
 
 Observations = dict(
     field = fields.String,
-    data = fields.List(Observation))
+    data = fields.List(fields.Nested(Observation)))
     
 
 # Stuff we can build
