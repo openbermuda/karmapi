@@ -340,20 +340,20 @@ def build_space(parms):
         outfile.close()
 
 
-def get_lat(lat, field):
+def get_lat(lat, field, base):
     """  Get all the data for a given latitude and field """
 
     # Read the data for the lat
     path = "space/{lat:.2f}/{field}".format(
         lat=lat, field=field)
 
-    return get_array_for_path(full_path(parms.base, path))
+    return get_array_for_path(full_path(base, path))
 
             
 def get_lat_lon(parms):
     """  Get all the data for a given lat/lon and field """
 
-    data = get_lat(parms.lat, parms.field)
+    data = get_lat(parms.lat, parms.field, parms.base)
 
     # Now find the index for this lat
     # get raw weather object
