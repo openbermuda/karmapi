@@ -361,7 +361,7 @@ def get_lat_lon(parms):
     raw = RawWeather()
     raw.from_dict(meta)
 
-    longitude_index = raw.longiitude_index(parms.lon)
+    longitude_index = raw.longitude_index(parms.lon)
 
     return data[longitude_index::raw.number_of_latitudes()]
 
