@@ -11,8 +11,9 @@ LatLonGrid = Model(
 
 LatLonTimeGrid = Model(
     "LatLonGrid",
-    lats = fields.List(fields.Float),               
-    lons = fields.List(fields.Float),
+    field = fields.String
     start_day = fields.Date,
     end_day = fields.Date,
-    grid = fields.List(fields.Float))
+    lats = fields.List(fields.Float),               
+    lons = fields.List(fields.Float),
+    values = fields.List(fields.Float))
