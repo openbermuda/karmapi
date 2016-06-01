@@ -382,8 +382,8 @@ def get_grid(parms):
 
     result = {}
     result['field'] = field
-    result['start_day'] = raw.START_DAY
-    result['end_day'] = raw.END_DAY
+    result['start_day'] = raw.start_day
+    result['end_day'] = raw.end_day
     result['lats'] = raw.latitudes()[min_lat:max_lat]
     result['lons'] = raw.longitudes()[min_lon:max_lon]
 
