@@ -32,6 +32,16 @@ AllFields = {
     (field, fields.List(fields.Float)) for field in meta['fields']}
 
 Image = dict(image=fields.String)
+
+Observation = dict(
+    date=fields.Date,
+    lat=fields.Float,
+    lon=fields.Float,
+    value=fields.Float,)
+
+Observations = dict(
+    field = fields.String,
+    data = fields.List(Observation))
     
 
 # Stuff we can build
@@ -92,12 +102,20 @@ meta['gets'] = dict(
         model = "karmapi.meta.weather.AllFields",
         ),
 
+    grid = dict(
+        doc="Return all data for a grid of lat/lons and a field",
+        path="space/<float:start_lat>/<float:start_lon>/<float:end_lat>/<float:end_lon>/<item>",
+        karma="karmapi.weather.get_grid",
+        model = "karmapi.models.lat_lon_grid.LatLonTimeGrid",
+        ),
+
     location = dict(
         doc="Return an image from location's perspective",
         path="locations/<location>/<item>",
         karma="karmapi.weather.location",
         model = "karmapi.meta.weather.Image",
         ),
+
 
 )
 

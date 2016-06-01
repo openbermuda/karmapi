@@ -263,7 +263,7 @@ def build_latitude(parms):
     # figure out a template for the path to day data
     path_parts = path.split('/')
 
-    stride = raw.number_of_longitudes()
+    stride = raw.number_of_latitudes()
     with open(path, 'wb') as outfile:
 
         for day in day_range(raw.start_day, raw.end_day):
@@ -339,15 +339,21 @@ def build_space(parms):
     for outfile in outfiles:
         outfile.close()
 
+
+def get_lat(lat, field):
+    """  Get all the data for a given latitude and field """
+
+    # Read the data for the lat
+    path = "space/{lat:.2f}/{field}".format(
+        lat=lat, field=field)
+
+    return get_array_for_path(full_path(parms.base, path))
+
             
 def get_lat_lon(parms):
     """  Get all the data for a given lat/lon and field """
 
-    # Read the data for the lat
-    path = "space/{lat:.2f}/{field}".format(
-        lat=parms.lat, field=parms.field)
-
-    data = get_array_for_path(full_path(parms.base, path))
+    data = get_lat(parms.lat, parms.field)
 
     # Now find the index for this lat
     # get raw weather object
@@ -355,9 +361,43 @@ def get_lat_lon(parms):
     raw = RawWeather()
     raw.from_dict(meta)
 
-    latitude_index = raw.latitude_index(parms.lat)
+    longitude_index = raw.longiitude_index(parms.lon)
 
-    return data[latitude_index::raw.number_of_latitudes()]
+    return data[longitude_index::raw.number_of_latitudes()]
+
+def get_grid(parms):
+    """ Get all the data for a lat/lon grid """
+    # get raw weather object
+    meta = get_all_meta_data('.')
+    raw = RawWeather()
+    raw.from_dict(meta)
+
+    # extract parameters and convert lats/lons to indices
+    min_lat = raw.latitude_index(parms.min_lat)
+    max_lat = raw.latitude_index(parms.max_lat)
+    min_lon = raw.longitude_index(parms.min_lon)
+    max_lon = raw.longitude_index(parms.max_lon)
+    
+    field = parms.field
+
+    result = {}
+    result['field'] = field
+    result['start_day'] = raw.START_DAY
+    result['end_day'] = raw.END_DAY
+    result['lats'] = raw.latitudes()[min_lat:max_lat]
+    result['lons'] = raw.longitudes()[min_lon:max_lon]
+
+    # loop round required latitudues
+    data = []
+    for lat in raw.latitudes()[min_lat:max_lat]:
+        lat_data = get_lat(lat, field)
+
+        for lon in range(min_lon, max_lon):
+            data += lat_data[lon::raw.number_of_longitudes]
+
+    result['values'] = data
+
+    return result
 
 def array_to_dict(f, keyword='data', *args, **kwargs):
     """ Decorator that wraps a function that returns an array 
