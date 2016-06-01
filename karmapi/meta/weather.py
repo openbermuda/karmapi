@@ -104,7 +104,7 @@ meta['gets'] = dict(
 
     grid = dict(
         doc="Return all data for a grid of lat/lons and a field",
-        path="space/<float:start_lat>/<float:start_lon>/<float:end_lat>/<float:end_lon>/<item>",
+        path="space/<float:start_lat>/<float:start_lon>/<float:end_lat>/<float:end_lon>/<field>",
         karma="karmapi.weather.get_grid",
         model = "karmapi.models.lat_lon_grid.LatLonTimeGrid",
         ),
