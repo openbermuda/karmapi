@@ -328,7 +328,7 @@ def build_space(parms):
             day=day,
             field=parms.field)
 
-        data = get_array_for_path(day_path)
+        data = get_array_for_path(full_path(parms.base, day_path))
 
         # extract stuff for this latitude
         for (outfile, lat) in zip(outfiles, raw.latitudes()):
