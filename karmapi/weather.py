@@ -185,13 +185,15 @@ def build_day(parms):
 
     # extract the source data from the parms
     source = parms.target['source'].format(field=parms.field)
+    fsource = full_path(parms.base, source)
 
     # get the meta data for the source
-    source_meta = get_all_meta_data(full_path(parms.base, source))
-    raw = RawWeather(**source_meta)
+    source_meta = get_all_meta_data(fsource)
+    raw = RawWeather()
+    raw.from_dict(source_meta)
 
     # Read the source data
-    with open(source) as infile:
+    with open(fsource) as infile:
         data = raw.get_data(day, infile)
 
     # Write the data out
@@ -290,7 +292,7 @@ def build_space(parms):
     quickly
     """
     path = parms.path
-    create_folder_if_missing(path)
+    create_folder_if_missing(full_path(parms.base, path))
 
     # get raw weather object
     meta = get_all_meta_data('.')
@@ -303,8 +305,9 @@ def build_space(parms):
 
         path = "space/{lat:.2f}/{field}".format(
             lat=lat, field=parms.field)
-        create_folder_if_missing(path)
-        paths.append(full_path(parms.base, path))
+        fpath = full_path(parms.base, path)
+        create_folder_if_missing(fpath)
+        paths.append(fpath)
     
     nlats = raw.number_of_latitudes()
 
