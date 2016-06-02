@@ -363,7 +363,7 @@ def get_lat_lon(parms):
 
     longitude_index = raw.longitude_index(parms.lon)
 
-    return data[longitude_index::raw.number_of_latitudes()]
+    return data[longitude_index::raw.number_of_longitudes()]
 
 def get_grid(parms):
     """ Get all the data for a lat/lon grid """
