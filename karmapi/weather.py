@@ -23,7 +23,8 @@ import numpy
 from .base import (
     get, build, match_path, Parms, get_all_meta_data,
     create_folder_if_missing, full_path, day_range)
-                   
+
+from .locations import location, Location
 
 # FIXME -- the following constants belong in meta data
 
@@ -487,121 +488,6 @@ def write_lats_for_day(data, date, outfiles):
         pdata = packer.pack(*col)
     
         outfiles[ix].write(pdata)
-
-
-def location(parms):
-    """Rough notes on how to plot centred on a location using basemap
-
-    What I really want to do is implement a Karma Pi path something like
-    this:
-
-    locations/{location}/{item}
-
-    That will show you {item} from location's point of view.
-
-    Now {item} works best if it does not have and /'s, so for
-    the item parameter we'll convert /'s to ,'s and see how that looks.
-
-    The idea is {item} will be a path to something in Karma Pi.
-
-    So here is how it might go:
-
-    >>> parms = base.Parms()
-    >>> parms.path = "locations/bermuda"
-    >>> parms.item = "time,2015,11,01,precipitation,image"
-
-    >>> data = location(parms)
-
-    In the background, some magic will read lat/lon for 
-    locations/bermuda, or rather read the meta data and hope the 
-    info is there.
-
-    It will find the data for the precipitation image and use it to 
-    create an image of the data using the "ortho" projection in basemap.
-
-    This shows a hemisphere of the world, centered on the location.
-
-    It would be good to offer other views.
-
-    This can be supported by adding different end points for each view
-
-    Eg:
-
-    >>> parms = base.Parms()
-    >>> parms.path = "locations/bermuda"
-    >>> parms.item = "time,2015,11,01,precipitation,mercator"
-    
-    Might return a mercator projection.
-
-    >>> parms = base.Parms()
-    >>> parms.path = "locations/bermuda"
-    >>> parms.item = "time,2015,11,01,precipitation,tendegree"
-
-    Might return a 10 degree window around the location.
-    """
-    
-    # get data for path
-    item_path = parms.item.split(',')
-    
-    version = item_path[-1]
-    item = '/'.join(item_path[:-1])
-
-    #print(full_path(parms.base, item))
-    data = get(item)
-
-
-    location = get_all_meta_data(
-        full_path(parms.base, 'locations/' + parms.location))
-
-    print(location.keys())
-    location = Location(location)
-
-    # wrangle the data into a numpy grid
-    ndata = numpy.array(data['data']).reshape(
-        len(location.lons), len(location.lats)).T
-
-    builder = image_makers(version)
-
-    return builder(ndata, location)
-
-
-class Location:
-    """ A location
-
-    Should have a lat, lon, assuming we are on earth.
-    """
-
-    def __init__(self, meta):
-
-        self.__dict__.update(meta)
-
-        if 'latlon_degrees' in meta:
-            self.lat_lon_from_degrees()
-
-    def lat_lon_from_degrees(self):
-        """ Return lat lon from degrees
-        
-        Degrees is somethng like "32 18 N 64 47 W"
-        """
-
-        fields = self.latlon_degrees.split()
-
-        lat = float(fields[0])
-        lat += float(fields[1]) / 60.0
-
-        if fields[2].lower() == 's':
-            lat *= -1.0
-
-        lon = float(fields[3])
-        lon += float(fields[4]) / 60.0
-
-        if fields[5].lower() == 'w':
-            lon = 360.0 - lon
-
-        self.lat = lat
-        self.lon = lon
-        
-        return lat, lon
 
 
 def build_image(data, location):
