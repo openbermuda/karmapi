@@ -8,6 +8,8 @@ Theae should be lat, lon on planet earth.
 from collections import Counter
 
 import pandas
+import numpy as np
+
 from matplotlib import pyplot
 from mpl_toolkits import basemap
 
@@ -126,18 +128,70 @@ def location(parms):
 
     return builder(ndata, location)
 
+def get_bounding_box(lats, lons):
+    """ Get the bounding box for the lats and lons 
 
+    This gets tricky when the area being plotted straddles
+    longitude 180 degrees.  
+    """
+    # if no data, return entire world
+    if len(lats) == 0 or len(lons) == 0:
+        return  -180, 180, -90, 90
+    
+    # First guess, just take max and mins
+    maxlon, minlon = find_biggest_gap(lons)
+    minlat, maxlat = min(lats), max(lats)
+
+    return minlat, maxlat, minlon, maxlon
+
+def find_biggest_gap(lons):
+    """ Find the biggest gap between items in lons 
+
+    Returns lons either side of the gap
+    """
+    # create a list and sort
+    lons = [x for x in lons]
+
+    if not lons: return -180.0, 180.0
+    if len(lons) == 1: return lons[0], lons[0]
+    lons.sort()
+
+    max_delta = 0.0
+    gapa = None
+    gapb = None
+    for a, b in zip(lons, lons[1:] + [360.0 + lons[0]]):
+        delta = b - a
+
+        if delta >= max_delta:
+            max_delta = delta
+            gapa = a
+            gapb = b
+
+    if gapb > 180:
+        gapb -= 360.0
+            
+    return gapa, gapb
+           
+
+def translate(value, offset=180):
+    """ Transform values to shift origin 
+
+    Intended for longitudes in range (-180, 180)
+    to shift the 0 meridian to the 180 degree point.
+    """
+    if value <= 0.0:
+        return value + offset
+
+    if value > 0.0:
+        return value - offset
 
 def create_map(lats, lons, proj='lcc', border=1.0, **kwargs):
     """ Create a base map appropriate for lats and lons """
 
     if len(lats) == 0:
         return world_map()
-    
-    minlon = min(lons)
-    maxlon = max(lons)
-    minlat = min(lats)
-    maxlat = max(lats)
+
+    minlat, maxlat, minlon, maxlon = get_bounding_box(lats, lons)
     
     lat_0 = (minlat + maxlat) / 2.
     lon_0 = (minlon + maxlon) / 2.
@@ -146,6 +200,8 @@ def create_map(lats, lons, proj='lcc', border=1.0, **kwargs):
     maxlat += border
     minlon -= border
     maxlon += border
+
+    print(minlat, maxlat, minlon, maxlon)
     
     return basemap.Basemap(projection=proj,
                            lat_0 = lat_0,
@@ -173,12 +229,12 @@ def lats_and_lons_are_transposed(lats, lons):
     minlat = min(lats)
     maxlat = max(lats)
 
-    # if lats are outside range -90.0 to 90.0, they are probably lons
-    if minlat < -90.0 or maxlat > 90.0:
+    # if lats are outside range -89.0 to 89.0, they are probably lons
+    if minlat < -89.0 or maxlat > 89.0:
         return True
 
-    # if lons are outside range -90.0 to 90.0, they are probably lons
-    if minlon < -90.0 or maxlon > 90.0:
+    # if lons are outside range -89.0 to 89.0, they are probably lons
+    if minlon < -89.0 or maxlon > 89.0:
         return False
 
     # If lons have less range than lats, may be reversed
