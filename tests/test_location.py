@@ -2,12 +2,13 @@
 
 from sys import float_info
 from math import isinf, isnan
+from decimal import Decimal, localcontext, BasicContext
 
 import pandas
 from collections import Counter
 
 from hypothesis.strategies import (lists, tuples,
-                                   floats, integers,
+                                   floats, integers, decimals,
                                    fixed_dictionaries)
 from hypothesis import given, note, assume, example
 
@@ -24,22 +25,25 @@ def test_translate(value):
     """
     assume(not isnan(value))
 
+    value = twoplaces(value)
+
     # if value is close to +/-180 then round trip can flip the sign
-    assume(not abs((abs(value) - 180.0)) < float_info.epsilon)
+    assume(not abs((abs(value) - Decimal(180.0))) < float_info.epsilon)
 
     tvalue = locations.translate(value)
     ttvalue = locations.translate(tvalue)
 
-    delta = ttvalue - value
-    
-    assert(abs(delta) <= 100.0 * float_info.epsilon)
+    ttvalue = twoplaces(ttvalue)
+
+    assert(value == ttvalue)
+
 
 @given(lists(floats(min_value=-180.0, max_value=180.0)))
 @example([-179, 179, 0])
 def test_find_biggest_gap(lons):
 
     assume(lons)
-    
+
     start, end = locations.find_biggest_gap(lons)
 
     note("start, end: {}. {}".format(start, end))
@@ -49,14 +53,16 @@ def test_find_biggest_gap(lons):
     if start <= end:
         xstart += 360.0
 
+    xstart = twoplaces(xstart)
+    end = twoplaces(end)
+
     epsilon = .1
     for lon in lons:
 
-        if abs(lon - start) < epsilon: continue
-        if abs(lon - end) < epsilon: continue
+        lon = twoplaces(lon)
 
         if lon < end:
-            lon += 360.0
+            lon += Decimal('360.0')
 
         assert(lon <= xstart)
         
@@ -73,39 +79,35 @@ def test_bounding_box(data):
 
     note("Bounding box: {} {} {} {}".format(minlon, maxlon, minlat, maxlat))
 
-    epsilon = float_info.epsilon
-    border = 100.0 * epsilon
-    border = 0.1
-    minlat -= border
-    minlon -= border
-    maxlat += border
-    maxlon += border
-
-    note("Border: {}".format(border))
-    
-    note("Bounding epsilon box: {} {} {} {}".format(
-        minlon, maxlon, minlat, maxlat))
-
     note("Minlon - Maxlon: {} {}".format(minlon, maxlon))
 
     note("biggest gap: {} {}".format(*locations.find_biggest_gap(lons)))
 
+    minlat, maxlat, minlon, maxlon = [
+        twoplaces(x) for x in (minlat, maxlat, minlon, maxlon)]
+
     for lat in lats:
+        lat = twoplaces(lat)
         #assert((lat - minlat) >= (100.0 * epsilon))
         assert(minlat <= lat)
         #assert((maxlat - lat) >= (100.0 * epsilon))
         assert(lat <= maxlat)
 
     for lon in lons:
+        lon = twoplaces(lon)
 
         if minlon <= maxlon:
             assert(minlon <= lon)
             assert(lon <= maxlon)
         else:
             if lon < minlon:
-                lon += 360.0
+                lon += Decimal('360.0')
 
             assert(minlon <= lon)
-            assert(lon <= (maxlon + 360.0))
+            assert(lon <= (maxlon + Decimal('360.0')))
                      
             
+def twoplaces(x):
+    """ Convert x to a decimal with two decimal places """
+    tp = Decimal('0.01')
+    return Decimal(x).quantize(tp)
