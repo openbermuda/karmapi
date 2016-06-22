@@ -97,15 +97,7 @@ def create_map_for_box(box, proj='lcc', border=1.0,
         print("ortho: {} {}".format(lat_0, lon_0))
         return world_map_centre_at(lat_0, lon_0)
 
-    return basemap.Basemap(projection=proj,
-                           lat_0 = lat_0,
-                           lon_0 = lon_0,
-                           llcrnrlat = minlat,
-                           urcrnrlat = maxlat,
-                           llcrnrlon = minlon,
-                           urcrnrlon = maxlon,
-                           **kwargs                           
-                          )
+    return cylinder(latmin, lonmin, latmax, lonmax, proj)
 
 def plot_points_on_map(lats, lons,
                        m = None,
@@ -171,7 +163,7 @@ def world(lat=0.0, lon=0.0, proj='mill'):
                            lat_0=lat, lon_0=lon)
 
 
-def world_centre_at(lat, lon, proj):
+def world_centre_at(lat, lon, proj='stere'):
     """ Return a map centred on given lat, lon """
 
     assert(proj in CENTRE)
