@@ -185,24 +185,58 @@ def translate(value, offset=180):
     if value > 0.0:
         return value - offset
 
-def create_map(lats, lons, proj='lcc', border=1.0, **kwargs):
+def create_map(lats, lons, proj='cyl', border=1.0, **kwargs):
     """ Create a base map appropriate for lats and lons """
 
     if len(lats) == 0:
         return world_map()
 
     minlat, maxlat, minlon, maxlon = get_bounding_box(lats, lons)
-    
-    lat_0 = (minlat + maxlat) / 2.
-    lon_0 = (minlon + maxlon) / 2.
 
-    minlat -= border
-    maxlat += border
-    minlon -= border
-    maxlon += border
+    # find 50th percentile of lats/lons and centre the map there.
+    lat = pandas.Series(lats).quantile()
+    lon = pandas.Series(lons).quantile()
+
+    #print(minlon, maxlon)
+    if minlon > maxlon:
+        # this case probably means we are straddling the international
+        # dateline.  Basemap gets dazed and confused, so just return
+        # a world map
+        print("ortho: {} {}".format(lat, lon))
+        return world_map_centre_at(lat, lon)
+
+    box = dict(minlat=minlat, minlon=minlon,
+               maxlat=maxlat, maxlon=maxlon)
+    
+    return create_map_for_box(box, proj, border,
+                              #lat_0=lat, lon_0=lon,
+                              **kwargs)
+    
+
+def create_map_for_box(box, proj='lcc', border=1.0,
+                       lat_0=None, lon_0=None, **kwargs):
+    """ Create map for given bounding box """
+    
+    minlat = box['minlat'] - border
+    minlon = box['minlon'] - border
+    maxlat = box['maxlat'] + border
+    maxlon = box['maxlon'] + border
+
+    if lat_0 is None:
+        lat_0 = (minlat + maxlat) / 2.
+
+    if lon_0 is None:
+        lon_0 = (minlon + maxlon) / 2.
 
     print(minlat, maxlat, minlon, maxlon)
-    
+
+    if minlon > maxlon:
+        # this case probably means we are straddling the international
+        # dateline.  Basemap gets dazed and confused, so just return
+        # a world map
+        print("ortho: {} {}".format(lat_0, lon_0))
+        return world_map_centre_at(lat_0, lon_0)
+
     return basemap.Basemap(projection=proj,
                            lat_0 = lat_0,
                            lon_0 = lon_0,
@@ -213,13 +247,13 @@ def create_map(lats, lons, proj='lcc', border=1.0, **kwargs):
                            **kwargs                           
                           )
 
-def lats_and_lons_are_transposed(lats, lons):
+def lats_and_lons_are_transposed(lats, lons, thresh=40.0):
     """ Sometimes lats and lons are mixed up.
 
     Lats are lons and vice versa.
 
     This utility tries to spot when things are mixed up and returns
-    True if things looked broken.
+    True if things look broken.
 
     """
     if not len(lats): return None
@@ -229,70 +263,32 @@ def lats_and_lons_are_transposed(lats, lons):
     minlat = min(lats)
     maxlat = max(lats)
 
-    # if lats are outside range -89.0 to 89.0, they are probably lons
-    if minlat < -89.0 or maxlat > 89.0:
+    # if lats are outside range -90.0 to 90.0, they are probably lons
+    if minlat < -90.0 or maxlat > 90.0:
         return True
 
     # if lons are outside range -89.0 to 89.0, they are probably lons
-    if minlon < -89.0 or maxlon > 89.0:
+    if minlon < -90.0 or maxlon > 90.0:
         return False
 
     # If lons have less range than lats, may be reversed
+    return range_test(minlat, maxlat, minlon, maxlon, thresh)
+
+def range_test(minlat, maxlat, minlon, maxlon, thresh=40.0):
+    """ Test if there is more range of lats than lons.
+
+    If so, it may be they are transposed, unless the range is small.
+
+    Setting thresh to 180.0 + epsilon ensures this only triggers when
+    things are clearly messed up.
+
+    Default, thresh = 40.0 may be a little over-aggressive.
+    """
     latrange = maxlat - minlat
     lonrange = maxlon - minlon
-    if lonrange < latrange and latrange > 40.0:
+    if lonrange < latrange and latrange > thresh:
         return True
 
     return False
-
-
-def plot_points_on_map(lats, lons,
-                       m = None,
-                       color=None, size=None, alpha=0.1,
-                       colorbar=False, border=0.0, **kwargs):
-    """ Plot event locations on a map """
-    if m is None:
-        m = create_map(lats, lons, border=border)
-
-    x, y = m(lons, lats)
-    #m.drawcoastlines()
-    m.drawmapboundary()
-    m.drawlsmask(alpha=1.)
     
-    pts = m.scatter(x, y, alpha=alpha, c=color, edgecolors='none',
-                    **kwargs)
-
-    if colorbar:
-        print('adding colorbar for {}'.format(pts))
-        m.colorbar(pts)
-    
-    return m
-
-def draw_grid_on_map(m):
-    """ Draw parallels and meridians """
-    m.drawparallels(range(-90, 90, 10), labels=[1, 0, 0, 1])
-    m.drawmeridians(range(0, 350, 10), labels=[1, 0, 0, 1])
-    
-
-def us_map():
-    """ Return a map suitable for the US 
-
-    FIXME: find a way to return good maps based on a region.
-    """
-
-    return basemap.Basemap(projection='stere',
-                           lat_0=10.0, lon_0=-80.0,
-                           llcrnrlat=10, llcrnrlon=-120,
-                           urcrnrlat=60, urcrnrlon=-40)
-
-
-def world_map():
-    """ Return a map suitable for the world
-
-    FIXME: find a way to return good maps based on a region.
-    """
-
-    return basemap.Basemap(projection='robin',
-                           lat_0=0.0, lon_0=0.0)
-
 

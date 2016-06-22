@@ -524,7 +524,6 @@ def image_makers(version):
     
 
     
-print('Importing weather')
 
     
     

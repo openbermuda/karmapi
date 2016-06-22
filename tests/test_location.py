@@ -106,6 +106,22 @@ def test_bounding_box(data):
             assert(minlon <= lon)
             assert(lon <= (maxlon + Decimal('360.0')))
                      
+
+@given(lists(
+    tuples(floats(min_value=-90., max_value=90.0),
+           floats(min_value=-180.0, max_value=180.0))))
+def test_transposed_lat_lons(data):
+
+    lats = [x[0] for x in data]
+    lons = [x[1] for x in data]
+
+    if len(data):
+        assert(locations.lats_and_lons_are_transposed(lats, lons, 181.0)
+               == False)
+    else:
+        assert(locations.lats_and_lons_are_transposed(lats, lons, 181.0)
+               == None)
+
             
 def twoplaces(x):
     """ Convert x to a decimal with two decimal places """
