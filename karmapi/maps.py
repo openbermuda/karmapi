@@ -129,21 +129,25 @@ def plot_points_on_map(lats, lons,
     
     return m
 
-def draw_grid_on_map(m, plabels=True, mlabels=True):
-    """ Draw parallels and meridians """
+def draw_grid_on_map(m, plabels=True, mlabels=True, step=15):
+    """ Draw parallels and meridians 
+    
+    [mp]labels indicate if labels should be printed on
+               left, right, top, bottom.
+    """
 
     if plabels == True:
         plabels = [1, 1, 0, 0]
     if mlabels == True:
         mlabels = [0, 0, 1, 1]
 
-    if plabels == False:
-        plabels = None
-    if mlabels == False:
-        mlabels = None
+    if not plabels:
+        plabels = [0, 0, 0, 0]
+    if not mlabels:
+        mlabels = [0, 0, 0, 0]
         
-    m.drawparallels(range(-90, 90, 10), labels=plabels)
-    m.drawmeridians(range(0, 350, 10), labels=mlabels)
+    m.drawparallels(range(-90, 90, step), labels=plabels)
+    m.drawmeridians(range(0, 360, step), labels=mlabels)
     
 
 def us_map():
