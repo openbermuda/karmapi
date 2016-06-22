@@ -142,6 +142,9 @@ def get_bounding_box(lats, lons):
     maxlon, minlon = find_biggest_gap(lons)
     minlat, maxlat = min(lats), max(lats)
 
+    if minlon > maxlon:
+        maxlon += 360.0
+
     return minlat, maxlat, minlon, maxlon
 
 def find_biggest_gap(lons):
