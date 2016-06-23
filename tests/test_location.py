@@ -75,16 +75,21 @@ def test_bounding_box(data):
     lats = [x[0] for x in data]
     lons = [x[1] for x in data]
 
-    minlat, maxlat, minlon, maxlon = locations.get_bounding_box(lats, lons)
+    b = locations.get_bounding_box(lats, lons)
+
+    minlon, maxlon, minlat, maxlat = b.minlon, b.maxlon, b.minlat, b.maxlat
 
     note("Bounding box: {} {} {} {}".format(minlon, maxlon, minlat, maxlat))
 
-    note("Minlon - Maxlon: {} {}".format(minlon, maxlon))
+    note("Minlon, Maxlon: {} {}".format(minlon, maxlon))
 
     note("biggest gap: {} {}".format(*locations.find_biggest_gap(lons)))
 
     minlat, maxlat, minlon, maxlon = [
         twoplaces(x) for x in (minlat, maxlat, minlon, maxlon)]
+
+    assert(minlat <= maxlat)
+    assert(minlon <= maxlon)
 
     for lat in lats:
         lat = twoplaces(lat)
@@ -96,15 +101,11 @@ def test_bounding_box(data):
     for lon in lons:
         lon = twoplaces(lon)
 
-        if minlon <= maxlon:
-            assert(minlon <= lon)
-            assert(lon <= maxlon)
-        else:
-            if lon < minlon:
-                lon += Decimal('360.0')
+        if lon < minlon:
+            lon += Decimal('360.0')
 
-            assert(minlon <= lon)
-            assert(lon <= (maxlon + Decimal('360.0')))
+        assert(minlon <= lon)
+        assert(lon <= maxlon)
                      
 
 @given(lists(

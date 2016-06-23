@@ -13,6 +13,8 @@ import numpy as np
 from matplotlib import pyplot
 from mpl_toolkits import basemap
 
+from karmapi.base import Parms
+
 class Location:
     """ A location
 
@@ -136,7 +138,8 @@ def get_bounding_box(lats, lons):
     """
     # if no data, return entire world
     if len(lats) == 0 or len(lons) == 0:
-        return  -180, 180, -90, 90
+        return  Parms(dict(
+            minlon=-180, maxlon=180, minlat=-90, maxlat=90))
     
     # First guess, just take max and mins
     maxlon, minlon = find_biggest_gap(lons)
@@ -145,7 +148,16 @@ def get_bounding_box(lats, lons):
     if minlon > maxlon:
         maxlon += 360.0
 
-    return minlat, maxlat, minlon, maxlon
+    box = Parms(dict(
+        minlat=minlat,
+        maxlat=maxlat,
+        minlon=minlon,
+        maxlon=maxlon))
+
+    box.height = (4e7 * (box.maxlat - box.minlat) / 180.0)
+    box.width = (4e7 * (box.maxlon - box.minlon) / 360.0)
+    
+    return box
 
 def find_biggest_gap(lons):
     """ Find the biggest gap between items in lons 
@@ -187,68 +199,6 @@ def translate(value, offset=180):
 
     if value > 0.0:
         return value - offset
-
-def create_map(lats, lons, proj='cyl', border=1.0, **kwargs):
-    """ Create a base map appropriate for lats and lons """
-
-    if len(lats) == 0:
-        return world_map()
-
-    minlat, maxlat, minlon, maxlon = get_bounding_box(lats, lons)
-
-    # find 50th percentile of lats/lons and centre the map there.
-    lat = pandas.Series(lats).quantile()
-    lon = pandas.Series(lons).quantile()
-
-    #print(minlon, maxlon)
-    if minlon > maxlon:
-        # this case probably means we are straddling the international
-        # dateline.  Basemap gets dazed and confused, so just return
-        # a world map
-        print("ortho: {} {}".format(lat, lon))
-        return world_map_centre_at(lat, lon)
-
-    box = dict(minlat=minlat, minlon=minlon,
-               maxlat=maxlat, maxlon=maxlon)
-    
-    return create_map_for_box(box, proj, border,
-                              #lat_0=lat, lon_0=lon,
-                              **kwargs)
-    
-
-def create_map_for_box(box, proj='lcc', border=1.0,
-                       lat_0=None, lon_0=None, **kwargs):
-    """ Create map for given bounding box """
-    
-    minlat = box['minlat'] - border
-    minlon = box['minlon'] - border
-    maxlat = box['maxlat'] + border
-    maxlon = box['maxlon'] + border
-
-    if lat_0 is None:
-        lat_0 = (minlat + maxlat) / 2.
-
-    if lon_0 is None:
-        lon_0 = (minlon + maxlon) / 2.
-
-    print(minlat, maxlat, minlon, maxlon)
-
-    if minlon > maxlon:
-        # this case probably means we are straddling the international
-        # dateline.  Basemap gets dazed and confused, so just return
-        # a world map
-        print("ortho: {} {}".format(lat_0, lon_0))
-        return world_map_centre_at(lat_0, lon_0)
-
-    return basemap.Basemap(projection=proj,
-                           lat_0 = lat_0,
-                           lon_0 = lon_0,
-                           llcrnrlat = minlat,
-                           urcrnrlat = maxlat,
-                           llcrnrlon = minlon,
-                           urcrnrlon = maxlon,
-                           **kwargs                           
-                          )
 
 def lats_and_lons_are_transposed(lats, lons, thresh=40.0):
     """ Sometimes lats and lons are mixed up.

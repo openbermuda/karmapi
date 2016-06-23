@@ -36,13 +36,20 @@ WORLD = set([
     'hammer'])
 
 
+# Cylindrical projections. Lat/lons form a grid of rectangles.
 CYLINDER = set(basemap._cylproj)
 
+# Projections centred on a point
 CENTRE = set([
     'stere',
     'laea',
-    'aeqd',
-    'ortho'])
+    'aeqd'])
+
+# Projections from the perspective of a satellite in orbit.
+SATELLITE = set([
+    'ortho',
+    'geos',
+    'nsper'])
     
 
 def create_map(lats, lons, proj='cyl', border=1.0, **kwargs):
@@ -51,23 +58,20 @@ def create_map(lats, lons, proj='cyl', border=1.0, **kwargs):
     if len(lats) == 0:
         return world_map()
 
-    minlat, maxlat, minlon, maxlon = get_bounding_box(lats, lons)
+    box = get_bounding_box(lats, lons)
 
     # find 50th percentile of lats/lons and centre the map there.
     lat = pandas.Series(lats).quantile()
     lon = pandas.Series(lons).quantile()
 
     #print(minlon, maxlon)
-    if minlon > maxlon:
+    if box.minlon > box.maxlon:
         # this case probably means we are straddling the international
         # dateline.  Basemap gets dazed and confused, so just return
         # a world map
-        print("ortho: {} {}".format(lat, lon))
-        return world_map_centre_at(lat, lon)
+        print("world_centre_at: {} {}".format(lat, lon))
+        return world_centre_at(lat, lon, width=box.widht, height=box.height)
 
-    box = dict(minlat=minlat, minlon=minlon,
-               maxlat=maxlat, maxlon=maxlon)
-    
     return create_map_for_box(box, proj, border,
                               #lat_0=lat, lon_0=lon,
                               **kwargs)
@@ -77,10 +81,10 @@ def create_map_for_box(box, proj='lcc', border=1.0,
                        lat_0=None, lon_0=None, **kwargs):
     """ Create map for given bounding box """
     
-    minlat = box['minlat'] - border
-    minlon = box['minlon'] - border
-    maxlat = box['maxlat'] + border
-    maxlon = box['maxlon'] + border
+    minlat = box.minlat - border
+    minlon = box.minlon - border
+    maxlat = box.maxlat + border
+    maxlon = box.maxlon + border
 
     if lat_0 is None:
         lat_0 = (minlat + maxlat) / 2.
@@ -95,9 +99,11 @@ def create_map_for_box(box, proj='lcc', border=1.0,
         # dateline.  Basemap gets dazed and confused, so just return
         # a world map
         print("ortho: {} {}".format(lat_0, lon_0))
-        return world_map_centre_at(lat_0, lon_0)
+        return world_centre_at(lat_0, lon_0,
+                               width=box.width,
+                               height=box.height)
 
-    return cylinder(latmin, lonmin, latmax, lonmax, proj)
+    return cylinder(minlat, minlon, maxlat, maxlon, proj)
 
 def plot_points_on_map(lats, lons,
                        m = None,
@@ -107,7 +113,15 @@ def plot_points_on_map(lats, lons,
     if m is None:
         m = create_map(lats, lons, border=border)
 
-    x, y = m(lons, lats)
+    box = get_bounding_box(lats, lons)
+
+    xlons = []
+    for lon in lons:
+        if lon < box.minlon:
+            lon += 360.0
+        xlons.append(lon)
+        
+    x, y = m(xlons, lats)
     #m.drawcoastlines()
     m.drawmapboundary()
     m.drawlsmask(alpha=1.)
@@ -154,26 +168,40 @@ def us_map():
                            urcrnrlat=60, urcrnrlon=-40)
 
 
-def world(lat=0.0, lon=0.0, proj='mill'):
+def world(lat=0.0, lon=0.0, proj='mill', **kwargs):
     """ Return a map suitable for the world """
 
     assert(proj in WORLD)
     
     return basemap.Basemap(projection=proj,
-                           lat_0=lat, lon_0=lon)
+                           lat_0=lat, lon_0=lon, **kwargs)
 
 
-def world_centre_at(lat, lon, proj='stere'):
+def world_centre_at(lat, lon, width=None, height=None, proj='stere', **kwargs):
     """ Return a map centred on given lat, lon """
 
     assert(proj in CENTRE)
 
-    return basemap.Basemap(projection='ortho',
-                           lat_0=lat, lon_0=lon)
+    return basemap.Basemap(projection=proj,
+                           width=width, height=height,
+                           lat_0=lat, lon_0=lon, **kwargs)
 
+def satellite(lat, lon, satellite_height=None, proj='ortho', **kwargs):
+    """ Return map showing view from a satellite """
+    if proj == 'geos':
+        lat = 0
 
-def polar(lat=0.0, lon=0.0, boundinglat=None, proj='spstere'):
-    """ Return a map suitable for the world """
+    if satellite_height is None:
+        return basemap.Basemap(projection=proj,
+                               lat_0=lat, lon_0=lon, **kwargs)
+        
+
+    return basemap.Basemap(projection=proj,
+                           lat_0=lat, lon_0=lon,
+                           satellite_height=satellite_height, *kwargs)
+
+def polar(lat=0.0, lon=0.0, boundinglat=None, proj='spstere', **kwargs):
+    """ Return a map centred on North or South pole """
 
     assert(proj in POLAR)
 
@@ -184,10 +212,10 @@ def polar(lat=0.0, lon=0.0, boundinglat=None, proj='spstere'):
     
     return basemap.Basemap(projection=proj,
                            lat_0=lat, lon_0=lon,
-                           boundinglat=boundinglat)
+                           boundinglat=boundinglat, **kwargs)
 
 
-def cylinder(latmin, lonmin, latmax, lonmax, proj='mill'):
+def cylinder(minlat, minlon, maxlat, maxlon, proj='mill', **kwargs):
     """ Cylindrical projection 
 
     These are simplest if you want to make sure the map 
@@ -198,13 +226,13 @@ def cylinder(latmin, lonmin, latmax, lonmax, proj='mill'):
 
     assert(proj in CYLINDER)
 
-    lat_ts = (latmin + latmax) / 2.0
+    lat_ts = (minlat + maxlat) / 2.0
 
     return basemap.Basemap(projection = proj,
-                           llcrnrlat = latmin,
-                           urcrnrlat = latmax,
-                           llcrnrlon = lonmin,
-                           urcrnrlon = lonmax,
-                           lat_ts = lat_ts)
+                           llcrnrlat = minlat,
+                           urcrnrlat = maxlat,
+                           llcrnrlon = minlon,
+                           urcrnrlon = maxlon,
+                           lat_ts = lat_ts, **kwargs)
 
 
