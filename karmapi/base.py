@@ -11,6 +11,10 @@ import os
 import importlib
 import json
 import datetime
+from pathlib import Path
+from contextlib import contextmanager
+
+import pandas
 
 BASE_FOLDER = '.'
 
@@ -245,3 +249,37 @@ def day_range(start, end):
     while day < end:
         yield day
         day += aday
+
+def load(path):
+    """ Read data at path and return a pandas DataFrame 
+
+    For now assumes item at path is a csv file.
+    """
+
+    return pandas.read_csv(path)
+
+def save(fptr, df):
+    """ Save dataframe df at fptr.
+
+    For now, save as csv.
+
+    FIXME: include meta data for format, or use file extension.
+    """
+
+    df.to_csv(fptr, index=False)
+
+@contextmanager
+def current_working_directory(path):
+    """ Temporarily change working directory """
+    cwd = Path.cwd()
+
+    # Change where we are
+    os.chdir(path)
+
+    try:
+        # yield the path
+        yield Path(path)
+    finally:
+        # change back to where we started
+        os.chdir(str(cwd))
+
