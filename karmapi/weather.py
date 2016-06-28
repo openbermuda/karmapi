@@ -25,7 +25,8 @@ from .base import (
     get, build, match_path, Parms, get_all_meta_data,
     create_folder_if_missing, day_range)
 
-from .locations import location, Location
+from .locations import Location
+from .maps import location
 
 # FIXME -- the following constants belong in meta data
 
@@ -299,7 +300,7 @@ def build_space(parms):
     """
     base_path = Path(parms.base)
     path = parms.path
-    create_folder_if_missing(base_path / path))
+    create_folder_if_missing(base_path / path)
 
     # get raw weather object
     meta = get_all_meta_data('.')
@@ -335,7 +336,7 @@ def build_space(parms):
             day=day,
             field=parms.field)
 
-        data = get_array_for_path(base_path / day_path))
+        data = get_array_for_path(base_path / day_path)
 
         # extract stuff for this latitude
         for (outfile, lat) in zip(outfiles, raw.latitudes()):
@@ -357,7 +358,7 @@ def get_lat(lat, field, base):
     path = "space/{lat:.2f}/{field}".format(
         lat=lat, field=field)
 
-    return get_array_for_path(Path(base) / path))
+    return get_array_for_path(Path(base) / path)
 
             
 def get_lat_lon(parms):
@@ -458,7 +459,7 @@ def get_all_for_day(parms):
 
 def get_array(parms):
 
-    return get_array_for_path(Path(parms.base) / parms.path))
+    return get_array_for_path(Path(parms.base) / parms.path)
 
 def get_array_as_dict(parms):
     """ Returns data for a path 
