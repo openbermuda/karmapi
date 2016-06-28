@@ -55,8 +55,8 @@ CASTS = dict(int=int, float=float)
 def match_path(path, target_path):
     """ See if path matches target """
     
-    fields = path.split('/')
-    target_fields = target_path.split('/')
+    fields = path.parts
+    target_fields = target_path.parts
 
     if len(fields) != len(target_fields): return None
     
@@ -84,7 +84,7 @@ def match_path(path, target_path):
 def meta_data_match(path, key='gets'):
     """ Work our way along path looking for a match """
 
-    folders = path.split('/')
+    folders = path.parts
     print(folders)
     bases = []
     relatives = folders[1:]
@@ -92,8 +92,8 @@ def meta_data_match(path, key='gets'):
     for folder in folders:
         bases.append(folder)
     
-        base = '/'.join(bases)
-        relative_path = '/'.join(relatives)
+        base = Path(*bases)
+        relative_path = Path(*relatives)
         
         if relatives:
             del relatives[0]
@@ -179,21 +179,22 @@ def get_all_meta_data(path):
     """ Spin along a path gathering up all meta data """
     meta = {}
 
-    fields = path.split('/')
+    fields = Path(path).parts
     path = []
     for field in fields:
         path.append(field)
 
         meta_data = meta.update(
-            load_meta_path('/'.join(path)))
+            load_meta_path(Path(*path)))
 
     return meta
         
 def load_meta_path(path):
     """ Load meta data a path if it exists """
-    filename = os.path.join(path, 'meta.json')
-    if os.path.exists(filename):
-        with open(filename) as infile:
+    filename = path / 'meta.json'
+    
+    if filename.exists():
+        with filename.open() as infile:
             return json.loads(infile.read())
 
     # return empty dictionary if there is no meta data here
@@ -201,6 +202,8 @@ def load_meta_path(path):
 
 def get_item(path):
     """ Given a path, return the item
+
+    Note that path here is a dotted module path per python import.
 
     Item is usually some sort of python callable.
 
@@ -225,15 +228,11 @@ def create_folder_if_missing(path):
     path is a path to a file, we just want to create
     the base folder if it is missing.
     """
-    folder, filename = os.path.split(path)
+    path = Path(path)
+    folder = path.parent()
 
-    if folder:
-        if not os.path.exists(folder):
-            os.makedirs(folder)
+    folder.mkdir(parents=True, exist_ok=True)
 
-def full_path(base, path):
-
-    return '/'.join([base, path])
 
 def day_range(start, end):
     """ Generate a range of days 

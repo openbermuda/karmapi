@@ -236,3 +236,113 @@ def cylinder(minlat, minlon, maxlat, maxlon, proj='mill', **kwargs):
                            lat_ts = lat_ts, **kwargs)
 
 
+# Older debris from weather module
+
+def location(parms):
+    """Rough notes on how to plot centred on a location using basemap
+
+    What I really want to do is implement a Karma Pi path something like
+    this:
+
+    locations/{location}/{item}
+
+    That will show you {item} from location's point of view.
+
+    Now {item} works best if it does not have any /'s, so for
+    the item parameter we'll convert /'s to ,'s and see how that looks.
+
+    The idea is {item} will be a path to something in Karma Pi.
+
+    So here is how it might go:
+
+    >>> parms = base.Parms()
+    >>> parms.path = "locations/bermuda"
+    >>> parms.item = "time,2015,11,01,precipitation,image"
+
+    >>> data = location(parms)
+
+    In the background, some magic will read lat/lon for 
+    locations/bermuda, or rather read the meta data and hope the 
+    info is there.
+
+    It will find the data for the precipitation image and use it to 
+    create an image of the data using the "ortho" projection in basemap.
+
+    This shows a hemisphere of the world, centered on the location.
+
+    It would be good to offer other views.
+
+    This can be supported by adding different end points for each view
+
+    Eg:
+
+    >>> parms = base.Parms()
+    >>> parms.path = "locations/bermuda"
+    >>> parms.item = "time,2015,11,01,precipitation,mercator"
+    
+    Might return a mercator projection.
+
+    >>> parms = base.Parms()
+    >>> parms.path = "locations/bermuda"
+    >>> parms.item = "time,2015,11,01,precipitation,tendegree"
+
+    Might return a 10 degree window around the location.
+    """
+    
+    # get data for path
+    item_path = parms.item.split(',')
+    
+    version = item_path[-1]
+    item = Path(item_path[:-1])
+
+    #print(full_path(parms.base, item))
+    data = get(item)
+
+    location = get_all_meta_data(
+        Path(parms.base) / 'locations' / parms.location)
+
+    print(location.keys())
+    location = Location(location)
+
+    # wrangle the data into a numpy grid
+    ndata = numpy.array(data['data']).reshape(
+        len(location.lons), len(location.lats)).T
+
+    builder = maps.image_makers(version)
+
+    return builder(ndata, location)
+
+
+def image_makers(version):
+
+    versions = dict(
+        image=build_image,
+        )
+
+    return versions.get(version)
+
+def build_image(data, location):
+    """ Build an image for a location """
+    from matplotlib import pyplot
+    from mpl_toolkits import basemap
+
+    m = basemap.Basemap(projection='ortho',
+                        lat_0=location.lat, lon_0=location.lon)
+
+    m.drawcoastlines()
+
+    lons, lats = numpy.meshgrid(location.lons, location.lats)
+
+    
+    m.pcolor(lons, lats, data, latlon=True)
+
+    return m, lats, lons, data
+    
+    img = StringIO()
+    pyplot.savefig(img)
+
+    result = img.getvalue()
+    img.close()
+    return result
+
+

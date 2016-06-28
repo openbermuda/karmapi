@@ -17,12 +17,13 @@ import datetime
 import struct
 from io import StringIO
 from functools import wraps
+from pathlib import Path
 
 import numpy
 
 from .base import (
     get, build, match_path, Parms, get_all_meta_data,
-    create_folder_if_missing, full_path, day_range)
+    create_folder_if_missing, day_range)
 
 from .locations import location, Location
 
@@ -176,7 +177,9 @@ def build_day(parms):
 
     Assume path is relative to current working directory.
     """
-    path = full_path(parms.base, parms.path)
+    base_path = Path(parms.base)
+
+    path = base_path / parms.path
     create_folder_if_missing(path)
 
     # now do what we have to do
@@ -186,7 +189,7 @@ def build_day(parms):
 
     # extract the source data from the parms
     source = parms.target['source'].format(field=parms.field)
-    fsource = full_path(parms.base, source)
+    fsource = base_path / source
 
     # get the meta data for the source
     source_meta = get_all_meta_data(fsource)
@@ -194,11 +197,11 @@ def build_day(parms):
     raw.from_dict(source_meta)
 
     # Read the source data
-    with open(fsource) as infile:
+    with fsource.open() as infile:
         data = raw.get_data(day, infile)
 
     # Write the data out
-    with open(path, 'wb') as outfile:
+    with path.open('wb') as outfile:
         write_array(outfile, data)
 
 def build_time(parms):
@@ -248,7 +251,9 @@ def build_latitude(parms):
 
     Alternatively, use build_space and do everythng in one.
     """
-    path = full_path(parms.base, parms.path)
+    base_path = Path(parms.base)
+    
+    path = base_path / parms.path
     create_folder_if_missing(path)
 
     # now do what we have to do
@@ -264,10 +269,10 @@ def build_latitude(parms):
     # this is going to be slow, we have to read
     # the data for every day to get all the data for a latitude
     # figure out a template for the path to day data
-    path_parts = path.split('/')
+    path_parts = path.parts
 
     stride = raw.number_of_latitudes()
-    with open(path, 'wb') as outfile:
+    with path.open('wb') as outfile:
 
         for day in day_range(raw.start_day, raw.end_day):
             print(day)
@@ -292,8 +297,9 @@ def build_space(parms):
     This then allows us to get the data for any lat/lat
     quickly
     """
+    base_path = Path(parms.base)
     path = parms.path
-    create_folder_if_missing(full_path(parms.base, path))
+    create_folder_if_missing(base_path / path))
 
     # get raw weather object
     meta = get_all_meta_data('.')
@@ -306,7 +312,7 @@ def build_space(parms):
 
         path = "space/{lat:.2f}/{field}".format(
             lat=lat, field=parms.field)
-        fpath = full_path(parms.base, path)
+        fpath = base_path / path
         create_folder_if_missing(fpath)
         paths.append(fpath)
     
@@ -316,9 +322,9 @@ def build_space(parms):
     # the data for every day to get all the data for a latitude
 
     # figure out a template for the path to day data
-    path_parts = path.split('/')
+    path_parts = path.parts
 
-    outfiles = [open(path, 'wb') for path in paths]
+    outfiles = [path.open('wb') for path in paths]
 
     for day in day_range(raw.start_day, raw.end_day):
 
@@ -329,7 +335,7 @@ def build_space(parms):
             day=day,
             field=parms.field)
 
-        data = get_array_for_path(full_path(parms.base, day_path))
+        data = get_array_for_path(base_path / day_path))
 
         # extract stuff for this latitude
         for (outfile, lat) in zip(outfiles, raw.latitudes()):
@@ -351,7 +357,7 @@ def get_lat(lat, field, base):
     path = "space/{lat:.2f}/{field}".format(
         lat=lat, field=field)
 
-    return get_array_for_path(full_path(base, path))
+    return get_array_for_path(Path(base) / path))
 
             
 def get_lat_lon(parms):
@@ -452,7 +458,7 @@ def get_all_for_day(parms):
 
 def get_array(parms):
 
-    return get_array_for_path(full_path(parms.base, parms.path))
+    return get_array_for_path(Path(parms.base) / parms.path))
 
 def get_array_as_dict(parms):
     """ Returns data for a path 
@@ -460,7 +466,7 @@ def get_array_as_dict(parms):
     Assumes the data is just an array of floats.
     """
     return dict(data=get_array_for_path(
-        full_path(parms.base, parms.path)))
+        Path(parms.base) / parms.path))
 
 def get_array_for_path(path):
     """ Return data as an array """
@@ -489,39 +495,6 @@ def write_lats_for_day(data, date, outfiles):
     
         outfiles[ix].write(pdata)
 
-
-def build_image(data, location):
-    """ Build an image for a location """
-    from matplotlib import pyplot
-    from mpl_toolkits import basemap
-
-    m = basemap.Basemap(projection='ortho',
-                        lat_0=location.lat, lon_0=location.lon)
-
-    m.drawcoastlines()
-
-    lons, lats = numpy.meshgrid(location.lons, location.lats)
-
-    
-    m.pcolor(lons, lats, data, latlon=True)
-
-    return m, lats, lons, data
-    
-    img = StringIO()
-    pyplot.savefig(img)
-
-    result = img.getvalue()
-    img.close()
-    return result
-
-def image_makers(version):
-
-    versions = dict(
-        image=build_image,
-        )
-
-    return versions.get(version)
-    
 
     
 
