@@ -229,7 +229,7 @@ def create_folder_if_missing(path):
     the base folder if it is missing.
     """
     path = Path(path)
-    folder = path.parent()
+    folder = path.parent
 
     folder.mkdir(parents=True, exist_ok=True)
 
@@ -249,11 +249,25 @@ def day_range(start, end):
         yield day
         day += aday
 
+READERS = dict(
+    csv=pandas.read_csv,
+    hdf=pandas.read_hdf)
+
 def load(path):
     """ Read data at path and return a pandas DataFrame 
 
     For now assumes item at path is a csv file.
     """
+    path = Path(path)
+    meta = get_all_meta_data(path)
+
+    if not path.exists():
+        # try and build it
+        build(str(path))
+
+    format = meta.get('format', 'csv')
+    reader = READERS.get(format)
+    df = reader(path)
 
     return pandas.read_csv(path)
 
