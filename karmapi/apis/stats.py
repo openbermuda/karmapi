@@ -10,30 +10,6 @@ from flask_restplus import Namespace, Resource, fields
 api = Namespace("stats", description="karmapi stats api")
 
 
-@api.route('/igul', defaults={'path': ''})
-@api.route('/igul/<path:path>')
-class IGUL(Resource):
-
-    @api.doc('return IGUL stats for path')
-    def get(self, path):
-        """ Return IGUL stats for path """
-        ppath = Path(path)
-
-        kind, vendor, version, model, detail = ppath.parts
-
-        # see if path has a suffix
-        suffix = ppath.suffix
-
-        result = 'foobar:' + str(ppath) + str(dict(
-            vendor=vendor, version=version, model=model, kind=kind,
-            detail=detail))
-        
-        response = make_response(result)
-
-        response.headers["content-type"] = 'text/plain'
-
-        return response
-
 formats = dict(
     csv=dict(
         method='to_csv',
@@ -51,7 +27,7 @@ formats = dict(
 
 @api.route('/', defaults={'path': ''})
 @api.route('/<path:path>')
-class Load(Resource):
+class Stats(Resource):
 
     @api.doc('load data at path')
     def get(self, path):
