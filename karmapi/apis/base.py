@@ -32,6 +32,9 @@ class Load(Resource):
         if suffix == '.csv':
             result = df.to_csv()
             ctype = "text/csv"
+        elif suffix == '.json':
+            result = df.to_json(orient='records')
+            ctype = "application/json"
         else:
             result = df.to_string()
             ctype = "text/plain"
