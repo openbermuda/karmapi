@@ -1,6 +1,4 @@
-""" 
-
-If a karma pi does not have the data it is asked for it has a
+"""If a karma pi does not have the data it is asked for it has a
 couple of choices.
 
 If it has the stuff needed to build it then it can do just that.
@@ -14,21 +12,48 @@ data with.
 These things tend to come in pairs.
 
 So we have peer and pair, so lets call it pear.
+
+For now, Pear's just try to retrieve the thing at path and save it
+locally.
+
 """
+from pathlib import Path
+import shutil
+
 from requests import get, put
+
+from karmapi import base
 
 
 class Pear:
 
-    def __init__(self, url=None):
+    def __init__(self, url):
 
         self.url = url
 
     def get(self, path):
 
-        return get(self.url + path).json()
+        path = Path(path)
+        response = get(self.url + path.as_posix() + '.csv')
+        if response.status_code != 200:
+            raise AttributeError('Status code: {}'.format(
+                response.status_code))
 
-    def put(self, path):
+        path.write_bytes(response.content)
 
-        return put(self.url + path).json()
+
+
+class LocalPear:
+
+    def __inti__(self, folder):
+
+        self.folder = Path(folder)
+
+    def get(self, path):
+
+        shutil.copy(str(self.folder / path), str(path))
+
+        
+
+
     

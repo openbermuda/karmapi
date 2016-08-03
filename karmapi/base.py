@@ -19,6 +19,7 @@ import pandas
 BASE_FOLDER = '.'
 
 PEARS = []
+PEAR = None
 
 class Parms:
 
@@ -253,23 +254,35 @@ READERS = dict(
     csv=pandas.read_csv,
     hdf=pandas.read_hdf)
 
+
+def try_pear(path):
+    """ Try and get data for path from a peer """
+    if PEAR is None:
+        raise AttributeError("No peer setup")
+
+    return PEAR.get(path)
+    
+
 def load(path):
     """ Read data at path and return a pandas DataFrame 
 
     For now assumes item at path is a csv file.
+
+    If pear is True then try and get from a pear if it
+    is missing
     """
     path = Path(path)
     meta = get_all_meta_data(path)
 
-    if not path.exists():
-        # try and build it
-        build(str(path))
+    if (not path.exists()):
+        # see if a peer has it
+        try_pear(path)
 
-    format = meta.get('format', 'csv')
-    reader = READERS.get(format)
+    form = meta.get('format', 'csv')
+    reader = READERS.get(form)
     df = reader(path)
 
-    return pandas.read_csv(path)
+    return df
 
 def save(fptr, df):
     """ Save dataframe df at fptr.
@@ -287,7 +300,7 @@ def current_working_directory(path):
     cwd = Path.cwd()
 
     # Change where we are
-    os.chdir(path)
+    os.chdir(str(path))
 
     try:
         # yield the path
