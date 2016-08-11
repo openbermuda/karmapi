@@ -8,10 +8,15 @@ Basemap supports a plethora of projections.
 
 Each projection requires different parameters to specify the map.
 """
+from pathlib import Path
+from collections import defaultdict
+
 import pandas
 import numpy as np
 
 from mpl_toolkits import basemap
+from matplotlib import pyplot
+from matplotlib.patches import Polygon
 
 from karmapi.locations import get_bounding_box, find_biggest_gap
 
@@ -345,4 +350,67 @@ def build_image(data, location):
     img.close()
     return result
 
+class CountyPlotter:
 
+    def __init__(self):
+        """ Reads county shapefiles 
+
+        Shapes is list of (lat/lons) making up the shapes.
+
+        info is list of info about each shape.
+        """
+
+        mm = basemap.Basemap()
+
+        gis_file = Path(basemap.basemap_datadir) / 'UScounties'
+        if not gis_file.with_suffix('.shp').exists():
+            msg = ('Cannot find {}.shp\nYou can install it with'
+                    '`conda install -c conda-forge basemap-data-hires`').format
+            raise IOError(msg(str(gis_file)))
+
+        county_info = mm.readshapefile(
+            str(gis_file), 'counties',
+            default_encoding='latin-1', drawbounds=False, linewidth=0.1)
+
+        self.shapes = mm.counties
+
+        self.info = mm.counties_info
+
+        self._build_shape_lookup()
+
+        self.cmap = pyplot.get_cmap('jet')
+
+    def _build_shape_lookup(self):
+        """ Spin through shape info creating lookup table """
+        lookup = defaultdict(list)
+
+        for shape, info in zip(self.shapes, self.info):
+            key = info['STATE'].lower(), int(info['COUNTY_FIP'])
+            lookup[key].append(shape)
+
+        self.lookup = lookup
+
+    def translate(self, m, patch):
+
+        return [m(x, y) for (x, y) in patch]
+
+    def plot(self, data, m):
+        """ Plot data in data on map m 
+
+        Data is dictionary with (state, cty) as key
+        and value as value.
+        """
+        norm = max(data.values())
+        ax = pyplot.gca()
+
+        for key, value in data.items():
+            color = self.cmap(value/norm)
+            for patch in self.lookup[key]:
+                mpatch = self.translate(m, patch)
+                poly = Polygon(mpatch, facecolor=color, edgecolor=color)
+                ax.add_patch(poly)
+
+        m.set_axes_limits()
+
+                
+        
