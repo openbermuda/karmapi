@@ -21,6 +21,14 @@ BASE_FOLDER = '.'
 PEARS = []
 PEAR = None
 
+def config(path):
+    """ Process configurarion data """
+    data = json.load(path.open())
+    
+    if 'pears' in data:
+        PEARS = data['pears']
+        PEAR = PEARS[0]
+
 class Parms:
 
     def __init__(self, data=None):
@@ -42,7 +50,7 @@ def find_path(path, paths):
     """
     for key, target in paths.items():
 
-        parms = match_path(path, target['path'])
+        parms = match_path(path, Path(target['path']))
 
         if parms:
             parms.update(dict(target=target))
@@ -85,7 +93,7 @@ def match_path(path, target_path):
 def meta_data_match(path, key='gets'):
     """ Work our way along path looking for a match """
 
-    folders = path.parts
+    folders = list(path.parts)
     print(folders)
     bases = []
     relatives = folders[1:]
@@ -121,6 +129,7 @@ def get(path):
     print("CWD:", os.getcwd())
     result = None
     problem = None
+    path = Path(path)
     
     try:
         result = dispatch(path, key='gets')
@@ -258,7 +267,7 @@ READERS = dict(
 def try_pear(path):
     """ Try and get data for path from a peer """
     if PEAR is None:
-        raise AttributeError("No peer setup")
+        return None
 
     return PEAR.get(path)
     
@@ -276,7 +285,10 @@ def load(path):
 
     if (not path.exists()):
         # see if a peer has it
-        try_pear(path)
+        got = try_pear(path)
+
+        if not got:
+            raise AttributeError("Unrecognised path: {}".format(path))
 
     form = meta.get('format', 'csv')
     reader = READERS.get(form)
@@ -284,15 +296,15 @@ def load(path):
 
     return df
 
-def save(fptr, df):
-    """ Save dataframe df at fptr.
+def save(path, df):
+    """ Save dataframe df at path.
 
     For now, save as csv.
 
     FIXME: include meta data for format, or use file extension.
     """
 
-    df.to_csv(fptr, index=False)
+    df.to_csv(str(path), index=False)
 
 @contextmanager
 def current_working_directory(path):

@@ -41,6 +41,8 @@ class Pear:
 
         path.write_bytes(response.content)
 
+        return True
+
 
 
 class LocalPear:
