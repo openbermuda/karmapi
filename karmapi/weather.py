@@ -227,18 +227,65 @@ def build_time(parms):
         print(parms.path)
         build_day(parms)
 
+def next_month(date):
+    
+    year = date.year
+    month = date.month
+    
+    month += 1
+    if month > 12:
+        year +=1
+        month = 1
+        
+    return datetime.date(year, month, 1)
 
-def build_month(path):
+def build_month(parms):
     """ Sum all the days in the month 
 
     Create some stats on the totals
     """
-    target = "year/{year}/{month}/{day}/{field}"
-    # load meta data for raw file
-    parms, path = match_path(path, target)
+    meta = base.Parms(get_all_meta_data(parms.base))
 
-    raise NotImplemented
+    start = datetime.date(meta.start_year, meta.start_month, 1)
+    end = next_month(day)
 
+    totals = np.zeros(len(meta['lats']) * len(meta['lons']))
+    path = 'time/{}/{:02d}/{:02d}/{}'
+    aday = datetime.timedelta(days=1)
+
+    for day in base.day_range(start, end):
+        data = get_array_for_path(str(
+                path.format(day.year, day.month, day.day, field)))
+        totals += data
+
+    totals /= (end - start).days
+
+    # save totals
+    path = base_path / parms.path
+
+    with path.open('wb') as outfile:
+        
+        write_array(outfile, totals)
+
+def build_months(parms):
+    """ Create monthly totals for each month of data
+    """
+    meta = base.Parms(get_all_meta_data(parms.base))
+
+    month = datetime.date(meta.start_year, meta.start_month, 1)
+    end = datetime.date(meta.start_year, meta.start_month, 1)
+    while month < end:
+        parms.month = month.month
+        parms.year = month.year
+
+        parms.path = "time/{month:%Y/%m/{field}".format(
+            month=month,
+            field=parms.field)
+
+        build_month(parms)
+
+        month = next_month(month)
+        
 
 def build_year(path):
     """ Sum all the days in the year """

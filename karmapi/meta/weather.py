@@ -53,6 +53,18 @@ meta['builds'] = dict(
         model = "karmapi.models.lists.Array",
         source = "raw/{field}",
     ),
+    month = dict(
+        doc="get means for a month",
+        path="time/<int:year>/<int:month>/<field>",
+        karma="karmapi.weather.build_month",
+        model = "karmapi.models.lists.Array",
+    ),
+    months = dict(
+        doc="get means for a month",
+        path="time/months/<field>",
+        karma="karmapi.weather.build_months",
+        model = "karmapi.models.lists.Array",
+    ),
     time = dict(
         doc="extract data for a day from the raw data",
         path="time/<field>",
@@ -126,4 +138,4 @@ if __name__ == '__main__':
     import json
     
     with open('meta.json', 'w') as out:
-        out.write(json.dumps(meta, indent=True))
+        out.write(json.dumps(meta, indent=True, sort_keys=True))
