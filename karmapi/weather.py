@@ -263,6 +263,7 @@ def build_month(parms):
 
     # save totals
     path = base_path / parms.path
+    create_folder_if_missing(path)
 
     with path.open('wb') as outfile:
         
