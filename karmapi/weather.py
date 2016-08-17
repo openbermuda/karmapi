@@ -281,7 +281,7 @@ def build_months(parms):
         parms.month = month.month
         parms.year = month.year
 
-        parms.path = "time/{month:%Y/%m}/{field}".format(
+        parms.path = "time/month/{month:%Y/%m}/{field}".format(
             month=month,
             field=parms.field)
 
