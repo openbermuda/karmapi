@@ -191,7 +191,7 @@ def main():
         else:
             resources[key] = dict(put=value)
 
-    for path, resource in resources.items():
+    for path, resource in sorted(resources.items()):
         print(path)
         print(resource.keys())
         # do models
