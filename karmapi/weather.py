@@ -247,7 +247,7 @@ def build_month(parms):
     meta = Parms(get_all_meta_data(parms.base))
     base_path = Path(parms.base)
 
-    start = datetime.date(meta.start_year, meta.start_month, 1)
+    start = datetime.date(parms.year, parms.month, 1)
     end = next_month(start)
 
     totals = numpy.zeros(len(meta.lats) * len(meta.lons))
