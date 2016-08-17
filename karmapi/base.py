@@ -121,7 +121,7 @@ def build(path):
 
     NB flask has already solved this.
     """
-    return dispatch(path, key='builds')
+    return dispatch(Path(path), key='builds')
 
 def get(path):
     """ Get data for a path """
