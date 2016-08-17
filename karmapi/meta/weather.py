@@ -95,6 +95,12 @@ meta['gets'] = dict(
         karma="karmapi.weather.get_array_as_dict",
         model = "karmapi.models.lists.Array",
         ),
+    month = dict(
+        doc="Data for a specific year/month/ and field",
+        path="time/<int:year>/<int:month>/<field>",
+        karma="karmapi.weather.get_array_as_dict",
+        model = "karmapi.models.lists.Array",
+        ),
     all_day = dict(
         doc="All data for a specific year/month/day",
         path="time/<int:year>/<int:month>/<int:day>",
