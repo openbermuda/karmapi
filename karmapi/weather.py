@@ -244,18 +244,19 @@ def build_month(parms):
 
     Create some stats on the totals
     """
-    meta = base.Parms(get_all_meta_data(parms.base))
+    meta = Parms(get_all_meta_data(parms.base))
+    base_path = Path(parms.base)
 
     start = datetime.date(meta.start_year, meta.start_month, 1)
-    end = next_month(day)
+    end = next_month(start)
 
-    totals = np.zeros(len(meta['lats']) * len(meta['lons']))
+    totals = numpy.zeros(len(meta.lats) * len(meta.lons))
     path = 'time/{}/{:02d}/{:02d}/{}'
     aday = datetime.timedelta(days=1)
 
-    for day in base.day_range(start, end):
-        data = get_array_for_path(str(
-                path.format(day.year, day.month, day.day, field)))
+    for day in day_range(start, end):
+        data = get_array_for_path(base_path /
+                path.format(day.year, day.month, day.day, parms.field))
         totals += data
 
     totals /= (end - start).days
@@ -270,15 +271,16 @@ def build_month(parms):
 def build_months(parms):
     """ Create monthly totals for each month of data
     """
-    meta = base.Parms(get_all_meta_data(parms.base))
+    meta = Parms(get_all_meta_data(parms.base))
 
     month = datetime.date(meta.start_year, meta.start_month, 1)
-    end = datetime.date(meta.start_year, meta.start_month, 1)
+    end = datetime.date(meta.end_year, meta.end_month, 1)
     while month < end:
+        print(month)
         parms.month = month.month
         parms.year = month.year
 
-        parms.path = "time/{month:%Y/%m/{field}".format(
+        parms.path = "time/{month:%Y/%m}/{field}".format(
             month=month,
             field=parms.field)
 
@@ -325,7 +327,7 @@ def build_latitude(parms):
         for day in day_range(raw.start_day, raw.end_day):
             print(day)
             # Get the day's data
-            day_path = "time/{day:%Y/%m/%d}/{field}".format(
+            day_path = "{base}/time/{day:%Y/%m/%d}/{field}".format(
                 base=parms.base,
                 day=day,
                 field=parms.field)
@@ -518,7 +520,7 @@ def get_array_as_dict(parms):
 
 def get_array_for_path(path):
     """ Return data as an array """
-    with open(path, 'rb') as infile:
+    with open(str(path), 'rb') as infile:
         data = infile.read()
 
     unpack = struct.Struct("{}f".format(int(len(data)/4)))
