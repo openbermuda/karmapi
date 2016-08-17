@@ -55,13 +55,13 @@ meta['builds'] = dict(
     ),
     month = dict(
         doc="get means for a month",
-        path="time/month/<int:year>/<int:month>/<field>",
+        path="month/<int:year>/<int:month>/<field>",
         karma="karmapi.weather.build_month",
         model = "karmapi.models.lists.Array",
     ),
     months = dict(
         doc="get means for a month",
-        path="time/months/<field>",
+        path="months/<field>",
         karma="karmapi.weather.build_months",
         model = "karmapi.models.lists.Array",
     ),
@@ -97,7 +97,7 @@ meta['gets'] = dict(
         ),
     month = dict(
         doc="Data for a specific year/month/ and field",
-        path="time/month/<int:year>/<int:month>/<field>",
+        path="month/<int:year>/<int:month>/<field>",
         karma="karmapi.weather.get_array_as_dict",
         model = "karmapi.models.lists.Array",
         ),
