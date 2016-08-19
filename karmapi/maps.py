@@ -82,7 +82,7 @@ def create_map(lats, lons, proj='cyl', border=1.0, **kwargs):
                               **kwargs)
     
 
-def create_map_for_box(box, proj='lcc', border=1.0,
+def create_map_for_box(box, proj='cyl', border=1.0,
                        lat_0=None, lon_0=None, **kwargs):
     """ Create map for given bounding box """
     
@@ -412,5 +412,20 @@ class CountyPlotter:
 
         m.set_axes_limits()
 
+
+    def state_bounds(self):
+        """ Return bounding boxes for states """
+        boxes = {}
+        for (state, county), shapes in self.lookup.items():
+            for shape in shapes:
+                box = get_bounding_box([x[1] for x in shape],
+                                       [x[0] for x in shape])
                 
-        
+                sbox = boxes.get(state)
+                if sbox:
+                    sbox.update(box)
+                else:
+                    boxes[state] = box
+
+        self.boxes = boxes
+

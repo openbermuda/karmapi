@@ -53,6 +53,22 @@ class Location:
         
         return lat, lon
 
+class BBox(Parms):
+
+    @property
+    def height(self):
+        return (4e7 * (self.maxlat - self.minlat) / 180.0)
+
+    @property
+    def width(self):
+        return (4e7 * (self.maxlon - self.minlon) / 360.0)
+
+    def update(self, box):
+
+        self.minlat = min(self.minlat, box.minlat)
+        self.minlon = min(self.minlon, box.minlon)
+        self.maxlat = max(self.maxlat, box.maxlat)
+        self.maxlon = max(self.maxlon, box.maxlon)
 
 
 
@@ -74,15 +90,12 @@ def get_bounding_box(lats, lons):
     if minlon > maxlon:
         maxlon += 360.0
 
-    box = Parms(dict(
+    box = BBox(dict(
         minlat=minlat,
         maxlat=maxlat,
         minlon=minlon,
         maxlon=maxlon))
 
-    box.height = (4e7 * (box.maxlat - box.minlat) / 180.0)
-    box.width = (4e7 * (box.maxlon - box.minlon) / 360.0)
-    
     return box
 
 def find_biggest_gap(lons):
