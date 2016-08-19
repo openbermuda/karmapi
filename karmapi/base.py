@@ -198,6 +198,41 @@ def get_all_meta_data(path):
             load_meta_path(Path(*path)))
 
     return meta
+
+def meta(path):
+    """ Return meta data for path """
+    with (path / 'meta.json').open() as infile:
+        return json.load(infile)
+
+def save_meta(path, meta):
+    """ Save meta data at path """
+    with (path / 'meta.json').open('w') as outfile:
+        json.dump(meta, outfile, indent=2, sort_keys=True)
+
+def build_from_meta(path):
+    """ Build item at path using meta data 
+
+    The idea here is to build something we just give the path.
+
+    Meta data is read and fingers crossed it has enough information
+    for the thing to build itself.
+
+    All this does is finds a function or method to call and calls it with the path. 
+
+    The meta data will likely get re-read when the thing gets called -- we could
+    pass it on, but this approach means all builders need to be given is a path.
+
+    """
+    meta = Parms(get_all_meta_data(path.parent))
+
+    # extract function to call
+    function = get_item(target.get('karma'))
+
+    print("Calling:", target.get('karma'))
+    result = function(path)
+        
+    return result
+    
         
 def load_meta_path(path):
     """ Load meta data a path if it exists """
