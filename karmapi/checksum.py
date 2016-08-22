@@ -72,6 +72,24 @@ def get_parser():
 
     return parser
 
+def changes(checka, checkb):
+    """ Given two sets of dataframes report changes """
+
+    # get stuff in both frames
+    both = pandas.merge(checka, checkb, on='path')
+
+    changes = both[both.checksum_x != both.checksum_y]
+
+    return changes
+
+def dupes(checks):
+    """ Look for duplicate checksums """
+    counts = checks.groupby('checksum').size()
+
+    dupes = set(counts[counts > 1].index.values)
+
+    return checks[checks.checksum.isin(dupes)]
+    
 
 def main(args=None):
 
