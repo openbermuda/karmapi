@@ -201,12 +201,22 @@ def get_all_meta_data(path):
 
 def meta(path):
     """ Return meta data for path """
-    with (path / 'meta.json').open() as infile:
+    path = Path(path)
+    if path.is_dir():
+        # try adding meta.json
+        path = path / 'meta.json'
+        
+    with path.open() as infile:
         return json.load(infile)
 
 def save_meta(path, meta):
     """ Save meta data at path """
-    with (path / 'meta.json').open('w') as outfile:
+    path = Path(path)
+    
+    if path.is_dir():
+        path = path / 'meta.json'
+    
+    with (path).open('w') as outfile:
         json.dump(meta, outfile, indent=2, sort_keys=True)
 
 def build_from_meta(path):

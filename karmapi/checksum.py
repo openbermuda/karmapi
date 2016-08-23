@@ -49,18 +49,15 @@ def checksum(path):
 def checksums(paths):
 
     results = []
-    timestamp = datetime.datetime.now()
-
-    print('checksums', paths)
 
     for path in paths:
         if path.is_dir():
             continue
         check = checksum(path)
 
-        results.append([path.as_posix(), check.hexdigest(), timestamp])
+        results.append([path.as_posix(), check.hexdigest()])
 
-    df = pandas.DataFrame(results, columns=['path', 'checksum', 'time'])
+    df = pandas.DataFrame(results, columns=['path', 'checksum'])
                           
     return df
 
@@ -85,17 +82,28 @@ def dupes(checks):
 
 def load_checksums(path=None):
 
+    global CHECKS
     if path is None:
-        path = PATH
+        path = Path(BASE) / 'checksums'
 
     CHECKS = base.load(path)
 
+def checksum_to_path(check):
 
+    if CHECKS is None:
+        load_checksums()
+
+    rows = CHECKS[CHECKS.checksum == check]
+
+    if len(rows) >= 1:
+        return rows.iloc[0].path
+        
+    
 def load(checksum):
     """ Loads the thing with checksum """
     # load the checksums
     if CHECKS is None:
-        load_checksums(PATH)
+        load_checksums()
 
     path = CHECKS.get(checksum)
 
@@ -114,21 +122,28 @@ def get_parser():
     return parser
 
 
-def main(args=None):
+def main(args):
 
-    parser = get_parser()
-    args = parser.parse_args(args)
-
-    print(args.path)
-
+    glob = args.glob
+    if glob == True:
+        glob = '**/*'
+    
     for apath in args.path:
-        foo = Path(apath).glob(args.glob)
-        df = checksums(Path(apath).glob(args.glob))
+        foo = Path(apath).glob(glob)
+        df = checksums(Path(apath).glob(glob))
 
         cpath = Path(args.checksums) / apath / 'checksums'
         cpath.parent.mkdir(exist_ok=True, parents=True)
         base.save(cpath, df)
 
+        # save meta data
+        timestamp = datetime.datetime.now()
+        meta = dict(path=apath, timestamp=timestamp)
+        base.save_meta(cpath.parent, meta)
+
 if __name__ == '__main__':
 
-    main()
+    parser = get_parser()
+    args = parser.parse_args()
+
+    main(args)
