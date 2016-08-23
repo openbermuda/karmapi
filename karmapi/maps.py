@@ -108,7 +108,7 @@ def create_map_for_box(box, proj='cyl', border=1.0,
                                width=box.width,
                                height=box.height)
 
-    return cylinder(minlat, minlon, maxlat, maxlon, proj)
+    return cylinder(minlat, minlon, maxlat, maxlon, proj, **kwargs)
 
 def plot_points_on_map(lats, lons,
                        m = None,

@@ -24,6 +24,10 @@ from karmapi import base
 
 BLOCKSIZE = 1024 * 1024 * 10
 
+CHECKS = None
+
+BASE = 'checksums'
+
 def blocks(infile):
 
     buffer = infile.read(BLOCKSIZE)
@@ -61,17 +65,6 @@ def checksums(paths):
     return df
 
 
-def get_parser():
-
-    
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('path', nargs='+', default=['.'])
-    parser.add_argument('--checksums', default='checksums')
-    parser.add_argument('--glob', default='**/*')
-
-    return parser
-
 def changes(checka, checkb):
     """ Given two sets of dataframes report changes """
 
@@ -89,7 +82,37 @@ def dupes(checks):
     dupes = set(counts[counts > 1].index.values)
 
     return checks[checks.checksum.isin(dupes)]
+
+def load_checksums(path=None):
+
+    if path is None:
+        path = PATH
+
+    CHECKS = base.load(path)
+
+
+def load(checksum):
+    """ Loads the thing with checksum """
+    # load the checksums
+    if CHECKS is None:
+        load_checksums(PATH)
+
+    path = CHECKS.get(checksum)
+
+    return base.load(path)
+
+
+def get_parser():
+
     
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('path', nargs='+', default=['.'])
+    parser.add_argument('--checksums', default='checksums')
+    parser.add_argument('--glob', default='**/*')
+
+    return parser
+
 
 def main(args=None):
 
