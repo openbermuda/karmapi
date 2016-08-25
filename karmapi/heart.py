@@ -25,15 +25,27 @@ from pathlib import Path
 
 import pandas
 
-from karmapi import base, checksum, pear
+from karmapi import base, checksum
 
-def get(key):
-    """ Get data for a path """
+def get(key=None, meta=None):
+    """ Get data for a key or meta """
 
-    return base.load(key)
+    if key is None:
+        key = checksum.check(str(meta))
+
+    try:
+        data = base.load(key)
+    except Exception as e:
+        # try a pear - for now just let it rise
+        raise e
+    
+    return data
 
 
-def meta(key):
+def meta(key=None, path=None):
+
+    if key is None:
+        key = get(key)
 
     return base.get_all_meta_data(key)
 
@@ -57,7 +69,6 @@ def save(key, data):
     base.save(key, data)
 
 
-    
 def _save_meta(key, meta):
     """ Save meta data at path 
 
