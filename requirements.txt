@@ -2,3 +2,5 @@ jupyter
 flask_restplus
 matplotlib
 pandas
+imageio
+
