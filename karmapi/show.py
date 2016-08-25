@@ -24,9 +24,12 @@ def hshow(path):
     return HTML('<img src="{}">'.format(path))
 
 
-def movie(images, **kwargs):
+def movie(images, path=None, **kwargs):
     """ Create a movie for images """
-    return imageio.mimwrite(imageio.RETURN_BYTES, images, **kwargs)
+    if path is None:
+        path = imageio.RETURN_BYTES
+        
+    return imageio.mimwrite(path, images, format='GIF', **kwargs)
 
 
 def load(path):
