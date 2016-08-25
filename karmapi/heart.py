@@ -57,7 +57,7 @@ def build(key):
         pick a pear
            ask pear to help
     """
-    return return base.build(key)
+    return base.build(key)
 
 def save(key, data):
     """ Save dataframe df at path.
