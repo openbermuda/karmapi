@@ -350,13 +350,18 @@ def load(path):
 
     return df
 
-def save(path, df):
+def save(path, df, exist_ok=True, mkdirs=True):
     """ Save dataframe df at path.
 
     For now, save as csv.
 
     FIXME: include meta data for format, or use file extension.
     """
+    path = Path(path)
+    
+    # create folder if we have been asked to
+    if mkdirs:
+        path.parent.mkdir(exist_ok=exist_ok, parents=True)
 
     df.to_csv(str(path), index=False)
 
