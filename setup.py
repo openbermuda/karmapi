@@ -34,6 +34,7 @@ setup(
         'console_scripts': [
             'kpi = karmapi.kpi:main',
             'kpimage = karmapi.tools.image:main',
+            'tankrain = karmapi.tankrain:main',
             ],
         },
     keywords='data pi karma',

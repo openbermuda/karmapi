@@ -22,16 +22,12 @@ local_chart = 'surfaceAnalysis/Latest/Local.gif'
 
 target = 'tankrain/{date:%Y}/{date:%m}/{date:%d}/{name}_{date:%H%M}{suffix}'
 
-def get_images(now, template):
+def main():
     """ Retrieve images currently available 
 
     There are usually six images available from the last half hour.
     """
-    pass
 
-
-if __name__ == '__main__':
-    # Radar
     size = 250
 
     images = defaultdict(list)
@@ -90,5 +86,10 @@ if __name__ == '__main__':
 
             with path.open('wb') as outfile:
                 outfile.write(image)
+
+
+if __name__ == '__main__':
+    # Radar
                     
-        
+    main()    
+    
