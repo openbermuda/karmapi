@@ -306,9 +306,15 @@ def day_range(start, end):
         yield day
         day += aday
 
+def raw_read(path):
+
+    return path.open('r').read()
+
+        
 READERS = dict(
     csv=pandas.read_csv,
-    hdf=pandas.read_hdf)
+    hdf=pandas.read_hdf,
+    raw=raw_read)
 
 
 def try_pear(path):
@@ -338,6 +344,7 @@ def load(path):
             raise AttributeError("Unrecognised path: {}".format(path))
 
     form = meta.get('format', 'csv')
+    
     reader = READERS.get(form)
     df = reader(path)
 
