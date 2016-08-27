@@ -1,4 +1,4 @@
-""" Checksum files in the system.
+"""Checksum files in the system.
 
 This code creates checksums on files in the karmapi system.
 
@@ -9,7 +9,10 @@ in meta data.
 
 Reports on files whose checksum has changed since last time.
 
-Creates dataframe with: checksum, path and date.
+Creates dataframe with: checksum, path
+
+Also creates meta.json with a timestamp and the path that was
+proecessed.
 
 """
 import argparse
@@ -84,7 +87,11 @@ def load_checksums(path=None):
 
     global CHECKS
     if path is None:
-        path = Path(BASE) / 'checksums'
+        path = Path(BASE)
+
+    if path.is_dir():
+
+        path = path / 'checksums'
 
     CHECKS = base.load(path)
 
@@ -138,7 +145,7 @@ def main(args):
 
         # save meta data
         timestamp = datetime.datetime.now()
-        meta = dict(path=apath, timestamp=timestamp)
+        meta = dict(path=apath, timestamp=timestamp.isoformat())
         base.save_meta(cpath.parent, meta)
 
 if __name__ == '__main__':

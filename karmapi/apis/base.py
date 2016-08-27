@@ -35,6 +35,12 @@ class Load(Resource):
         elif suffix == '.json':
             result = df.to_json(orient='records')
             ctype = "application/json"
+        elif suffix == '.gif':
+            result = df
+            ctype = "image/gif"
+        elif suffix == '.png':
+            result = df
+            ctype = "image/png"
         else:
             result = df.to_string()
             ctype = "text/plain"
