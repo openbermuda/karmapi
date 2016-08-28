@@ -1,5 +1,7 @@
 """ Bermuda weather
 """
+import argparse
+
 import datetime
 utcnow = datetime.datetime.utcnow
 
@@ -22,11 +24,23 @@ local_chart = 'surfaceAnalysis/Latest/Local.gif'
 
 target = 'tankrain/{date:%Y}/{date:%m}/{date:%d}/{name}_{date:%H%M}{suffix}'
 
-def main():
+def get_parser():
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--minutes', type=int, default=30)
+
+    return parser
+
+def main(args=None):
     """ Retrieve images currently available 
 
     There are usually six images available from the last half hour.
     """
+
+    parser = get_parser()
+    args = parser.parse_args()
+    minutes = args.minutes
 
     size = 250
 
@@ -49,8 +63,8 @@ def main():
     if timestamp.minute % 2:
         timestamp -= aminute
 
-    end = timestamp - (30 * aminute)
-    while timestamp > (end - (30 * aminute)):
+    end = timestamp - (minutes * aminute)
+    while timestamp > end:
 
         try:
             for name, data in iurls.items():
@@ -58,11 +72,13 @@ def main():
                                          size=data['size'])
                 image = show.load(iurl)
                 piurl = Path(iurl)
+                print(iurl)
                 images[name].append(dict(image=image,
                                          time=timestamp,
                                          suffix=piurl.suffix))
         except HTTPError as e:
-            print('missing:', timestamp)
+            #print('missing:', timestamp)
+            pass
 
         except Exception as e:
             raise e
@@ -84,12 +100,11 @@ def main():
             print('Creating', path)
             path.parent.mkdir(exist_ok=True, parents=True)
 
-            with path.open('wb') as outfile:
-                outfile.write(image)
+            show.save(str(path), image)
 
 
 if __name__ == '__main__':
     # Radar
                     
-    main()    
+    main() 
     

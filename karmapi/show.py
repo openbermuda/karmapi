@@ -36,3 +36,6 @@ def load(path):
 
     return imageio.imread(path)
 
+def save(path, image):
+
+    imageio.save(path, image)
