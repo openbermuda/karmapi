@@ -1,4 +1,8 @@
-"""
+""" Teapot
+teapot == tpot 
+
+hpat == tpot + covo
+
 path+ == hpat
 
 mastermind
