@@ -97,8 +97,6 @@ def create_map_for_box(box, proj='cyl', border=1.0,
     if lon_0 is None:
         lon_0 = (minlon + maxlon) / 2.
 
-    print(minlat, maxlat, minlon, maxlon)
-
     if minlon > maxlon:
         # this case probably means we are straddling the international
         # dateline.  Basemap gets dazed and confused, so just return
@@ -135,7 +133,6 @@ def plot_points_on_map(lats, lons,
                     **kwargs)
 
     if colorbar:
-        print('adding colorbar for {}'.format(pts))
         m.colorbar(pts)
     
     return m
