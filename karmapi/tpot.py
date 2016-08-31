@@ -54,7 +54,7 @@ def alpha():
     scale = np.zeros(T)
 
     # calculate alpha[0]
-    alpha[0] = p0 * B[observations[0]]
+    alpha[0] = P0 * B[observations[0]]
     scale[0] = sum(alpha[0])
     alpha[0] /= scale[0]
 
@@ -151,7 +151,7 @@ def am_rest():
     """ Re-estimate A matrix. """
     
     ksi = np.zeros(shape=A.shape)
-    T = alpha.shape[0]
+    T = ALPHA.shape[0]
     n = A.shape[0]
     
     for t in range(1, T):
@@ -162,13 +162,17 @@ def am_rest():
         for i in range(n):
             for j in range(n):
                 # alpha[t] = (alpha[t-1] @ A) * B[o]
-                weight = alpha[t-1, i] * A[i, j] * beta[t, j] * B[obs, j] / scale[n]
+                weight = ALPHA[t-1, i] * A[i, j] * BETA[t, j] * B[obs, j] / SCALE[n]
                 totweight += weight
                 weights[i, j] += weight
 
         weights /= totweight
         ksi += weights
 
+    # do some gymnastics to scale ksi
+    ksi = (ksi.T / ksi.T.sum(0)).T
+
+    # Save the re-estimate
     global R_A
     R_A = ksi
 
@@ -177,13 +181,16 @@ def fill(parms):
     """ Fill the teapot """
     global A, B, P0, ALPHA, BETA, GAMMA, OBSERVATIONS
 
-    A = parms.a
-    B = parms.b
-    P0 = parms.p0
-    ALPHA = parms.alpha 
-    BETA = parms.beta
-    GAMMA = parms.gamma
-    ALPHA = parms.alpha
+    A = parms.get('a')
+    B = parms.get('b')
+    P0 = parms.get('p0')
+
+    OBSERVATIONS = parms.get('observations')
+    
+    ALPHA = parms.get('alpha')
+    BETA = parms.get('beta')
+    GAMMA = parms.get('gamma')
+    ALPHA = parms.get('alpha')
 
 
 def brew():
@@ -199,10 +206,9 @@ def beer():
 
     Since we are in Bermuda, ginger beer perhaps.
     """
-    global R_B, R_A, R_P0
-    R_B = bm_rest()
-    R_A = am_rest()
-    R_P0 = p0_rest()
+    bm_rest()
+    am_rest()
+    p0_rest()
 
 def stir():
 

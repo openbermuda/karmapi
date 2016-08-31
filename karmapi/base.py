@@ -39,6 +39,11 @@ class Parms:
     def update(self, data):
 
         self.__dict__.update(data)
+
+    def get(self, parm):
+        """ Return parm or None if id does not exist """
+
+        return self.__dict__.get(parm)
         
 
 def find_path(path, paths):
