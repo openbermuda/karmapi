@@ -41,6 +41,12 @@ def alpha():
        k = size of observation space.
 
     p0: initial probability of each state.
+
+    another turning point..
+   
+    fork in the road...
+
+    time will show the way.
     """
 
     observations = OBSERVATIONS
@@ -85,6 +91,8 @@ def beta():
        k = size of observation space.
 
     scale: scaling factors from alpha pass
+
+    it is something unpredictable ...
     """
     observations = OBSERVATIONS
     scale = SCALE
@@ -114,7 +122,10 @@ def beta():
 
 
 def gamma():
-    """ Gamma pass """
+    """ Gamma pass 
+
+    but in the end its right..
+    """
     global GAMMA
 
     GAMMA = ALPHA * BETA
@@ -205,6 +216,8 @@ def beer():
     beer = reverse(reeb)
 
     Since we are in Bermuda, ginger beer perhaps.
+
+    I hope you have the time of your life...
     """
     bm_rest()
     am_rest()
