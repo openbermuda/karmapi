@@ -129,7 +129,9 @@ def get_parser():
     return parser
 
 
-def main(args):
+def main(args=None):
+
+    args = get_parser().parse_args(args)
 
     glob = args.glob
     if glob == True:
@@ -148,9 +150,3 @@ def main(args):
         meta = dict(path=apath, timestamp=timestamp.isoformat())
         base.save_meta(cpath.parent, meta)
 
-if __name__ == '__main__':
-
-    parser = get_parser()
-    args = parser.parse_args()
-
-    main(args)
