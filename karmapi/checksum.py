@@ -96,16 +96,41 @@ def load_checksums(path=None):
     CHECKS = base.load(path)
 
 def checksum_to_path(check):
+    """ Return first path matching checksum """
 
+    rows = checksum_to_paths(check)
+
+    if len(rows) >= 1:
+        return rows.iloc[0].path
+        
+def checksum_to_paths(check):
+    """ Return all paths matching check """
+    
     if CHECKS is None:
         load_checksums()
 
     rows = CHECKS[CHECKS.checksum == check]
 
+    return rows
+
+def path_to_checksum(path):
+    """ Return checksum for path
+
+    This does not calculate the checksum, rather
+    it looks up path in CHECKS.
+
+    To calculate a checksum, see checksum(path)
+    """
+
+    if CHECKS is None:
+        load_checksums()
+
+    rows = CHECKS[CHECKS.path == path]
+
     if len(rows) >= 1:
-        return rows.iloc[0].path
-        
-    
+        return rows.iloc[0].checksum
+
+
 def load(checksum):
     """ Loads the thing with checksum """
     # load the checksums
