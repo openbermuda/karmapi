@@ -124,7 +124,7 @@ def beta():
 def gamma():
     """ Gamma pass 
 
-    but in the end its right..
+    but in the end is right..
     """
     global GAMMA
 
