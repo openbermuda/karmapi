@@ -1,6 +1,9 @@
 """ Karmapi base web api
 """
 from pathlib import Path
+from io import BytesIO
+
+import pandas
 
 from karmapi import base
 
@@ -41,6 +44,13 @@ class Load(Resource):
         elif suffix == '.png':
             result = df
             ctype = "image/png"
+        elif suffix == '.xlsx':
+            out = BytesIO()
+            ew = pandas.ExcelWriter(out)
+            df.to_excel(ew)
+            ew.save()
+            result = out.getvalue()
+            ctype = 'application/vnd.ms-excel; charset=utf-16'
         else:
             result = df.to_string()
             ctype = "text/plain"
