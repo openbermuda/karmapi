@@ -89,6 +89,7 @@ def load_checksums(path=None):
     if path is None:
         path = Path(BASE)
 
+    path = Path(path)
     if path.is_dir():
 
         path = path / 'checksums'
@@ -130,6 +131,19 @@ def path_to_checksum(path):
     if len(rows) >= 1:
         return rows.iloc[0].checksum
 
+def path_to_checksums(path):
+    """ Return checksums for path
+
+    It looks for any paths in checksums that match path.
+    """
+
+    if CHECKS is None:
+        load_checksums()
+
+    rows = CHECKS[CHECKS.path.str.contains(str(path))]
+
+    return rows
+
 
 def load(checksum):
     """ Loads the thing with checksum """
@@ -137,7 +151,7 @@ def load(checksum):
     if CHECKS is None:
         load_checksums()
 
-    path = CHECKS.get(checksum)
+    path = checksum_to_path(checksum)
 
     return base.load(path)
 
@@ -163,7 +177,6 @@ def main(args=None):
         glob = '**/*'
     
     for apath in args.path:
-        foo = Path(apath).glob(glob)
         df = checksums(Path(apath).glob(glob))
 
         cpath = Path(args.checksums) / apath / 'checksums'
