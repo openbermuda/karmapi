@@ -29,6 +29,8 @@ BLOCKSIZE = 1024 * 1024 * 10
 
 CHECKS = None
 
+CACHE = {}
+
 BASE = 'checksums'
 
 def blocks(infile):
@@ -94,7 +96,13 @@ def load_checksums(path=None):
 
         path = path / 'checksums'
 
+    # cache checksums to save repeated loading
+    if path in CACHE:
+        CHECKS = CACHE[path]
+
     CHECKS = base.load(path)
+    
+    CACHE[path] = CHECKS
 
 def checksum_to_path(check):
     """ Return first path matching checksum """
