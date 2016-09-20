@@ -29,6 +29,8 @@ BLOCKSIZE = 1024 * 1024 * 10
 
 CHECKS = None
 
+CACHE = {}
+
 BASE = 'checksums'
 
 def blocks(infile):
@@ -89,30 +91,75 @@ def load_checksums(path=None):
     if path is None:
         path = Path(BASE)
 
+    path = Path(path)
     if path.is_dir():
 
         path = path / 'checksums'
 
+    # cache checksums to save repeated loading
+    if path in CACHE:
+        CHECKS = CACHE[path]
+
     CHECKS = base.load(path)
+    
+    CACHE[path] = CHECKS
 
 def checksum_to_path(check):
+    """ Return first path matching checksum """
 
+    rows = checksum_to_paths(check)
+
+    if len(rows) >= 1:
+        return rows.iloc[0].path
+        
+def checksum_to_paths(check):
+    """ Return all paths matching check """
+    
     if CHECKS is None:
         load_checksums()
 
     rows = CHECKS[CHECKS.checksum == check]
 
+    return rows
+
+def path_to_checksum(path):
+    """ Return checksum for path
+
+    This does not calculate the checksum, rather
+    it looks up path in CHECKS.
+
+    To calculate a checksum, see checksum(path)
+    """
+
+    if CHECKS is None:
+        load_checksums()
+
+    rows = CHECKS[CHECKS.path == path]
+
     if len(rows) >= 1:
-        return rows.iloc[0].path
-        
-    
+        return rows.iloc[0].checksum
+
+def path_to_checksums(path):
+    """ Return checksums for path
+
+    It looks for any paths in checksums that match path.
+    """
+
+    if CHECKS is None:
+        load_checksums()
+
+    rows = CHECKS[CHECKS.path.str.contains(str(path))]
+
+    return rows
+
+
 def load(checksum):
     """ Loads the thing with checksum """
     # load the checksums
     if CHECKS is None:
         load_checksums()
 
-    path = CHECKS.get(checksum)
+    path = checksum_to_path(checksum)
 
     return base.load(path)
 
@@ -138,7 +185,6 @@ def main(args=None):
         glob = '**/*'
     
     for apath in args.path:
-        foo = Path(apath).glob(glob)
         df = checksums(Path(apath).glob(glob))
 
         cpath = Path(args.checksums) / apath / 'checksums'
