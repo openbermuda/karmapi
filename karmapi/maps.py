@@ -170,7 +170,7 @@ def us_map():
                            urcrnrlat=60, urcrnrlon=-40)
 
 
-def world(lat=0.0, lon=0.0, proj='mill', **kwargs):
+def world(lat=0.0, lon=0.0, proj='robin', **kwargs):
     """ Return a map suitable for the world """
 
     assert(proj in WORLD)

@@ -7,6 +7,9 @@ http://earthquake.usgs.gov/data/centennial/centennial_Y2K.CAT
 
 README:  http://earthquake.usgs.gov/data/centennial/centennial_README.rtf
 
+Stable Continental Regions:
+
+http://earthquake.usgs.gov/data/scr_catalog.txt
 """
 import datetime
 import requests
@@ -55,3 +58,22 @@ def load(infile):
     df.index = df.apply(timestamp, axis=1)
         
     return df
+
+def scr_parse(line):
+    pass
+
+def load_scr(infile):
+
+    data = []
+    for line in infile:
+        data.append(scr_parse(line))
+
+    columns = ['year', 'month', 'day', 'hour', 'minute', 'second',
+               'lat', 'lon', 'foo', 'bar', 'foobar', 'severity']
+
+    df = pandas.DataFrame(data, columns=columns)
+
+    df.index = df.apply(timestamp, axis=1)
+        
+    return df
+    

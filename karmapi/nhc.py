@@ -112,3 +112,10 @@ def get_value(field):
     if value == -999:
         value = None
     return value
+
+
+def read_raw_mei(path):
+
+    df = pandas.read_csv(path, sep=' ')
+
+    return df
