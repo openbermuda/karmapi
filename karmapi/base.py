@@ -15,6 +15,8 @@ from pathlib import Path
 from contextlib import contextmanager
 
 import pandas
+from pandas.np import fft
+
 
 BASE_FOLDER = '.'
 
@@ -369,6 +371,22 @@ def save(path, df, exist_ok=True, mkdirs=True):
         path.parent.mkdir(exist_ok=exist_ok, parents=True)
 
     df.to_csv(str(path), index=False)
+
+
+def sono(xx, window=None):
+    """ Return sonogram of xx """
+
+    n = len(xx)
+
+    if window is None:
+        window / 100
+    
+    yy = fft.fft(xx)
+
+    return yy
+
+    
+    
 
 @contextmanager
 def current_working_directory(path):
