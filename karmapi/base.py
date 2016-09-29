@@ -15,7 +15,7 @@ from pathlib import Path
 from contextlib import contextmanager
 
 import pandas
-from pandas.np import fft
+fft = pandas.np.fft
 
 
 BASE_FOLDER = '.'
@@ -379,14 +379,17 @@ def sono(xx, window=None):
     n = len(xx)
 
     if window is None:
-        window / 100
-    
-    yy = fft.fft(xx)
+        window = 128
 
-    return yy
+    kk = len(xx) - window
 
+    result = []
+    for yy in range(kk):
+
+        result.append(fft.fft(xx[yy:yy+window]))
     
-    
+    return result
+
 
 @contextmanager
 def current_working_directory(path):
