@@ -55,25 +55,13 @@ def load(infile):
 
     df = pandas.DataFrame(data, columns=columns)
 
-    df.index = df.apply(timestamp, axis=1)
+    df.index = df[df.year != None].fillna(0).apply(pandas.to_datetime, axis=1)
         
     return df
 
-def scr_parse(line):
-    pass
+def get():
 
-def load_scr(infile):
+    data = requests.get(URL).content.decode()
 
-    data = []
-    for line in infile:
-        data.append(scr_parse(line))
-
-    columns = ['year', 'month', 'day', 'hour', 'minute', 'second',
-               'lat', 'lon', 'foo', 'bar', 'foobar', 'severity']
-
-    df = pandas.DataFrame(data, columns=columns)
-
-    df.index = df.apply(timestamp, axis=1)
-        
-    return df
+    return load(data.split('\n')[:-1])
     

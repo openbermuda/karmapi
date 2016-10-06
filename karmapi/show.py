@@ -3,6 +3,9 @@ Show images.
 """
 from IPython.display import HTML, Image
 import imageio
+import pandas
+
+from matplotlib import pyplot
 
 from karmapi import base, heart
 
@@ -39,3 +42,45 @@ def load(path):
 def save(path, image):
 
     imageio.save(path, image)
+
+def sono(so, offset=1, end=None, **kwargs):
+    """ Show an sonogram image """
+    
+    so = pandas.np.array(so)
+
+    n = so.shape[1]
+
+    if end is None:
+        end = n / 2
+    
+    pyplot.title('offset: {} end: {} n: {}'.format(offset, end, n))
+
+    pyplot.imshow(so[:, offset:int(end)].T.real, aspect='auto',
+                  **kwargs)
+
+
+def sono2(so, offset=1, end=None, **kwargs):
+    """ Show an sonogram image """
+    
+    so = pandas.np.array(so)
+
+    n = so.shape[1]
+
+    if end is None:
+        end = n / 2
+
+    pyplot.figure(figsize=(12, 4))
+    pyplot.subplot(1, 2, 1)
+    pyplot.title('offset: {} end: {} n: {}'.format(offset, end, n))
+
+    pyplot.imshow(so[:, offset:int(end)].T.real, aspect='auto',
+                  **kwargs)
+    
+    pyplot.subplot(1, 2, 2)
+
+    pyplot.imshow(so[:, offset:int(end)].T.imag, aspect='auto',
+                  **kwargs)
+
+def wide():
+    pyplot.figure(figsize=(12,4))
+    
