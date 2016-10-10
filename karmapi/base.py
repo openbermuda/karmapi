@@ -391,6 +391,28 @@ def sono(xx, window=None):
     return result
 
 
+def isono(xx, points=None, k=24):
+
+    if points is None:
+        points = set(range(1, k))
+    
+    vfft = fft.fft(xx)
+
+    for x in range(1, int(len(vfft)/2)):
+        if x not in points:
+            vfft[x] = 0
+            vfft[-x] = 0
+
+    iso = fft.ifft(vfft)
+
+    xdf = pandas.DataFrame(dict(value=xx))
+
+    xdf['fit'] = iso.real
+
+    xdf['delta'] = xdf.value - xdf.fit
+
+    return xdf
+
 @contextmanager
 def current_working_directory(path):
     """ Temporarily change working directory """
