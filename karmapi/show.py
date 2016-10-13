@@ -4,6 +4,7 @@ Show images.
 from IPython.display import HTML, Image
 import imageio
 import pandas
+from PIL import Image
 
 from matplotlib import pyplot
 
@@ -41,7 +42,8 @@ def load(path):
 
 def save(path, image):
 
-    imageio.save(path, image)
+    im = Image.fromarray(image)
+    im.save(str(path))
 
 def sono(so, offset=1, end=None, **kwargs):
     """ Show an sonogram image """
