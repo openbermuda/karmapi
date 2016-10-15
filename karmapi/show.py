@@ -1,7 +1,8 @@
 """
 Show images.
 """
-from IPython.display import HTML, Image
+from IPython import display
+
 import imageio
 import pandas
 from PIL import Image
@@ -13,10 +14,11 @@ from karmapi import base, heart
 
 def show(path):
     """ Show image for path """
-    if path.endswith('.gif'):
-        return hshow(path)
+    path = str(path)
+    #if path.endswith('.gif'):
+    #    return hshow(path)
     
-    return Image(data=load(path))
+    return Image.open(path)
 
 def hshow(path):
     """ Show image for path using HTML 
@@ -25,7 +27,7 @@ def hshow(path):
 
     So we embed it in html instead.
     """
-    return HTML('<img src="{}">'.format(path))
+    return display.HTML('<img src="{}">'.format(path))
 
 
 def movie(images, path=None, **kwargs):
@@ -38,7 +40,7 @@ def movie(images, path=None, **kwargs):
 
 def load(path):
 
-    return imageio.imread(path)
+    return imageio.imread(str(path))
 
 def save(path, image):
 
