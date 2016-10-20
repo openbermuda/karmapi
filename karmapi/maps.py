@@ -61,7 +61,7 @@ def create_map(lats, lons, proj='cyl', border=1.0, **kwargs):
     """ Create a base map appropriate for lats and lons """
 
     if len(lats) == 0:
-        return world_map()
+        return world()
 
     box = get_bounding_box(lats, lons)
 
@@ -375,7 +375,7 @@ class CountyPlotter:
 
         self._build_shape_lookup()
 
-        self.cmap = pyplot.get_cmap('jet')
+        self.cmap = pyplot.get_cmap('rainbow')
 
     def _build_shape_lookup(self):
         """ Spin through shape info creating lookup table """
