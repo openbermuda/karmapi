@@ -29,8 +29,11 @@ class Load(Resource):
 
         # see if path has a suffix
         suffix = ppath.suffix
-        
-        df = base.load(ppath.parent / ppath.stem)
+
+        if ppath.exists():
+            df = base.load(ppath)
+        else:
+            df = base.load(ppath.parent / ppath.stem)
 
         if suffix == '.csv':
             result = df.to_csv()
