@@ -55,8 +55,12 @@ def load(infile):
 
     df = pandas.DataFrame(data, columns=columns)
 
-    df.index = df[df.year != None].fillna(0).apply(pandas.to_datetime, axis=1)
-        
+    # at least one date has 0 for the day :(
+    df.day = df.day.clip_lower(1)
+
+    fields = ['year', 'month', 'day', 'hour', 'minute', 'second']
+    df.index = pandas.to_datetime(df[fields])
+    
     return df
 
 def get():
