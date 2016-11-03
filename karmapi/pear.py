@@ -44,6 +44,14 @@ class Pear:
 
         return True
 
+    def mirror(self, path, overwrite=False):
+
+        path = Path(path)
+
+        if path.exists() and not overwrite:
+            return False
+
+        self.get(path)
 
 
 class LocalPear:

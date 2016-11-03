@@ -212,6 +212,13 @@ def meta(path):
     if path.is_dir():
         # try adding meta.json
         path = path / 'meta.json'
+
+    if (not path.exists()):
+        # see if a peer has it
+        got = try_pear(path)
+
+        if not got:
+            raise AttributeError("Unrecognised path: {}".format(path))
         
     with path.open() as infile:
         return json.load(infile)
@@ -256,7 +263,7 @@ def build_from_meta(path):
 def load_meta_path(path):
     """ Load meta data a path if it exists """
     filename = path / 'meta.json'
-    
+
     if filename.exists():
         with filename.open() as infile:
             return json.loads(infile.read())
