@@ -39,7 +39,7 @@ class Pear:
             raise AttributeError('Status code: {}'.format(
                 response.status_code))
 
-        path.parent.mkdirs(exist_ok=True, parents=True)
+        path.parent.mkdir(exist_ok=True, parents=True)
         path.write_bytes(response.content)
 
         return True
