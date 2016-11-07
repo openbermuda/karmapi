@@ -336,7 +336,7 @@ def try_pear(path):
     if PEAR is None:
         return None
 
-    return PEAR.get(path)
+    return PEAR.mirror(path)
     
 
 def load(path):

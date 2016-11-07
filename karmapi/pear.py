@@ -34,15 +34,20 @@ class Pear:
     def get(self, path):
 
         path = Path(path)
-        response = get(self.url + path.as_posix() + '.csv')
+        response = get(self.url + path.as_posix())
         if response.status_code != 200:
             raise AttributeError('Status code: {}'.format(
                 response.status_code))
 
-        path.parent.mkdir(exist_ok=True, parents=True)
-        path.write_bytes(response.content)
+        return response.content
 
-        return True
+
+    def save(self, path, content):
+
+        path.parent.mkdir(exist_ok=True, parents=True)
+        path.write_bytes(content)
+
+        return content
 
     def mirror(self, path, overwrite=False):
 
@@ -51,7 +56,11 @@ class Pear:
         if path.exists() and not overwrite:
             return False
 
-        return self.get(path)
+        content = self.get(path)
+
+        self.save(path, content)
+
+        return True
 
 
 class LocalPear:
@@ -60,7 +69,7 @@ class LocalPear:
 
         self.folder = Path(folder)
 
-    def get(self, path):
+    def mirror(self, path):
 
         shutil.copy(str(self.folder / path), str(path))
 
