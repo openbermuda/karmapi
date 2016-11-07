@@ -56,7 +56,7 @@ class Pear:
 
 class LocalPear:
 
-    def __inti__(self, folder):
+    def __init__(self, folder):
 
         self.folder = Path(folder)
 
