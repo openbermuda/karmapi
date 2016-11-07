@@ -51,7 +51,7 @@ class Pear:
         if path.exists() and not overwrite:
             return False
 
-        self.get(path)
+        return self.get(path)
 
 
 class LocalPear:

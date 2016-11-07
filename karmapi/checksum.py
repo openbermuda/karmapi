@@ -163,6 +163,18 @@ def load(checksum):
 
     return base.load(path)
 
+def mirror(paths, pear):
+    """ Use pear to mirror paths
+
+    :paths:  the paths to mirror
+
+    :pear:  a peer, see the pear module
+    """
+
+    # read the checksums for folder
+    for path in paths:
+        pear.mirror(path)
+
 
 def get_parser():
 
