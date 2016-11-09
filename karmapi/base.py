@@ -13,6 +13,7 @@ import json
 import datetime
 from pathlib import Path
 from contextlib import contextmanager
+import time
 
 import pandas
 fft = pandas.np.fft
@@ -434,21 +435,33 @@ def current_working_directory(path):
         # change back to where we started
         os.chdir(str(cwd))
 
-def build_stats(tt, path):
-    """ Generate and write out some timing stats 
+class Timer:
 
-    Args:
-  
-       tt: a list of timestamps
-       path: where to save the stats
-    """
-    stats = {}
+    def __init__(self):
 
-    now = tt[0]
+        self.tt = []
+        self.tags = []
 
-    for ix, stamp in enumerate(tt[1:]):
-        stats['t{}'.format(ix)] = stamp - now
-        now = stamp
+    def time(self, tag=None):
+        """ Take a time snap shot """
+        self.tt.append(time.time())
+        self.tags.append(tag)
 
-    stats['total'] = tt[-1] - tt[0]
-    save_meta(path, stats)
+    def stats(self):
+        """ Generate timing stats """
+
+        stats = {}
+
+        now = None
+        for ix, (stamp, tag) in enumerate(zip(self.tt, self.tags)):
+            if now is not None:
+                if tag is None:
+                    tag = 't{}'.format(ix)
+                    
+                stats[tag] = stamp - now
+                
+            now = stamp
+
+        stats['total'] = self.tt[-1] - self.tt[0]
+
+        return stats
