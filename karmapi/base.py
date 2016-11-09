@@ -46,7 +46,6 @@ class Parms:
         """ Return parm or None if id does not exist """
 
         return self.__dict__.get(parm)
-        
 
 def find_path(path, paths):
     """ Find first matching path in paths 
@@ -435,3 +434,21 @@ def current_working_directory(path):
         # change back to where we started
         os.chdir(str(cwd))
 
+def build_stats(tt, path):
+    """ Generate and write out some timing stats 
+
+    Args:
+  
+       tt: a list of timestamps
+       path: where to save the stats
+    """
+    stats = {}
+
+    now = tt[0]
+
+    for ix, stamp in enumerate(tt[1:]):
+        stats['t{}'.format(ix)] = stamp - now
+        now = stamp
+
+    stats['total'] = tt[-1] - tt[0]
+    save_meta(path, stats)
