@@ -420,6 +420,17 @@ def isono(xx, points=None, k=24):
 
     return xdf
 
+
+def update_meta(path, data):
+    """ Update meta data at path with new data """
+
+    m = meta(path)
+    
+    m.update(data)
+
+    base.save_meta(path, m)
+
+
 @contextmanager
 def current_working_directory(path):
     """ Temporarily change working directory """

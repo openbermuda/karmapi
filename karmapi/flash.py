@@ -6,7 +6,6 @@ Maybe Flash Gordon.
 
 Make things faster.
 """
-from karmapi import base
 
 def save_hdf(path, df):
     """ Save a dataframe as hdf """
@@ -14,10 +13,17 @@ def save_hdf(path, df):
     df.to_hdf(path, 'data', mode='w')
 
 
-def meta(path, data):
-    """ Update meta data at path with new data """
-    m = base.meta(path)
+def meta():
+    """ Return meta data describing formats 
 
-    m.update(data)
+    The idea here is to set meta data for folders and
+    then magically have the data stored in hdf format
+    instead of the default csv.
 
-    base.save_meta(path, m)
+    New writes will work fine, but old files will need converting.
+
+    
+    """
+
+    return dict(format='hdf')
+    
