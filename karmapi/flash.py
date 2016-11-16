@@ -10,7 +10,7 @@ Make things faster.
 def save_hdf(path, df):
     """ Save a dataframe as hdf """
 
-    df.to_hdf(path, 'data', mode='w')
+    df.to_hdf(str(path), 'data', mode='w')
 
 
 def meta():

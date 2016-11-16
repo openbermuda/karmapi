@@ -18,6 +18,7 @@ import time
 import pandas
 fft = pandas.np.fft
 
+from karmapi import flash
 
 BASE_FOLDER = '.'
 
@@ -330,6 +331,13 @@ READERS = dict(
     hdf=pandas.read_hdf,
     raw=raw_read)
 
+def save_csv(path, df):
+    """ Save dataframe as csv """
+    df.to_csv(str(path), index=False)
+
+WRITERS = dict(
+    csv=save_csv,
+    hdf=flash.save_hdf)    
 
 def try_pear(path):
     """ Try and get data for path from a peer """
@@ -360,16 +368,17 @@ def load(path):
     form = meta.get('format', 'csv')
     
     reader = READERS.get(form)
-    df = reader(path)
+    df = reader(str(path))
 
     return df
 
 def save(path, df, exist_ok=True, mkdirs=True):
     """ Save dataframe df at path.
 
-    For now, save as csv.
+    Reads meta data and if it finds a format attribute
+    uses a writer for the given format.
 
-    FIXME: include meta data for format, or use file extension.
+    See also load.
     """
     path = Path(path)
     
@@ -377,7 +386,16 @@ def save(path, df, exist_ok=True, mkdirs=True):
     if mkdirs:
         path.parent.mkdir(exist_ok=exist_ok, parents=True)
 
-    df.to_csv(str(path), index=False)
+    # load meta data to find format to save with
+    meta = get_all_meta_data(path)
+
+    form = meta.get('format', 'csv')
+
+    # get the writer to use
+    writer = WRITERS.get(form)
+
+    # do the write
+    writer(path, df)
 
 
 def sono(xx, window=None):
