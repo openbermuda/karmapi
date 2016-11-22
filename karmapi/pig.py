@@ -65,9 +65,9 @@ class Pigs(qtw.QWidget):
         self.tb = qtw.QTabBar()
         for tab in self.meta.get('tabs', []):
             w = self.tb.addTab(tab)
-            # FIXME
+            # FIXME recurse?
 
-        return tb
+        return self.tb
 
     def build_info(self):
         """ Build info """
