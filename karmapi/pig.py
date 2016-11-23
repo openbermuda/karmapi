@@ -167,6 +167,15 @@ class Video(MyDynamicMplCanvas):
     """
     pass
 
+class Table:
+    """ A table, time for dinner 
+
+    matplotlib has a table widget.  It will do for now.
+
+    .. have to go find it first.
+    """
+    pass
+
 
 def build(recipe, parent=None, row=True):
 
