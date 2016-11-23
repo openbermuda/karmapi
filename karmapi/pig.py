@@ -157,6 +157,16 @@ class Yosser(qtw.QWidget):
                 print(item)
                 hlayout.addWidget(item(None))
 
+class Image(MyStaticMplCanvas):
+    """ An image widget 
+    """
+    pass
+
+class Video(MyDynamicMplCanvas):
+    """ a video widget 
+    """
+    pass
+
 
 def build(recipe, parent=None, row=True):
 
