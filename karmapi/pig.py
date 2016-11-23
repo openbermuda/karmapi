@@ -5,9 +5,10 @@ import argparse
 from collections import defaultdict
 from pathlib import Path
 
-from karmapi import base
-
 import sys
+
+import qtconsole.mainwindow as qtc
+
 from PyQt5 import QtWidgets as qtw
 
 from PyQt5.QtCore import Qt as qt
@@ -16,13 +17,16 @@ from PyQt5.QtWidgets  import (
     QApplication, QWidget, QLabel, QLineEdit, QTextEdit,
     QGridLayout, QBoxLayout, QHBoxLayout, QVBoxLayout)
 
+from karmapi import base
+
 def meta():
     """ Return description of a pig """
     info = dict(
         title = "PIGS",
         info = dict(foo=27, bar='open'),
         parms = ['path'],
-        tabs = ['perspective', "interest", "goals", "score", "table"])
+        tabs = ['perspective', "interest", "goals",
+                "score", "table", "yosser"])
         
     return info
 
@@ -62,10 +66,19 @@ class Pigs(qtw.QWidget):
     def build_tabs(self):
         """ Build tabs """
 
-        self.tb = qtw.QTabBar()
+        self.tb = qtw.QTabWidget()
+        self.tabs = []
         for tab in self.meta.get('tabs', []):
-            w = self.tb.addTab(tab)
+            print(tab)
+            w = qtw.QWidget()
+            self.tabs.append(w)
+            
+            self.tb.addTab(w, tab)
             # FIXME recurse?
+            target = 'build_{}'.format(tab)
+
+            if hasattr(self, target):
+                getattr(self, target)(w)
 
         return self.tb
 
@@ -83,7 +96,10 @@ class Pigs(qtw.QWidget):
 
         # Now just need to loop round the args
         # and display the values:  K:   VALUE
-        
+
+    def build_yosser(self, parent=None):
+
+        return Yosser(parent)
 
     
 class Plotter:
@@ -95,50 +111,47 @@ class Plotter:
     """
     pass
 
-class Console:
+class Console(qtc.MainWindow):
     """ A console widget
 
-    FIXME: this just needs to wrap qtconsole.
+    This just needs to wrap qtconsole.
     """
     pass
+
+class Data:
+    """ Data widget """
+    pass
+
+class Docs:
+    """ Docs widget """
+    pass
+
+
+class Yosser(qtw.QWidget):
+    """ A builder widget 
+
+
+    more generally, ipywidgets might be worth a look.
+    """
+
+    def __init__(self, parent=None):
+
+        super().__init__()
+        
+        rows = [[Plotter, Data], [Docs, Console]]
+        rows = [[Console, Console], [Console, Console]]
+
+        # FIXME create the widget
+        vlayout = qtw.QVBoxLayout(parent)
+        for row in rows:
+            wrow = qtw.QWidget()
+            vlayout.addWidget(wrow)
+            hlayout = qtw.QHBoxLayout(wrow)
+            for item in row:
+                print(item)
+                hlayout.addWidget(item(None))
     
 
-
-def hello():
-
-    app = QApplication(sys.argv) #ignore()
-    window = QWidget()
-    window.setWindowTitle("Hello World")
-    window.show()
-
-    # [Add widgets to the widget]
-
-    # Create some widgets (these won't appear immediately):
-    nameLabel = QLabel("Name:")
-    nameEdit = QLineEdit()
-    addressLabel = QLabel("Address:")
-    addressEdit = QTextEdit()
-
-    # Put the widgets in a layout (now they start to appear):
-    layout = QGridLayout(window)
-    layout.addWidget(nameLabel, 0, 0)
-    layout.addWidget(nameEdit, 0, 1)
-    layout.addWidget(addressLabel, 1, 0)
-    layout.addWidget(addressEdit, 1, 1)
-    layout.setRowStretch(2, 1)
-
-    # [Resizing the window]
-
-    # Let's resize the window:
-    window.resize(480, 160)
-
-    # The widgets are managed by the layout...
-    window.resize(320, 180)
-
-    # [Run the application]
-
-    # Start the event loop...
-    sys.exit(app.exec_())
 
 def build(recipe, parent=None, row=True):
 
