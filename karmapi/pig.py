@@ -22,7 +22,7 @@ def meta():
         title = "PIGS",
         info = dict(foo=27, bar='open'),
         parms = ['path'],
-        tabs = ['perspective', "interest", "goals", "score", "table"])
+        tabs = ['perspective', "interest", "goals", "score", "table", "yosser"])
         
     return info
 
@@ -66,6 +66,11 @@ class Pigs(qtw.QWidget):
         for tab in self.meta.get('tabs', []):
             w = self.tb.addTab(tab)
             # FIXME recurse?
+            child = getattr(self, 'build_{}'.format(tab))
+            if child:
+                # call child
+                widget = child()
+                w.addWidget(widget)
 
         return self.tb
 
@@ -83,7 +88,10 @@ class Pigs(qtw.QWidget):
 
         # Now just need to loop round the args
         # and display the values:  K:   VALUE
-        
+
+    def build_console(self):
+
+        return Console()
 
     
 class Plotter:
@@ -101,7 +109,26 @@ class Console:
     FIXME: this just needs to wrap qtconsole.
     """
     pass
-    
+
+class Data:
+    """ Data widget """
+    pass
+
+class Docs:
+    """ Docs widget """
+    pass
+
+
+class Yosser:
+    """ A builder widget 
+
+
+    more generally, ipywidgets might be worth a look.
+    """
+    rows = {[Plotter, Data], [Docs, Console]}
+
+    # FIXME create the widget
+
 
 
 def hello():
