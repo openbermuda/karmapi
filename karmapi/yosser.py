@@ -12,7 +12,20 @@ So this is Yosser.  If you have some compute intensive stuff to do
 then yosser can help you.
 
 Just tell him what to build, and he will give it a go.
+
+curio
+=====
+
+So, the author says that at some point it will fly at you like a swarm
+of stinging bees.
+
+So, yosser, meet curio.
+
+**Stands well back**
+
 """
+import curio
+
 from karmapi import base
 
 def look_for_a_job():
