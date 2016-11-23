@@ -19,6 +19,8 @@ from PyQt5.QtWidgets  import (
 
 from karmapi import base
 
+from karmapi.embedding_in_qt4 import MyStaticMplCanvas, MyDynamicMplCanvas
+
 def meta():
     """ Return description of a pig """
     info = dict(
@@ -143,6 +145,7 @@ class Yosser(qtw.QWidget):
         
         rows = [[Plotter, Data], [Docs, Console]]
         rows = [[Console, Console], [Console, Console]]
+        rows = [[MyDynamicMplCanvas, MyStaticMplCanvas]]
 
         # FIXME create the widget
         vlayout = qtw.QVBoxLayout(parent)
