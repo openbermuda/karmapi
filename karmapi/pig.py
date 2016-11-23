@@ -25,7 +25,8 @@ def meta():
         title = "PIGS",
         info = dict(foo=27, bar='open'),
         parms = ['path'],
-        tabs = ['perspective', "interest", "goals", "score", "table", "yosser"])
+        tabs = ['perspective', "interest", "goals",
+                "score", "table", "yosser"])
         
     return info
 
@@ -65,16 +66,21 @@ class Pigs(qtw.QWidget):
     def build_tabs(self):
         """ Build tabs """
 
-        self.tb = qtw.QTabBar()
+        self.tb = qtw.QTabWidget()
+        self.tabs = []
         for tab in self.meta.get('tabs', []):
             print(tab)
-            w = self.tb.addTab(tab)
+
+            w = qtw.QWidget()
+            self.tabs.append(w)
+            
+            self.tb.addTab(w, tab)
+
             # FIXME recurse?
             target = 'build_{}'.format(tab)
 
             if hasattr(self, target):
-                widget = getattr(self, target)()
-                self.tb.addWidget(widget, w)
+                getattr(self, target)(w)
 
         return self.tb
 
@@ -93,9 +99,10 @@ class Pigs(qtw.QWidget):
         # Now just need to loop round the args
         # and display the values:  K:   VALUE
 
-    def build_yosser(self):
 
-        return Console(self)
+    def build_yosser(self, parent=None):
+
+        return Yosser(parent)
 
     
 class Plotter:
@@ -130,7 +137,7 @@ class Yosser(qtw.QWidget):
     more generally, ipywidgets might be worth a look.
     """
 
-    def __init__(self):
+    def __init__(self, parent=None):
 
         super().__init__()
         
@@ -138,14 +145,14 @@ class Yosser(qtw.QWidget):
         rows = [[Console, Console], [Console, Console]]
 
         # FIXME create the widget
-        vlayout = qtw.QVBoxLayout(self)
+        vlayout = qtw.QVBoxLayout(parent)
         for row in rows:
             wrow = qtw.QWidget()
-            vlayout.addWidget(vrow)
+            vlayout.addWidget(wrow)
             hlayout = qtw.QHBoxLayout(wrow)
             for item in row:
-                hlayout.addWidget(item())
-    
+                print(item)
+                hlayout.addWidget(item(None))
 
 
 def build(recipe, parent=None, row=True):
