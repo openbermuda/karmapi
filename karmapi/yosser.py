@@ -44,11 +44,21 @@ They just need to farm out the actual work to another process.  This
 looks to be the job of curio.workers.  run_in_process() sounds like it
 might do the trick.
 
+Multiple yossers would be good.  So when a job needs to be start,
+await yosser, then let it build in its own process.
+
 No threads, otherwise there will be stinging bats.
 
 This thing should just run.
 
+Oh, and there is a sneaking suspicion curio.queue.EpicQueue does all
+of this.  Or very nearly, but then there might be stinging bats.
+
 """
+import argparse
+import random
+from multiprocessing import cpu_count
+
 import curio
 
 from curio import socket, queue, workers
@@ -57,13 +67,11 @@ from karmapi import base
 
 # last in first out seems right for yosser
 # but there is also queue.EpicQueue -- not sure if that comes with bats.
-lifo = queue.LifoQueue()
+LIFO = queue.LifoQueue()
+YOSSERS = queue.LifoQueue()
 
-def look_for_a_job():
-    """ Returns the path of something to build """
-    raise NotImplemented
 
-def build():
+def build(meta):
     """FIXME: need to time builds and how much disk gets filled.
 
     Jobs should aim to be low memory demand, say 500MB.
@@ -80,20 +88,70 @@ def build():
 
     Add more pi's and change the mix as necessary.
     """
-    raise NotImplemented
+    # lets see how this goes -- just do a random sleep for now
+    curio.sleep(random.randint(10))
     
-def sleep():
-    """ Even Yosser needs to sleep now and then """
-    raise NotImplemented
+
+async def yosser_handler(client, addr):
+    print('Connection from', addr)
+    s = client.as_stream()
+    async for line in s:
+        try:
+            meta = json.loads(line.encode('ascii'))
+
+            # FIXME await a yosser
+            yosser = await YOSSERS.pop()
+            result = await run_in_process(build, meta)
+
+            # send the result back
+            rest = str(result + '\n')
+            await s.write(resp.encode('ascii'))
+            
+            # yosser now ready for another build
+            YOSSERS.put(yosser)
+
+        except ValueError:
+            await s.write(b'Bad input\n')
+    print('Connection closed')
+    await client.close()
 
 
-def run():
-    """ Start yosser runnint """
+def run(args):
+    """ Start yosser running """
 
-    # create a server
-    server = icandothat()
+    # set up YOSSERS
+    yossers = args.n
+    if args.share:
+        yossers *= share
 
-    # queue
-    queue = queue.EpicQueue()
+    for yosser in range(yossers):
+        YOSSERS.put(yosser)
 
     # now make it work...
+    curio.run(curio.tcp_server('', args.port, yosser_handler))
+
+def get_parser():
+    
+    parser = argparse.ArgumentParser()
+
+    # default, take half the cores
+    share = 0.5
+    
+    yossers = cpu_count()
+    parser.add_argument('-n', type=int, default=yossers)
+    parser.add_argument('--port', type=int, default=2469)
+    parser.add_argument('--share', type=float)
+
+    return parser
+    
+def main():
+
+    parser = get_parser()
+    args = parser.parse_args()
+
+    run(args)
+    
+
+if __name__ == '__main__':
+
+    main()
