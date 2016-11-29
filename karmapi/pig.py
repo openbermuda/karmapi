@@ -19,6 +19,7 @@ from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas)
 
 from matplotlib.figure import Figure
+from pandas.formats.format import EngFormatter
 
 from karmapi import base
 
@@ -246,12 +247,16 @@ class Table(qtw.QTableView):
 
         super().__init__()
         self.setSortingEnabled(True)
+        self.setAlternatingRowColors(True)
+        #self.verticalHeader().setResizeMode(
+        #    qtw.QHeaderView.ResizeToContents)        
 
 
 class PandasModel(qtcore.QAbstractTableModel):
     def __init__(self, data, parent=None):
         qtcore.QAbstractTableModel.__init__(self, parent)
         self._data = data
+        self.formatter = EngFormatter(accuracy=0, use_eng_prefix=True)
 
     def rowCount(self, parent=None):
         return len(self._data.values)
@@ -265,7 +270,7 @@ class PandasModel(qtcore.QAbstractTableModel):
                 # FIXME -- format this pretty
                 data = self._data.values[index.row()][index.column()]
                 try:
-                    value = '{:,}'.format(data)
+                    value = self.formatter(data)
                 except:
                     value = str(data)
                 return qtcore.QVariant(value)

@@ -58,6 +58,8 @@ of this.  Or very nearly, but then there might be stinging bats.
 import argparse
 import random
 from multiprocessing import cpu_count
+import time
+import sys
 
 import curio
 
@@ -89,26 +91,35 @@ def build(meta):
     Add more pi's and change the mix as necessary.
     """
     # lets see how this goes -- just do a random sleep for now
-    curio.sleep(random.randint(10))
+    nap = random.randint(10)
+    time.sleep(nap)
+    return nap
     
 
 async def yosser_handler(client, addr):
     print('Connection from', addr)
+    sys.stdout.flush()
+    
     s = client.as_stream()
     async for line in s:
         try:
-            meta = json.loads(line.encode('ascii'))
-
+            #meta = json.loads(line.encode('ascii'))
+            meta = line
+            print(meta)
+            sys.stdout.flush()
             # FIXME await a yosser
-            yosser = await YOSSERS.pop()
-            result = await run_in_process(build, meta)
+            yosser = await YOSSERS.get()
+            result = await workers.run_in_process(build, meta)
+
+            print('result', result)
+            sys.stdout.flush()
 
             # send the result back
             rest = str(result + '\n')
             await s.write(resp.encode('ascii'))
             
             # yosser now ready for another build
-            YOSSERS.put(yosser)
+            await YOSSERS.put(yosser)
 
         except ValueError:
             await s.write(b'Bad input\n')
