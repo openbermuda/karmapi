@@ -7,6 +7,9 @@ from pathlib import Path
 
 import sys
 
+# import this early, I like pandas.
+import pandas
+
 import qtconsole.mainwindow as qtc
 
 from PyQt5 import QtWidgets as qtw
@@ -173,7 +176,8 @@ class Image(MyStaticMplCanvas):
         # We want the axes cleared every time plot() is called
         self.axes.hold(False)
 
-        self.compute_initial_figure()
+                
+        self.compute_data()
 
         #
         FigureCanvas.__init__(self, fig)
@@ -184,23 +188,27 @@ class Image(MyStaticMplCanvas):
                                    qtw.QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
 
-    def compute_initial_figure(self):
-        """ Over-ride to draw what you want 
+        # plot self
+        self.plot()
+
+    def compute_data(self):
+        """ Over-ride to get whatever data you want to see
         
+        """
+        self.data = pandas.np.random.normal(size=(100, 100))
+
+    def plot(self):
+        """ Display an image 
+
         For example:
         
           t = arange(0.0, 3.0, 0.01)
           s = sin(2*pi*t)
           self.axes.plot(t, s)
+
         """
-        import pandas
-        self.axes.imshow(pandas.np.random.random(size=(100, 100)))
+        self.axes.imshow(self.data)
         
-
-    def show(self, image):
-        """ Display an image """
-        self.axes.imshow(image)
-
 
 
 class Video(Image):
@@ -214,15 +222,20 @@ class Video(Image):
         timer.timeout.connect(self.update_figure)
         timer.start(1000)
 
-    def compute_initial_figure(self):
-        self.axes.plot([0, 1, 2, 3], [1, 2, 0, 4], 'r')
+    def compute_data(self):
+
+        self.n = 10
+        self.k = 20
+        self.data = [random.randint(0, self.n) for i in range(self.k)]
+
+
+    def plot(self):
+        self.axes.plot(self.data, 'r')
 
     def update_figure(self):
         # Build a list of 4 random integers
         # between 0 and 10 (both inclusive)
-        l = [random.randint(0, 10) for i in range(4)]
-
-        self.axes.plot([0, 1, 2, 3], l, 'r')
+        self.plot()
         self.draw()
 
 
