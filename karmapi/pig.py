@@ -178,7 +178,8 @@ class Image(MyStaticMplCanvas):
 
                 
         self.compute_data()
-
+        self.plot()
+       
         #
         FigureCanvas.__init__(self, fig)
         self.setParent(parent)
@@ -188,8 +189,6 @@ class Image(MyStaticMplCanvas):
                                    qtw.QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
 
-        # plot self
-        self.plot()
 
     def compute_data(self):
         """ Over-ride to get whatever data you want to see
@@ -218,6 +217,8 @@ class Video(Image):
     """
     def __init__(self, *args, **kwargs):
         super().__init__(self, *args, **kwargs)
+
+        # fixme, use curio
         timer = qtcore.QTimer(self)
         timer.timeout.connect(self.update_figure)
         timer.start(1000)
@@ -228,14 +229,14 @@ class Video(Image):
         self.k = 20
         self.data = [random.randint(0, self.n) for i in range(self.n)]
 
-        print(str(self))
-
-    def __str__(self):
+    def __repr__(self):
 
         return self.data
 
 
     def plot(self):
+        print('xx', self.data)
+
         #self.axes.plot(range(self.n), self.data, 'r')
         self.axes.plot(self.data)
 
@@ -381,4 +382,5 @@ def run(recipe):
 
 if __name__ == '__main__':
 
+    # fix to: curio.run(meta())
     run(meta())
