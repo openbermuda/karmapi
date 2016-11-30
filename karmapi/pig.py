@@ -55,6 +55,8 @@ class Pigs(qtw.QWidget):
     def __init__(self, recipe=None, args=None):
 
         super().__init__()
+        self.queue = curio.Queue()
+
         self.meta = recipe or meta()
         self.args = args
         self.build()
@@ -114,7 +116,9 @@ class Pigs(qtw.QWidget):
 
     def build_yosser(self, parent=None):
 
-        return Yosser(parent)
+        self.yosser =  Yosser(parent)
+
+        return self.yosser
 
     
 class Plotter:
@@ -143,15 +147,13 @@ class Docs:
 
 
 class Yosser(qtw.QWidget):
-    """ A builder widget 
-
-
-    more generally, ipywidgets might be worth a look.
-    """
+    """ A builder widget """
 
     def __init__(self, parent=None):
 
         super().__init__()
+
+        self.coro = curio.Queue()
         
         rows = [[Plotter, Data], [Docs, Console]]
         rows = [[Console, Console], [Console, Console]]
@@ -159,6 +161,7 @@ class Yosser(qtw.QWidget):
 
         # FIXME create the widget
         vlayout = qtw.QVBoxLayout(parent)
+        self.runners = []
         for row in rows:
             wrow = qtw.QWidget()
             vlayout.addWidget(wrow)
@@ -166,6 +169,9 @@ class Yosser(qtw.QWidget):
             for item in row:
                 print(item)
                 widget = item(None)
+                if hasattr(widget, 'run'):
+                    self.runners.append(widget.run)
+                    
                 hlayout.addWidget(widget)
 
 class Image(FigureCanvas):
@@ -222,8 +228,6 @@ class Video(Image):
     """
     def __init__(self, interval=1, *args, **kwargs):
         super().__init__()
-
-        curio.spawn(self.run)
 
     async def run(self):
         # Loop forever updating the figure, with a little
@@ -372,6 +376,20 @@ class PiWidget(qtw.QWidget):
         return
 
 
+async def qt_app_runner(app):
+
+    event_loop = await qtloop(app)
+
+    queue = curio.Queue()
+    for window in app.allWindows():
+        if hasattr(window, 'runners'):
+            for runner in window.runners:
+                crun = await curio.spawn(runner)
+                queue.put(crun)
+
+    await queue.join()
+
+
 async def qtloop(app):
 
     event_loop = qtcore.QEventLoop()
@@ -388,8 +406,7 @@ async def qtloop(app):
 def build(recipe):
 
 
-    print(sys.argv)
-    app = qtw.QApplication(sys.argv)
+    app = qtw.QApplication([])
 
     
     title = recipe.get('title', app.applicationName())
@@ -404,4 +421,4 @@ def build(recipe):
 if __name__ == '__main__':
 
     # Let curio bring this to life
-    curio.run(qtloop(build(meta())))
+    curio.run(qt_app_runner(build(meta())), with_monitor=True)
