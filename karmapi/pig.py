@@ -9,6 +9,7 @@ import sys
 
 # import this early, I like pandas.
 import pandas
+random = pandas.np.random
 
 import qtconsole.mainwindow as qtc
 
@@ -162,9 +163,10 @@ class Yosser(qtw.QWidget):
             hlayout = qtw.QHBoxLayout(wrow)
             for item in row:
                 print(item)
-                hlayout.addWidget(item(None))
+                widget = item(None)
+                hlayout.addWidget(widget)
 
-class Image(MyStaticMplCanvas):
+class Image(FigureCanvas):
     """ An image widget
 
     This is just a wrapper around matplotlib FigureCanvas.
@@ -172,6 +174,8 @@ class Image(MyStaticMplCanvas):
     def __init__(self, parent=None, width=5, height=4, dpi=100):
 
         fig = Figure(figsize=(width, height), dpi=dpi)
+        super().__init__(fig)
+
         self.axes = fig.add_subplot(111)
         # We want the axes cleared every time plot() is called
         self.axes.hold(False)
@@ -179,7 +183,6 @@ class Image(MyStaticMplCanvas):
                 
         self.compute_data()
         self.plot()
-       
         #
         FigureCanvas.__init__(self, fig)
         self.setParent(parent)
@@ -216,7 +219,7 @@ class Video(Image):
     This is currently a matplotlib FigureCanvas
     """
     def __init__(self, *args, **kwargs):
-        super().__init__(self, *args, **kwargs)
+        super().__init__()
 
         # fixme, use curio
         timer = qtcore.QTimer(self)
@@ -235,14 +238,13 @@ class Video(Image):
 
 
     def plot(self):
-        print('xx', self.data)
 
-        #self.axes.plot(range(self.n), self.data, 'r')
         self.axes.plot(self.data)
 
     def update_figure(self):
         # Build a list of 4 random integers
         # between 0 and 10 (both inclusive)
+        self.compute_data()
         self.plot()
         self.draw()
 
