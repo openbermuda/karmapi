@@ -72,6 +72,9 @@ from karmapi import base
 LIFO = queue.LifoQueue()
 YOSSERS = queue.LifoQueue()
 
+def meta():
+
+    return dict(name='yosser', karma='build')
 
 def build(meta):
     """FIXME: need to time builds and how much disk gets filled.
@@ -141,6 +144,35 @@ def run(args):
     # now make it work...
     curio.run(curio.tcp_server('', args.port, yosser_handler))
 
+
+start_event = curio.Event()
+    
+
+async def yosser(*args, **kwargs):
+
+
+    while True:
+        try:
+            print('Go on, giusajob?')
+            await curio.timeout_after(1, start_event.wait())
+            break
+        except curio.TaskTimeout:
+            print('I can do that!?!')
+    try:
+        # 
+        print('Building the Millenium Falcon in Minecraft')
+
+        # ok at this point run a server to wait for work
+        total = 0
+        total = await curiot.tcp_server('', args.port, yosser_handler)
+
+    except curio.CancelledError:
+        # need a way to send yosser home
+        print('Off home status:', total)
+        # hmm.. missing yosser status reports never get here?
+
+
+    
 def get_parser():
     
     parser = argparse.ArgumentParser()
@@ -165,4 +197,4 @@ def main():
 
 if __name__ == '__main__':
 
-    main()
+    curio.run(yosser(meta(), '.'))
