@@ -158,6 +158,8 @@ class Yosser(qtw.QWidget):
         rows = [[Plotter, Data], [Docs, Console]]
         rows = [[Console, Console], [Console, Console]]
         rows = [[Image, Video]]
+        rows = [[Image, Image]]
+        rows = [[Table, Table]]
 
         # FIXME create the widget
         vlayout = qtw.QVBoxLayout(parent)
@@ -276,7 +278,7 @@ class Table(qtw.QTableView):
 
     https://gist.github.com/jsexauer/f2bb0cc876828b54f2ed    
     """
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
 
         super().__init__()
         self.setSortingEnabled(True)
@@ -395,6 +397,10 @@ async def qtloop(app):
     event_loop = qtcore.QEventLoop()
 
     while True:
+        print(app)
+        print(app.allWindows())
+        for win in app.allWindows():
+            win.show()
         event_loop.processEvents()
         app.sendPostedEvents(None, 0)
 
@@ -421,4 +427,8 @@ def build(recipe):
 if __name__ == '__main__':
 
     # Let curio bring this to life
-    curio.run(qt_app_runner(build(meta())), with_monitor=True)
+    #curio.run(qt_app_runner(build(meta())), with_monitor=True)
+    app = build(meta())
+    curio.run(qtloop(app))
+    
+    #urio.run(qt_app_runner(build(meta())), with_monitor=True)
