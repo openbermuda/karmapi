@@ -152,7 +152,7 @@ class Yosser(qtw.QWidget):
         
         rows = [[Plotter, Data], [Docs, Console]]
         rows = [[Console, Console], [Console, Console]]
-        rows = [[Image, Image]]
+        rows = [[Image, Video]]
 
         # FIXME create the widget
         vlayout = qtw.QVBoxLayout(parent)
@@ -224,13 +224,20 @@ class Video(Image):
 
     def compute_data(self):
 
-        self.n = 10
+        self.n = 4
         self.k = 20
-        self.data = [random.randint(0, self.n) for i in range(self.k)]
+        self.data = [random.randint(0, self.n) for i in range(self.n)]
+
+        print(str(self))
+
+    def __str__(self):
+
+        return self.data
 
 
     def plot(self):
-        self.axes.plot(self.data, 'r')
+        #self.axes.plot(range(self.n), self.data, 'r')
+        self.axes.plot(self.data)
 
     def update_figure(self):
         # Build a list of 4 random integers
