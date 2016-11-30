@@ -7,6 +7,8 @@ from pathlib import Path
 
 import sys
 
+import curio
+
 # import this early, I like pandas.
 import pandas
 random = pandas.np.random
@@ -218,13 +220,17 @@ class Video(Image):
 
     This is currently a matplotlib FigureCanvas
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, interval=1, *args, **kwargs):
         super().__init__()
 
-        # fixme, use curio
-        timer = qtcore.QTimer(self)
-        timer.timeout.connect(self.update_figure)
-        timer.start(1000)
+        curio.spawn(self.run)
+
+    async def run(self):
+        # Loop forever updating the figure, with a little
+        # sleeping help from curio
+        while True:
+            await curio.sleep(interval)
+            self.update_figure()
 
     def compute_data(self):
 
@@ -366,7 +372,20 @@ class PiWidget(qtw.QWidget):
         return
 
 
-def run(recipe):
+async def qtloop(app):
+
+    event_loop = qtcore.QEventLoop()
+
+    while True:
+        event_loop.processEvents()
+        app.sendPostedEvents(None, 0)
+
+        # Experiment with sleep to keep gui responsive
+        # but not a cpu hog.
+        await curio.sleep(0.05)
+    
+
+def build(recipe):
 
 
     print(sys.argv)
@@ -379,10 +398,10 @@ def run(recipe):
     window.setWindowTitle(title)
     window.show()
 
-    sys.exit(app.exec_())
+    return app
 
 
 if __name__ == '__main__':
 
-    # fix to: curio.run(meta())
-    run(meta())
+    # Let curio bring this to life
+    curio.run(qtloop(build(meta())))
