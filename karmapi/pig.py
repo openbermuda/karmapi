@@ -27,9 +27,11 @@ from matplotlib.backends.backend_qt5agg import (
 from matplotlib.figure import Figure
 from pandas.formats.format import EngFormatter
 
-from karmapi import base
+from karmapi import base, yosser
 
-from karmapi.embedding_in_qt4 import MyStaticMplCanvas, MyDynamicMplCanvas
+def printf(*args, **kwargs):
+
+    print(*args, flush=True, **kwargs)
 
 def meta():
     """ Return description of a pig """
@@ -58,6 +60,7 @@ class Pigs(qtw.QWidget):
 
         self.meta = recipe or meta()
         self.args = args
+        self.runners = []
         self.build()
 
     def build(self):
@@ -82,7 +85,7 @@ class Pigs(qtw.QWidget):
         self.tb = qtw.QTabWidget()
         self.tabs = []
         for tab in self.meta.get('tabs', []):
-            print(tab)
+            printf(tab)
 
             w = qtw.QWidget()
             self.tabs.append(w)
@@ -117,6 +120,8 @@ class Pigs(qtw.QWidget):
 
         self.yosser =  Yosser(parent)
 
+        self.runners += self.yosser.runners
+
         return self.yosser
 
     
@@ -136,10 +141,6 @@ class Console(qtc.MainWindow):
     """
     pass
 
-class Data:
-    """ Data widget """
-    pass
-
 class Docs:
     """ Docs widget """
     pass
@@ -152,11 +153,11 @@ class Yosser(qtw.QWidget):
 
         super().__init__()
 
-        rows = [[Plotter, Data], [Docs, Console]]
+        rows = [[Plotter, Table], [Docs, Console]]
         rows = [[Console, Console], [Console, Console]]
-        rows = [[Image, Video]]
         rows = [[Image, Image]]
         rows = [[Table, Table]]
+        rows = [[Image, Video]]
 
         # FIXME create the widget
         vlayout = qtw.QVBoxLayout(parent)
@@ -166,12 +167,13 @@ class Yosser(qtw.QWidget):
             vlayout.addWidget(wrow)
             hlayout = qtw.QHBoxLayout(wrow)
             for item in row:
-                print(item)
+                printf(item)
                 widget = item(None)
                 if hasattr(widget, 'run'):
-                    self.runners.append(widget.run)
+                    self.runners.append(widget.run())
                     
                 hlayout.addWidget(widget)
+        #print(str(self.runners), flush=True)
 
 class Image(FigureCanvas):
     """ An image widget
@@ -227,13 +229,20 @@ class Video(Image):
     """
     def __init__(self, interval=1, *args, **kwargs):
         super().__init__()
+        self.interval = interval or 1
 
     async def run(self):
+        """ Run the animation """
         # Loop forever updating the figure, with a little
         # sleeping help from curio
         while True:
-            await curio.sleep(interval)
+            printf('run update figure')
+
+            printf('sleep', self.interval)
+            await curio.sleep(self.interval)
+            printf('slept', self.interval)
             self.update_figure()
+            printf('figure updated')
 
     def compute_data(self):
 
@@ -253,6 +262,7 @@ class Video(Image):
     def update_figure(self):
         # Build a list of 4 random integers
         # between 0 and 10 (both inclusive)
+        printf('update figure')
         self.compute_data()
         self.plot()
         self.draw()
@@ -331,7 +341,7 @@ class PandasModel(qtcore.QAbstractTableModel):
 
 
 
-def build(recipe, parent=None, row=True):
+def xbuild(recipe, parent=None, row=True):
 
     if parent is None:
         parent = QVBoxLayout()
@@ -375,18 +385,29 @@ class PiWidget(qtw.QWidget):
         return
 
 
-async def qt_app_runner(app):
+async def qt_app_runner(app, window):
 
-    event_loop = await qtloop(app)
+    printf('spawn yosser')
+    qq = curio.Queue()
+    yoss = await curio.spawn(curio.tcp_server(
+        '', 2469, yosser.yosser_handler))
+      
+    event_loop = await curio.spawn(qtloop(app))
 
-    queue = curio.Queue()
-    for window in app.allWindows():
-        if hasattr(window, 'runners'):
-            for runner in window.runners:
-                crun = await curio.spawn(runner)
-                queue.put(crun)
+    print('event loop running')
+    
+    printf('runners:', len(window.runners))
+        
+    for runner in window.runners:
+        printf('spawning runner')
+        printf(runner)
+        coro = await curio.spawn(runner)
+        printf(coro)
+        qq.put(coro)
 
-    await queue.join()
+
+    await event_loop.join()
+
 
 
 async def qtloop(app):
@@ -394,10 +415,8 @@ async def qtloop(app):
     event_loop = qtcore.QEventLoop()
 
     while True:
-        print(app)
-        print(app.allWindows())
-        for win in app.allWindows():
-            win.show()
+        #for win in app.allWindows():
+        #    win.show()
         event_loop.processEvents()
         app.sendPostedEvents(None, 0)
 
@@ -415,18 +434,19 @@ def build(recipe):
     title = recipe.get('title', app.applicationName())
     
     window = Pigs(recipe, app.arguments()[1:])
-    window.setWindowTitle(title)
+    #window = qtw.QProgressBar()
+    #window.setRange(0, 99)
+
+    #window.setWindowTitle(title)
     window.show()
 
-    return app
+    return app, window
 
 
 if __name__ == '__main__':
 
     # Let curio bring this to life
-    #curio.run(qt_app_runner(build(meta())), with_monitor=True)
-    app = build(meta())
-    #curio.run(qtloop(app))
-    
-    #urio.run(qt_app_runner(build(meta())), with_monitor=True)
-    sys.exit(app.exec_())
+    app, window = build(meta())
+
+    curio.run(qt_app_runner(app, window), with_monitor=True)
+
