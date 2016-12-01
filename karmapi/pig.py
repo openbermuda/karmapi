@@ -391,7 +391,9 @@ async def qt_app_runner(app, window):
 
     # FIXME -- without yosser nothing works
     printf('spawn yosser')
-    qq = curio.Queue()
+
+    args = yosser.get_parser().parse_args([])
+    yosser.set_up_workers(args)
     yoss = await curio.spawn(curio.tcp_server(
         '', 2469, yosser.yosser_handler))
       
@@ -408,8 +410,6 @@ async def qt_app_runner(app, window):
         printf(runner)
         coro = await curio.spawn(runner)
         printf(coro)
-        qq.put(coro)
-
 
     await event_loop.join()
 

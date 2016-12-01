@@ -60,6 +60,10 @@ import random
 from multiprocessing import cpu_count
 import time
 import sys
+import functools
+
+# make print flush
+print = functools.partial(print, flush=True)
 
 import curio
 
@@ -109,17 +113,16 @@ async def yosser_handler(client, addr):
             #meta = json.loads(line.encode('ascii'))
             meta = line
             print(meta)
-            sys.stdout.flush()
             # FIXME await a yosser
             yosser = await YOSSERS.get()
+            print('got yosser')
             result = await workers.run_in_process(build, meta)
-
-            print('result', result)
-            sys.stdout.flush()
+            print('got result:', result)
 
             # send the result back
             rest = str(result + '\n')
             await s.write(resp.encode('ascii'))
+            print('result sent to client')
             
             # yosser now ready for another build
             await YOSSERS.put(yosser)
@@ -130,8 +133,8 @@ async def yosser_handler(client, addr):
     await client.close()
 
 
-def run(args):
-    """ Start yosser running """
+def set_up_workers(args):
+    """ Set up yosser queue """
 
     # set up YOSSERS
     yossers = args.n
@@ -141,8 +144,6 @@ def run(args):
     for yosser in range(yossers):
         YOSSERS.put(yosser)
 
-    # now make it work...
-    curio.run(curio.tcp_server('', args.port, yosser_handler))
 
 
 start_event = curio.Event()
