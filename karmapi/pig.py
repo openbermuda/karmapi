@@ -55,7 +55,6 @@ class Pigs(qtw.QWidget):
     def __init__(self, recipe=None, args=None):
 
         super().__init__()
-        self.queue = curio.Queue()
 
         self.meta = recipe or meta()
         self.args = args
@@ -153,8 +152,6 @@ class Yosser(qtw.QWidget):
 
         super().__init__()
 
-        self.coro = curio.Queue()
-        
         rows = [[Plotter, Data], [Docs, Console]]
         rows = [[Console, Console], [Console, Console]]
         rows = [[Image, Video]]
@@ -429,6 +426,7 @@ if __name__ == '__main__':
     # Let curio bring this to life
     #curio.run(qt_app_runner(build(meta())), with_monitor=True)
     app = build(meta())
-    curio.run(qtloop(app))
+    #curio.run(qtloop(app))
     
     #urio.run(qt_app_runner(build(meta())), with_monitor=True)
+    sys.exit(app.exec_())
