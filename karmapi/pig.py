@@ -235,7 +235,11 @@ class Video(Image):
         super().__init__()
         self.interval = interval or 1
 
-    async def run(self):
+        timer = qtcore.QTimer(self)
+        timer.timeout.connect(self.update_figure)
+        timer.start(1000)
+        
+    async def xrun(self):
         """ Run the animation """
         # Loop forever updating the figure, with a little
         # sleeping help from curio

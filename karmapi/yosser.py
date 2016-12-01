@@ -105,14 +105,13 @@ def build(meta):
 
 async def yosser_handler(client, addr):
     print('Connection from', addr)
-    sys.stdout.flush()
     
     s = client.as_stream()
     async for line in s:
         try:
             #meta = json.loads(line.encode('ascii'))
             meta = line
-            print(meta)
+            print('xxxxx', meta, YOSSERS.qsize())
             # FIXME await a yosser
             yosser = await YOSSERS.get()
             print('got yosser')
@@ -141,9 +140,12 @@ def set_up_workers(args):
     if args.share:
         yossers *= share
 
+    print("creating {} yosser workers".format(yossers))
+
     for yosser in range(yossers):
         YOSSERS.put(yosser)
 
+    print(YOSSERS.qsize())
 
 
 start_event = curio.Event()
