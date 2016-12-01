@@ -98,7 +98,7 @@ def build(meta):
     Add more pi's and change the mix as necessary.
     """
     # lets see how this goes -- just do a random sleep for now
-    nap = random.randint(10)
+    nap = random.randint(0, 10)
     time.sleep(nap)
     return nap
     
@@ -120,7 +120,7 @@ async def yosser_handler(client, addr):
             print('got result:', result)
 
             # send the result back
-            rest = str(result + '\n')
+            resp = str(str(result) + '\n')
             await s.write(resp.encode('ascii'))
             print('result sent to client')
             
