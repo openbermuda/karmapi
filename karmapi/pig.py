@@ -60,6 +60,8 @@ class Pigs(qtw.QWidget):
 
         self.meta = recipe or meta()
         self.args = args
+
+        # keep a list of asynchronous tasks needed to run widgets
         self.runners = []
         self.build()
 
@@ -169,6 +171,8 @@ class Yosser(qtw.QWidget):
             for item in row:
                 printf(item)
                 widget = item(None)
+
+                # some widgets need a runner eg Video window
                 if hasattr(widget, 'run'):
                     self.runners.append(widget.run())
                     
@@ -236,19 +240,15 @@ class Video(Image):
         # Loop forever updating the figure, with a little
         # sleeping help from curio
         while True:
-            printf('run update figure')
-
-            printf('sleep', self.interval)
             await curio.sleep(self.interval)
-            printf('slept', self.interval)
             self.update_figure()
-            printf('figure updated')
 
     def compute_data(self):
 
-        self.n = 4
-        self.k = 20
-        self.data = [random.randint(0, self.n) for i in range(self.n)]
+        self.data = pandas.np.random.normal(size=(100, 100))
+        #self.n = 4
+        #self.k = 20
+        #self.data = [random.randint(0, self.n) for i in range(self.n)]
 
     def __repr__(self):
 
@@ -257,12 +257,13 @@ class Video(Image):
 
     def plot(self):
 
-        self.axes.plot(self.data)
+        self.axes.imshow(self.data)
 
     def update_figure(self):
-        # Build a list of 4 random integers
-        # between 0 and 10 (both inclusive)
-        printf('update figure')
+        """  Update the figure 
+
+        This just re-computes data and replots.
+        """
         self.compute_data()
         self.plot()
         self.draw()
@@ -309,11 +310,12 @@ class PandasModel(qtcore.QAbstractTableModel):
     def data(self, index, role=qt.DisplayRole):
         if index.isValid():
             if role == qt.DisplayRole:
-                # FIXME -- format this pretty
                 data = self._data.values[index.row()][index.column()]
                 try:
+                    # format data with formatter function
                     value = self.formatter(data)
                 except:
+                    # anything goes wrong, just show with str
                     value = str(data)
                 return qtcore.QVariant(value)
         return qtcore.QVariant()
@@ -387,6 +389,7 @@ class PiWidget(qtw.QWidget):
 
 async def qt_app_runner(app, window):
 
+    # FIXME -- without yosser nothing works
     printf('spawn yosser')
     qq = curio.Queue()
     yoss = await curio.spawn(curio.tcp_server(
@@ -397,6 +400,8 @@ async def qt_app_runner(app, window):
     print('event loop running')
     
     printf('runners:', len(window.runners))
+    for runner in window.runners:
+        printf(runner)
         
     for runner in window.runners:
         printf('spawning runner')
