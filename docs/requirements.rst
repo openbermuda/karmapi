@@ -8,7 +8,15 @@ requirements.txt
 
 jupyter, pandas, matplotlib, curio
 
-note: check the requirements.txt for an alternate truth,
+note: check the requirements.txt for an alternate truth.
+
+curio
+-----
+
+This is a new David Beazley project, so karmapi is using the latest
+from github.
+
+In Dave we trust.
 
 flask_restplus
 ==============
