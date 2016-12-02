@@ -41,7 +41,8 @@ def meta():
         parms = ['path'],
         tabs = [
             {'name': 'example',
-             'widgets': [[Image, Video], [Docs, KPlot]]},
+             'widgets': [[Image, Video], [Docs, KPlot],
+                          [Button('Run')]]},
             {'name': 'perspective'},
             {'name': 'interest'},
             {'name': 'goals'},
@@ -183,6 +184,12 @@ class Grid(qtw.QWidget):
 
                 hlayout.addWidget(widget)
 
+class Button(qtw.QPushButton):
+
+    def __init__(self, name, cb=None):
+        """ A button """
+        super().__init__()
+                
 class Image(FigureCanvas):
     """ An image widget
 
