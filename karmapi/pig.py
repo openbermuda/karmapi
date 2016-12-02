@@ -42,7 +42,7 @@ def meta():
         tabs = [
             {'name': 'example',
              'widgets': [[Image, Video], [Docs, KPlot],
-                          [Button('Run')]]},
+                         [{'name': 'Run', 'callback': hello}]]},
             {'name': 'perspective'},
             {'name': 'interest'},
             {'name': 'goals'},
@@ -50,6 +50,9 @@ def meta():
             {'name': 'table'},
             {'name': 'yosser'}]) 
     return info
+
+def hello():
+    print('hello')
 
 def get_parser():
 
@@ -180,15 +183,23 @@ class Grid(qtw.QWidget):
             hlayout = qtw.QHBoxLayout(wrow)
             for item in row:
                 printf(item)
-                widget = item(None)
+
+                # using isinstance makes me sad.. but i will make an exception
+                if isinstance(item, dict):
+                    widget = button(item)
+                else:
+                    widget = item(None)
+
+
 
                 hlayout.addWidget(widget)
 
-class Button(qtw.QPushButton):
 
-    def __init__(self, name, cb=None):
-        """ A button """
-        super().__init__()
+def button(meta):
+    """ Button factory """
+    b = qtw.QPushButton(meta.get('name', 'Push Me'))
+
+    return b
                 
 class Image(FigureCanvas):
     """ An image widget
