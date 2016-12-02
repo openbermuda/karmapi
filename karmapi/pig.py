@@ -159,7 +159,7 @@ class Yosser(qtw.QWidget):
         rows = [[Console, Console], [Console, Console]]
         rows = [[Image, Image]]
         rows = [[Table, Table]]
-        rows = [[Image, Video]]
+        rows = [[KPlot, Video]]
 
         # FIXME create the widget
         vlayout = qtw.QVBoxLayout(parent)
@@ -224,7 +224,12 @@ class Image(FigureCanvas):
         """
         self.axes.imshow(self.data)
         
+class KPlot(Image):
 
+    def compute_data(self):
+
+        self.data = [list(range(100)) for x in range(100)]
+        
 
 class Video(Image):
     """ a video widget 
