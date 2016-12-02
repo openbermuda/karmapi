@@ -39,9 +39,15 @@ def meta():
         title = "PIGS",
         info = dict(foo=27, bar='open'),
         parms = ['path'],
-        tabs = ['perspective', "interest", "goals",
-                "score", "table", "yosser"])
-        
+        tabs = [
+            {'name': 'example',
+             'widgets': [[Image, Video], [Docs, KPlot]]},
+            {'name': 'perspective'},
+            {'name': 'interest'},
+            {'name': 'goals'},
+            {'name': 'score'},
+            {'name': 'table'},
+            {'name': 'yosser'}]) 
     return info
 
 def get_parser():
@@ -92,13 +98,12 @@ class Pigs(qtw.QWidget):
             w = qtw.QWidget()
             self.tabs.append(w)
             
-            self.tb.addTab(w, tab)
+            self.tb.addTab(w, tab['name'])
 
-            # FIXME recurse?
-            target = 'build_{}'.format(tab)
+            widgets = tab.get('widgets')
 
-            if hasattr(self, target):
-                getattr(self, target)(w)
+            if widgets:
+                self.build_widgets(widgets, w)
 
         return self.tb
 
@@ -118,24 +123,13 @@ class Pigs(qtw.QWidget):
         # and display the values:  K:   VALUE
 
 
-    def build_yosser(self, parent=None):
+    def build_widgets(self, widgets, parent=None):
 
-        self.yosser =  Yosser(parent)
+        grid = Grid(widgets, parent)
 
-        self.runners += self.yosser.runners
-
-        return self.yosser
+        return grid
 
     
-class Plotter:
-    """ A plot widget 
-
-    FIXME: this just needs to wrap matplotlib qt viewer.
-
-    more generally, ipywidgets might be worth a look.
-    """
-    pass
-
 class Console(qtc.MainWindow):
     """ A console widget
 
@@ -143,28 +137,43 @@ class Console(qtc.MainWindow):
     """
     pass
 
-class Docs:
+class Docs(qtw.QTextBrowser):
     """ Docs widget """
-    pass
+    def __init__(self, doc=None):
+        """ Initialise the widget 
 
-
-class Yosser(qtw.QWidget):
-    """ A builder widget """
-
-    def __init__(self, parent=None):
+        doc: optional html text to load the widget with.
+        """
 
         super().__init__()
 
-        rows = [[Plotter, Table], [Docs, Console]]
-        rows = [[Console, Console], [Console, Console]]
-        rows = [[Image, Image]]
-        rows = [[Table, Table]]
-        rows = [[KPlot, Video]]
+        if doc is None:
+            "Show docs here"
+            
+        self.setHtml("<b>hello world</b>")
+
+
+
+class Grid(qtw.QWidget):
+    """ A grid of widgets """
+
+    def __init__(self, widgets=None, parent=None):
+
+        super().__init__()
+        
+        if widgets is None:
+            rows = [[Plotter, Table], [Docs, Console]]
+            rows = [[Console, Console], [Console, Console]]
+            rows = [[Image, Image]]
+            rows = [[Table, Table]]
+            rows = [[KPlot, Video]]
+        else:
+            rows = widgets
 
         # FIXME create the widget
         vlayout = qtw.QVBoxLayout(parent)
-        self.runners = []
         for row in rows:
+            print(row)
             wrow = qtw.QWidget()
             vlayout.addWidget(wrow)
             hlayout = qtw.QHBoxLayout(wrow)
@@ -172,12 +181,7 @@ class Yosser(qtw.QWidget):
                 printf(item)
                 widget = item(None)
 
-                # some widgets need a runner eg Video window
-                if hasattr(widget, 'run'):
-                    self.runners.append(widget.run())
-                    
                 hlayout.addWidget(widget)
-        #print(str(self.runners), flush=True)
 
 class Image(FigureCanvas):
     """ An image widget
@@ -350,35 +354,6 @@ class PandasModel(qtcore.QAbstractTableModel):
         self.layoutChanged.emit()
 
 
-
-
-def xbuild(recipe, parent=None, row=True):
-
-    if parent is None:
-        parent = QVBoxLayout()
-
-    for item in recipe:
-
-        if isinstance(item, dict):
-            parent.addWidget(build_widget(item))
-
-        else:
-            if row:
-                layout = QHBoxLayout(window)
-            else:
-                layout = QVBoxLayout(window)
-
-            parent.addWidget(window)
-
-            build(item, layout, not row)
-
-    return parent
-
-def build_widget(item):
-
-    return QLabel(item.get(name, 'noname'))
-
-
 class PiWidget(qtw.QWidget):
 
     def __init__(self, recipe):
@@ -399,6 +374,8 @@ class PiWidget(qtw.QWidget):
 async def qt_app_runner(app, window):
 
     # FIXME -- without yosser nothing works
+    # may be a windows thing select([], [], []) on windows
+    # doesn't block, instead throws an error.
     printf('spawn yosser')
 
     args = yosser.get_parser().parse_args([])
@@ -409,17 +386,6 @@ async def qt_app_runner(app, window):
     event_loop = await curio.spawn(qtloop(app))
 
     print('event loop running')
-    
-    printf('runners:', len(window.runners))
-    for runner in window.runners:
-        printf(runner)
-        
-    for runner in window.runners:
-        printf('spawning runner')
-        printf(runner)
-        coro = await curio.spawn(runner)
-        printf(coro)
-
     await event_loop.join()
 
 
