@@ -378,8 +378,6 @@ async def qt_app_runner(app, window):
     # doesn't block, instead throws an error.
     printf('spawn yosser')
 
-    args = yosser.get_parser().parse_args([])
-    yosser.set_up_workers(args)
     yoss = await curio.spawn(curio.tcp_server(
         '', 2469, yosser.yosser_handler))
       

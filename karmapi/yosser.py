@@ -74,7 +74,7 @@ from karmapi import base
 # last in first out seems right for yosser
 # but there is also queue.EpicQueue -- not sure if that comes with bats.
 LIFO = queue.LifoQueue()
-YOSSERS = queue.LifoQueue()
+PORT = 2469
 
 def meta():
 
@@ -111,10 +111,11 @@ async def yosser_handler(client, addr):
         try:
             #meta = json.loads(line.encode('ascii'))
             meta = line
-            print('xxxxx', meta, YOSSERS.qsize())
-            # FIXME await a yosser
-            yosser = await YOSSERS.get()
-            print('got yosser')
+
+            # FIXME: parse line to get instruction
+            # path:  path_to_build
+            # meta:  meta data for thing to build
+
             result = await workers.run_in_process(build, meta)
             print('got result:', result)
 
@@ -131,28 +132,16 @@ async def yosser_handler(client, addr):
     print('Connection closed')
     await client.close()
 
-
-def set_up_workers(args):
-    """ Set up yosser queue """
-
-    # set up YOSSERS
-    yossers = args.n
-    if args.share:
-        yossers *= share
-
-    print("creating {} yosser workers".format(yossers))
-
-    for yosser in range(yossers):
-        YOSSERS.put(yosser)
-
-    print(YOSSERS.qsize())
-
-
 start_event = curio.Event()
-    
+
 
 async def yosser(*args, **kwargs):
+    """ A yosser example 
 
+    This is just an adapted version of the curio hello example.
+
+
+    """
 
     while True:
         try:
@@ -175,6 +164,20 @@ async def yosser(*args, **kwargs):
         # hmm.. missing yosser status reports never get here?
 
 
+async def client(path=None, meta=None, host='localhost', port=PORT):
+    """ Client to submit tasks to yosser """
+    s = await socket.socket()
+
+    c = await s.connect((host, port))
+
+    if path is not None:
+        result = await s.send('path: {}\n'.format(path))
+    else:
+        result = await s.send('path: {}\n'.format(meta))
+
+    answer = await s.recv(10000)
+
+    return answer
     
 def get_parser():
     
@@ -185,7 +188,8 @@ def get_parser():
     
     yossers = cpu_count()
     parser.add_argument('-n', type=int, default=yossers)
-    parser.add_argument('--port', type=int, default=2469)
+    parser.add_argument('--port', type=int, default=PORT)
+    parser.add_argument('--host', default='')
     parser.add_argument('--share', type=float)
 
     return parser
@@ -195,9 +199,10 @@ def main():
     parser = get_parser()
     args = parser.parse_args()
 
-    run(args)
+    curio.run(curio.tcp_server(args.host, args.port,
+                               yosser_handler))
     
 
 if __name__ == '__main__':
 
-    curio.run(yosser(meta(), '.'))
+    main()
