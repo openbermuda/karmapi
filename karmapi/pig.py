@@ -257,6 +257,9 @@ class KPlot(Image):
         self.data = [list(range(100)) for x in range(100)]
         
 
+class ZoomImage(Image):
+    pass
+        
 class Video(Image):
     """ a video widget 
 

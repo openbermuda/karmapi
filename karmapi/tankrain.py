@@ -13,6 +13,8 @@ from collections import defaultdict
 
 from karmapi import show
 
+from karmapi.pig import Video, Image
+
 # Paths to data
 url = 'http://weather.bm/images/'
 
@@ -24,10 +26,31 @@ local_chart = 'surfaceAnalysis/Latest/Local.gif'
 
 target = 'tankrain/{date:%Y}/{date:%m}/{date:%d}/{name}_{date:%H%M}{suffix}'
 
+class ParishImage(ZoomImage):
+
+    def compute_data(self):
+
+        # for now, no idea
+        super().compute_data()
+
+        # pick a time?
+
+        # base.load(path)
+
+        # increment time
+
+class LocalImage(ParishImage):
+    pass
+
+class WideImage(LocalImage):
+    pass
+
+
 def get_parser():
 
     parser = argparse.ArgumentParser()
 
+    parser.add_argument('--pig')
     parser.add_argument('--minutes', type=int, default=30)
 
     return parser
