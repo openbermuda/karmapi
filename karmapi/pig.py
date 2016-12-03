@@ -199,6 +199,10 @@ def button(meta):
     """ Button factory """
     b = qtw.QPushButton(meta.get('name', 'Push Me'))
 
+    cb = meta.get('callback')
+    if cb:
+        b.clicked.connect(cb)
+
     return b
                 
 class Image(FigureCanvas):
