@@ -54,6 +54,18 @@ This thing should just run.
 Oh, and there is a sneaking suspicion curio.queue.EpicQueue does all
 of this.  Or very nearly, but then there might be stinging bats.
 
+
+So yosser is now mostly working, in so far as clients can get it to fire off a job.
+
+At this point some sort of protocol is needed.
+
+A client end and a server,
+
+A client running as a curio task.
+
+A server running as another curio task in a separate process.
+
+
 """
 import argparse
 import random
