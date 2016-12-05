@@ -445,11 +445,37 @@ def build(recipe):
 
     return app, window
 
+def win_curio_fix():
+    """ Kludge alert 
+
+    On windows, select.select() with three empty sets throws an exception.
+
+    On Linux, select.select() sleeps and waits for something to appear.
+
+    This adds dummy read socket to the selector and so ensures it never 
+    gets called with three empty sets.
+
+    Just pass it into curio.run(...., selector=win_curio_fix())
+    """
+    
+    import selectors
+    import socket
+
+    dummy_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    selector = selectors.DefaultSelector()
+    selector.register(dummy_socket, selectors.EVENT_READ)
+
+    return selector
 
 if __name__ == '__main__':
 
     # Let curio bring this to life
     app, window = build(meta())
 
-    curio.run(qt_app_runner(app, window), with_monitor=True)
+    #curio.run(countdown(100000), selector=selector)
+    selector = win_curio_fix()
 
+    curio.run(qt_app_runner(app, window), with_monitor=True, selector=selector)
+
+    
