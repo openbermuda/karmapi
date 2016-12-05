@@ -396,7 +396,7 @@ class PiWidget(qtw.QWidget):
         return
 
 
-async def qt_app_runner(app, window):
+async def qt_app_runner(app):
 
     # FIXME -- without yosser nothing works
     # may be a windows thing select([], [], []) on windows
@@ -443,7 +443,11 @@ def build(recipe):
     #window.setWindowTitle(title)
     window.show()
 
-    return app, window
+    # need to hang on to a reference to window o/w it gets garbage
+    # collected and disappears.
+    app.windows = [window]
+
+    return app
 
 def win_curio_fix():
     """ Kludge alert 
@@ -468,14 +472,18 @@ def win_curio_fix():
 
     return selector
 
+def run(app):
+
+    selector = win_curio_fix()
+
+    curio.run(qt_app_runner(app), with_monitor=True, selector=selector)
+    
+
 if __name__ == '__main__':
 
     # Let curio bring this to life
-    app, window = build(meta())
+    app = build(meta())
+    run(app)
 
-    #curio.run(countdown(100000), selector=selector)
-    selector = win_curio_fix()
-
-    curio.run(qt_app_runner(app, window), with_monitor=True, selector=selector)
 
     
