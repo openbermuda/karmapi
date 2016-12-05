@@ -20,3 +20,9 @@ imageio
 
 Working towards just using matplotlib.
 
+pyqt5
+=====
+
+For the pig module (a pyqt graphical user interface) pyqt5 is required::
+
+  pip3 install pyqt5
