@@ -14,8 +14,18 @@ curio
 -----
 
 This is a new David Beazley project, so karmapi is using the latest
-from github.
+from github.  Add the following to requirements.txt:
 
+   # curio, live on the edge, run from source
+   -e git://github.com/dabeaz/curio.git
+
+
+Alternatively, clone the repository and use:
+
+   python setup.py develop --user
+
+To install curio in development mode.
+   
 In Dave we trust.
 
 flask_restplus

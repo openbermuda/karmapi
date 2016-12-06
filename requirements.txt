@@ -1,8 +1,6 @@
 jupyter
 matplotlib
 pandas
-# curio, live on the edge, run from source
--e git://github.com/dabeaz/curio.git
-sense_hat
-gpio_zero
+#sense_hat
+#gpio_zero
 pyqt5
