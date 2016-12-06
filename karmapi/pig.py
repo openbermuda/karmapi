@@ -5,6 +5,7 @@ import argparse
 from collections import defaultdict
 from pathlib import Path
 
+import math
 import sys
 
 import curio
@@ -25,6 +26,8 @@ from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas)
 
 from matplotlib.figure import Figure
+from matplotlib import pyplot as plt
+
 from pandas.formats.format import EngFormatter
 
 from karmapi import base, yosser
@@ -243,7 +246,7 @@ class Image(FigureCanvas):
 
         For example:
         
-          t = arange(0.0, 3.0, 0.01)
+          t = pands.np.arange(0.0, 3.0, 0.01)
           s = sin(2*pi*t)
           self.axes.plot(t, s)
 
@@ -255,7 +258,15 @@ class KPlot(Image):
     def compute_data(self):
 
         self.data = [list(range(100)) for x in range(100)]
-        
+
+class XKCD(Image):
+
+    def plot(self):
+        """ Display plot xkcd style """
+        with plt.xkcd():
+            t = pandas.np.arange(0.0, 3.0, 0.01)
+            s = pandas.np.sin(2*math.pi*t)
+            self.axes.plot(t, s) 
 
 class ZoomImage(Image):
     pass
