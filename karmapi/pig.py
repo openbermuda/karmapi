@@ -41,12 +41,13 @@ def meta():
     info = dict(
         title = "PIGS",
         info = dict(foo=27, bar='open'),
-        parms = ['path'],
+        parms = [{'label': 'path'}],
         tabs = [
             {'name': 'example',
              'widgets': [[Image, Video], [Docs, KPlot],
                          [{'name': 'Run', 'callback': hello}]]},
-            {'name': 'perspective'},
+            {'name': 'perspective',
+             'widgets': [[XKCD]]},
             {'name': 'interest'},
             {'name': 'goals'},
             {'name': 'score'},
@@ -119,15 +120,9 @@ class Pigs(qtw.QWidget):
         pass
     
     def build_parms(self):
-        """ Build parms
+        """ Build parms """
 
-        Use arg parser to get at args
-        """
-        parser = get_parser()
-        args = parser.parse_args(self.args)
-
-        # Now just need to loop round the args
-        # and display the values:  K:   VALUE
+        return ParmGrid(self.meta.get('parms', {}))
 
 
     def build_widgets(self, widgets, parent=None):
@@ -167,15 +162,12 @@ class Grid(qtw.QWidget):
     def __init__(self, widgets=None, parent=None):
 
         super().__init__()
+
+        self.build(widgets, parent)
+
+    def build(self, widgets, parent):
         
-        if widgets is None:
-            rows = [[Plotter, Table], [Docs, Console]]
-            rows = [[Console, Console], [Console, Console]]
-            rows = [[Image, Image]]
-            rows = [[Table, Table]]
-            rows = [[KPlot, Video]]
-        else:
-            rows = widgets
+        rows = widgets
 
         # FIXME create the widget
         vlayout = qtw.QVBoxLayout(parent)
@@ -197,7 +189,26 @@ class Grid(qtw.QWidget):
 
                 hlayout.addWidget(widget)
 
+class ParmGrid(Grid):
+    def build(self, parms=None, parent=None):
 
+        layout = qtw.QGridLayout()
+        self.setLayout(layout)
+
+        parms = parms or {}
+        
+        for row, item in enumerate(parms):
+            printf(item)
+
+            label = qtw.QLabel(item.get('label'))
+            layout.addWidget(label, row, 0)
+            entry = qtw.QLineEdit()
+            layout.addWidget(entry, row, 1)
+            
+
+        return self
+
+                
 def button(meta):
     """ Button factory """
     b = qtw.QPushButton(meta.get('name', 'Push Me'))
@@ -264,10 +275,21 @@ class XKCD(Image):
     def plot(self):
         """ Display plot xkcd style """
         with plt.xkcd():
-            t = pandas.np.arange(0.0, 3.0, 0.01)
-            s = pandas.np.sin(2*math.pi*t)
-            self.axes.plot(t, s) 
 
+            np = pandas.np
+
+            data = np.ones(100)
+            data[70:] -= np.arange(30)
+
+            self.axes.plot(data)
+
+            self.axes.annotate(
+                'THE DAY I REALIZED\nI COULD COOK BACON\nWHENEVER I WANTED',
+                xy=(70, 1), arrowprops=dict(arrowstyle='->'), xytext=(15, -10))
+
+            self.axes.set_xlabel('time')
+            self.axes.set_ylabel('my overall health')
+    
 class ZoomImage(Image):
     pass
         
@@ -488,6 +510,7 @@ def run(app):
     selector = win_curio_fix()
 
     curio.run(qt_app_runner(app), with_monitor=True, selector=selector)
+    #curio.run(qt_app_runner(app), with_monitor=True)
     
 
 if __name__ == '__main__':
