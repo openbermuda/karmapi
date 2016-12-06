@@ -99,19 +99,22 @@ class Pigs(qtw.QWidget):
         """ Build tabs """
 
         self.tb = qtw.QTabWidget()
-        self.tabs = []
+        self.tabs = {}
         for tab in self.meta.get('tabs', []):
             printf(tab)
 
             w = qtw.QWidget()
-            self.tabs.append(w)
-            
-            self.tb.addTab(w, tab['name'])
+
+            name = tab['name']
+            self.tb.addTab(w, name)
+
+            self.tabs[name] = {}
 
             widgets = tab.get('widgets')
 
             if widgets:
-                self.build_widgets(widgets, w)
+                grid = self.build_widgets(widgets, w)
+                self.tabs[name] = grid
 
         return self.tb
 
@@ -163,6 +166,7 @@ class Grid(qtw.QWidget):
 
         super().__init__()
 
+        self.grid = {}
         self.build(widgets, parent)
 
     def build(self, widgets, parent):
@@ -171,12 +175,12 @@ class Grid(qtw.QWidget):
 
         # FIXME create the widget
         vlayout = qtw.QVBoxLayout(parent)
-        for row in rows:
+        for irow, row in enumerate(rows):
             print(row)
             wrow = qtw.QWidget()
             vlayout.addWidget(wrow)
             hlayout = qtw.QHBoxLayout(wrow)
-            for item in row:
+            for icol, item in enumerate(row):
                 printf(item)
 
                 # using isinstance makes me sad.. but i will make an exception
@@ -185,7 +189,7 @@ class Grid(qtw.QWidget):
                 else:
                     widget = item(None)
 
-
+                self.grid[(irow, icol)] = widget
 
                 hlayout.addWidget(widget)
 
@@ -362,7 +366,7 @@ class Table(qtw.QTableView):
         super().__init__()
         self.setSortingEnabled(True)
         self.setAlternatingRowColors(True)
-        #self.verticalHeader().setResizeMode(
+        #self.verticalHeader().setSectionResizeMode(
         #    qtw.QHeaderView.ResizeToContents)        
 
 
