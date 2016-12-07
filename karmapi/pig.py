@@ -21,6 +21,7 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5.QtCore import Qt as qt
 
 from PyQt5 import QtCore as qtcore
+from PyQt5 import QtGui as qtgui
 
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas)
@@ -44,7 +45,7 @@ def meta():
         parms = [{'label': 'path'}],
         tabs = [
             {'name': 'example',
-             'widgets': [[Image, Video], [Docs, KPlot],
+             'widgets': [[PlotImage, Video], [Docs, KPlot],
                          [{'name': 'Run', 'callback': hello}]]},
             {'name': 'perspective',
              'widgets': [[XKCD]]},
@@ -222,8 +223,26 @@ def button(meta):
         b.clicked.connect(cb)
 
     return b
-                
-class Image(FigureCanvas):
+
+class Image(qtw.QWidget):
+
+    def __init__(self, meta=None):
+
+        super().__init__()
+
+        meta = meta or {}
+
+        path = meta.get('path', __file__ + 'pig.png')
+
+        self.png = qtgui.QPixmap(path)
+
+        qp = qtgui.QPainter()
+        qp.begin(self)
+        qp.drawPixmap(0, 0, self.png, 0, 0, 100, 100)
+        qp.end()
+        
+        
+class PlotImage(FigureCanvas):
     """ An image widget
 
     This is just a wrapper around matplotlib FigureCanvas.
@@ -274,7 +293,7 @@ class KPlot(Image):
 
         self.data = [list(range(100)) for x in range(100)]
 
-class XKCD(Image):
+class XKCD(PlotImage):
 
     def plot(self):
         """ Display plot xkcd style """
@@ -297,7 +316,7 @@ class XKCD(Image):
 class ZoomImage(Image):
     pass
         
-class Video(Image):
+class Video(PlotImage):
     """ a video widget 
 
     This is currently a matplotlib FigureCanvas
