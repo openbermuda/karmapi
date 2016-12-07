@@ -48,11 +48,13 @@ def meta():
             {'name': 'goals'},
             {'name': 'score'},
             {'name': 'table'},
+# zlatan ibrahimovic is a swedish striker in football
+            {'name': 'ibrah'},
             {'name': 'yosser'}]) 
     return info
 
 def hello():
-    print('hello')
+    print('hello... im a muddy pig')
 
 def get_parser():
 
@@ -155,6 +157,8 @@ class Docs(qtw.QTextBrowser):
             "Show docs here"
             
         self.setHtml("<b>hello world</b>")
+#how do i make this show next to hello world instead of ovveriding it?
+        self.setHtml("<b>gooey py</b>")
 
 
 
@@ -184,7 +188,7 @@ class Grid(qtw.QWidget):
             for item in row:
                 printf(item)
 
-                # using isinstance makes me sad.. but i will make an exception
+                # using isinstance makes me sad.. but i will make an exception; ... what does is isinstance do? couldn't find it in the man pages
                 if isinstance(item, dict):
                     widget = button(item)
                 else:
@@ -302,6 +306,7 @@ class Video(Image):
 
         This just re-computes data and replots.
         """
+#how do we plot a sine waveform?; how does it react to vibration?
         self.compute_data()
         self.plot()
         self.draw()
@@ -424,7 +429,7 @@ async def qtloop(app):
         app.sendPostedEvents(None, 0)
 
         # Experiment with sleep to keep gui responsive
-        # but not a cpu hog.
+        # but not a cpu hog; insert pig joke here
         await curio.sleep(0.05)
     
 
@@ -438,7 +443,8 @@ def build(recipe):
     
     window = Pigs(recipe, app.arguments()[1:])
     #window = qtw.QProgressBar()
-    #window.setRange(0, 99)
+    #window.setRange(0, 101)
+    #window.setRange(0,128)
 
     #window.setWindowTitle(title)
     window.show()
