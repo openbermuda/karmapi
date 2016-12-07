@@ -49,7 +49,8 @@ def meta():
                          [{'name': 'Run', 'callback': hello}]]},
             {'name': 'perspective',
              'widgets': [[XKCD]]},
-            {'name': 'interest'},
+            {'name': 'interest',
+             'widgets': [[Image]]},
             {'name': 'goals'},
             {'name': 'score'},
             {'name': 'table'},
@@ -230,16 +231,21 @@ class Image(qtw.QWidget):
 
         super().__init__()
 
+        self.setAutoFillBackground(True)
+        
         meta = meta or {}
 
-        path = meta.get('path', __file__ + 'pig.png')
+        path = meta.get('path',
+                        Path(__file__).parent / 'pig.png')
 
-        self.png = qtgui.QPixmap(path)
+        print(path, Path(path).exists())
 
-        qp = qtgui.QPainter()
-        qp.begin(self)
-        qp.drawPixmap(0, 0, self.png, 0, 0, 100, 100)
-        qp.end()
+        p = self.palette()
+        p.setBrush(self.backgroundRole(),
+                   qtgui.QBrush(
+                       qtgui.QImage(str(path))))
+        self.setPalette(p)
+
         
         
 class PlotImage(FigureCanvas):
@@ -287,7 +293,7 @@ class PlotImage(FigureCanvas):
         """
         self.axes.imshow(self.data)
         
-class KPlot(Image):
+class KPlot(PlotImage):
 
     def compute_data(self):
 
