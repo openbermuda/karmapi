@@ -45,7 +45,7 @@ def meta():
         parms = [{'label': 'path'}],
         tabs = [
             {'name': 'interest',
-             'widgets': [[Image]]},
+             'widgets': [[TankRain]]},
             {'name': 'example',
              'widgets': [[PlotImage, Video], [Docs, KPlot],
                          [{'name': 'Run', 'callback': hello}]]},
@@ -281,7 +281,8 @@ class PlotImage(FigureCanvas):
         """ Over-ride to get whatever data you want to see
         
         """
-        self.data = pandas.np.random.normal(size=(100, 100))
+        #self.data = pandas.np.random.normal(size=(100, 100))
+        self.data = pandas.np.random.randint(0,100, size=100)
 
     def plot(self):
         """ Display an image 
@@ -293,7 +294,8 @@ class PlotImage(FigureCanvas):
           self.axes.plot(t, s)
 
         """
-        self.axes.imshow(self.data)
+        self.axes.plot(self.data)
+        #self.axes.imshow(self.data)
         
 class KPlot(PlotImage):
 
@@ -320,12 +322,13 @@ class XKCD(PlotImage):
 
             self.axes.set_xlabel('time')
             self.axes.set_ylabel('my overall health')
-    
+
+
 class ZoomImage(Image):
     pass
         
 class Video(PlotImage):
-    """ a video widget 
+    """ a video widget
 
     This is currently a matplotlib FigureCanvas
     """
@@ -335,7 +338,7 @@ class Video(PlotImage):
 
         timer = qtcore.QTimer(self)
         timer.timeout.connect(self.update_figure)
-        timer.start(1000)
+        timer.start(1000 * self.interval)
         
     async def xrun(self):
         """ Run the animation """
@@ -371,6 +374,40 @@ class Video(PlotImage):
         self.draw()
 
 
+
+class TankRain(Video):
+
+    def __init__(self, *args):
+        
+        self.ix = 0
+        self.paths = [x for x in self.images()]
+        print(self.paths)
+        
+        super().__init__(0.1)
+
+
+    def compute_data(self):
+
+        from PIL import Image
+
+        ix = self.ix
+        im = Image.open(self.paths[self.ix])
+        ix = ix + 1
+        if ix == len(self.paths):
+            ix = 0
+        self.ix = ix
+                            
+        self.data = im
+
+    def images(self):
+        path = Path('tankrain/2016/10/12')
+
+        
+        for image in path.glob('local*.png'):
+            yield image
+            
+
+        
 class Table(qtw.QTableView):
     """ A table, time for dinner 
 
