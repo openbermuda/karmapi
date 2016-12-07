@@ -44,13 +44,13 @@ def meta():
         info = dict(foo=27, bar='open'),
         parms = [{'label': 'path'}],
         tabs = [
+            {'name': 'interest',
+             'widgets': [[Image]]},
             {'name': 'example',
              'widgets': [[PlotImage, Video], [Docs, KPlot],
                          [{'name': 'Run', 'callback': hello}]]},
             {'name': 'perspective',
              'widgets': [[XKCD]]},
-            {'name': 'interest',
-             'widgets': [[Image]]},
             {'name': 'goals'},
             {'name': 'score'},
             {'name': 'table'},
@@ -225,7 +225,7 @@ def button(meta):
 
     return b
 
-class Image(qtw.QWidget):
+class Image(qtw.QLabel):
 
     def __init__(self, meta=None):
 
@@ -238,13 +238,15 @@ class Image(qtw.QWidget):
         path = meta.get('path',
                         Path(__file__).parent / 'pig.png')
 
-        print(path, Path(path).exists())
-
         p = self.palette()
-        p.setBrush(self.backgroundRole(),
-                   qtgui.QBrush(
-                       qtgui.QImage(str(path))))
-        self.setPalette(p)
+        image = qtgui.QPixmap(str(path))
+        #self.setPixmap(image.scaled(image.width(), image.height(),
+        #                            qt.KeepAspectRatio))
+        self.setPixmap(image.scaled(self.size(),
+                                    qt.KeepAspectRatio,
+                                    qt.SmoothTransformation))
+        self.setScaledContents(True)
+        
 
         
         
