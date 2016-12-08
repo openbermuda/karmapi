@@ -45,12 +45,12 @@ def meta():
         parms = [{'label': 'path'}],
         tabs = [
             {'name': 'interest',
-             'widgets': [[TankRain]]},
+             'widgets': [["karmapi.tankrain.TankRain"]]},
             {'name': 'example',
-             'widgets': [[PlotImage, Video], [Docs, KPlot],
+             'widgets': [["PlotImage", "Video"], ["Docs", "KPlot"],
                          [{'name': 'Run', 'callback': hello}]]},
             {'name': 'perspective',
-             'widgets': [[XKCD]]},
+             'widgets': [["XKCD"]]},
             {'name': 'goals'},
             {'name': 'score'},
             {'name': 'table'},
@@ -178,22 +178,45 @@ class Grid(qtw.QWidget):
         # FIXME create the widget
         vlayout = qtw.QVBoxLayout(parent)
         for irow, row in enumerate(rows):
-            print(row)
             wrow = qtw.QWidget()
             vlayout.addWidget(wrow)
             hlayout = qtw.QHBoxLayout(wrow)
             for icol, item in enumerate(row):
-                printf(item)
 
-                # using isinstance makes me sad.. but i will make an exception
-                if isinstance(item, dict):
-                    widget = button(item)
+                # using isinstance makes me sad..
+                # but i will make an exception
+                if isinstance(item, str):
+                    # assume it is a path to a widget
+                    widget = get_widget(item)(None)
+                    
+                elif isinstance(item, dict):
+                    # see if dict specifies the widget
+                    widget = item.get('widget', button)
+
+                    if isinstance(widget, str):
+                        # maybe it is a path to a widget
+                        # eg "karmapi.tankrain.TankRain"
+                        widget = get_widget(widget)
+
+                    # build the widget
+                    widget = widget(item)
                 else:
                     widget = item(None)
 
                 self.grid[(irow, icol)] = widget
 
                 hlayout.addWidget(widget)
+
+def get_widget(path):
+
+    parts = path.split('.')
+
+    if len(parts) == 1:
+        pig_mod = sys.modules[__name__]
+        return base.get_item(path, pig_mod)
+
+    return base.get_item(path)
+    
 
 class ParmGrid(Grid):
     def build(self, parms=None, parent=None):
@@ -289,7 +312,7 @@ class PlotImage(FigureCanvas):
 
         For example:
         
-          t = pands.np.arange(0.0, 3.0, 0.01)
+          t = pandas.np.arange(0.0, 3.0, 0.01)
           s = sin(2*pi*t)
           self.axes.plot(t, s)
 
@@ -304,6 +327,10 @@ class KPlot(PlotImage):
         self.data = [list(range(100)) for x in range(100)]
 
 class XKCD(PlotImage):
+
+    def __init__(self, *args, **kwargs):
+
+        super().__init__()
 
     def plot(self):
         """ Display plot xkcd style """

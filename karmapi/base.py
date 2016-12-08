@@ -272,7 +272,7 @@ def load_meta_path(path):
     # return empty dictionary if there is no meta data here
     return {}
 
-def get_item(path):
+def get_item(path, module=None):
     """ Given a path, return the item
 
     Note that path here is a dotted module path per python import.
@@ -283,9 +283,10 @@ def get_item(path):
     """
     path = path.split('.')
 
-    module_name = '.'.join(path[:-1])
+    if module is None:
+        module_name = '.'.join(path[:-1])
 
-    module = importlib.import_module(module_name)
+        module = importlib.import_module(module_name)
 
     return getattr(module, path[-1])
 
