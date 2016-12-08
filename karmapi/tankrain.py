@@ -13,7 +13,7 @@ from collections import defaultdict
 
 from karmapi import show
 
-from karmapi.pig import Video, Image
+from karmapi import pig
 
 # Paths to data
 url = 'http://weather.bm/images/'
@@ -26,7 +26,64 @@ local_chart = 'surfaceAnalysis/Latest/Local.gif'
 
 target = 'tankrain/{date:%Y}/{date:%m}/{date:%d}/{name}_{date:%H%M}{suffix}'
 
-class ParishImage(ZoomImage):
+def meta():
+    """ Generate pig gui description for tankrain """
+    info = dict(
+        title = "PIGS",
+        info = dict(foo=27, bar='open'),
+        parms = [{'label': 'path'}],
+        tabs = [
+            {'name': 'parish',
+             'widgets': [[TankRain]]},
+            {'name': 'local',
+             'widgets': [[TankRain]]},
+            {'name': 'wide',
+             'widgets': [[TankRain]]},
+            {'name': 'yosser'}]) 
+    return info
+    
+
+class TankRain(pig.Video):
+    """ Widget to show tankrain images """
+
+    def __init__(self, *args):
+        
+        self.ix = 0
+        self.paths = [x for x in self.images()]
+        print(self.paths)
+        
+        super().__init__(0.1)
+
+
+    def compute_data(self):
+
+        from PIL import Image
+
+        ix = self.ix
+
+        if ix < len(self.paths):
+            im = Image.open(self.paths[ix])
+        else:
+            im = [list(range(10)) for x in range(10)]
+        
+        ix = ix + 1
+        if ix == len(self.paths):
+            ix = 0
+        self.ix = ix
+                            
+        self.data = im
+
+    def images(self):
+        path = Path('tankrain/2016/10/12')
+
+        
+        for image in path.glob('local*.png'):
+            yield image
+            
+
+
+
+class ParishImage(TankRain):
 
     def compute_data(self):
 
@@ -50,10 +107,16 @@ def get_parser():
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--pig')
+    parser.add_argument('--pig', action='store_true')
     parser.add_argument('--minutes', type=int, default=30)
 
     return parser
+
+def run_pig():
+
+    app = pig.build(meta())
+
+    pig.run(app)
 
 def main(args=None):
     """ Retrieve images currently available 
@@ -63,6 +126,10 @@ def main(args=None):
 
     parser = get_parser()
     args = parser.parse_args()
+
+    if args.pig:
+        run_pig()
+                  
     minutes = args.minutes
 
     size = 250

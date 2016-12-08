@@ -375,38 +375,6 @@ class Video(PlotImage):
 
 
 
-class TankRain(Video):
-
-    def __init__(self, *args):
-        
-        self.ix = 0
-        self.paths = [x for x in self.images()]
-        print(self.paths)
-        
-        super().__init__(0.1)
-
-
-    def compute_data(self):
-
-        from PIL import Image
-
-        ix = self.ix
-        im = Image.open(self.paths[self.ix])
-        ix = ix + 1
-        if ix == len(self.paths):
-            ix = 0
-        self.ix = ix
-                            
-        self.data = im
-
-    def images(self):
-        path = Path('tankrain/2016/10/12')
-
-        
-        for image in path.glob('local*.png'):
-            yield image
-            
-
         
 class Table(qtw.QTableView):
     """ A table, time for dinner 
