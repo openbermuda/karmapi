@@ -14,7 +14,7 @@ import curio
 import pandas
 random = pandas.np.random
 
-import qtconsole.mainwindow as qtc
+#import qtconsole.mainwindow as qtc
 
 from PyQt5 import QtWidgets as qtw
 
@@ -45,7 +45,7 @@ def meta():
         parms = [{'label': 'path'}],
         tabs = [
             {'name': 'interest',
-             'widgets': [["karmapi.tankrain.TankRain"]]},
+             'widgets': [["karmapi.widgets.Friday"]]},
             {'name': 'example',
              'widgets': [["PlotImage", "Video"], ["Docs", "KPlot"],
                          [{'name': 'Run', 'callback': hello}]]},
@@ -137,12 +137,12 @@ class Pigs(qtw.QWidget):
         return grid
 
     
-class Console(qtc.MainWindow):
-    """ A console widget
-
-    This just needs to wrap qtconsole.
-    """
-    pass
+#class Console(qtc.MainWindow):
+#    """ A console widget
+#
+#    This just needs to wrap qtconsole.
+#    """
+#    pass
 
 class Docs(qtw.QTextBrowser):
     """ Docs widget """
@@ -349,6 +349,7 @@ class XKCD(PlotImage):
 
             self.axes.set_xlabel('time')
             self.axes.set_ylabel('my overall health')
+
 
 
 class ZoomImage(Image):
