@@ -45,7 +45,8 @@ def meta():
         parms = [{'label': 'path'}],
         tabs = [
             {'name': 'interest',
-             'widgets': [["karmapi.widgets.Circle"]]},
+             'widgets': [["karmapi.widgets.Circle",
+                          "karmapi.widgets.InfinitySlalom"]]},
             {'name': 'example',
              'widgets': [["PlotImage", "Video"], ["Docs", "KPlot"],
                          [{'name': 'Run', 'callback': hello}]]},
