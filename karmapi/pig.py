@@ -44,14 +44,20 @@ def meta():
         info = dict(foo=27, bar='open'),
         parms = [{'label': 'path'}],
         tabs = [
-            {'name': 'interest',
-             'widgets': [["karmapi.widgets.Circle",
-                          "karmapi.widgets.InfinitySlalom"]]},
             {'name': 'example',
-             'widgets': [["PlotImage", "Video"], ["Docs", "KPlot"],
-                         [{'name': 'Run', 'callback': hello}]]},
+             'widgets': [
+                 ["PlotImage", "Video"],
+                 ["karmapi.widgets.Circle"],
+                 ["Docs", "KPlot"],
+                 [{'name': 'Run', 'callback': hello}]]},
+                 
             {'name': 'perspective',
              'widgets': [["XKCD"]]},
+             
+            {'name': 'interest',
+             'widgets': [
+                 ["karmapi.widgets.InfinitySlalom"]]},
+                 
             {'name': 'goals'},
             {'name': 'score'},
             {'name': 'table'},

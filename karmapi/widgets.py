@@ -7,6 +7,9 @@ from karmapi import pig
 import numpy as np
 from numpy import random
 
+import math
+
+PI = math.pi
 
 class Circle(pig.PlotImage):
 
@@ -54,18 +57,25 @@ class MapPoints(pig.PlotImage):
         
         self.axes.plot(self.data)
 
+        
 class InfinitySlalom(pig.Video):
 
     def compute_data(self):
 
         #self.data = random.randint(0, 100, size=100)
-        self.x = np.linspace(0, random.randint(5, 32), 1000)
+        waves_start = random.randint(5, 10)
+        waves_end = random.randint(32, 1024)
+        self.x = np.linspace(
+            0,
+            random.randint(waves_start, waves_end),
+            1000) * PI
+        
         self.y = np.sin(self.x)
 
     def plot(self):
 
         
-        self.axes.hold(True)
+        self.axes.hold(random.randint(0, 1))
         self.axes.plot(self.x, self.y * -1 * random.random())
         self.axes.plot(self.x, self.y * -1 * random.random())
 
