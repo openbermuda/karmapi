@@ -60,23 +60,44 @@ class MapPoints(pig.PlotImage):
         
 class InfinitySlalom(pig.Video):
 
+    def __init__(self, parent=None):
+
+        super().__init__(parent, facecolor='grey')
+
     def compute_data(self):
 
         #self.data = random.randint(0, 100, size=100)
         waves_start = random.randint(5, 10)
-        waves_end = random.randint(32, 1024)
+        waves_end = random.randint(32, 128)
         self.x = np.linspace(
             0,
             random.randint(waves_start, waves_end),
-            1000) * PI
+            512) * PI
         
-        self.y = np.sin(self.x)
+        self.y = (np.sin(self.x) * 256 / PI) - (128 * PI)
 
     def plot(self):
 
+
+        self.axes.hold(True)
+
+        colour = random.random()
+        n = 100
+        background = np.ones((n, n))
+
+        background *= colour
+
+        background[0, 0] = 0.0
+        background[n-1, n-1] = 1.0
         
-        self.axes.hold(random.randint(0, 1))
-        self.axes.plot(self.x, self.y * -1 * random.random())
-        self.axes.plot(self.x, self.y * -1 * random.random())
+        for curve in range(random.randint(3, 12)):
+
+            self.axes.fill(self.x, self.y * -1 * random.random())
+            self.axes.fill(self.x, self.y * -1 * random.random())
+
+            self.compute_data()
+
+        self.axes.imshow(background, alpha=0.5)
+
 
     

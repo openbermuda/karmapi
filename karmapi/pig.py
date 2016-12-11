@@ -285,9 +285,10 @@ class PlotImage(FigureCanvas):
 
     This is just a wrapper around matplotlib FigureCanvas.
     """
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
+    def __init__(self, parent=None, width=5, height=4, dpi=100, **kwargs):
 
-        fig = Figure(figsize=(width, height), dpi=dpi)
+        print("Init PlotImage")
+        fig = Figure(figsize=(width, height), dpi=dpi, **kwargs)
         super().__init__(fig)
 
         self.axes = fig.add_subplot(111)
@@ -368,7 +369,9 @@ class Video(PlotImage):
     This is currently a matplotlib FigureCanvas
     """
     def __init__(self, interval=1, *args, **kwargs):
-        super().__init__()
+
+        print('Init Video')
+        super().__init__(**kwargs)
         self.interval = interval or 1
 
         timer = qtcore.QTimer(self)
