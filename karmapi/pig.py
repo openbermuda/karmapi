@@ -7,6 +7,7 @@ from pathlib import Path
 
 import math
 import sys
+import inspect
 
 import curio
 
@@ -56,7 +57,8 @@ def meta():
              
             {'name': 'interest',
              'widgets': [
-                 ["karmapi.widgets.InfinitySlalom"]]},
+                 ["karmapi.widgets.InfinitySlalom",
+                  "karmapi.widgets.InfinitySlalom"]]},
                  
             {'name': 'goals'},
             {'name': 'score'},
@@ -85,7 +87,7 @@ class Pigs(qtw.QWidget):
         self.args = args
 
         # keep a list of asynchronous tasks needed to run widgets
-        self.runners = []
+        self.runners = set()
         self.build()
 
     def build(self):
@@ -142,15 +144,23 @@ class Pigs(qtw.QWidget):
 
         grid = Grid(widgets, parent)
 
+        for widget in grid.grid.values():
+            if hasattr(widget, 'run'):
+                self.runners.add(widget.run())
+
         return grid
 
-    
-#class Console(qtc.MainWindow):
-#    """ A console widget
-#
-#    This just needs to wrap qtconsole.
-#    """
-#    pass
+
+    async def run(self):
+        """ Make the pig run """
+        # spawn task for each runner
+        coros = []
+        for item in self.runners:
+            if inspect.iscoroutine(item):
+                coros.append(await(curio.spawn(item)))
+
+        await curio.gather(coros)
+
 
 class Docs(qtw.QTextBrowser):
     """ Docs widget """
@@ -292,7 +302,6 @@ class PlotImage(FigureCanvas):
     """
     def __init__(self, parent=None, width=5, height=4, dpi=100, **kwargs):
 
-        print("Init PlotImage")
         fig = Figure(figsize=(width, height), dpi=dpi, **kwargs)
         super().__init__(fig)
 
@@ -375,15 +384,10 @@ class Video(PlotImage):
     """
     def __init__(self, interval=1, *args, **kwargs):
 
-        print('Init Video')
         super().__init__(**kwargs)
         self.interval = interval or 1
 
-        timer = qtcore.QTimer(self)
-        timer.timeout.connect(self.update_figure)
-        timer.start(1000 * self.interval)
-        
-    async def xrun(self):
+    async def run(self):
         """ Run the animation """
         # Loop forever updating the figure, with a little
         # sleeping help from curio
@@ -394,9 +398,6 @@ class Video(PlotImage):
     def compute_data(self):
 
         self.data = pandas.np.random.normal(size=(100, 100))
-        #self.n = 4
-        #self.k = 20
-        #self.data = [random.randint(0, self.n) for i in range(self.n)]
 
     def __repr__(self):
 
@@ -417,8 +418,6 @@ class Video(PlotImage):
         self.draw()
 
 
-
-        
 class Table(qtw.QTableView):
     """ A table, time for dinner 
 
@@ -513,16 +512,19 @@ async def qt_app_runner(app):
     # FIXME -- without yosser nothing works
     # may be a windows thing select([], [], []) on windows
     # doesn't block, instead throws an error.
-    printf('spawn yosser')
+
+
+    #printf('spawn yosser')
 
     #yoss = await curio.spawn(curio.tcp_server(
     #    '', 2469, yosser.yosser_handler))
-      
-    event_loop = await curio.spawn(qtloop(app))
 
-    print('event loop running')
-    await event_loop.join()
+    app.pig.runners.add(qtloop(app))
 
+    # await the runners
+    selector = win_curio_fix()
+    print('event loop running:')
+    await curio.run(app.pig.run(), selector=selector)
 
 
 async def qtloop(app):
@@ -530,10 +532,10 @@ async def qtloop(app):
     event_loop = qtcore.QEventLoop()
 
     while True:
-        #for win in app.allWindows():
-        #    win.show()
-        event_loop.processEvents()
-        app.sendPostedEvents(None, 0)
+
+        if app.hasPendingEvents():
+            event_loop.processEvents()
+            app.sendPostedEvents(None, 0)
 
         # Experiment with sleep to keep gui responsive
         # but not a cpu hog.
@@ -549,15 +551,14 @@ def build(recipe):
     title = recipe.get('title', app.applicationName())
     
     window = Pigs(recipe, app.arguments()[1:])
-    #window = qtw.QProgressBar()
-    #window.setRange(0, 99)
 
-    #window.setWindowTitle(title)
+    window.setWindowTitle(title)
     window.show()
 
     # need to hang on to a reference to window o/w it gets garbage
     # collected and disappears.
     app.windows = [window]
+    app.pig = window
 
     return app
 
@@ -586,16 +587,20 @@ def win_curio_fix():
 
 def run(app):
 
-    selector = win_curio_fix()
+    # add qt event loop to the curio tasks
+    app.pig.runners.add(qtloop(app))
 
-    curio.run(qt_app_runner(app), with_monitor=True, selector=selector)
-    #curio.run(qt_app_runner(app), with_monitor=True)
+    selector = win_curio_fix()
+    curio.run(app.pig.run(), with_monitor=True, selector=selector)
+
     
 
 if __name__ == '__main__':
 
     # Let curio bring this to life
+    print('build pig')
     app = build(meta())
+    print('make pig run')
     run(app)
 
 

@@ -69,47 +69,61 @@ class InfinitySlalom(pig.Video):
     def compute_data(self):
 
         #self.data = random.randint(0, 100, size=100)
-        waves_start = random.randint(5, 10)
-        waves_end = random.randint(32, 128)
+        self.waves_start = random.randint(5, 10)
+        self.waves_end = random.randint(32, 128)
+        nwaves = random.randint(self.waves_start, self.waves_end)
         self.x = np.linspace(
             0,
-            random.randint(waves_start, waves_end),
+            nwaves,
             512) * PI
         
         self.y = np.sin(self.x / PI) * (64 * PI)
 
     def plot(self):
 
-        selector = pig.win_curio_fix()
-        curio.run(self.updater(), selector=selector)
+        #selector = pig.win_curio_fix()
+        #curio.run(self.updater(), selector=selector)
+        pass
 
-    async def updater(self):
 
+    async def run(self):
+        """ Run the animation 
+        
+        Loop forever updating the figure
+
+        A little help sleeping from curio
+        """
         self.axes.hold(True)
 
-        if random.random() < 0.02:
-            self.axes.clear()
+        while True:
+            await curio.sleep(self.interval)
 
-        colour = random.random()
-        n = 100
-        background = np.ones((n, n))
+            if random.random() < 0.25:
+                print('clearing axes', flush=True)
+                self.axes.clear()
 
-        background *= colour
+            self.compute_data()
 
-        background[0, 0] = 0.0
-        background[n-1, n-1] = 1.0
+            colour = random.random()
+            n = len(self.x)
+            background = np.ones((n, n))
+
+            background *= colour
+
+            background[0, 0] = 0.0
+            background[n-1, n-1] = 1.0
         
-        for curve in range(random.randint(3, 12)):
+            for curve in range(random.randint(3, 12)):
 
-            await curio.sleep(1)
 
-            self.axes.fill(self.x, self.y * 1 * random.random(), alpha=0.3)
-            self.axes.fill(self.x, self.y * -1 * random.random(), alpha=0.3)
+                self.axes.fill(self.x, self.y * 1 * random.random(),
+                               alpha=0.3)
+                self.axes.fill(self.x, self.y * -1 * random.random(),
+                               alpha=0.3)
+                self.axes.imshow(background, alpha=0.1, extent=(
+                    0, 66 * PI, -100, 100))
+                self.draw()
+                
+                await curio.sleep(.5)
 
-            #self.compute_data()
-            break
 
-        
-        self.axes.imshow(background, alpha=0.1, extent=(
-            0, 128 * PI, -128, 128))
-        
