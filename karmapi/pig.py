@@ -125,6 +125,8 @@ class Pigs(qtw.QWidget):
                 grid = self.build_widgets(widgets, w)
                 self.tabs[name] = grid
 
+        self.tb.setCurrentIndex(2)
+
         return self.tb
 
     def build_info(self):
@@ -135,7 +137,6 @@ class Pigs(qtw.QWidget):
         """ Build parms """
 
         return ParmGrid(self.meta.get('parms', {}))
-
 
     def build_widgets(self, widgets, parent=None):
 

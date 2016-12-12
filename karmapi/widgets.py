@@ -76,7 +76,7 @@ class InfinitySlalom(pig.Video):
             random.randint(waves_start, waves_end),
             512) * PI
         
-        self.y = (np.sin(self.x) * 256 / PI) - (128 * PI)
+        self.y = np.sin(self.x / PI) * (64 * PI)
 
     def plot(self):
 
@@ -99,10 +99,13 @@ class InfinitySlalom(pig.Video):
 
             curio.sleep(0.1)
 
+            self.axes.fill(self.x, self.y * 1 * random.random())
             self.axes.fill(self.x, self.y * -1 * random.random())
-            self.axes.fill(self.x, self.y * -1 * random.random())
 
-            self.compute_data()
+            #self.compute_data()
+            break
 
-        self.axes.imshow(background, alpha=0.5)
-
+        
+        self.axes.imshow(background, alpha=0.1, extent=(
+            0, 128 * PI, -128, 128))
+        
