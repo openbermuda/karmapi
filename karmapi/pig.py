@@ -515,8 +515,8 @@ async def qt_app_runner(app):
     # doesn't block, instead throws an error.
     printf('spawn yosser')
 
-    yoss = await curio.spawn(curio.tcp_server(
-        '', 2469, yosser.yosser_handler))
+    #yoss = await curio.spawn(curio.tcp_server(
+    #    '', 2469, yosser.yosser_handler))
       
     event_loop = await curio.spawn(qtloop(app))
 

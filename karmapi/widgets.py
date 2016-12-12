@@ -103,8 +103,8 @@ class InfinitySlalom(pig.Video):
 
             await curio.sleep(1)
 
-            self.axes.fill(self.x, self.y * 1 * random.random())
-            self.axes.fill(self.x, self.y * -1 * random.random())
+            self.axes.fill(self.x, self.y * 1 * random.random(), alpha=0.3)
+            self.axes.fill(self.x, self.y * -1 * random.random(), alpha=0.3)
 
             #self.compute_data()
             break
