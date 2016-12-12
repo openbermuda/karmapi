@@ -4,6 +4,8 @@ Widgets for pig
 
 from karmapi import pig
 
+import curio
+
 import numpy as np
 from numpy import random
 
@@ -78,6 +80,9 @@ class InfinitySlalom(pig.Video):
 
     def plot(self):
 
+        curio.run(self.updater())
+
+    async def updater(self):
 
         self.axes.hold(True)
 
@@ -92,6 +97,8 @@ class InfinitySlalom(pig.Video):
         
         for curve in range(random.randint(3, 12)):
 
+            curio.sleep(0.1)
+
             self.axes.fill(self.x, self.y * -1 * random.random())
             self.axes.fill(self.x, self.y * -1 * random.random())
 
@@ -99,5 +106,3 @@ class InfinitySlalom(pig.Video):
 
         self.axes.imshow(background, alpha=0.5)
 
-
-    
