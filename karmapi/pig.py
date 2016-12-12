@@ -215,6 +215,10 @@ class Grid(qtw.QWidget):
 
                 hlayout.addWidget(widget)
 
+    def __getitem__(self, item):
+
+        return self.grid.get(item)
+
 def get_widget(path):
 
     parts = path.split('.')

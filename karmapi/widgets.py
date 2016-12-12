@@ -80,11 +80,15 @@ class InfinitySlalom(pig.Video):
 
     def plot(self):
 
-        curio.run(self.updater())
+        selector = pig.win_curio_fix()
+        curio.run(self.updater(), selector=selector)
 
     async def updater(self):
 
         self.axes.hold(True)
+
+        if random.random() < 0.02:
+            self.axes.clear()
 
         colour = random.random()
         n = 100
@@ -97,7 +101,7 @@ class InfinitySlalom(pig.Video):
         
         for curve in range(random.randint(3, 12)):
 
-            curio.sleep(0.1)
+            await curio.sleep(1)
 
             self.axes.fill(self.x, self.y * 1 * random.random())
             self.axes.fill(self.x, self.y * -1 * random.random())
