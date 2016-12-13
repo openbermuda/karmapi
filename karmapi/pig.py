@@ -4,6 +4,7 @@ Pi Gui
 import argparse
 from collections import defaultdict
 from pathlib import Path
+import os
 
 import math
 import sys
@@ -37,7 +38,11 @@ from pandas.formats.format import EngFormatter
 
 from karmapi import base, yosser
 
-YOSSER = None
+global APP
+global YQ
+
+YQ = curio.Queue()
+APP = None
 
 def printf(*args, **kwargs):
 
@@ -55,7 +60,7 @@ def meta():
                  ["PlotImage", "Video"],
                  ["karmapi.widgets.Circle"],
                  ["Docs", "KPlot"],
-                 [{'name': 'Run', 'callback': 'runit'}]]},
+                 [{'name': 'Run', 'callback': 'karmapi.pig.runit'}]]},
                  
             {'name': 'perspective',
              'widgets': [["XKCD"]]},
@@ -118,7 +123,6 @@ class Pigs(qtw.QWidget):
         self.tb = qtw.QTabWidget()
         self.tabs = {}
         for tab in self.meta.get('tabs', []):
-            printf(tab)
 
             w = qtw.QWidget()
 
@@ -135,7 +139,7 @@ class Pigs(qtw.QWidget):
 
                 self.lookup.update(grid.lookup)
 
-        self.tb.setCurrentIndex(2)
+        #self.tb.setCurrentIndex(2)
 
         return self.tb
 
@@ -245,8 +249,6 @@ class Grid(qtw.QWidget):
                         widget = get_widget(widget)
 
                     # build the widget
-                    print(item)
-                    print(widget)
                     widget = widget(item)
 
                     # add reference if given one
@@ -273,7 +275,6 @@ def get_widget(path):
 
     if len(parts) == 1:
         pig_mod = sys.modules[__name__]
-        print("looking for {}".format(path))
         return base.get_item(path, pig_mod)
 
     return base.get_item(path)
@@ -288,7 +289,6 @@ class ParmGrid(Grid):
         parms = parms or {}
         
         for row, item in enumerate(parms):
-            printf(item)
 
             label = qtw.QLabel(item.get('label'))
             layout.addWidget(label, row, 0)
@@ -607,8 +607,6 @@ class EventLoop:
         
         self.queue = curio.Queue()
 
-        self.job_queue = curio.Queue()
-
         self.event_loop = qtcore.QEventLoop()
 
         self.app.applicationStateChanged.connect(self.magic)
@@ -622,9 +620,11 @@ class EventLoop:
     async def flush(self):
         """  Wait for an event to arrive in the queue.
         """
-
+        print_thread_info('FLUSH')
+        print(globals().keys())
         while True:
-            
+
+            #print('qsize', self.yq.qsize())
             event = await self.queue.get()
 
             self.event_loop.processEvents()
@@ -636,6 +636,9 @@ class EventLoop:
         # Experiment with sleep to keep gui responsive
         # but not a cpu hog.
         event = 0
+
+        print_thread_info('POLL')
+
         while True:
 
             if self.app.hasPendingEvents():
@@ -649,12 +652,12 @@ class EventLoop:
 
     def submit_job(self, coro):
         """ Submit a coroutine to the job queue """
-        self.job_queue.put(coro)
+        self.yq.put(coro)
 
     async def yosser(self):
 
         while True:
-            job = await self.job_queue.get()
+            job = await self.yq.get()
 
             await curio.run_in_process(job)  
             
@@ -666,6 +669,8 @@ class EventLoop:
 
 
     async def run(self):
+
+        self.yq = YQ
 
         poll_task = await curio.spawn(self.poll())
 
@@ -683,7 +688,8 @@ def build(recipe, pig=None):
 
 
     app = qtw.QApplication([])
-
+    eloop = EventLoop(app)
+    app.eloop = eloop
     
     title = recipe.get('title', app.applicationName())
 
@@ -697,6 +703,10 @@ def build(recipe, pig=None):
     # collected and disappears.
     app.windows = [pig]
     app.pig = pig
+
+    
+    app.pig.runners.add(eloop.run())
+
 
     return app
 
@@ -724,26 +734,50 @@ def win_curio_fix():
     return selector
 
 def run(app):
-    global YOSSER
 
     # add qt event loop to the curio tasks
-    eloop = EventLoop(app)
-    app.pig.runners.add(eloop.run())
-
-    YOSSER = eloop.submit_job
 
     selector = win_curio_fix()
     curio.run(app.pig.run(), with_monitor=True, selector=selector)
 
+async def doit():
+
+    return await curio.sleep(random.randint(20))
+
+
+def print_thread_info(name):
+    import threading
+    print()
+    print(name)
+    print(globals().keys())
+    print(locals().keys())
+    print(threading.current_thread())
+    print(threading.active_count())
+    print('YQ:', YQ.qsize())
+
+
+def runit(*args):
+    """ """
+    #global YOSSER_QUEUE
+    print_thread_info('RUNIT')
+    print('pid', os.getpid())
+    print('submitting to queue')
+    #print('queue size:', YOSSER_QUEUE.qsize())
+
+    # FIXME
+
+    
     
 
 if __name__ == '__main__':
 
     # Let curio bring this to life
     print('build pig')
-    app = build(meta())
+    
+    APP = build(meta())
+
     print('make pig run')
-    run(app)
+    run(APP)
 
 
     
