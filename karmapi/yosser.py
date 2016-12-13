@@ -190,6 +190,38 @@ async def client(path=None, meta=None, host='localhost', port=PORT):
     answer = await s.recv(10000)
 
     return answer
+
+
+class Yosser:
+    """ An asynchronous job server """
+
+    def __init__(self):
+
+        self.queue = curio.Queue()
+
+    def put(self, task):
+        """ Maybe EventLoop is just a curio.EpicQueue? """
+        self.queue.put(task)
+
+        
+    async def giusajob(self):
+        """  Wait for an event to arrive in the queue """
+
+        while True:
+            
+            task = await self.queue.get()
+
+            await curio.run_in_process(task)
+
+
+    async def run(self):
+
+        giusajob_task = await curio.spawn(self.giusajob())
+
+        tasks = [giusajob_task]
+
+        await curio.gather(tasks)
+
     
 def get_parser():
     

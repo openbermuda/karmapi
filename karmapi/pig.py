@@ -27,12 +27,17 @@ from PyQt5 import QtGui as qtgui
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas)
 
+from matplotlib.backends.backend_qt5agg import (
+    NavigationToolbar2QT)
+
 from matplotlib.figure import Figure
 from matplotlib import pyplot as plt
 
 from pandas.formats.format import EngFormatter
 
 from karmapi import base, yosser
+
+YOSSER = None
 
 def printf(*args, **kwargs):
 
@@ -50,7 +55,7 @@ def meta():
                  ["PlotImage", "Video"],
                  ["karmapi.widgets.Circle"],
                  ["Docs", "KPlot"],
-                 [{'name': 'Run', 'callback': hello}]]},
+                 [{'name': 'Run', 'callback': 'runit'}]]},
                  
             {'name': 'perspective',
              'widgets': [["XKCD"]]},
@@ -88,6 +93,7 @@ class Pigs(qtw.QWidget):
 
         # keep a list of asynchronous tasks needed to run widgets
         self.runners = set()
+        self.lookup = {}
         self.build()
 
     def build(self):
@@ -127,6 +133,8 @@ class Pigs(qtw.QWidget):
                 grid = self.build_widgets(widgets, w)
                 self.tabs[name] = grid
 
+                self.lookup.update(grid.lookup)
+
         self.tb.setCurrentIndex(2)
 
         return self.tb
@@ -150,6 +158,12 @@ class Pigs(qtw.QWidget):
 
         return grid
 
+    def __getitem__(self, item):
+
+        if item in self.lookup:
+            return self.lookup.get(item)
+
+        raise KeyError
 
     async def run(self):
         """ Make the pig run """
@@ -160,6 +174,19 @@ class Pigs(qtw.QWidget):
                 coros.append(await(curio.spawn(item)))
 
         await curio.gather(coros)
+
+
+class Text(qtw.QTextEdit):
+    """ Text edit widget """
+    def __init__(self, meta=None):
+        """ Initialise the widget 
+
+        doc: optional html text to load the widget with.
+        """
+
+        super().__init__()
+
+        meta = meta or {}
 
 
 class Docs(qtw.QTextBrowser):
@@ -187,6 +214,7 @@ class Grid(qtw.QWidget):
         super().__init__()
 
         self.grid = {}
+        self.lookup = {}
         self.build(widgets, parent)
 
     def build(self, widgets, parent):
@@ -217,7 +245,14 @@ class Grid(qtw.QWidget):
                         widget = get_widget(widget)
 
                     # build the widget
+                    print(item)
+                    print(widget)
                     widget = widget(item)
+
+                    # add reference if given one
+                    name = item.get('name')
+                    if name:
+                        self.lookup[name] = widget
                 else:
                     widget = item(None)
 
@@ -227,6 +262,9 @@ class Grid(qtw.QWidget):
 
     def __getitem__(self, item):
 
+        if item in self.lookup:
+            return self.lookup.get(item)
+
         return self.grid.get(item)
 
 def get_widget(path):
@@ -235,6 +273,7 @@ def get_widget(path):
 
     if len(parts) == 1:
         pig_mod = sys.modules[__name__]
+        print("looking for {}".format(path))
         return base.get_item(path, pig_mod)
 
     return base.get_item(path)
@@ -266,6 +305,8 @@ def button(meta):
 
     cb = meta.get('callback')
     if cb:
+        if str(cb):
+            cb = base.get_item(cb)
         b.clicked.connect(cb)
 
     return b
@@ -293,33 +334,42 @@ class Image(qtw.QLabel):
         self.setScaledContents(True)
         
 
-        
-        
-class PlotImage(FigureCanvas):
+class PlotImage(qtw.QWidget):
     """ An image widget
 
     This is just a wrapper around matplotlib FigureCanvas.
     """
     def __init__(self, parent=None, width=5, height=4, dpi=100, **kwargs):
 
+        super().__init__()
+
         fig = Figure(figsize=(width, height), dpi=dpi, **kwargs)
-        super().__init__(fig)
+        layout = qtw.QVBoxLayout(self)
+        self.image = FigureCanvas(fig)
+        layout.addWidget(self.image)
+
+        self.toolbar = NavigationToolbar2QT(self.image, self)
+        layout.addWidget(self.toolbar)
+        #self.toolbar.hide()
 
         self.axes = fig.add_subplot(111)
         # We want the axes cleared every time plot() is called
         self.axes.hold(False)
 
-                
         self.compute_data()
         self.plot()
-        #
-        FigureCanvas.__init__(self, fig)
+
         self.setParent(parent)
 
-        FigureCanvas.setSizePolicy(self,
+        FigureCanvas.setSizePolicy(self.image,
                                    qtw.QSizePolicy.Expanding,
                                    qtw.QSizePolicy.Expanding)
-        FigureCanvas.updateGeometry(self)
+        FigureCanvas.updateGeometry(self.image)
+
+
+    def __getattr__(self, attr):
+
+        return getattr(self.image, attr)
 
 
     def compute_data(self):
@@ -557,6 +607,8 @@ class EventLoop:
         
         self.queue = curio.Queue()
 
+        self.job_queue = curio.Queue()
+
         self.event_loop = qtcore.QEventLoop()
 
         self.app.applicationStateChanged.connect(self.magic)
@@ -595,6 +647,17 @@ class EventLoop:
 
             await curio.sleep(0.05)
 
+    def submit_job(self, coro):
+        """ Submit a coroutine to the job queue """
+        self.job_queue.put(coro)
+
+    async def yosser(self):
+
+        while True:
+            job = await self.job_queue.get()
+
+            await curio.run_in_process(job)  
+            
 
     def magic(self, event, *args, **kwargs):
         """ Gets called when magic is needed """
@@ -608,29 +671,32 @@ class EventLoop:
 
         flush_task = await curio.spawn(self.flush())
 
-        tasks = [flush_task, poll_task]
+        yosser_task = await curio.spawn(self.yosser())
+
+        tasks = [flush_task, poll_task, yosser_task]
 
         await curio.gather(tasks)
 
 
 
-def build(recipe):
+def build(recipe, pig=None):
 
 
     app = qtw.QApplication([])
 
     
     title = recipe.get('title', app.applicationName())
-    
-    window = Pigs(recipe, app.arguments()[1:])
 
-    window.setWindowTitle(title)
-    window.show()
+    if pig is None:
+        pig = Pigs(recipe, app.arguments()[1:])
+    
+    pig.setWindowTitle(title)
+    pig.show()
 
     # need to hang on to a reference to window o/w it gets garbage
     # collected and disappears.
-    app.windows = [window]
-    app.pig = window
+    app.windows = [pig]
+    app.pig = pig
 
     return app
 
@@ -658,10 +724,13 @@ def win_curio_fix():
     return selector
 
 def run(app):
+    global YOSSER
 
     # add qt event loop to the curio tasks
     eloop = EventLoop(app)
     app.pig.runners.add(eloop.run())
+
+    YOSSER = eloop.submit_job
 
     selector = win_curio_fix()
     curio.run(app.pig.run(), with_monitor=True, selector=selector)
