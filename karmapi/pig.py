@@ -527,20 +527,92 @@ async def qt_app_runner(app):
     await curio.run(app.pig.run(), selector=selector)
 
 
-async def qtloop(app):
+class EventLoop:
+    """ An event loop
 
-    event_loop = qtcore.QEventLoop()
+    For now, this is just here to make a Qt app run
+    under curio,
 
-    while True:
+    For now it has two tasks.
 
-        if app.hasPendingEvents():
-            event_loop.processEvents()
-            app.sendPostedEvents(None, 0)
+    flush:  wait for an event, then process it
+
+    poll: periodically tests if the app has pending events
+
+
+    FIXME: add a magic task that magically knows when there
+           are events pending without having to poll.
+
+           Somewhere in the depths of Qt there has to be an
+           event queue.  If that code can be fixed to let
+           this event loop know when the queue is not empty
+           then we'd have magic.
+
+           somewhere there is a magic file or socket?
+    """
+
+    def __init__(self, app=None):
+
+        self.app = app
+        
+        self.queue = curio.Queue()
+
+        self.event_loop = qtcore.QEventLoop()
+
+        self.app.applicationStateChanged.connect(self.magic)
+
+
+    def put(self, event):
+        """ Maybe EventLoop is just a curio.EpicQueue? """
+        self.queue.put(event)
+
+        
+    async def flush(self):
+        """  Wait for an event to arrive in the queue.
+        """
+
+        while True:
+            
+            event = await self.queue.get()
+
+            self.event_loop.processEvents()
+            self.app.sendPostedEvents(None, 0)
+
+
+    async def poll(self):
 
         # Experiment with sleep to keep gui responsive
         # but not a cpu hog.
-        await curio.sleep(0.05)
-    
+        event = 0
+        while True:
+
+            if self.app.hasPendingEvents():
+
+                # FIXME - have Qt do the put when it wants refreshing
+                self.put(event)
+                event += 1
+
+
+            await curio.sleep(0.05)
+
+
+    def magic(self, event, *args, **kwargs):
+        """ Gets called when magic is needed """
+        print('magic', flush=True)
+        self.put(event)
+
+
+    async def run(self):
+
+        poll_task = await curio.spawn(self.poll())
+
+        flush_task = await curio.spawn(self.flush())
+
+        tasks = [flush_task, poll_task]
+
+        await curio.gather(tasks)
+
+
 
 def build(recipe):
 
@@ -588,7 +660,8 @@ def win_curio_fix():
 def run(app):
 
     # add qt event loop to the curio tasks
-    app.pig.runners.add(qtloop(app))
+    eloop = EventLoop(app)
+    app.pig.runners.add(eloop.run())
 
     selector = win_curio_fix()
     curio.run(app.pig.run(), with_monitor=True, selector=selector)
