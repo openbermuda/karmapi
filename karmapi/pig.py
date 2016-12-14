@@ -5,10 +5,11 @@ import argparse
 from collections import defaultdict
 from pathlib import Path
 import os
-
+import time
 import math
 import sys
 import inspect
+from multiprocessing import cpu_count
 
 import curio
 
@@ -60,7 +61,7 @@ def meta():
                  ["PlotImage", "Video"],
                  ["karmapi.widgets.Circle"],
                  ["Docs", "KPlot"],
-                 [{'name': 'Run', 'callback': 'karmapi.pig.runit'}]]},
+                 [{'name': 'Run'}]]},
                  
             {'name': 'perspective',
              'widgets': [["XKCD"]]},
@@ -76,8 +77,25 @@ def meta():
             {'name': 'yosser'}]) 
     return info
 
-def hello():
-    print('hello')
+def bindings():
+    """ Return the bindings between widgets and callbacks """
+    return {
+        'Run': 'runit'}
+
+def bind(piggy, binds):
+
+    for widget, binding in binds.items():
+
+        print(widget)
+        w = piggy[widget]
+
+        try:
+            cb = getattr(piggy, binding)
+        except AttributeError:
+            cb = base.get_item(binding)
+        
+        w.clicked.connect(cb)
+
 
 def get_parser():
 
@@ -168,6 +186,26 @@ class Pigs(qtw.QWidget):
             return self.lookup.get(item)
 
         raise KeyError
+
+    async def doit(self):
+        """  Async callback example 
+
+        See Pig.runit()
+        """
+        print('doit eloop.yq:', self.eloop.yq.qsize())
+        sleep = random.randint(1, 20)
+        print("running doit doit doit {}".format(sleep))
+        start = time.time()
+        await curio.sleep(sleep)
+        end = time.time()
+        print('actual sleep {} {}'.format(sleep, end-start))
+        return sleep
+
+    def runit(self):
+        
+        print('pig runit :)')
+
+        self.eloop.submit_job(self.doit())
 
     async def run(self):
         """ Make the pig run """
@@ -540,43 +578,6 @@ class PandasModel(qtcore.QAbstractTableModel):
         self.layoutChanged.emit()
 
 
-class PiWidget(qtw.QWidget):
-
-    def __init__(self, recipe):
-
-        super().__init__()
-        
-        self.recipe = recipe
-
-    def build(self):
-
-        layout = QVBoxLayout(self)
-
-        build(self.recipe, layout)
-
-        return
-
-
-async def qt_app_runner(app):
-
-    # FIXME -- without yosser nothing works
-    # may be a windows thing select([], [], []) on windows
-    # doesn't block, instead throws an error.
-
-
-    #printf('spawn yosser')
-
-    #yoss = await curio.spawn(curio.tcp_server(
-    #    '', 2469, yosser.yosser_handler))
-
-    app.pig.runners.add(qtloop(app))
-
-    # await the runners
-    selector = win_curio_fix()
-    print('event loop running:')
-    await curio.run(app.pig.run(), selector=selector)
-
-
 class EventLoop:
     """ An event loop
 
@@ -609,8 +610,6 @@ class EventLoop:
 
         self.event_loop = qtcore.QEventLoop()
 
-        self.app.applicationStateChanged.connect(self.magic)
-
 
     def put(self, event):
         """ Maybe EventLoop is just a curio.EpicQueue? """
@@ -620,7 +619,6 @@ class EventLoop:
     async def flush(self):
         """  Wait for an event to arrive in the queue.
         """
-        print_thread_info('FLUSH')
         print(globals().keys())
         while True:
 
@@ -631,13 +629,11 @@ class EventLoop:
             self.app.sendPostedEvents(None, 0)
 
 
-    async def poll(self):
+    async def poll(self, yq):
 
         # Experiment with sleep to keep gui responsive
         # but not a cpu hog.
         event = 0
-
-        print_thread_info('POLL')
 
         while True:
 
@@ -647,19 +643,24 @@ class EventLoop:
                 self.put(event)
                 event += 1
 
-
             await curio.sleep(0.05)
 
     def submit_job(self, coro):
         """ Submit a coroutine to the job queue """
         self.yq.put(coro)
 
-    async def yosser(self):
+    async def yosser(self, yq):
 
+        self.yq = yq
         while True:
-            job = await self.yq.get()
+            job = await yq.get()
+            print('yay!! yosser got a job')
 
-            await curio.run_in_process(job)  
+            start = time.time()
+            result = await job
+            end = time.time()
+            print("doit slept for {} {}".format(result, end-start))
+            #await curio.run_in_process(job)  
             
 
     def magic(self, event, *args, **kwargs):
@@ -670,15 +671,16 @@ class EventLoop:
 
     async def run(self):
 
-        self.yq = YQ
-
-        poll_task = await curio.spawn(self.poll())
+        poll_task = await curio.spawn(self.poll(YQ))
 
         flush_task = await curio.spawn(self.flush())
 
-        yosser_task = await curio.spawn(self.yosser())
+        yosser_tasks = []
+        for yosser in range(cpu_count()):
+        
+            yosser_tasks.append(await curio.spawn(self.yosser(YQ)))
 
-        tasks = [flush_task, poll_task, yosser_task]
+        tasks = [flush_task, poll_task] +  yosser_tasks
 
         await curio.gather(tasks)
 
@@ -689,7 +691,6 @@ def build(recipe, pig=None):
 
     app = qtw.QApplication([])
     eloop = EventLoop(app)
-    app.eloop = eloop
     
     title = recipe.get('title', app.applicationName())
 
@@ -698,6 +699,7 @@ def build(recipe, pig=None):
     
     pig.setWindowTitle(title)
     pig.show()
+    pig.eloop = eloop
 
     # need to hang on to a reference to window o/w it gets garbage
     # collected and disappears.
@@ -740,9 +742,6 @@ def run(app):
     selector = win_curio_fix()
     curio.run(app.pig.run(), with_monitor=True, selector=selector)
 
-async def doit():
-
-    return await curio.sleep(random.randint(20))
 
 
 def print_thread_info(name):
@@ -756,17 +755,6 @@ def print_thread_info(name):
     print('YQ:', YQ.qsize())
 
 
-def runit(*args):
-    """ """
-    #global YOSSER_QUEUE
-    print_thread_info('RUNIT')
-    print('pid', os.getpid())
-    print('submitting to queue')
-    #print('queue size:', YOSSER_QUEUE.qsize())
-
-    # FIXME
-
-    
     
 
 if __name__ == '__main__':
@@ -775,6 +763,9 @@ if __name__ == '__main__':
     print('build pig')
     
     APP = build(meta())
+
+    # apply bindings
+    bind(APP.pig, bindings())
 
     print('make pig run')
     run(APP)
