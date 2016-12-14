@@ -124,6 +124,6 @@ class InfinitySlalom(pig.Video):
                     0, 66 * PI, -100, 100))
                 self.draw()
                 
-                await curio.sleep(.5)
+                await curio.sleep(10)
 
 

@@ -9,6 +9,7 @@ import time
 import math
 import sys
 import inspect
+
 from multiprocessing import cpu_count
 
 import curio
@@ -187,8 +188,14 @@ class Pigs(qtw.QWidget):
 
         raise KeyError
 
+    def runit(self):
+        
+        print('pig runit :)')
+
+        self.eloop.submit_job(doit)
+
     async def doit(self):
-        """  Async callback example 
+        """  Async callback example for yosser
 
         See Pig.runit()
         """
@@ -201,11 +208,6 @@ class Pigs(qtw.QWidget):
         print('actual sleep {} {}'.format(sleep, end-start))
         return sleep
 
-    def runit(self):
-        
-        print('pig runit :)')
-
-        self.eloop.submit_job(self.doit())
 
     async def run(self):
         """ Make the pig run """
@@ -217,6 +219,25 @@ class Pigs(qtw.QWidget):
 
         await curio.gather(coros)
 
+def doit():
+    """  Callback example for yosser
+
+    See Pig.runit()
+    """
+    n = random.randint(35, 40)
+    start = time.time()
+    #time.sleep(sleep)
+    sleep = fib(n)
+    end = time.time()
+    print('actual sleep {} {}'.format(sleep, end-start))
+    return n, sleep
+
+def fib(n):
+    if n <= 2:
+        return 1
+    else:
+        return fib(n-1) + fib(n-2)
+        
 
 class Text(qtw.QTextEdit):
     """ Text edit widget """
@@ -654,13 +675,16 @@ class EventLoop:
         self.yq = yq
         while True:
             job = await yq.get()
-            print('yay!! yosser got a job')
+            print('yay!! yosser got a job {}'.format(job))
 
             start = time.time()
-            result = await job
+            # fixme: want curio run for
+            if inspect.iscoroutine(job):
+                result = await job
+            else:
+                result = await curio.run_in_process(job)
             end = time.time()
             print("doit slept for {} {}".format(result, end-start))
-            #await curio.run_in_process(job)  
             
 
     def magic(self, event, *args, **kwargs):
