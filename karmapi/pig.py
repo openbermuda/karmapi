@@ -50,6 +50,7 @@ def printf(*args, **kwargs):
 
     print(*args, flush=True, **kwargs)
 
+
 def meta():
     """ Return description of a pig """
     info = dict(
@@ -87,7 +88,6 @@ def bind(piggy, binds):
 
     for widget, binding in binds.items():
 
-        print(widget)
         w = piggy[widget]
 
         try:
@@ -193,19 +193,21 @@ class Pigs(qtw.QWidget):
         print('pig runit :)')
 
         self.eloop.submit_job(doit)
+        self.eloop.submit_job(self.doit())
 
     async def doit(self):
         """  Async callback example for yosser
 
         See Pig.runit()
         """
-        print('doit eloop.yq:', self.eloop.yq.qsize())
+        from datetime import datetime
         sleep = random.randint(1, 20)
-        print("running doit doit doit {}".format(sleep))
+        printf("running doit doit doit {} {}".format(sleep, datetime.now()))
         start = time.time()
         await curio.sleep(sleep)
         end = time.time()
-        print('actual sleep {} {}'.format(sleep, end-start))
+        printf('actual sleep {} {} {}'.format(
+            sleep, end-start, datetime.now()))
         return sleep
 
 
@@ -640,10 +642,8 @@ class EventLoop:
     async def flush(self):
         """  Wait for an event to arrive in the queue.
         """
-        print(globals().keys())
         while True:
 
-            #print('qsize', self.yq.qsize())
             event = await self.queue.get()
 
             self.event_loop.processEvents()
@@ -675,6 +675,7 @@ class EventLoop:
         self.yq = yq
         while True:
             job = await yq.get()
+
             print('yay!! yosser got a job {}'.format(job))
 
             start = time.time()
@@ -684,12 +685,13 @@ class EventLoop:
             else:
                 result = await curio.run_in_process(job)
             end = time.time()
+
             print("doit slept for {} {}".format(result, end-start))
             
 
     def magic(self, event, *args, **kwargs):
         """ Gets called when magic is needed """
-        print('magic', flush=True)
+        printf('magic', flush=True)
         self.put(event)
 
 
