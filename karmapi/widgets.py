@@ -172,7 +172,7 @@ class Curio(pig.Widget):
         layout.addWidget(monitor)
 
         self.text = monitor.grid[(0,0)]
-
+        #self.setFixedWidth(14)
 
     def keyPressEvent(self, event):
 
@@ -181,9 +181,61 @@ class Curio(pig.Widget):
         key = event.key()
         print(key, chr(key))
         key = chr(key)
-        
-        m = CurioMonitor()
 
+        self.dokey(key)
+
+    def show_previous(self):
+
+        text, tasks = self.get_tasks()
+
+        max_id = max(tasks)
+
+        while True:
+            self.task_id -= 1
+            if self.task_id < 0:
+                self.task_id = max_id
+                
+            if self.task_id in tasks:
+                text += "\nWhere {}:\n\n".format(self.task_id)
+                text += self.mon.where(self.task_id).decode()
+                return text
+        
+        
+    def show_next(self):
+
+        text, tasks = self.get_tasks()
+
+        max_id = max(tasks)
+
+        while True:
+            self.task_id += 1
+            if self.task_id > max_id:
+                self.task_id = 0
+            if self.task_id in tasks:
+                text += "\nWhere {}:\n\n".format(self.task_id)
+                text += self.mon.where(self.task_id).decode()
+                return text
+
+
+    def get_tasks(self):
+
+        tasks = set()
+
+        # get set of tasks -- be better to find the
+        # curio kernel
+        text = self.mon.ps().decode()
+        for line in text.split('\n'):
+            task = line.split()[0]
+            if task.isdigit():
+                tasks.add(int(task))
+
+        return text, tasks
+        
+
+    def dokey(self, key):
+
+        m = self.mon
+        
         text = m.ps().decode()
             
         if key.isdigit():
@@ -191,8 +243,24 @@ class Curio(pig.Widget):
             ikey = int(key)
             text += "\nWhere {}\n\n".format(ikey)
             text += m.where(ikey).decode()
+
+        elif key == 'J':
+            text = self.show_previous()
+
+        elif key == 'K':
+            text = self.show_next()
             
-        self.text.setText(text)
+        self.text.setHtml('<pre>' + text + '<pre>')
+
+
+    async def run(self):
+        
+        
+        self.mon = CurioMonitor()
+        self.task_id = 0
+        self.dokey('P')
+
+
 
         
         
