@@ -58,6 +58,10 @@ def meta():
         info = dict(foo=27, bar='open'),
         parms = [{'label': 'path'}],
         tabs = [
+            {'name': 'curio',
+             'widgets': [
+                 ["karmapi.widgets.Curio"]]},
+                 
             {'name': 'example',
              'widgets': [
                  ["PlotImage", "Video"],
@@ -239,7 +243,18 @@ def fib(n):
         return 1
     else:
         return fib(n-1) + fib(n-2)
-        
+
+class Widget(qtw.QWidget):
+
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+
+        self.layout
+
+    def keyPressEvent(self, event):
+
+        print('key pressed', event)
 
 class Text(qtw.QTextEdit):
     """ Text edit widget """
@@ -268,7 +283,6 @@ class Docs(qtw.QTextBrowser):
             "Show docs here"
             
         self.setHtml("<b>hello world</b>")
-
 
 
 class Grid(qtw.QWidget):

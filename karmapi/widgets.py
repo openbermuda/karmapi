@@ -127,3 +127,83 @@ class InfinitySlalom(pig.Video):
                 await curio.sleep(10)
 
 
+class CurioMonitor:
+
+    def __init__(self):
+
+        import socket
+
+        self.mon = socket.socket()
+
+        host = curio.monitor.MONITOR_HOST
+        port = curio.monitor.MONITOR_PORT
+        self.mon.connect((host, port))
+
+        self.info = self.mon.recv(10000)
+
+    def ps(self):
+
+        self.mon.send(b'ps\n')
+        return self.mon.recv(100000)
+                
+    def where(self, n):
+
+        self.mon.send('where {}\n'.format(n).encode())
+        return self.mon.recv(100000)
+
+class Curio(pig.Widget):
+    """ A Curio Monitor 
+
+    ps: show tasks
+    where: show where the task is
+    cancel: end the task
+    """
+    def __init__(self, parent=None, *args, **kwargs):
+        """ Set up the widget """
+        super().__init__(*args, **kwargs)
+
+        layout = pig.qtw.QHBoxLayout(parent)
+
+        # ps screen, where window
+        meta = [["Docs"]]
+        
+        # build a Grid and add to self
+        monitor = pig.Grid(meta, self)
+        layout.addWidget(monitor)
+
+        self.text = monitor.grid[(0,0)]
+
+
+    def keyPressEvent(self, event):
+
+        print(event)
+        #print([x for x in dir(event)])
+        key = event.key()
+        print(key, chr(key))
+        key = chr(key)
+        
+        m = CurioMonitor()
+
+        text = m.ps().decode()
+            
+        if key.isdigit():
+
+            ikey = int(key)
+            text += "\nWhere {}\n\n".format(ikey)
+            text += m.where(ikey).decode()
+            
+        self.text.setText(text)
+
+        
+        
+        
+        
+def get_widget(path):
+
+    parts = path.split('.')
+
+    if len(parts) == 1:
+        pig_mod = sys.modules[__name__]
+        return base.get_item(path, pig_mod)
+
+    return base.get_item(path)
