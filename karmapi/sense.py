@@ -18,7 +18,12 @@ def piggy():
         tabs = [
             {'name': 'weather',
              'widgets': [
-                 ["karmapi.sense.Weather"],
+                 ["karmapi.sense.Temperature"],
+                 ["karmapi.sense.Humidity"],
+                 ["karmapi.sense.Pressure"],
+             ]},
+            {'name': 'curio',
+             'widgets': [
                  ['karmapi.widgets.Curio']]}])
 
     return info
@@ -80,7 +85,9 @@ def show_all_stats(hat, show=None):
             show("%s: %04.1f\n" % (key, value))
 
 
-class Weather(pig.Video):
+class Humidity(pig.Video):
+
+    field = 'humidity'
 
     async def run(self):
         """ Loop forever updating with sense had data
@@ -94,13 +101,13 @@ class Weather(pig.Video):
         queue = curio.Queue()
         await curio.spawn(self.read_hat(queue))
 
-        for x in range(5):
-            stats = await queue.get()
-            data.append(stats)
+        #for x in range(5):
+        #    stats = await queue.get()
+        #    data.append(stats)
 
         df = pandas.DataFrame(data)
-        self.axes.plot(df.timestamp, df.humidity)
-        self.draw()
+        #self.axes.plot(df.timestamp, df.humidity)
+        #self.draw()
         
         while True:
             stats = await queue.get()
@@ -109,11 +116,10 @@ class Weather(pig.Video):
             df = pandas.DataFrame(data)
 
             self.axes.clear()
-            self.axes.plot(df.timestamp, df.humidity,
-                           label='humidity')
-            self.axes.plot(df.timestamp, df.temperature_guess,
-                           label='temp')
-            self.axes.legend(loc=0)
+            self.axes.plot(df.timestamp, df[self.field],
+                           label=self.field)
+
+            self.axes.set_title(self.field)
 
             self.draw()
 
@@ -128,8 +134,16 @@ class Weather(pig.Video):
             stats = get_stats(hat)
             await data.put(stats)
             await curio.sleep(self.interval)
-        
-            
+
+
+class Temperature(Humidity):
+
+    field = 'temperature_guess'
+
+class Pressure(Humidity):
+
+    field = 'pressure'
+    
 if __name__ == '__main__':
 
     app = pig.build(piggy())

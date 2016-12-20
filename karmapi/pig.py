@@ -428,6 +428,7 @@ class PlotImage(qtw.QWidget):
         #self.toolbar.hide()
 
         self.axes = fig.add_subplot(111)
+        self.fig = fig
         # We want the axes cleared every time plot() is called
         self.axes.hold(False)
 
