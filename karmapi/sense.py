@@ -5,6 +5,9 @@ Sense Hat tools
 """
 import subprocess
 import curio
+import sense_hat
+import pandas
+import datetime
 
 from karmapi import pig
 
@@ -15,18 +18,11 @@ def piggy():
         tabs = [
             {'name': 'weather',
              'widgets': [
-                 ["karmapi.sense.Weather"]]}])
+                 ["karmapi.sense.Weather"],
+                 ['karmapi.widgets.Curio']]}])
 
     return info
                 
-
-def record(hat):
-    """ Return current sense had readings """
-
-
-    pressure = hat.pressure
-    temperature = hat.
-    
 
 def stats(hat):
     while True:
@@ -59,6 +55,8 @@ def get_stats(hat):
 
     data['temperature_guess'] = guess
 
+    data['timestamp'] = datetime.datetime.now()
+
     return data
 
 def get_cpu_temperature():
@@ -83,7 +81,54 @@ def show_all_stats(hat, show=None):
 
 
 class Weather(pig.Video):
-    pass
+
+    async def run(self):
+        """ Loop forever updating with sense had data
+
+        A little help sleeping from curio
+        """
+        self.axes.hold(True)
+        interval = 1
+
+        data = []
+        queue = curio.Queue()
+        await curio.spawn(self.read_hat(queue))
+
+        for x in range(5):
+            stats = await queue.get()
+            data.append(stats)
+
+        df = pandas.DataFrame(data)
+        self.axes.plot(df.timestamp, df.humidity)
+        self.draw()
+        
+        while True:
+            stats = await queue.get()
+            
+            data.append(stats)
+            df = pandas.DataFrame(data)
+
+            self.axes.clear()
+            self.axes.plot(df.timestamp, df.humidity,
+                           label='humidity')
+            self.axes.plot(df.timestamp, df.temperature_guess,
+                           label='temp')
+            self.axes.legend(loc=0)
+
+            self.draw()
+
+    def plot(self):
+        pass
+
+    async def read_hat(self, data):
+        """ Read sense hat data """
+        hat = sense_hat.SenseHat()
+
+        while True:
+            stats = get_stats(hat)
+            await data.put(stats)
+            await curio.sleep(self.interval)
+        
             
 if __name__ == '__main__':
 
