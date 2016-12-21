@@ -18,23 +18,18 @@ def piggy():
         tabs = [
             {'name': 'weather',
              'widgets': [
-                 ["karmapi.sense.Temperature"],
-                 ["karmapi.sense.Humidity"],
-                 ["karmapi.sense.Pressure"],
+                 ["karmapi.sense.WeatherHat"],
              ]},
             {'name': 'Orient',
              'widgets': [
-                 ["karmapi.sense.Compass"],
-                 ["karmapi.sense.Roll"],
-                 ["karmapi.sense.Pitch"],
-                 ["karmapi.sense.Yaw"],
+                 ["karmapi.sense.OrientHat"],
              ]},
             {'name': 'curio',
              'widgets': [
                  ['karmapi.widgets.Curio']]}])
 
     return info
-                
+
 
 def stats(hat):
     while True:
@@ -53,10 +48,10 @@ def get_stats(hat):
         pressure = hat.pressure,
         temperature_from_pressure = hat.get_temperature_from_pressure(),
         temperature_from_humidity = hat.get_temperature_from_humidity(),
-        compass = hat.compass,
         cpu_temperature = get_cpu_temperature(),
         )
-    data.update(hat.orientation)
+    data.update(hat.gyro)
+    data['compass'] = hat.compass
 
     guess = data['temperature_from_pressure'] + data['temperature_from_humidity']
     guess = guess / 2.0
@@ -91,82 +86,83 @@ def show_all_stats(hat, show=None):
         for key, value in stats.items():
             show("%s: %04.1f\n" % (key, value))
 
+class WeatherHat(pig.Widget):
+    """  Sense Hat widget """
+    fields = ['humidity', 'temperature_guess', 'pressure']
 
-class Humidity(pig.Video):
+    def __init__(self, parent=None, *args, **kwargs):
+        """ Set up the widget """
+        super().__init__(*args, **kwargs)
 
-    field = 'humidity'
+        layout = pig.qtw.QHBoxLayout(parent)
+
+        meta = [["karmapi.sense.Monitor"] for x in self.fields]
+
+        self.interval = 1
+        
+        # build a Grid and add to self
+        monitor = pig.Grid(meta, self)
+        self.monitor = monitor
+        layout.addWidget(monitor)
+
+        for widget, field in zip(monitor.grid.values(), self.fields):
+            setattr(widget, 'field', field)
+
 
     async def run(self):
-        """ Loop forever updating with sense had data
 
-        A little help sleeping from curio
-        """
-        self.toolbar.hide()
-        self.axes.hold(True)
-        interval = 1
+        self.hat = sense_hat.SenseHat()
+        self.data = []
 
-        data = []
-        queue = curio.Queue()
-        await curio.spawn(self.read_hat(queue))
-
-        #for x in range(5):
-        #    stats = await queue.get()
-        #    data.append(stats)
-
-        df = pandas.DataFrame(data)
-        #self.axes.plot(df.timestamp, df.humidity)
-        #self.draw()
+        await curio.spawn(self.read_hat())
         
         while True:
-            stats = await queue.get()
+            #self.data.append(get_stats(self.hat))
+            self.update_plots()
             
-            data.append(stats)
-            df = pandas.DataFrame(data)
+            await curio.sleep(self.interval)
 
-            self.axes.clear()
-            self.axes.plot(df.timestamp, df[self.field],
-                           label=self.field)
+    async def read_hat(self):
 
-            self.axes.set_title(self.field)
+        while True:
+            self.data.append(get_stats(self.hat))
+            print(len(self.data))
+            await curio.sleep(self.interval / 10)
 
-            self.draw()
+    def update_plots(self):
+
+        if len(self.data) == 0:
+            print('no data')
+            return
+        
+        df = pandas.DataFrame(self.data)
+
+        # FIXME: allow control over time period to plot
+        print(df.info())
+        for widget in self.monitor.grid.values():
+            widget.show(df)
+    
+class OrientHat(WeatherHat):
+
+    fields = ['compass', 'pitch', 'roll', 'yaw']
+    
+class Monitor(pig.Video):
+
+    def show(self, df):
+        """ Plot field from df """
+        self.toolbar.hide()
+        self.axes.hold(True)
+
+        self.axes.clear()
+        self.axes.plot(df.timestamp, df[self.field], label=self.field)
+
+        self.axes.set_ylabel(self.field)
+        self.draw()
 
     def plot(self):
         pass
 
-    async def read_hat(self, data):
-        """ Read sense hat data """
-        hat = sense_hat.SenseHat()
-
-        while True:
-            stats = get_stats(hat)
-            await data.put(stats)
-            await curio.sleep(self.interval)
-
-
-class Temperature(Humidity):
-
-    field = 'temperature_guess'
-
-class Pressure(Humidity):
-
-    field = 'pressure'
-    
-class Compass(Humidity):
-
-    field = 'compass'
-
-class Roll(Humidity):
-
-    field = 'roll'
-
-class Pitch(Humidity):
-
-    field = 'pitch'
-
-class Yaw(Humidity):
-
-    field = 'yaw'
+            
     
 if __name__ == '__main__':
 
