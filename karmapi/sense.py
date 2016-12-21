@@ -22,6 +22,13 @@ def piggy():
                  ["karmapi.sense.Humidity"],
                  ["karmapi.sense.Pressure"],
              ]},
+            {'name': 'Orient',
+             'widgets': [
+                 ["karmapi.sense.Compass"],
+                 ["karmapi.sense.Roll"],
+                 ["karmapi.sense.Pitch"],
+                 ["karmapi.sense.Yaw"],
+             ]},
             {'name': 'curio',
              'widgets': [
                  ['karmapi.widgets.Curio']]}])
@@ -94,6 +101,7 @@ class Humidity(pig.Video):
 
         A little help sleeping from curio
         """
+        self.toolbar.hide()
         self.axes.hold(True)
         interval = 1
 
@@ -143,6 +151,22 @@ class Temperature(Humidity):
 class Pressure(Humidity):
 
     field = 'pressure'
+    
+class Compass(Humidity):
+
+    field = 'compass'
+
+class Roll(Humidity):
+
+    field = 'roll'
+
+class Pitch(Humidity):
+
+    field = 'pitch'
+
+class Yaw(Humidity):
+
+    field = 'yaw'
     
 if __name__ == '__main__':
 
