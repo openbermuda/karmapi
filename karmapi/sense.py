@@ -114,21 +114,17 @@ class WeatherHat(pig.Widget):
         self.hat = sense_hat.SenseHat()
         self.data = []
 
-        await curio.spawn(self.read_hat())
         
         while True:
             #self.data.append(get_stats(self.hat))
+            for x in range(10):
+                self.data.append(get_stats(self.hat))
+                await curio.sleep(0.1)
+
+            print(len(self.data))
+
             self.update_plots()
             
-            await curio.sleep(self.interval)
-
-    async def read_hat(self):
-
-        while True:
-            self.data.append(get_stats(self.hat))
-            print(len(self.data))
-            await curio.sleep(self.interval / 10)
-
     def update_plots(self):
 
         if len(self.data) == 0:
