@@ -101,7 +101,7 @@ class WeatherHat(pig.Widget):
         self.interval = 1
         
         # build a Grid and add to self
-        monitor = pig.Grid(meta, self)
+        monitor = pig.Grid(self, meta)
         self.monitor = monitor
         layout.addWidget(monitor)
 
