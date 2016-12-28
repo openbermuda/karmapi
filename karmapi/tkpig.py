@@ -18,20 +18,13 @@ import curio
 import pandas
 random = pandas.np.random
 
-#import qtconsole.mainwindow as qtc
+import tkinter
+from tkinter import Tk, ttk, Text
 
-from PyQt5 import QtWidgets as qtw
+from matplotlib.backends.backend_tkagg import FigureCanvas, FigureManager
 
-from PyQt5.QtCore import Qt as qt
-
-from PyQt5 import QtCore as qtcore
-from PyQt5 import QtGui as qtgui
-
-from matplotlib.backends.backend_qt5agg import (
-    FigureCanvasQTAgg as FigureCanvas)
-
-from matplotlib.backends.backend_qt5agg import (
-    NavigationToolbar2QT)
+from matplotlib.backends.backend_tkagg import (
+    NavigationToolbar2TkAgg)
 
 from matplotlib.figure import Figure
 from matplotlib import pyplot as plt
@@ -51,7 +44,7 @@ def printf(*args, **kwargs):
     print(*args, flush=True, **kwargs)
 
 
-def meta():
+def xmeta():
     """ Return description of a pig """
     info = dict(
         title = "PIGS",
@@ -83,6 +76,30 @@ def meta():
             {'name': 'yosser'}]) 
     return info
 
+def meta():
+    """ Return description of a pig """
+    info = dict(
+        title = "PIGS",
+        info = dict(foo=27, bar='open'),
+        parms = [{'label': 'path'}],
+        tabs = [
+            {'name': 'curio',
+             'widgets2': [['PlotImage', 'XKCD']],
+             'widgets': [
+                 ["karmapi.widgets.Curio"]]},
+            {'name': 'curio2'},
+            {'name': 'goals'},
+            {'name': 'interest',
+             'widgets': [
+                 ["karmapi.widgets.InfinitySlalom",
+                  "karmapi.widgets.InfinitySlalom"]]},
+            {'name': 'score'},
+            {'name': 'table'},
+            {'name': 'yosser'}])
+    
+    return info
+
+
 def bindings():
     """ Return the bindings between widgets and callbacks """
     return {
@@ -92,13 +109,16 @@ def bind(piggy, binds):
 
     for widget, binding in binds.items():
 
-        w = piggy[widget]
+        try:
+            w = piggy[widget]
+        except:
+            continue
 
         try:
             cb = getattr(piggy, binding)
         except AttributeError:
             cb = base.get_item(binding)
-        
+
         w.clicked.connect(cb)
 
 
@@ -110,11 +130,11 @@ def get_parser():
 
     return parser
 
-class Pigs(qtw.QWidget):
+class Pigs(ttk.Frame):
 
-    def __init__(self, recipe=None, args=None):
+    def __init__(self, app, recipe=None, args=None):
 
-        super().__init__()
+        super().__init__(app)
 
         self.meta = recipe or meta()
         self.args = args
@@ -123,45 +143,48 @@ class Pigs(qtw.QWidget):
         self.runners = set()
         self.lookup = {}
         self.build()
+        self.pack()
 
     def build(self):
 
-        self.layout = qtw.QVBoxLayout(self)
-
         widget = self.build_info()
         if widget:
-            self.layout.addWidget(widget)
+            widget.pack(side=tkinter.TOP)
             
         widget = self.build_parms()
         if widget:
-            self.layout.addWidget(widget)
+            widget.pack(side=tkinter.TOP)
 
         widget = self.build_tabs()
         if widget:
-            self.layout.addWidget(widget)
+            widget.pack(side=tkinter.BOTTOM, expand=True, fill='both')
 
     def build_tabs(self):
         """ Build tabs """
 
-        self.tb = qtw.QTabWidget()
+        self.tb = ttk.Notebook(self)
         self.tabs = {}
         for tab in self.meta.get('tabs', []):
 
-            w = qtw.QWidget()
+            w = ttk.Frame(self.tb)
 
             name = tab['name']
-            self.tb.addTab(w, name)
-
+            #button = ttk.Button(w, text=name)
+            #button.pack()
             self.tabs[name] = {}
 
+            print('tab {name} {w}'.format(**locals()))
             widgets = tab.get('widgets')
 
             if widgets:
-                print(widgets)
                 grid = self.build_widgets(w, widgets)
+                print(grid)
+                grid.pack()
                 self.tabs[name] = grid
 
                 self.lookup.update(grid.lookup)
+
+            self.tb.add(w, text=name)
 
         #self.tb.setCurrentIndex(2)
 
@@ -174,11 +197,15 @@ class Pigs(qtw.QWidget):
     def build_parms(self):
         """ Build parms """
 
-        return ParmGrid(self.meta.get('parms', {}))
+        pg = ParmGrid(self)
 
-    def build_widgets(self, widgets, parent=None):
+        pg.build(self.meta.get('parms', {}))
 
-        grid = Grid(widgets, parent)
+        return pg
+
+    def build_widgets(self, parent, widgets):
+
+        grid = Grid(parent, widgets)
 
         for widget in grid.grid.values():
             if hasattr(widget, 'run'):
@@ -245,56 +272,36 @@ def fib(n):
     else:
         return fib(n-1) + fib(n-2)
 
-class Widget(qtw.QWidget):
+class Widget(ttk.Frame):
 
-    def __init__(self, *args, **kwargs):
-
-        super().__init__(*args, **kwargs)
-
-        self.layout
 
     def keyPressEvent(self, event):
 
         print('key pressed', event)
 
-class Text(qtw.QTextEdit):
-    """ Text edit widget """
-    def __init__(self, meta=None):
-        """ Initialise the widget 
 
-        doc: optional html text to load the widget with.
-        """
-
-        super().__init__()
-
-        meta = meta or {}
-
-
-class Docs(qtw.QTextBrowser):
+class Docs(Text):
     """ Docs widget """
-    def __init__(self, doc=None):
+    def __init__(self, parent, doc=None):
         """ Initialise the widget 
 
         doc: optional html text to load the widget with.
         """
-
-        super().__init__()
+        print('Docs', parent)
+        super().__init__(parent)
 
         if doc is None:
             "Show docs here"
-
-    def set_text(self, text):
-        
-        self.setHtml(text)
+            
+        self.text = "<b>hello world</b>"
 
 
-class Grid(qtw.QWidget):
+class Grid(ttk.Frame):
     """ A grid of widgets """
 
-    def __init__(self, parent=None, widgets=None):
+    def __init__(self, parent, widgets=None):
 
-        super().__init__()
-
+        super().__init__(parent)
         self.grid = {}
         self.lookup = {}
         self.build(widgets)
@@ -304,19 +311,18 @@ class Grid(qtw.QWidget):
         rows = widgets
 
         # FIXME create the widget
-        vlayout = qtw.QVBoxLayout(self)
         for irow, row in enumerate(rows):
-            wrow = qtw.QWidget()
-            vlayout.addWidget(wrow)
-            hlayout = qtw.QHBoxLayout(wrow)
             for icol, item in enumerate(row):
 
                 # using isinstance makes me sad..
                 # but i will make an exception
                 if isinstance(item, str):
                     # assume it is a path to a widget
-                    widget = get_widget(item)(None)
+                    widget = get_widget(item)
+                    print('yy', widget, self)
                     
+                    widget = widget(self)
+                    print('xx', widget)
                 elif isinstance(item, dict):
                     # see if dict specifies the widget
                     widget = item.get('widget', button)
@@ -327,18 +333,19 @@ class Grid(qtw.QWidget):
                         widget = get_widget(widget)
 
                     # build the widget
-                    widget = widget(item)
+                    widget = widget(self, item)
 
                     # add reference if given one
                     name = item.get('name')
                     if name:
                         self.lookup[name] = widget
                 else:
-                    widget = item(None)
+                    widget = item(self)
 
                 self.grid[(irow, icol)] = widget
 
-                hlayout.addWidget(widget)
+                print('adding {widget} to grid'.format(**locals()))
+                widget.grid(row=irow, column=icol)
 
     def __getitem__(self, item):
 
@@ -358,28 +365,27 @@ def get_widget(path):
     return base.get_item(path)
     
 
-class ParmGrid(Grid):
+class ParmGrid(ttk.Frame):
+
     def build(self, parms=None, parent=None):
 
-        layout = qtw.QGridLayout()
-        self.setLayout(layout)
-
+        print('PARMGRID', self)
         parms = parms or {}
         
         for row, item in enumerate(parms):
 
-            label = qtw.QLabel(item.get('label'))
-            layout.addWidget(label, row, 0)
-            entry = qtw.QLineEdit()
-            layout.addWidget(entry, row, 1)
-            
+            label = ttk.Label(self, text=item.get('label'))
+            label.grid(row=row, column=0)
+            entry = ttk.Entry(self)
+            entry.grid(row=row, column=1)
 
         return self
 
                 
-def button(meta):
+def button(parent, meta):
     """ Button factory """
-    b = qtw.QPushButton(meta.get('name', 'Push Me'))
+    b = ttk.Button(parent, text=meta.get('name', 'Push Me'))
+    print(b)
 
     cb = meta.get('callback')
     if cb:
@@ -389,11 +395,11 @@ def button(meta):
 
     return b
 
-class Image(qtw.QLabel):
+class Image(ttk.Label):
 
-    def __init__(self, meta=None):
+    def __init__(self, parent, meta=None):
 
-        super().__init__()
+        super().__init__(parent)
 
         self.setAutoFillBackground(True)
         
@@ -412,23 +418,21 @@ class Image(qtw.QLabel):
         self.setScaledContents(True)
         
 
-class PlotImage(qtw.QWidget):
+class PlotImage(ttk.Frame):
     """ An image widget
 
     This is just a wrapper around matplotlib FigureCanvas.
     """
-    def __init__(self, parent=None, width=5, height=4, dpi=100, **kwargs):
+    def __init__(self, parent, width=5, height=4, dpi=100, **kwargs):
 
-        super().__init__()
+        super().__init__(parent)
 
         fig = Figure(figsize=(width, height), dpi=dpi, **kwargs)
-        layout = qtw.QVBoxLayout(self)
-        self.image = FigureCanvas(fig)
-        layout.addWidget(self.image)
+        self.image = FigureCanvas(fig, master=self)
+        self.image._tkcanvas.pack()
 
-        self.toolbar = NavigationToolbar2QT(self.image, self)
-        layout.addWidget(self.toolbar)
-        #self.toolbar.hide()
+        self.toolbar = NavigationToolbar2TkAgg(self.image, self)
+        self.toolbar.update()
 
         self.axes = fig.add_subplot(111)
         self.fig = fig
@@ -437,13 +441,6 @@ class PlotImage(qtw.QWidget):
 
         self.compute_data()
         self.plot()
-
-        self.setParent(parent)
-
-        FigureCanvas.setSizePolicy(self.image,
-                                   qtw.QSizePolicy.Expanding,
-                                   qtw.QSizePolicy.Expanding)
-        FigureCanvas.updateGeometry(self.image)
 
 
     def __getattr__(self, attr):
@@ -479,10 +476,6 @@ class KPlot(PlotImage):
 
 class XKCD(PlotImage):
 
-    def __init__(self, *args, **kwargs):
-
-        super().__init__()
-
     def plot(self):
         """ Display plot xkcd style """
         with plt.xkcd():
@@ -511,11 +504,12 @@ class Video(PlotImage):
 
     This is currently a matplotlib FigureCanvas
     """
-    def __init__(self, interval=1, *args, **kwargs):
 
-        super().__init__(**kwargs)
-        self.interval = interval or 1
+    def __init__(self, parent):
+        super().__init__(parent)
 
+        self.interval = 1
+    
     async def run(self):
         """ Run the animation """
         # Loop forever updating the figure, with a little
@@ -547,7 +541,7 @@ class Video(PlotImage):
         self.draw()
 
 
-class Table(qtw.QTableView):
+class Table(ttk.Widget):
     """ A table, time for dinner 
 
     Using QTableView
@@ -572,51 +566,6 @@ class Table(qtw.QTableView):
         #self.verticalHeader().setSectionResizeMode(
         #    qtw.QHeaderView.ResizeToContents)        
 
-
-class PandasModel(qtcore.QAbstractTableModel):
-    def __init__(self, data, parent=None):
-        qtcore.QAbstractTableModel.__init__(self, parent)
-        self._data = data
-        self.formatter = EngFormatter(accuracy=0, use_eng_prefix=True)
-
-    def rowCount(self, parent=None):
-        return len(self._data.values)
-
-    def columnCount(self, parent=None):
-        return self._data.columns.size
-
-    def data(self, index, role=qt.DisplayRole):
-        if index.isValid():
-            if role == qt.DisplayRole:
-                data = self._data.values[index.row()][index.column()]
-                try:
-                    # format data with formatter function
-                    value = self.formatter(data)
-                except:
-                    # anything goes wrong, just show with str
-                    value = str(data)
-                return qtcore.QVariant(value)
-        return qtcore.QVariant()
-
-
-    def headerData(self, section, orientation, role):
-        """ Return header for given column """
-        if role == qt.DisplayRole and orientation == qt.Horizontal:
-
-            return self._data.columns.values[section]
-
-        return qtcore.QAbstractTableModel.headerData(
-            self, section, orientation, role)
-
-    def sort(self, ncol, order):
-        """Sort table by given column number. """
-        self.layoutAboutToBeChanged.emit()
-
-        self._data.sort_values(by=self._data.columns[ncol], 
-                               ascending=order == qt.AscendingOrder,
-                               inplace=True)
-        
-        self.layoutChanged.emit()
 
 
 class EventLoop:
@@ -649,8 +598,6 @@ class EventLoop:
         
         self.queue = curio.Queue()
 
-        self.event_loop = qtcore.QEventLoop()
-
 
     def put(self, event):
         """ Maybe EventLoop is just a curio.EpicQueue? """
@@ -664,8 +611,8 @@ class EventLoop:
 
             event = await self.queue.get()
 
-            self.event_loop.processEvents()
-            self.app.sendPostedEvents(None, 0)
+            self.app.update_idletasks()
+            self.app.update()
 
 
     async def poll(self, yq):
@@ -676,11 +623,9 @@ class EventLoop:
 
         while True:
 
-            if self.app.hasPendingEvents():
-
-                # FIXME - have Qt do the put when it wants refreshing
-                self.put(event)
-                event += 1
+            # FIXME - have Qt do the put when it wants refreshing
+            self.put(event)
+            event += 1
 
             await curio.sleep(0.05)
 
@@ -733,16 +678,16 @@ class EventLoop:
 def build(recipe, pig=None):
 
 
-    app = qtw.QApplication([])
+    app = Tk()
     eloop = EventLoop(app)
     
-    title = recipe.get('title', app.applicationName())
+    title = recipe.get('title', 'TkPig')
 
     if pig is None:
-        pig = Pigs(recipe, app.arguments()[1:])
+        pig = Pigs(app, recipe, [])
     
-    pig.setWindowTitle(title)
-    pig.show()
+    app.title(title)
+    #pig.show()
     pig.eloop = eloop
 
     # need to hang on to a reference to window o/w it gets garbage

@@ -2,7 +2,7 @@
 Widgets for pig
 """
 
-from karmapi import pig
+from karmapi import pig as pig
 
 import curio
 
@@ -61,10 +61,6 @@ class MapPoints(pig.PlotImage):
 
         
 class InfinitySlalom(pig.Video):
-
-    def __init__(self, parent=None):
-
-        super().__init__(parent, facecolor='grey')
 
     def compute_data(self):
 
@@ -151,28 +147,17 @@ class CurioMonitor:
         self.mon.send('where {}\n'.format(n).encode())
         return self.mon.recv(100000)
 
-class Curio(pig.Widget):
+class Curio(pig.Docs):
     """ A Curio Monitor 
 
     ps: show tasks
     where: show where the task is
     cancel: end the task
     """
-    def __init__(self, parent=None, *args, **kwargs):
+    def __init__(self, parent=None):
         """ Set up the widget """
-        super().__init__(*args, **kwargs)
+        super().__init__(parent)
 
-        layout = pig.qtw.QHBoxLayout(parent)
-
-        # ps screen, where window
-        meta = [["Docs"]]
-        
-        # build a Grid and add to self
-        monitor = pig.Grid(meta, self)
-        layout.addWidget(monitor)
-
-        self.text = monitor.grid[(0,0)]
-        #self.setFixedWidth(14)
 
     def keyPressEvent(self, event):
 
@@ -253,7 +238,7 @@ class Curio(pig.Widget):
         elif key == 'K':
             text = self.show_next()
             
-        self.text.setHtml('<pre>' + text + '<pre>')
+        self.set_text(text)
 
 
     async def run(self):
@@ -264,10 +249,6 @@ class Curio(pig.Widget):
         self.dokey('P')
 
 
-
-        
-        
-        
         
 def get_widget(path):
 
