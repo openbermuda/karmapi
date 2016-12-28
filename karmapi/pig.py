@@ -176,9 +176,9 @@ class Pigs(qtw.QWidget):
 
         return ParmGrid(self.meta.get('parms', {}))
 
-    def build_widgets(self, widgets, parent=None):
+    def build_widgets(self, parent, widgets):
 
-        grid = Grid(widgets, parent)
+        grid = Grid(parent, widgets)
 
         for widget in grid.grid.values():
             if hasattr(widget, 'run'):
@@ -285,7 +285,11 @@ class Docs(qtw.QTextBrowser):
 
     def set_text(self, text):
         
-        self.setHtml(text)
+        self.setHtml('<pre>' + text + '</pre>')
+
+    def bindkey(self, f):
+
+        pass
 
 
 class Grid(qtw.QWidget):
@@ -294,7 +298,7 @@ class Grid(qtw.QWidget):
     def __init__(self, parent=None, widgets=None):
 
         super().__init__()
-
+        self.parent = parent
         self.grid = {}
         self.lookup = {}
         self.build(widgets)
@@ -304,7 +308,7 @@ class Grid(qtw.QWidget):
         rows = widgets
 
         # FIXME create the widget
-        vlayout = qtw.QVBoxLayout(self)
+        vlayout = qtw.QVBoxLayout(self.parent)
         for irow, row in enumerate(rows):
             wrow = qtw.QWidget()
             vlayout.addWidget(wrow)

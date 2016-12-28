@@ -158,6 +158,8 @@ class Curio(pig.Docs):
         """ Set up the widget """
         super().__init__(parent)
 
+        self.bindkey(self.dokey)
+
 
     def keyPressEvent(self, event):
 

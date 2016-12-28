@@ -295,6 +295,25 @@ class Docs(Text):
             
         self.text = "<b>hello world</b>"
 
+    def set_text(self, text):
+
+        print(text)
+        #self.delete('start', 'end')
+        self.insert('end', text)
+
+    def bindkey(self, f):
+        from functools import partial
+        self.bind('<Key>', partial(self.keypress, cb=f))
+
+    def keypress(self, event, cb):
+
+        print(dir(event))
+        print(event.keycode)
+        print(event, cb)
+        cb(str(event.keycode))
+    
+    
+
 
 class Grid(ttk.Frame):
     """ A grid of widgets """
