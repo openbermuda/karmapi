@@ -166,7 +166,6 @@ class Curio(pig.Docs):
         print(event)
         #print([x for x in dir(event)])
         key = event.key()
-        print(key, chr(key))
         if key > 256:
             return
         
