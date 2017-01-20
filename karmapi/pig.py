@@ -12,6 +12,8 @@ import inspect
 
 from multiprocessing import cpu_count
 
+from concurrent.futures import ProcessPoolExecutor
+
 import curio
 
 # import this early, I like pandas.
@@ -174,7 +176,7 @@ class Pigs(qtw.QWidget):
     def build_parms(self):
         """ Build parms """
 
-        return ParmGrid(self.meta.get('parms', {}))
+        return ParmGrid(self, self.meta.get('parms', {}))
 
     def build_widgets(self, parent, widgets):
 
@@ -369,9 +371,12 @@ class ParmGrid(Grid):
         self.setLayout(layout)
 
         parms = parms or {}
+
+        print('parms:', parms)
         
         for row, item in enumerate(parms):
 
+            print('parms:', row, item)
             label = qtw.QLabel(item.get('label'))
             layout.addWidget(label, row, 0)
             entry = qtw.QLineEdit()
@@ -573,8 +578,15 @@ class Table(qtw.QTableView):
         super().__init__()
         self.setSortingEnabled(True)
         self.setAlternatingRowColors(True)
-        #self.verticalHeader().setSectionResizeMode(
-        #    qtw.QHeaderView.ResizeToContents)        
+
+        header = self.horizontalHeader()
+
+        # make table autoresize
+        header.setSectionResizeMode(qtw.QHeaderView.ResizeToContents)
+
+        # tell it to just use 50 rows to do the sizing, otherewise it
+        # gets painfully slow.
+        header.setResizeContentsPrecision(50)
 
 
 class PandasModel(qtcore.QAbstractTableModel):
@@ -655,6 +667,9 @@ class EventLoop:
 
         self.event_loop = qtcore.QEventLoop()
 
+        if sys.platform == 'win32':
+            self.ppe = ProcessPoolExecutor()
+
 
     def put(self, event):
         """ Maybe EventLoop is just a curio.EpicQueue? """
@@ -688,15 +703,16 @@ class EventLoop:
 
             await curio.sleep(0.05)
 
-    def submit_job(self, coro):
+    def submit_job(self, coro, afters, *args, **kwargs):
         """ Submit a coroutine to the job queue """
-        self.yq.put(coro)
+        print('SUBMIT', args, kwargs)
+        self.yq.put([coro, afters, args, kwargs])
 
     async def yosser(self, yq):
 
         self.yq = yq
         while True:
-            job = await yq.get()
+            job, afters, args, kwargs = await yq.get()
 
             print('yay!! yosser got a job {}'.format(job))
 
@@ -705,8 +721,15 @@ class EventLoop:
             if inspect.iscoroutine(job):
                 result = await job
             else:
-                result = await curio.run_in_process(job)
+                if sys.platform != 'win32':
+                    result = await curio.run_in_process(job, *args, **kwargs)
+                else:
+                    result = await curio.run_in_executor(
+                        self.ppe, job, *args, **kwargs)
             end = time.time()
+
+            if afters:
+                afters(result)
 
             print("doit slept for {} {}".format(result, end-start))
             
@@ -788,6 +811,7 @@ def run(app):
     # add qt event loop to the curio tasks
 
     selector = win_curio_fix()
+    selector = None
     curio.run(app.pig.run(), with_monitor=True, selector=selector)
 
 
