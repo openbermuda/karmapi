@@ -567,11 +567,11 @@ class Table(qtw.QTableView):
     To attach the data just do:
 
     tab = Table()
-    tab.setModel(PandasModel(df))
+    tab.load(df))
 
     If filtering and more is needed there is always this:
 
-    https://gist.github.com/jsexauer/f2bb0cc876828b54f2ed    
+    https://gist.github.com/jsexauer/f2bb0cc876828b54f2ed 
     """
     def __init__(self, *args, **kwargs):
 
@@ -586,22 +586,101 @@ class Table(qtw.QTableView):
 
         # tell it to just use 50 rows to do the sizing, otherewise it
         # gets painfully slow.
-        header.setResizeContentsPrecision(50)
+        header.setResizeContentsPrecision(5)
+
+        self.filter_model = qtcore.QSortFilterProxyModel()
+        self.setModel(self.filter_model)
+
+
+    def keyPressEvent(self, event):
+        """ If keypress is a return then filter on current value """
+        key = event.key()
+
+        if key != qtcore.Qt.Key_Return:
+            return super().keyPressEvent(event)
+        
+        ix = self.currentIndex()
+        data = self.model().itemData(ix)
+
+        if data:
+            text = data[0]
+            self.toggle_filter(ix.column(), text)
+        else:
+            self.remove_filter()
+        
+        return super().keyPressEvent(event)
+
+    def toggle_filter(self, column, text):
+        """ Toggle filtering """
+        self.filter_model.modelAboutToBeReset.emit()
+        model = self.model()
+        text = qtcore.QRegExp('^' + text + '$')
+        if model.filterRegExp() == text and model.filterKeyColumn() == column:
+            self.remove_filter()
+        else:
+            model.setFilterKeyColumn(column)
+            model.setFilterRegExp(text)
+        self.filter_model.modelReset.emit()
+            
+    def remove_filter(self):
+        self.filter_model.setFilterRegExp('')
+
+    def load(self, df):
+        """ Load a dataframe into the table """
+        self.filter_model.modelAboutToBeReset.emit()
+        self.remove_filter()
+        self.filter_model.setSourceModel(PandasModel(df))
+        self.filter_model.modelReset.emit()
 
 
 class PandasModel(qtcore.QAbstractTableModel):
+    ROW_BATCH_COUNT = 50
+    
     def __init__(self, data, parent=None):
         qtcore.QAbstractTableModel.__init__(self, parent)
         self._data = data
         self.formatter = EngFormatter(accuracy=0, use_eng_prefix=True)
 
+        self.rows_loaded = self.ROW_BATCH_COUNT
+
+        self.rowcountcalls = 0
+
     def rowCount(self, parent=None):
-        return len(self._data.values)
+
+        self.rowcountcalls += 1
+        if 0 == self.rowcountcalls % 50:
+            print('rowcount', self.rows_loaded, self.rowcountcalls,
+                  self._data.columns.size,
+                  flush=True)
+        if len(self._data) < self.rows_loaded:
+            return len(self._data)
+        
+        return self.rows_loaded
+
+    def canFetchMore(self, index=None):
+
+        if index:
+            print('canfetchmore', index.row())
+        print('canfetchmore', self.rows_loaded, flush=True)
+        return self.rows_loaded < len(self._data)
+
+    def fetchMore(self, index=None):
+
+        print('fetching more', self.rows_loaded, flush=True)
+        remainder = len(self._data) - self.rows_loaded
+
+        items_to_fetch = min(remainder, self.ROW_BATCH_COUNT)
+
+        self.beginInsertRows(qtcore.QModelIndex(), self.rows_loaded,
+                             self.rows_loaded + items_to_fetch - 1)
+        self.rows_loaded += items_to_fetch
+        self.endInsertRows()
 
     def columnCount(self, parent=None):
         return self._data.columns.size
 
     def data(self, index, role=qt.DisplayRole):
+        #print('data', len(self._data), index.row(), flush=True)
         if index.isValid():
             if role == qt.DisplayRole:
                 data = self._data.values[index.row()][index.column()]
