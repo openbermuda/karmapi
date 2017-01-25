@@ -385,7 +385,78 @@ class ParmGrid(Grid):
 
         return self
 
+class LabelGrid(qtw.QScrollArea):
+
+    def __init__(self, parent=None, widgets=None):
+
+        super().__init__()
+
+        self.setWidgetResizable(True) # CRITICAL
+
+        self.setLayout(qtw.QHBoxLayout())
+
+        inner = qtw.QWidget(self)
+        inner.setStyleSheet('background: #c0c0c0')
+
+        inner.setLayout(qtw.QGridLayout())
+
+        self.setWidget(inner) # CRITICAL
+
+        self.layout = inner.layout()
+        self.layout.setSpacing(1)
+        self.inner = inner
+
+    def clear(self):
+
+        for item in self.layout.children():
+            self.layout.removeItem(item)
+        
+    def load(self, data):
+
+        self.clear()
+
+        formatter = EngFormatter(accuracy=0, use_eng_prefix=True)
+        layout = self.layout
+        
+        for column, name in enumerate(data.columns.values):
+            button = qtw.QLabel(name)
+            button.setStyleSheet('background: #ff00ff')
+            layout.addWidget(button, 0, column + 1)
+
+        for row in range(len(data)):
+
+            for col in range(len(data.columns)):
+
+                value = data.values[row][col]
+                try:
+                    # format data with formatter function
+                    value = formatter(value)
+                except:
+                    # anything goes wrong, just show with str
+                    value = str(value)
+
+                    
+                label = qtw.QLabel(value)
+                #label.setStyleSheet('border: 1px solid black;')
+                label.setStyleSheet('background: #cccccc')
+                label.setAlignment(qt.AlignRight)
+                layout.addWidget(label, row+1, col+1)
+
+        pad = qtw.QLabel()
+        layout.addWidget(pad, 0, len(data.columns) + 1,
+                         len(data), len(data.columns) + 1)
+        #pad = qtw.QLabel()
+        #layout.addWidget(pad, 0, 0, len(data), 0)
+
+        layout.setColumnStretch(0, 1)
+        layout.setColumnStretch(len(data.columns) + 1, 1)
+        
+        size = self.inner.minimumSize()
+        printf(size.width(), size.height())
+        
+        return
                 
+
 def button(meta):
     """ Button factory """
     b = qtw.QPushButton(meta.get('name', 'Push Me'))
@@ -579,16 +650,20 @@ class Table(qtw.QTableView):
         self.setSortingEnabled(True)
         self.setAlternatingRowColors(True)
 
-        header = self.horizontalHeader()
+        if not hasattr(self, 'header'):
+            self.header = self.horizontalHeader
+
+        header = self.header()
 
         # make table autoresize
         header.setSectionResizeMode(qtw.QHeaderView.ResizeToContents)
 
         # tell it to just use 50 rows to do the sizing, otherewise it
         # gets painfully slow.
-        header.setResizeContentsPrecision(5)
+        header.setResizeContentsPrecision(50)
+        #self.setUniformRowHeights(True)
 
-        self.filter_model = qtcore.QSortFilterProxyModel()
+        self.filter_model = FilterModel()
         self.setModel(self.filter_model)
 
 
@@ -627,12 +702,43 @@ class Table(qtw.QTableView):
 
     def load(self, df):
         """ Load a dataframe into the table """
+        self.hide()
+        self.df = df
+        header = self.header()
+        #header.setSectionResizeMode(qtw.QHeaderView.ResizeToContents)
         self.filter_model.modelAboutToBeReset.emit()
         self.remove_filter()
-        self.filter_model.setSourceModel(PandasModel(df))
+        source = PandasModel(df)
+        self.filter_model.setSourceModel(source)
+        #self.filter_model.sort = source.sort
         self.filter_model.modelReset.emit()
 
+        #header.setSectionResizeMode(qtw.QHeaderView.Fixed)
+        self.show()
 
+    def contextMenuEvent(self, event):
+        """Implements right-clicking on cell.
+
+        NOTE: You probably want to overrite make_cell_context_menu, not this
+        function, when subclassing.
+        """
+        row_ix = self.rowAt(event.y())
+        col_ix = self.columnAt(event.x())
+
+        if row_ix < 0 or col_ix < 0:
+            return #out of bounds
+
+        menu = qtw.QMenu(self)
+        menu.addAction("Open in Excel",
+                       self._to_excel)
+
+        menu.exec_(self.mapToGlobal(event.pos()))
+
+    def _to_excel(self):
+        from subprocess import Popen
+        self.df.to_excel('temp.xls')
+        Popen('temp.xls', shell=True)
+        
 class PandasModel(qtcore.QAbstractTableModel):
     ROW_BATCH_COUNT = 50
     
@@ -643,15 +749,8 @@ class PandasModel(qtcore.QAbstractTableModel):
 
         self.rows_loaded = self.ROW_BATCH_COUNT
 
-        self.rowcountcalls = 0
-
     def rowCount(self, parent=None):
 
-        self.rowcountcalls += 1
-        if 0 == self.rowcountcalls % 50:
-            print('rowcount', self.rows_loaded, self.rowcountcalls,
-                  self._data.columns.size,
-                  flush=True)
         if len(self._data) < self.rows_loaded:
             return len(self._data)
         
@@ -680,6 +779,7 @@ class PandasModel(qtcore.QAbstractTableModel):
         return self._data.columns.size
 
     def data(self, index, role=qt.DisplayRole):
+
         #print('data', len(self._data), index.row(), flush=True)
         if index.isValid():
             if role == qt.DisplayRole:
@@ -705,13 +805,24 @@ class PandasModel(qtcore.QAbstractTableModel):
 
     def sort(self, ncol, order):
         """Sort table by given column number. """
+        printf('sorting', ncol, order)
         self.layoutAboutToBeChanged.emit()
 
-        self._data.sort_values(by=self._data.columns[ncol], 
-                               ascending=order == qt.AscendingOrder,
-                               inplace=True)
+        data = self._data
+        data.head(self.rows_loaded).sort_values(
+            by=data.columns[ncol], 
+            ascending=order == qt.AscendingOrder,
+            inplace=True)
         
         self.layoutChanged.emit()
+
+
+class FilterModel(qtcore.QSortFilterProxyModel):
+    
+    def sort(self, ncol, order):
+        """Sort table by given column number. """
+        printf('sorting filtermodel', ncol, order)
+        return self.sourceModel().sort(ncol, order)
 
 
 class EventLoop:
