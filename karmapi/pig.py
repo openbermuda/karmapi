@@ -147,7 +147,7 @@ def build(recipe, pig=None):
     title = recipe.get('title', 'PIGS')
 
     if pig is None:
-        pig = Pigs(recipe, app.arguments()[1:])
+        pig = Pigs(recipe, [])
     
     pig.setWindowTitle(title)
     pig.show()

@@ -2,6 +2,7 @@
 Pig widgets
 """
 import curio
+from concurrent.futures import ProcessPoolExecutor
 
 from karmapi import joy
 
@@ -68,7 +69,7 @@ class Pigs(Widget):
         self.tabs = {}
         for tab in self.meta.get('tabs', []):
 
-            w = qtw.QWidget()
+            w = Widget()
 
             name = tab['name']
             self.tb.addTab(w, name)
@@ -210,7 +211,7 @@ class Grid(Widget):
 class ParmGrid(Grid):
     def build(self, parms=None, parent=None):
 
-        layout = qtw.QGridLayout()
+        layout = GridLayout()
         self.setLayout(layout)
 
         parms = parms or {}
@@ -220,9 +221,9 @@ class ParmGrid(Grid):
         for row, item in enumerate(parms):
 
             print('parms:', row, item)
-            label = qtw.QLabel(item.get('label'))
+            label = Label(item.get('label'))
             layout.addWidget(label, row, 0)
-            entry = qtw.QLineEdit()
+            entry = LineEdit()
             layout.addWidget(entry, row, 1)
             
 
@@ -293,7 +294,7 @@ class LabelGrid(GridBase, Widget):
         self.number_of_rows = 10
         self.start_row = 0
 
-        self.setLayout(qtw.QGridLayout())
+        self.setLayout(GridLayout())
 
         self.layout = self.layout()
         self.layout.setSpacing(1)
@@ -327,7 +328,7 @@ class LabelGrid(GridBase, Widget):
         self.draw()
 
     
-class EventLoop:
+class EventLoop(AppEventLoop):
     """ An event loop
 
     For now, this is just here to make a Qt app run
@@ -353,11 +354,10 @@ class EventLoop:
 
     def __init__(self, app=None):
 
-        self.app = app
-        
-        self.queue = curio.Queue()
+        super().__init__()
 
-        self.event_loop = qtcore.QEventLoop()
+        self.app = app
+        self.queue = curio.Queue()
 
         if sys.platform == 'win32':
             self.ppe = ProcessPoolExecutor()
@@ -366,34 +366,6 @@ class EventLoop:
     def put(self, event):
         """ Maybe EventLoop is just a curio.EpicQueue? """
         self.queue.put(event)
-
-        
-    async def flush(self):
-        """  Wait for an event to arrive in the queue.
-        """
-        while True:
-
-            event = await self.queue.get()
-
-            self.event_loop.processEvents()
-            self.app.sendPostedEvents(None, 0)
-
-
-    async def poll(self, yq):
-
-        # Experiment with sleep to keep gui responsive
-        # but not a cpu hog.
-        event = 0
-
-        while True:
-
-            if self.app.hasPendingEvents():
-
-                # FIXME - have Qt do the put when it wants refreshing
-                self.put(event)
-                event += 1
-
-            await curio.sleep(0.05)
 
     def submit_job(self, coro, afters, *args, **kwargs):
         """ Submit a coroutine to the job queue """
@@ -434,7 +406,7 @@ class EventLoop:
 
     async def run(self):
 
-        poll_task = await curio.spawn(self.poll(YQ))
+        poll_task = await curio.spawn(self.poll())
 
         flush_task = await curio.spawn(self.flush())
 

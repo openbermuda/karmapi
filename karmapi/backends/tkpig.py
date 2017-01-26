@@ -279,6 +279,9 @@ class Widget(ttk.Frame):
 
         print('key pressed', event)
 
+    def setLayout(self, layout):
+
+        pass
 
 class Docs(Text):
     """ Docs widget """
@@ -586,43 +589,45 @@ class Table(ttk.Widget):
         #    qtw.QHeaderView.ResizeToContents)        
 
 
+class VBoxLayout:
+    """ Layout widgets in a vertical box """
+    def __init__(self, *args):
+        pass
+    
+    def addWidget(self, widget):
 
-class EventLoop:
+        widget.pack()
+
+class HBoxLayout:
+    """ Layout widgets in a horizontal box """
+    def __init__(self, *args):
+        pass
+    
+    def addWidget(self, widget):
+
+        widget.pack(side=tkinter.LEFT)
+
+class GridLayout:        
+    """ Layout widgets in a grid """
+    def __init__(self, *args):
+        self.spacing = 1
+
+    def setSpacing(self, space):
+
+        self.spacing = space
+    
+    def addWidget(self, widget, row, col):
+
+        widget.grid(row=row, column=col,
+                    padx=self.spacing, pady=self.spacing)
+    
+
+class AppEventLoop:
     """ An event loop
 
-    For now, this is just here to make a Qt app run
-    under curio,
-
-    For now it has two tasks.
-
-    flush:  wait for an event, then process it
-
-    poll: periodically tests if the app has pending events
-
-
-    FIXME: add a magic task that magically knows when there
-           are events pending without having to poll.
-
-           Somewhere in the depths of Qt there has to be an
-           event queue.  If that code can be fixed to let
-           this event loop know when the queue is not empty
-           then we'd have magic.
-
-           somewhere there is a magic file or socket?
+    tk specific application event loop
     """
 
-    def __init__(self, app=None):
-
-        self.app = app
-        
-        self.queue = curio.Queue()
-
-
-    def put(self, event):
-        """ Maybe EventLoop is just a curio.EpicQueue? """
-        self.queue.put(event)
-
-        
     async def flush(self):
         """  Wait for an event to arrive in the queue.
         """
@@ -647,51 +652,6 @@ class EventLoop:
             event += 1
 
             await curio.sleep(0.05)
-
-    def submit_job(self, coro):
-        """ Submit a coroutine to the job queue """
-        self.yq.put(coro)
-
-    async def yosser(self, yq):
-
-        self.yq = yq
-        while True:
-            job = await yq.get()
-
-            print('yay!! yosser got a job {}'.format(job))
-
-            start = time.time()
-            # fixme: want curio run for
-            if inspect.iscoroutine(job):
-                result = await job
-            else:
-                result = await curio.run_in_process(job)
-            end = time.time()
-
-            print("doit slept for {} {}".format(result, end-start))
-            
-
-    def magic(self, event, *args, **kwargs):
-        """ Gets called when magic is needed """
-        printf('magic', flush=True)
-        self.put(event)
-
-
-    async def run(self):
-
-        poll_task = await curio.spawn(self.poll(YQ))
-
-        flush_task = await curio.spawn(self.flush())
-
-        yosser_tasks = []
-        for yosser in range(cpu_count()):
-        
-            yosser_tasks.append(await curio.spawn(self.yosser(YQ)))
-
-        tasks = [flush_task, poll_task] +  yosser_tasks
-
-        await curio.gather(tasks)
-
 
 
 def build(recipe, pig=None):
@@ -720,63 +680,19 @@ def build(recipe, pig=None):
 
     return app
 
-def win_curio_fix():
-    """ Kludge alert 
-
-    On windows, select.select() with three empty sets throws an exception.
-
-    On Linux, select.select() sleeps and waits for something to appear.
-
-    This adds dummy read socket to the selector and so ensures it never 
-    gets called with three empty sets.
-
-    Just pass it into curio.run(...., selector=win_curio_fix())
-    """
-    
-    import selectors
-    import socket
-
-    dummy_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-    selector = selectors.DefaultSelector()
-    selector.register(dummy_socket, selectors.EVENT_READ)
-
-    return selector
-
-def run(app):
-
-    # add qt event loop to the curio tasks
-
-    selector = win_curio_fix()
-    curio.run(app.pig.run(), with_monitor=True, selector=selector)
+class Application(Tk):
 
 
+    def __init__(self, *args):
 
-def print_thread_info(name):
-    import threading
-    print()
-    print(name)
-    print(globals().keys())
-    print(locals().keys())
-    print(threading.current_thread())
-    print(threading.active_count())
-    print('YQ:', YQ.qsize())
-
+        super().__init__()
 
     
+class Label(ttk.Label):
 
-if __name__ == '__main__':
+    def __init__(self, text):
 
-    # Let curio bring this to life
-    print('build pig')
-    
-    APP = build(meta())
-
-    # apply bindings
-    bind(APP.pig, bindings())
-
-    print('make pig run')
-    run(APP)
+        super().__init__(text=text)
 
 
-    
+LineEdit = ttk.Entry        

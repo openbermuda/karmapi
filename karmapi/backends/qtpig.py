@@ -12,8 +12,6 @@ import inspect
 
 from multiprocessing import cpu_count
 
-from concurrent.futures import ProcessPoolExecutor
-
 import curio
 
 # import this early, I like pandas.
@@ -558,13 +556,51 @@ class FilterModel(qtcore.QSortFilterProxyModel):
         return self.sourceModel().sort(ncol, order)
 
 
+class AppEventLoop:
+    """ An event loop
+    
+    Qt specific event loop base
+    """
+
+    def __init__(self):
+
+        self.event_loop = qtcore.QEventLoop()
+
+    async def flush(self):
+        """  Wait for an event to arrive in the queue.
+        """
+        while True:
+
+            event = await self.queue.get()
+
+            self.event_loop.processEvents()
+            self.app.sendPostedEvents(None, 0)
+
+
+    async def poll(self):
+
+        # Experiment with sleep to keep gui responsive
+        # but not a cpu hog.
+        event = 0
+
+        while True:
+
+            if self.app.hasPendingEvents():
+
+                # FIXME - have Qt do the put when it wants refreshing
+                self.put(event)
+                event += 1
+
+            await curio.sleep(0.05)
+
 
 Application = qtw.QApplication
 HBoxLayout = qtw.QHBoxLayout
 VBoxLayout = qtw.QVBoxLayout
 GridLayout = qtw.QGridLayout
 TabWidget = qtw.QTabWidget
-
+Label = qtw.QLabel
+LineEdit = qtw.QLineEdit
 
 
 
