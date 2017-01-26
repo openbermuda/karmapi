@@ -400,7 +400,7 @@ class LabelGrid(qtw.QScrollArea):
 
         inner.setLayout(qtw.QGridLayout())
 
-        self.setWidget(inner) # CRITICAL
+        self.setWidget(inner)
 
         self.layout = inner.layout()
         self.layout.setSpacing(1)
@@ -420,7 +420,11 @@ class LabelGrid(qtw.QScrollArea):
         
         for column, name in enumerate(data.columns.values):
             button = qtw.QLabel(name)
+            #button = qtw.QPushButton(name)
+            
             button.setStyleSheet('background: #ff00ff')
+            button.setAlignment(qt.AlignCenter)
+            button.setMargin(5)
             layout.addWidget(button, 0, column + 1)
 
         for row in range(len(data)):
@@ -438,8 +442,10 @@ class LabelGrid(qtw.QScrollArea):
                     
                 label = qtw.QLabel(value)
                 #label.setStyleSheet('border: 1px solid black;')
-                label.setStyleSheet('background: #cccccc')
+                label.setStyleSheet('background: #eeeeee')
                 label.setAlignment(qt.AlignRight)
+                label.setMargin(5)
+                label.font().setPointSize(10)
                 layout.addWidget(label, row+1, col+1)
 
         pad = qtw.QLabel()
