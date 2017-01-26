@@ -166,7 +166,7 @@ class Grid(Widget):
         # FIXME create the widget
         vlayout = VBoxLayout(self.parent)
         for irow, row in enumerate(rows):
-            wrow = Widget()
+            wrow = Widget(self)
             vlayout.addWidget(wrow)
             hlayout = HBoxLayout(wrow)
             for icol, item in enumerate(row):
@@ -175,7 +175,8 @@ class Grid(Widget):
                 # but i will make an exception
                 if isinstance(item, str):
                     # assume it is a path to a widget
-                    widget = get_widget(item)(None)
+                    printf(item)
+                    widget = get_widget(item)(wrow)
                     
                 elif isinstance(item, dict):
                     # see if dict specifies the widget
@@ -187,14 +188,16 @@ class Grid(Widget):
                         widget = get_widget(widget)
 
                     # build the widget
-                    widget = widget(item)
+                    printf(widget)
+                    printf(item)
+                    widget = widget(wrow, item)
 
                     # add reference if given one
                     name = item.get('name')
                     if name:
                         self.lookup[name] = widget
                 else:
-                    widget = item(None)
+                    widget = item(wrow)
 
                 self.grid[(irow, icol)] = widget
 
@@ -221,9 +224,9 @@ class ParmGrid(Grid):
         for row, item in enumerate(parms):
 
             print('parms:', row, item)
-            label = Label(item.get('label'))
+            label = Label(self, item.get('label'))
             layout.addWidget(label, row, 0)
-            entry = LineEdit()
+            entry = LineEdit(self)
             layout.addWidget(entry, row, 1)
             
 
@@ -427,9 +430,9 @@ class KPlot(PlotImage):
 
 class XKCD(PlotImage):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, parent, *args, **kwargs):
 
-        super().__init__()
+        super().__init__(parent)
 
     def plot(self):
         """ Display plot xkcd style """
@@ -459,9 +462,9 @@ class Video(PlotImage):
 
     This is currently a matplotlib FigureCanvas
     """
-    def __init__(self, interval=1, *args, **kwargs):
+    def __init__(self, parent, interval=1, *args, **kwargs):
 
-        super().__init__(**kwargs)
+        super().__init__(parent, **kwargs)
         self.interval = interval or 1
 
     async def run(self):

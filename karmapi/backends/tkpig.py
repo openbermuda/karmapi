@@ -119,7 +119,7 @@ def bind(piggy, binds):
         except AttributeError:
             cb = base.get_item(binding)
 
-        w.clicked.connect(cb)
+        w.configure(command=cb)
 
 
 def get_parser():
@@ -283,6 +283,13 @@ class Widget(ttk.Frame):
 
         pass
 
+    def setWindowTitle(self, title):
+
+        pass
+
+    def show(self):
+        pass
+
 class Docs(Text):
     """ Docs widget """
     def __init__(self, parent, doc=None):
@@ -403,19 +410,18 @@ class ParmGrid(ttk.Frame):
 
         return self
 
-                
-def button(parent, meta):
-    """ Button factory """
-    b = ttk.Button(parent, text=meta.get('name', 'Push Me'))
-    print(b)
+class button(ttk.Button):
 
-    cb = meta.get('callback')
-    if cb:
-        if str(cb):
-            cb = base.get_item(cb)
-        b.clicked.connect(cb)
+    def __init__(self, parent, meta):
+        """ Button factory """
+        cb = meta.get('callback')
+        if cb:
+            if str(cb):
+                cb = base.get_item(cb)
 
-    return b
+        super().__init__(parent, text=meta.get('name', 'Push Me'),
+                         command=cb)
+
 
 class Image(ttk.Label):
 
@@ -639,7 +645,7 @@ class AppEventLoop:
             self.app.update()
 
 
-    async def poll(self, yq):
+    async def poll(self):
 
         # Experiment with sleep to keep gui responsive
         # but not a cpu hog.
@@ -690,9 +696,16 @@ class Application(Tk):
     
 class Label(ttk.Label):
 
-    def __init__(self, text):
+    def __init__(self, parent, text):
 
-        super().__init__(text=text)
+        super().__init__(parent, text=text)
 
 
+class TabWidget(ttk.Notebook):
+
+    def addTab(self, widget, name):
+
+        self.add(widget, text=name)
+        
+        
 LineEdit = ttk.Entry        

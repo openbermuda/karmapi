@@ -192,7 +192,7 @@ class Widget(qtw.QWidget):
 
 class Text(qtw.QTextEdit):
     """ Text edit widget """
-    def __init__(self, meta=None):
+    def __init__(self, parent, meta=None):
         """ Initialise the widget 
 
         doc: optional html text to load the widget with.
@@ -262,7 +262,7 @@ class GridLabel(qtw.QLabel):
     
                     
 
-def button(meta):
+def button(parent, meta):
     """ Button factory """
     b = qtw.QPushButton(meta.get('name', 'Push Me'))
 
@@ -593,13 +593,19 @@ class AppEventLoop:
 
             await curio.sleep(0.05)
 
+class Label(qtw.QLabel):
+
+    def __init__(self, parent, text=None):
+
+        super().__init__(parent)
+        self.setText(text)
+            
 
 Application = qtw.QApplication
 HBoxLayout = qtw.QHBoxLayout
 VBoxLayout = qtw.QVBoxLayout
 GridLayout = qtw.QGridLayout
 TabWidget = qtw.QTabWidget
-Label = qtw.QLabel
 LineEdit = qtw.QLineEdit
 
 
