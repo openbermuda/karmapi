@@ -11,7 +11,7 @@ if joy.BACKEND == 'qt':
 
 else:
 
-    from .backends.tkpog import *
+    from .backends.tkpig import *
 
 global YQ
 
@@ -228,6 +228,105 @@ class ParmGrid(Grid):
 
         return self
 
+class GridBase:
+
+    def clear(self):
+
+        for item in self.layout.children():
+            self.layout.removeItem(item)
+        
+    def load(self, data):
+
+        self.data = data
+
+        self.draw()
+
+    def draw(self):
+        
+        self.clear()
+
+        data = self.data
+        
+        formatter = EngFormatter(accuracy=0, use_eng_prefix=True)
+        layout = self.layout
+        
+        for column, name in enumerate(data.columns.values):
+            button = HeaderLabel(name)
+
+            layout.addWidget(button, 0, column + 1)
+
+        nrows = min(len(data) - self.start_row, self.number_of_rows)
+        for row in range(nrows):
+
+            for col in range(len(data.columns)):
+
+                value = data.values[row + self.start_row][col]
+                try:
+                    # format data with formatter function
+                    value = formatter(value)
+                except:
+                    # anything goes wrong, just show with str
+                    value = str(value)
+
+                label = GridLabel(value)
+
+                layout.addWidget(label, row+1, col+1)
+
+        pad = Widget()
+        layout.addWidget(pad, 0, len(data.columns) + 1,
+                         len(data), len(data.columns) + 1)
+
+        layout.setColumnStretch(0, 1)
+        layout.setColumnStretch(len(data.columns) + 1, 1)
+        
+        size = self.inner.minimumSize()
+        printf(size.width(), size.height())
+        
+        return
+
+class LabelGrid(GridBase, Widget):
+
+    def __init__(self, parent=None, widgets=None):
+
+        super().__init__()
+
+        self.number_of_rows = 10
+        self.start_row = 0
+
+        self.setLayout(qtw.QGridLayout())
+
+        self.layout = self.layout()
+        self.layout.setSpacing(1)
+        self.inner = self
+
+        self.setFocusPolicy(qt.StrongFocus)
+
+
+    def keyPressEvent(self, event):
+
+        printf(self.start_row, len(self.data))
+        key = event.key()
+        printf(key)
+        if key == qtcore.Qt.Key_Down:
+            # scroll down one row
+            self.start_row += 1
+
+        elif key == qtcore.Qt.Key_Up:
+            self.start_row -= 1
+
+        elif key == qtcore.Qt.Key_PageDown:
+            self.start_row += self.number_of_rows
+
+        elif key == qtcore.Qt.Key_PageUp:
+            self.start_row -= self.number_of_rows
+
+        self.start_row = max(0, self.start_row)
+        self.start_row = min(len(self.data) - self.number_of_rows,
+                             self.start_row)
+
+        self.draw()
+
+    
 class EventLoop:
     """ An event loop
 
@@ -348,7 +447,81 @@ class EventLoop:
 
         await curio.gather(tasks)
 
-    
+class KPlot(PlotImage):
+
+    def compute_data(self):
+
+        self.data = [list(range(100)) for x in range(100)]
+
+class XKCD(PlotImage):
+
+    def __init__(self, *args, **kwargs):
+
+        super().__init__()
+
+    def plot(self):
+        """ Display plot xkcd style """
+        with plt.xkcd():
+
+            np = pandas.np
+
+            data = np.ones(100)
+            data[70:] -= np.arange(30)
+
+            self.axes.plot(data)
+
+            self.axes.annotate(
+                'THE DAY I REALIZED\nI COULD COOK BACON\nWHENEVER I WANTED',
+                xy=(70, 1), arrowprops=dict(arrowstyle='->'), xytext=(15, -10))
+
+            self.axes.set_xlabel('time')
+            self.axes.set_ylabel('my overall health')
+
+
+
+class ZoomImage(Image):
+    pass
+        
+class Video(PlotImage):
+    """ a video widget
+
+    This is currently a matplotlib FigureCanvas
+    """
+    def __init__(self, interval=1, *args, **kwargs):
+
+        super().__init__(**kwargs)
+        self.interval = interval or 1
+
+    async def run(self):
+        """ Run the animation """
+        # Loop forever updating the figure, with a little
+        # sleeping help from curio
+        while True:
+            await curio.sleep(self.interval)
+            self.update_figure()
+
+    def compute_data(self):
+
+        self.data = pandas.np.random.normal(size=(100, 100))
+
+    def __repr__(self):
+
+        return self.data
+
+
+    def plot(self):
+
+        self.axes.imshow(self.data)
+
+    def update_figure(self):
+        """  Update the figure 
+
+        This just re-computes data and replots.
+        """
+        self.compute_data()
+        self.plot()
+        self.draw()
+
 def print_thread_info(name):
     import threading
     print()

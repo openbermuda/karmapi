@@ -227,140 +227,42 @@ class Docs(qtw.QTextBrowser):
         pass
 
 
+class HeaderLabel(qtw.QLabel):
 
+    def __init__(self, name=None):
 
-class GridBase:
-
-    def clear(self):
-
-        for item in self.layout.children():
-            self.layout.removeItem(item)
+        name = name or ''
         
-    def load(self, data):
-
-        self.data = data
-
-        self.draw()
-
-    def draw(self):
-        
-        self.clear()
-
-        data = self.data
-        
-        formatter = EngFormatter(accuracy=0, use_eng_prefix=True)
-        layout = self.layout
-        
-        for column, name in enumerate(data.columns.values):
-            button = qtw.QLabel(name)
-            #button = qtw.QPushButton(name)
+        super().__init__(name)
             
-            button.setStyleSheet('background: #ff00ff')
-            button.setAlignment(qt.AlignCenter)
-            button.setMargin(5)
-            layout.addWidget(button, 0, column + 1)
+        self.setStyleSheet('background: #ff00ff')
+        self.setAlignment(qt.AlignCenter)
+        self.setMargin(5)
 
-        nrows = min(len(data) - self.start_row, self.number_of_rows)
-        for row in range(nrows):
+    def set_text(self, text):
 
-            for col in range(len(data.columns)):
+        self.setText(text)
 
-                value = data.values[row + self.start_row][col]
-                try:
-                    # format data with formatter function
-                    value = formatter(value)
-                except:
-                    # anything goes wrong, just show with str
-                    value = str(value)
+class GridLabel(qtw.QLabel):
 
-                    
-                label = qtw.QLabel(value)
-                #label.setStyleSheet('border: 1px solid black;')
-                label.setStyleSheet('background: #eeeeee')
-                label.setAlignment(qt.AlignRight)
-                label.setMargin(5)
-                label.font().setPointSize(10)
-                layout.addWidget(label, row+1, col+1)
+    def __init__(self, name=None):
 
-        pad = qtw.QLabel()
-        layout.addWidget(pad, 0, len(data.columns) + 1,
-                         len(data), len(data.columns) + 1)
-        #pad = qtw.QLabel()
-        #layout.addWidget(pad, 0, 0, len(data), 0)
-
-        layout.setColumnStretch(0, 1)
-        layout.setColumnStretch(len(data.columns) + 1, 1)
+        name = name or ''
         
-        size = self.inner.minimumSize()
-        printf(size.width(), size.height())
-        
-        return
+        super().__init__(name)
+            
+        #label.setStyleSheet('border: 1px solid black;')
+        self.setStyleSheet('background: #eeeeee')
+        self.setAlignment(qt.AlignRight)
+        self.setMargin(5)
+        self.font().setPointSize(10)
 
+
+    def set_text(self, text):
+
+        self.setText(text)
     
-class xLabelGrid(GridBase, qtw.QScrollArea):
-
-    def __init__(self, parent=None, widgets=None):
-
-        super().__init__()
-
-        self.setWidgetResizable(True) # CRITICAL
-
-        self.setLayout(qtw.QHBoxLayout())
-
-        inner = qtw.QWidget(self)
-        inner.setStyleSheet('background: #c0c0c0')
-
-        inner.setLayout(qtw.QGridLayout())
-
-        self.setWidget(inner)
-
-        self.layout = inner.layout()
-        self.layout.setSpacing(1)
-        self.inner = inner
-
-
-
-class LabelGrid(GridBase, qtw.QWidget):
-
-    def __init__(self, parent=None, widgets=None):
-
-        super().__init__()
-
-        self.number_of_rows = 10
-        self.start_row = 0
-
-        self.setLayout(qtw.QGridLayout())
-
-        self.layout = self.layout()
-        self.layout.setSpacing(1)
-        self.inner = self
-
-        self.setFocusPolicy(qt.StrongFocus)
-
-
-    def keyPressEvent(self, event):
-
-        printf(self.start_row, len(self.data))
-        key = event.key()
-        printf(key)
-        if key == qtcore.Qt.Key_Down:
-            # scroll down one row
-            self.start_row += 1
-
-        elif key == qtcore.Qt.Key_Up:
-            self.start_row -= 1
-
-        elif key == qtcore.Qt.Key_PageDown:
-            self.start_row += self.number_of_rows
-
-        elif key == qtcore.Qt.Key_PageUp:
-            self.start_row -= self.number_of_rows
-
-        self.start_row = max(0, self.start_row)
-        self.start_row = min(len(self.data) - self.number_of_rows,
-                             self.start_row)
-
-        self.draw()
+                    
 
 def button(meta):
     """ Button factory """
@@ -456,80 +358,6 @@ class PlotImage(qtw.QWidget):
         self.axes.plot(self.data)
         #self.axes.imshow(self.data)
         
-class KPlot(PlotImage):
-
-    def compute_data(self):
-
-        self.data = [list(range(100)) for x in range(100)]
-
-class XKCD(PlotImage):
-
-    def __init__(self, *args, **kwargs):
-
-        super().__init__()
-
-    def plot(self):
-        """ Display plot xkcd style """
-        with plt.xkcd():
-
-            np = pandas.np
-
-            data = np.ones(100)
-            data[70:] -= np.arange(30)
-
-            self.axes.plot(data)
-
-            self.axes.annotate(
-                'THE DAY I REALIZED\nI COULD COOK BACON\nWHENEVER I WANTED',
-                xy=(70, 1), arrowprops=dict(arrowstyle='->'), xytext=(15, -10))
-
-            self.axes.set_xlabel('time')
-            self.axes.set_ylabel('my overall health')
-
-
-
-class ZoomImage(Image):
-    pass
-        
-class Video(PlotImage):
-    """ a video widget
-
-    This is currently a matplotlib FigureCanvas
-    """
-    def __init__(self, interval=1, *args, **kwargs):
-
-        super().__init__(**kwargs)
-        self.interval = interval or 1
-
-    async def run(self):
-        """ Run the animation """
-        # Loop forever updating the figure, with a little
-        # sleeping help from curio
-        while True:
-            await curio.sleep(self.interval)
-            self.update_figure()
-
-    def compute_data(self):
-
-        self.data = pandas.np.random.normal(size=(100, 100))
-
-    def __repr__(self):
-
-        return self.data
-
-
-    def plot(self):
-
-        self.axes.imshow(self.data)
-
-    def update_figure(self):
-        """  Update the figure 
-
-        This just re-computes data and replots.
-        """
-        self.compute_data()
-        self.plot()
-        self.draw()
 
 
 class Table(qtw.QTableView):
@@ -734,6 +562,7 @@ class FilterModel(qtcore.QSortFilterProxyModel):
 Application = qtw.QApplication
 HBoxLayout = qtw.QHBoxLayout
 VBoxLayout = qtw.QVBoxLayout
+GridLayout = qtw.QGridLayout
 TabWidget = qtw.QTabWidget
 
 
