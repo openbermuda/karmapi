@@ -259,6 +259,8 @@ class Widget(qtw.QWidget):
 
         print('key pressed', event)
 
+
+
 class Text(qtw.QTextEdit):
     """ Text edit widget """
     def __init__(self, meta=None):
@@ -385,26 +387,8 @@ class ParmGrid(Grid):
 
         return self
 
-class LabelGrid(qtw.QScrollArea):
 
-    def __init__(self, parent=None, widgets=None):
-
-        super().__init__()
-
-        self.setWidgetResizable(True) # CRITICAL
-
-        self.setLayout(qtw.QHBoxLayout())
-
-        inner = qtw.QWidget(self)
-        inner.setStyleSheet('background: #c0c0c0')
-
-        inner.setLayout(qtw.QGridLayout())
-
-        self.setWidget(inner)
-
-        self.layout = inner.layout()
-        self.layout.setSpacing(1)
-        self.inner = inner
+class GridBase:
 
     def clear(self):
 
@@ -413,8 +397,16 @@ class LabelGrid(qtw.QScrollArea):
         
     def load(self, data):
 
+        self.data = data
+
+        self.draw()
+
+    def draw(self):
+        
         self.clear()
 
+        data = self.data
+        
         formatter = EngFormatter(accuracy=0, use_eng_prefix=True)
         layout = self.layout
         
@@ -427,11 +419,12 @@ class LabelGrid(qtw.QScrollArea):
             button.setMargin(5)
             layout.addWidget(button, 0, column + 1)
 
-        for row in range(len(data)):
+        nrows = min(len(data) - self.start_row, self.number_of_rows)
+        for row in range(nrows):
 
             for col in range(len(data.columns)):
 
-                value = data.values[row][col]
+                value = data.values[row + self.start_row][col]
                 try:
                     # format data with formatter function
                     value = formatter(value)
@@ -461,7 +454,72 @@ class LabelGrid(qtw.QScrollArea):
         printf(size.width(), size.height())
         
         return
-                
+
+    
+class xLabelGrid(GridBase, qtw.QScrollArea):
+
+    def __init__(self, parent=None, widgets=None):
+
+        super().__init__()
+
+        self.setWidgetResizable(True) # CRITICAL
+
+        self.setLayout(qtw.QHBoxLayout())
+
+        inner = qtw.QWidget(self)
+        inner.setStyleSheet('background: #c0c0c0')
+
+        inner.setLayout(qtw.QGridLayout())
+
+        self.setWidget(inner)
+
+        self.layout = inner.layout()
+        self.layout.setSpacing(1)
+        self.inner = inner
+
+
+
+class LabelGrid(GridBase, qtw.QWidget):
+
+    def __init__(self, parent=None, widgets=None):
+
+        super().__init__()
+
+        self.number_of_rows = 10
+        self.start_row = 0
+
+        self.setLayout(qtw.QGridLayout())
+
+        self.layout = self.layout()
+        self.layout.setSpacing(1)
+        self.inner = self
+
+        self.setFocusPolicy(qt.StrongFocus)
+
+
+    def keyPressEvent(self, event):
+
+        printf(self.start_row, len(self.data))
+        key = event.key()
+        printf(key)
+        if key == qtcore.Qt.Key_Down:
+            # scroll down one row
+            self.start_row += 1
+
+        elif key == qtcore.Qt.Key_Up:
+            self.start_row -= 1
+
+        elif key == qtcore.Qt.Key_PageDown:
+            self.start_row += self.number_of_rows
+
+        elif key == qtcore.Qt.Key_PageUp:
+            self.start_row -= self.number_of_rows
+
+        self.start_row = max(0, self.start_row)
+        self.start_row = min(len(self.data) - self.number_of_rows,
+                             self.start_row)
+
+        self.draw()
 
 def button(meta):
     """ Button factory """
