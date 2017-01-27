@@ -45,6 +45,10 @@ def meta():
         info = dict(foo=27, bar='open'),
         parms = [{'label': 'path'}],
         tabs = [
+            {'name': 'grid',
+             'widgets': [
+                 [{'widget': "LabelGrid", 'name': 'lg'}]]},
+
             {'name': 'curio',
              'widgets': [
                  ["karmapi.widgets.Curio"]]},
@@ -178,6 +182,11 @@ if __name__ == '__main__':
     # apply bindings
     bind(APP.pig, bindings())
 
+    lg = APP.pig['lg']
+
+    data = random.randint(0, 100, size=(10, 5))
+    lg.load(pandas.DataFrame(data))
+        
     print('make pig run')
     run(APP)
 

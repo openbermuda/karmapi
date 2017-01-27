@@ -250,7 +250,7 @@ class GridBase:
         layout = self.layout
         
         for column, name in enumerate(data.columns.values):
-            button = HeaderLabel(name)
+            button = HeaderLabel(str(name))
 
             layout.addWidget(button, 0, column + 1)
 
