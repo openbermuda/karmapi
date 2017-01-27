@@ -181,67 +181,6 @@ class Docs(Text):
         print(event, cb)
         cb(str(event.keycode))
     
-    
-
-
-class Grid(ttk.Frame):
-    """ A grid of widgets """
-
-    def __init__(self, parent, widgets=None):
-
-        super().__init__(parent)
-        self.grid = {}
-        self.lookup = {}
-        self.build(widgets)
-
-    def build(self, widgets):
-        
-        rows = widgets
-
-        # FIXME create the widget
-        for irow, row in enumerate(rows):
-            for icol, item in enumerate(row):
-
-                # using isinstance makes me sad..
-                # but i will make an exception
-                if isinstance(item, str):
-                    # assume it is a path to a widget
-                    widget = get_widget(item)
-                    print('yy', widget, self)
-                    
-                    widget = widget(self)
-                    print('xx', widget)
-                elif isinstance(item, dict):
-                    # see if dict specifies the widget
-                    widget = item.get('widget', button)
-
-                    if isinstance(widget, str):
-                        # maybe it is a path to a widget
-                        # eg "karmapi.tankrain.TankRain"
-                        widget = get_widget(widget)
-
-                    # build the widget
-                    widget = widget(self, item)
-
-                    # add reference if given one
-                    name = item.get('name')
-                    if name:
-                        self.lookup[name] = widget
-                else:
-                    widget = item(self)
-
-                self.grid[(irow, icol)] = widget
-
-                print('adding {widget} to grid'.format(**locals()))
-                widget.grid(row=irow, column=icol)
-
-    def __getitem__(self, item):
-
-        if item in self.lookup:
-            return self.lookup.get(item)
-
-        return self.grid.get(item)
-
 def get_widget(path):
 
     parts = path.split('.')
@@ -316,10 +255,11 @@ class PlotImage(ttk.Frame):
 
         fig = Figure(figsize=(width, height), dpi=dpi, **kwargs)
         self.image = FigureCanvas(fig, master=self)
-        self.image._tkcanvas.pack()
+        self.image._tkcanvas.pack(expand=1, fill=tkinter.BOTH)
 
         self.toolbar = NavigationToolbar2TkAgg(self.image, self)
         self.toolbar.update()
+        self.toolbar.pack(expand=0)
 
         self.axes = fig.add_subplot(111)
         self.fig = fig
@@ -461,7 +401,7 @@ class VBoxLayout:
     
     def addWidget(self, widget):
 
-        widget.pack(side=tkinter.BOTTOM, expand=True, fill='both')
+        widget.pack(side=tkinter.TOP, expand=1, fill=tkinter.BOTH)
 
 class HBoxLayout:
     """ Layout widgets in a horizontal box """
@@ -470,7 +410,7 @@ class HBoxLayout:
     
     def addWidget(self, widget):
 
-        widget.pack(side=tkinter.LEFT)
+        widget.pack(side=tkinter.LEFT, expand=1, fill=tkinter.BOTH)
 
 class GridLayout:        
     """ Layout widgets in a grid """
@@ -484,7 +424,8 @@ class GridLayout:
     def addWidget(self, widget, row, col):
 
         widget.grid(row=row, column=col,
-                    padx=self.spacing, pady=self.spacing)
+                    padx=self.spacing, pady=self.spacing,
+                    sticky='nsew')
     
 
 class AppEventLoop:
@@ -568,6 +509,7 @@ class TabWidget(ttk.Notebook):
     def add_tab(self, name):
 
         widget = ttk.Frame(self)
+
         self.add(widget, text=name)
 
         return widget
