@@ -600,12 +600,33 @@ class Label(qtw.QLabel):
         super().__init__(parent)
         self.setText(text)
             
+class TabWidget(qtw.QTabWidget):
 
-Application = qtw.QApplication
+    def add_tab(self, name):
+        """ Add a tab and return widget to hold contents of tab """
+        w = Widget(self)
+
+        self.addTab(w, name)
+
+        return w
+
+    
+class Application(qtw.QApplication):
+
+    def __init__(self, *args):
+
+        super().__init__(*args)
+
+        self.top = qtw.QFrame()
+        self.top.show()
+
+    def toplevel(self):
+
+        return self.top
+    
 HBoxLayout = qtw.QHBoxLayout
 VBoxLayout = qtw.QVBoxLayout
 GridLayout = qtw.QGridLayout
-TabWidget = qtw.QTabWidget
 LineEdit = qtw.QLineEdit
 
 

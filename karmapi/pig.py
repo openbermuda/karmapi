@@ -28,7 +28,8 @@ from karmapi.piglet import (
     # widgetw
     Pigs, Text, Docs, Grid, ParmGrid, GridBase,
     LabelGrid, Image, PlotImage, KPlot, XKCD, ZoomImage, Video,
-    Table, EventLoop, Application,
+    Table, EventLoop, Application, Widget, TabWidget,
+    GridLayout, VBoxLayout, HBoxLayout,
 
     # functions
     bind, printf)
@@ -146,8 +147,10 @@ def build(recipe, pig=None):
     
     title = recipe.get('title', 'PIGS')
 
+    layout = VBoxLayout(app.toplevel())
     if pig is None:
-        pig = Pigs(recipe, [])
+        pig = Pigs(app, recipe)
+        layout.addWidget(pig)
     
     pig.setWindowTitle(title)
     pig.show()

@@ -34,9 +34,9 @@ def get_widget(path):
     
 class Pigs(Widget):
 
-    def __init__(self, recipe=None, args=None):
+    def __init__(self, app, recipe=None, args=None):
 
-        super().__init__()
+        super().__init__(app.toplevel())
 
         self.meta = recipe or meta()
         self.args = args
@@ -48,44 +48,43 @@ class Pigs(Widget):
 
     def build(self):
 
-        self.layout = VBoxLayout(self)
+        layout = VBoxLayout(self)
 
         widget = self.build_info()
         if widget:
-            self.layout.addWidget(widget)
+            layout.addWidget(widget)
             
         widget = self.build_parms()
         if widget:
-            self.layout.addWidget(widget)
+            layout.addWidget(widget)
 
         widget = self.build_tabs()
         if widget:
-            self.layout.addWidget(widget)
+            layout.addWidget(widget)
 
     def build_tabs(self):
         """ Build tabs """
 
-        self.tb = TabWidget()
+        self.tb = TabWidget(self)
         self.tabs = {}
         for tab in self.meta.get('tabs', []):
 
-            w = Widget()
-
             name = tab['name']
-            self.tb.addTab(w, name)
-
-            self.tabs[name] = {}
+            printf(name)
 
             widgets = tab.get('widgets')
 
+            w = self.tb.add_tab(name)
+            print('frame', w)
+
+            layout = VBoxLayout(w)
             if widgets:
-                print(widgets)
                 grid = self.build_widgets(w, widgets)
                 self.tabs[name] = grid
-
+                
                 self.lookup.update(grid.lookup)
 
-        #self.tb.setCurrentIndex(2)
+                layout.addWidget(grid)
 
         return self.tb
 
@@ -153,7 +152,7 @@ class Grid(Widget):
 
     def __init__(self, parent=None, widgets=None):
 
-        super().__init__()
+        super().__init__(parent)
         self.parent = parent
         self.grid = {}
         self.lookup = {}
@@ -164,7 +163,7 @@ class Grid(Widget):
         rows = widgets
 
         # FIXME create the widget
-        vlayout = VBoxLayout(self.parent)
+        vlayout = VBoxLayout(self)
         for irow, row in enumerate(rows):
             wrow = Widget(self)
             vlayout.addWidget(wrow)
@@ -175,7 +174,6 @@ class Grid(Widget):
                 # but i will make an exception
                 if isinstance(item, str):
                     # assume it is a path to a widget
-                    printf(item)
                     widget = get_widget(item)(wrow)
                     
                 elif isinstance(item, dict):
@@ -188,8 +186,6 @@ class Grid(Widget):
                         widget = get_widget(widget)
 
                     # build the widget
-                    printf(widget)
-                    printf(item)
                     widget = widget(wrow, item)
 
                     # add reference if given one
@@ -228,7 +224,6 @@ class ParmGrid(Grid):
             layout.addWidget(label, row, 0)
             entry = LineEdit(self)
             layout.addWidget(entry, row, 1)
-            
 
         return self
 

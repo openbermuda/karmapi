@@ -130,147 +130,6 @@ def get_parser():
 
     return parser
 
-class Pigs(ttk.Frame):
-
-    def __init__(self, app, recipe=None, args=None):
-
-        super().__init__(app)
-
-        self.meta = recipe or meta()
-        self.args = args
-
-        # keep a list of asynchronous tasks needed to run widgets
-        self.runners = set()
-        self.lookup = {}
-        self.build()
-        self.pack()
-
-    def build(self):
-
-        widget = self.build_info()
-        if widget:
-            widget.pack(side=tkinter.TOP)
-            
-        widget = self.build_parms()
-        if widget:
-            widget.pack(side=tkinter.TOP)
-
-        widget = self.build_tabs()
-        if widget:
-            widget.pack(side=tkinter.BOTTOM, expand=True, fill='both')
-
-    def build_tabs(self):
-        """ Build tabs """
-
-        self.tb = ttk.Notebook(self)
-        self.tabs = {}
-        for tab in self.meta.get('tabs', []):
-
-            w = ttk.Frame(self.tb)
-
-            name = tab['name']
-            #button = ttk.Button(w, text=name)
-            #button.pack()
-            self.tabs[name] = {}
-
-            print('tab {name} {w}'.format(**locals()))
-            widgets = tab.get('widgets')
-
-            if widgets:
-                grid = self.build_widgets(w, widgets)
-                print(grid)
-                grid.pack()
-                self.tabs[name] = grid
-
-                self.lookup.update(grid.lookup)
-
-            self.tb.add(w, text=name)
-
-        #self.tb.setCurrentIndex(2)
-
-        return self.tb
-
-    def build_info(self):
-        """ Build info """
-        pass
-    
-    def build_parms(self):
-        """ Build parms """
-
-        pg = ParmGrid(self)
-
-        pg.build(self.meta.get('parms', {}))
-
-        return pg
-
-    def build_widgets(self, parent, widgets):
-
-        grid = Grid(parent, widgets)
-
-        for widget in grid.grid.values():
-            if hasattr(widget, 'run'):
-                self.runners.add(widget.run())
-
-        return grid
-
-    def __getitem__(self, item):
-
-        if item in self.lookup:
-            return self.lookup.get(item)
-
-        raise KeyError
-
-    def runit(self):
-        
-        print('pig runit :)')
-
-        self.eloop.submit_job(doit)
-        self.eloop.submit_job(self.doit())
-
-    async def doit(self):
-        """  Async callback example for yosser
-
-        See Pig.runit()
-        """
-        from datetime import datetime
-        sleep = random.randint(1, 20)
-        printf("running doit doit doit {} {}".format(sleep, datetime.now()))
-        start = time.time()
-        await curio.sleep(sleep)
-        end = time.time()
-        printf('actual sleep {} {} {}'.format(
-            sleep, end-start, datetime.now()))
-        return sleep
-
-
-    async def run(self):
-        """ Make the pig run """
-        # spawn task for each runner
-        coros = []
-        for item in self.runners:
-            if inspect.iscoroutine(item):
-                coros.append(await(curio.spawn(item)))
-
-        await curio.gather(coros)
-
-def doit():
-    """  Callback example for yosser
-
-    See Pig.runit()
-    """
-    n = random.randint(35, 40)
-    start = time.time()
-    #time.sleep(sleep)
-    sleep = fib(n)
-    end = time.time()
-    print('actual sleep {} {}'.format(sleep, end-start))
-    return n, sleep
-
-def fib(n):
-    if n <= 2:
-        return 1
-    else:
-        return fib(n-1) + fib(n-2)
 
 class Widget(ttk.Frame):
 
@@ -602,7 +461,7 @@ class VBoxLayout:
     
     def addWidget(self, widget):
 
-        widget.pack()
+        widget.pack(side=tkinter.BOTTOM, expand=True, fill='both')
 
 class HBoxLayout:
     """ Layout widgets in a horizontal box """
@@ -693,6 +552,9 @@ class Application(Tk):
 
         super().__init__()
 
+    def toplevel(self):
+        return self
+
     
 class Label(ttk.Label):
 
@@ -703,9 +565,11 @@ class Label(ttk.Label):
 
 class TabWidget(ttk.Notebook):
 
-    def addTab(self, widget, name):
+    def add_tab(self, name):
 
+        widget = ttk.Frame(self)
         self.add(widget, text=name)
-        
+
+        return widget
         
 LineEdit = ttk.Entry        
