@@ -13,6 +13,15 @@ Contents:
 
    karmapi
 
+PyCaribbean
+===========
+
+.. toctree::
+   :maxdepth: 2
+
+   
+   pycaribbean/*
+
 TO DO
 =====
 

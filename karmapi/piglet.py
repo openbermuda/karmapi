@@ -26,6 +26,8 @@ def get_widget(path):
 
     parts = path.split('.')
 
+    # FIXME look in ./widgets,py as well
+    # or rather have a list set up as default and away we go.
     if len(parts) == 1:
         pig_mod = sys.modules[__name__]
         return base.get_item(path, pig_mod)
