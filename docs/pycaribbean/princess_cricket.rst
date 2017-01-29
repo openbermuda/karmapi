@@ -15,11 +15,12 @@ She's whoever you want her to be
 Fork in the road
 ================
 
-... a fork in the road.. which path will you take or will you rest at the tree in the fork and watch the world go by for a while?
+Which path will you take.
 
-Tree of hearts.. two trees.. growing side by side... the branches are all routes that were taken..
+Will you rest at the tree in the fork?
 
-The branches in the middle make a heart, where leaves are sharing their journeys...
+Watch the world go by for a while
+
 
 .. image:: fork_in_road.jpg
            :width: 400
