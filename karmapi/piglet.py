@@ -419,6 +419,27 @@ class EventLoop(AppEventLoop):
 
         await curio.gather(tasks)
 
+
+class MagicCarpet(PlotImage):
+    """ Magic data display 
+
+    image, table, plots and more
+    """
+
+    def __init__(self, parent):
+
+        super.__init__(parent)
+
+            
+    async def process(self, event):
+        """ Process events """
+
+        method = getattr(self, str(event))
+
+        return await method()
+        
+
+        
 class KPlot(PlotImage):
 
     def compute_data(self):

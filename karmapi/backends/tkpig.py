@@ -135,8 +135,9 @@ class Widget(ttk.Frame):
 
 
     def keyPressEvent(self, event):
-
+        """ Transalte tk keypresses into karma """
         print('key pressed', event)
+        
 
     def setLayout(self, layout):
 
@@ -257,9 +258,9 @@ class PlotImage(ttk.Frame):
         self.image = FigureCanvas(fig, master=self)
         self.image._tkcanvas.pack(expand=1, fill=tkinter.BOTH)
 
-        self.toolbar = NavigationToolbar2TkAgg(self.image, self)
-        self.toolbar.update()
-        self.toolbar.pack(expand=0)
+        #self.toolbar = NavigationToolbar2TkAgg(self.image, self)
+        #self.toolbar.update()
+        #self.toolbar.pack(expand=0)
 
         self.axes = fig.add_subplot(111)
         self.fig = fig
