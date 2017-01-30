@@ -36,6 +36,7 @@ setup(
             'kpimage = karmapi.tools.image:main',
             'tankrain = karmapi.tankrain:main',
             'checkmate = karmapi.checksum:main',
+            'joy = karmapi.pigjoy:main',
             ],
         },
     keywords='data pi karma',

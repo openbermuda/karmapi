@@ -34,5 +34,7 @@ class Pig:
 
         method = getattr(self, str(event))
 
-        return await method()
+        if method:
+
+            return await method()
         
