@@ -7,7 +7,7 @@ Called joy because of Great Uncle Urban's letter, where joy looked like pig
 
 import os
 
-BACKEND = 'qt'
+BACKEND = 'tk'
 
 if 'PIG' in os.environ:
     BACKEND = os.environ['PIG']

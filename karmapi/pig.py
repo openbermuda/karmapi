@@ -47,7 +47,7 @@ def meta():
         tabs = [
             {'name': 'grid',
              'widgets': [
-                 [{'widget': "LabelGrid", 'name': 'lg'}]]},
+                 [{'widget': "MagicCarpet", 'name': 'magic'}]]},
 
             {'name': 'curio',
              'widgets': [
@@ -182,10 +182,10 @@ if __name__ == '__main__':
     # apply bindings
     bind(APP.pig, bindings())
 
-    lg = APP.pig['lg']
+    magic = APP.pig['magic']
 
     data = random.randint(0, 100, size=(10, 5))
-    lg.load(pandas.DataFrame(data))
+    magic.load(pandas.DataFrame(data))
         
     print('make pig run')
     run(APP)

@@ -33,6 +33,8 @@ from pandas.formats.format import EngFormatter
 
 from karmapi import base, yosser
 
+from . import core
+
 global APP
 global YQ
 
@@ -131,7 +133,8 @@ def get_parser():
     return parser
 
 
-class Widget(ttk.Frame):
+
+class Pig(ttk.Frame, core.Pig):
 
 
     def keyPressEvent(self, event):
@@ -149,6 +152,8 @@ class Widget(ttk.Frame):
 
     def show(self):
         pass
+
+
 
 class Docs(Text):
     """ Docs widget """
@@ -245,7 +250,7 @@ class Image(ttk.Label):
         self.setScaledContents(True)
         
 
-class PlotImage(ttk.Frame):
+class PlotImage(core.Pig, ttk.Frame):
     """ An image widget
 
     This is just a wrapper around matplotlib FigureCanvas.

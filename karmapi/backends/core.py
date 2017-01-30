@@ -8,7 +8,7 @@ Backends should build with what is here,
 
 import curio
 
-class Widget:
+class Pig:
 
     def __init__(self, *args, **kwargs):
 
@@ -24,11 +24,15 @@ class Widget:
     async def run(self):
 
         while True:
-            await event = self.event_queue.pop()
+            event = await self.event_queue.pop()
 
             await self.process(event)
 
 
-    async def process(self):
-        """ Make it do something """
-        passs
+    async def process(self, event):
+        """ Process events """
+
+        method = getattr(self, str(event))
+
+        return await method()
+        

@@ -34,7 +34,7 @@ def get_widget(path):
 
     return base.get_item(path)
     
-class Pigs(Widget):
+class Pigs(Pig):
 
     def __init__(self, app, recipe=None, args=None):
 
@@ -149,7 +149,7 @@ class Pigs(Widget):
 
         await curio.gather(coros)
 
-class Grid(Widget):
+class Grid(core.Pig):
     """ A grid of widgets """
 
     def __init__(self, parent=None, widgets=None):
@@ -285,7 +285,7 @@ class GridBase:
         
         return
 
-class LabelGrid(GridBase, Widget):
+class LabelGrid(GridBase, Pig):
 
     def __init__(self, parent=None, widgets=None):
 
@@ -420,7 +420,10 @@ class EventLoop(AppEventLoop):
         await curio.gather(tasks)
 
 
-class MagicCarpet(PlotImage):
+class Piglet(Pig):
+    pass
+        
+class MagicCarpet(PlotImage, Piglet):
     """ Magic data display 
 
     image, table, plots and more
@@ -430,13 +433,26 @@ class MagicCarpet(PlotImage):
 
         super.__init__(parent)
 
-            
-    async def process(self, event):
-        """ Process events """
+        self.image_state = False
+        self.table_state = False
 
-        method = getattr(self, str(event))
+    async def image(self):
+        """ Toggle image state """
+        pass
+        
+    async def table(self):
+        """ Toggle image state """
 
-        return await method()
+        # draw the data as a table
+
+    def load_table(self):
+        """ Load table data """
+        self.axes.clear()
+        self.axes.table(self.data)
+
+        
+        
+        
         
 
         
