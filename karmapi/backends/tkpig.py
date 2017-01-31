@@ -466,32 +466,6 @@ class AppEventLoop:
             await curio.sleep(0.05)
 
 
-def build(recipe, pig=None):
-
-
-    app = Tk()
-    eloop = EventLoop(app)
-    
-    title = recipe.get('title', 'TkPig')
-
-    if pig is None:
-        pig = Pigs(app, recipe, [])
-    
-    app.title(title)
-    #pig.show()
-    pig.eloop = eloop
-
-    # need to hang on to a reference to window o/w it gets garbage
-    # collected and disappears.
-    app.windows = [pig]
-    app.pig = pig
-
-    
-    app.pig.runners.add(eloop.run())
-
-
-    return app
-
 class Application(Tk):
 
 

@@ -59,124 +59,7 @@ def bind(piggy, binds):
         w.clicked.connect(cb)
 
 
-class Pigs(qtw.QWidget):
-
-    def __init__(self, recipe=None, args=None):
-
-        super().__init__()
-
-        self.meta = recipe or meta()
-        self.args = args
-
-        # keep a list of asynchronous tasks needed to run widgets
-        self.runners = set()
-        self.lookup = {}
-        self.build()
-
-    def build(self):
-
-        self.layout = qtw.QVBoxLayout(self)
-
-        widget = self.build_info()
-        if widget:
-            self.layout.addWidget(widget)
-            
-        widget = self.build_parms()
-        if widget:
-            self.layout.addWidget(widget)
-
-        widget = self.build_tabs()
-        if widget:
-            self.layout.addWidget(widget)
-
-    def build_tabs(self):
-        """ Build tabs """
-
-        self.tb = qtw.QTabWidget()
-        self.tabs = {}
-        for tab in self.meta.get('tabs', []):
-
-            w = qtw.QWidget()
-
-            name = tab['name']
-            self.tb.addTab(w, name)
-
-            self.tabs[name] = {}
-
-            widgets = tab.get('widgets')
-
-            if widgets:
-                print(widgets)
-                grid = self.build_widgets(w, widgets)
-                self.tabs[name] = grid
-
-                self.lookup.update(grid.lookup)
-
-        #self.tb.setCurrentIndex(2)
-
-        return self.tb
-
-    def build_info(self):
-        """ Build info """
-        pass
-    
-    def build_parms(self):
-        """ Build parms """
-
-        return ParmGrid(self, self.meta.get('parms', {}))
-
-    def build_widgets(self, parent, widgets):
-
-        grid = Grid(parent, widgets)
-
-        for widget in grid.grid.values():
-            if hasattr(widget, 'run'):
-                self.runners.add(widget.run())
-
-        return grid
-
-    def __getitem__(self, item):
-
-        if item in self.lookup:
-            return self.lookup.get(item)
-
-        raise KeyError
-
-    def runit(self):
-        
-        print('pig runit :)')
-
-        self.eloop.submit_job(doit)
-        self.eloop.submit_job(self.doit())
-
-    async def doit(self):
-        """  Async callback example for yosser
-
-        See Pig.runit()
-        """
-        from datetime import datetime
-        sleep = random.randint(1, 20)
-        printf("running doit doit doit {} {}".format(sleep, datetime.now()))
-        start = time.time()
-        await curio.sleep(sleep)
-        end = time.time()
-        printf('actual sleep {} {} {}'.format(
-            sleep, end-start, datetime.now()))
-        return sleep
-
-
-    async def run(self):
-        """ Make the pig run """
-        # spawn task for each runner
-        coros = []
-        for item in self.runners:
-            if inspect.iscoroutine(item):
-                coros.append(await(curio.spawn(item)))
-
-        await curio.gather(coros)
-
-
-class Widget(qtw.QWidget):
+class Pig(qtw.QWidget):
 
     def __init__(self, *args, **kwargs):
 
@@ -604,7 +487,7 @@ class TabWidget(qtw.QTabWidget):
 
     def add_tab(self, name):
         """ Add a tab and return widget to hold contents of tab """
-        w = Widget(self)
+        w = Pig(self)
 
         self.addTab(w, name)
 

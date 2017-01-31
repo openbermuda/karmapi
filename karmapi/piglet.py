@@ -149,7 +149,7 @@ class Pigs(Pig):
 
         await curio.gather(coros)
 
-class Grid(core.Pig):
+class Grid(Pig):
     """ A grid of widgets """
 
     def __init__(self, parent=None, widgets=None):
@@ -167,7 +167,7 @@ class Grid(core.Pig):
         # FIXME create the widget
         vlayout = VBoxLayout(self)
         for irow, row in enumerate(rows):
-            wrow = Widget(self)
+            wrow = Piglet(self)
             vlayout.addWidget(wrow)
             hlayout = HBoxLayout(wrow)
             for icol, item in enumerate(row):
@@ -188,6 +188,7 @@ class Grid(core.Pig):
                         widget = get_widget(widget)
 
                     # build the widget
+                    print(widget)
                     widget = widget(wrow, item)
 
                     # add reference if given one
@@ -429,9 +430,11 @@ class MagicCarpet(PlotImage, Piglet):
     image, table, plots and more
     """
 
-    def __init__(self, parent):
+    def __init__(self, parent, *args):
 
-        super.__init__(parent)
+        super().__init__(parent)
+
+        print('MagicCarpet', *args)
 
         self.image_state = False
         self.table_state = False
@@ -450,11 +453,13 @@ class MagicCarpet(PlotImage, Piglet):
         self.axes.clear()
         self.axes.table(self.data)
 
-        
-        
-        
-        
+    def load(self, data):
 
+        print('magic carpet loading data', len(data))
+        self.data = data
+
+        
+        
         
 class KPlot(PlotImage):
 
