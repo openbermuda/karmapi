@@ -136,6 +136,9 @@ def get_parser():
 
 class Pig(ttk.Frame, core.Pig):
 
+    def __init__(self, parent, *args):
+
+        super().__init__(parent)
 
     def keyPressEvent(self, event):
         """ Transalte tk keypresses into karma """
@@ -250,7 +253,7 @@ class Image(ttk.Label):
         self.setScaledContents(True)
         
 
-class PlotImage(core.Pig, ttk.Frame):
+class PlotImage(Pig):
     """ An image widget
 
     This is just a wrapper around matplotlib FigureCanvas.

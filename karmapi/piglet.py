@@ -368,7 +368,7 @@ class EventLoop(AppEventLoop):
         """ Maybe EventLoop is just a curio.EpicQueue? """
         self.queue.put(event)
 
-    def submit_job(self, coro, afters, *args, **kwargs):
+    def submit_job(self, coro, afters=None, *args, **kwargs):
         """ Submit a coroutine to the job queue """
         print('SUBMIT', args, kwargs)
         self.yq.put([coro, afters, args, kwargs])
@@ -424,7 +424,7 @@ class EventLoop(AppEventLoop):
 class Piglet(Pig):
     pass
         
-class MagicCarpet(PlotImage, Piglet):
+class MagicCarpet(PlotImage):
     """ Magic data display 
 
     image, table, plots and more
@@ -536,6 +536,28 @@ class Video(PlotImage):
         self.plot()
         self.draw()
 
+def doit():
+    """  Callback example for yosser
+
+    See Pig.runit()
+    """
+    n = random.randint(35, 40)
+    start = time.time()
+    #time.sleep(sleep)
+    sleep = fib(n)
+    end = time.time()
+    print('actual sleep {} {}'.format(sleep, end-start))
+    return n, sleep
+
+def fib(n):
+    if n <= 2:
+        return 1
+    else:
+        return fib(n-1) + fib(n-2)
+
+    
+
+        
 def print_thread_info(name):
     import threading
     print()

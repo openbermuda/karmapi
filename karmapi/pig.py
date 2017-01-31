@@ -88,26 +88,6 @@ def get_parser():
     return parser
 
 
-def doit():
-    """  Callback example for yosser
-
-    See Pig.runit()
-    """
-    n = random.randint(35, 40)
-    start = time.time()
-    #time.sleep(sleep)
-    sleep = fib(n)
-    end = time.time()
-    print('actual sleep {} {}'.format(sleep, end-start))
-    return n, sleep
-
-def fib(n):
-    if n <= 2:
-        return 1
-    else:
-        return fib(n-1) + fib(n-2)
-
-    
 
 def win_curio_fix():
     """ Kludge alert 
