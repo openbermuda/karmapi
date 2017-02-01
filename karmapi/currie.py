@@ -1,6 +1,4 @@
 """
-Currie -- you can do magic.
-
 Goal here is to have a thread launching piglets.
 
 And curio controlling the operation.
