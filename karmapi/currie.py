@@ -1,4 +1,6 @@
 """
+Currie -- you can do magic.
+
 Goal here is to have a thread launching piglets.
 
 And curio controlling the operation.
@@ -6,6 +8,10 @@ And curio controlling the operation.
 Aim to use joy to control which widget loop to use.
 
 No piglets known to be harmed with this code.
+
+So there is a pig farm and piglets running everywhere.
+
+And currie doing magic.
 """
 from karmapi import pig
 import curio
