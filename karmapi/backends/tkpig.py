@@ -484,6 +484,9 @@ class AppEventLoop:
             event += 1
 
             nap = await self.naptime(nap)
+
+            # FIXME should do away with the poll loop and just schedule
+            # for some time in the future.
             await curio.sleep(nap)
 
     async def naptime(self, naptime=None):
@@ -495,7 +498,8 @@ class AppEventLoop:
 
         So, if there are a lot of events, shorten the naps.
 
-        If there are not so many take a longer nap, but never exceed given naptime.
+        If there are not so many take a longer nap
+
         """
 
         if naptime is None:
