@@ -500,6 +500,15 @@ class AppEventLoop:
 
         If there are not so many take a longer nap
 
+
+        This should take into account how fast events are taking to arrive and
+        how long they are taking to process and balance the two.
+
+        And don't sleep too long, in case some other task wakes up and starts talking.
+
+        Better still, might be to have something else managing nap times.
+
+        For now, keep it simple.
         """
 
         if naptime is None:

@@ -37,6 +37,7 @@ setup(
             'tankrain = karmapi.tankrain:main',
             'checkmate = karmapi.checksum:main',
             'joy = karmapi.pigjoy:main',
+            'currie = karmapi.currie:main',
             ],
         },
     keywords='data pi karma',
