@@ -104,8 +104,9 @@ class GuidoClock(pig.Canvas):
 
         while True:
             self.redraw()
-            curio.sleep(10)
+            await curio.sleep(10)
 
+            
     def redraw(self):
         t = time.time()
         hh, mm, ss = time.localtime(t)[3:6]
