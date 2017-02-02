@@ -476,13 +476,32 @@ class AppEventLoop:
         # but not a cpu hog.
         event = 0
 
+        nap = 0.05
         while True:
 
             # FIXME - have Qt do the put when it wants refreshing
             self.put(event)
             event += 1
 
-            await curio.sleep(0.05)
+            nap = await self.naptime(nap)
+            await curio.sleep(nap)
+
+    async def naptime(self, naptime=None):
+        """ Return the time to nap 
+        
+        FIXME: make this adaptive, but keep it responsive
+
+        The idea would be to see how many events each poll produces.
+
+        So, if there are a lot of events, shorten the naps.
+
+        If there are not so many take a longer nap, but never exceed given naptime.
+        """
+
+        if naptime is None:
+            nap = 0.05
+
+        return naptime
 
 
 class Application(Tk):
