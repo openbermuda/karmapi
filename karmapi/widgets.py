@@ -2,7 +2,7 @@
 Widgets for pig
 """
 
-from karmapi import pig as pig
+from karmapi import pig
 
 import curio
 

@@ -241,6 +241,7 @@ class button(ttk.Button):
                          command=cb)
 
 
+
 class Image(ttk.Label):
 
     def __init__(self, parent, meta=None):
@@ -262,8 +263,20 @@ class Image(ttk.Label):
                                     qt.KeepAspectRatio,
                                     qt.SmoothTransformation))
         self.setScaledContents(True)
-        
 
+
+class Canvas(Pig):
+
+    
+    def __init__(self, parent, width=5, height=4, dpi=100, **kwargs):
+
+        super().__init__(parent)
+
+        self.canvas = tkinter.Canvas(parent)
+
+        VBoxLayout().addWidget(self.canvas)
+
+        
 class PlotImage(Pig):
     """ An image widget
 
