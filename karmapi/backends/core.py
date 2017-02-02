@@ -26,6 +26,7 @@ class Pig:
         while True:
             event = await self.event_queue.pop()
 
+            print(self, 'got an event', event)
             await self.process(event)
 
 

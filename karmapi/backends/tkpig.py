@@ -140,6 +140,8 @@ class Pig(ttk.Frame, core.Pig):
 
         super().__init__(parent)
 
+        self.bind('<Key>', self.keypress)
+        
     def keyPressEvent(self, event):
         """ Transalte tk keypresses into karma """
         print('key pressed', event)
@@ -155,6 +157,15 @@ class Pig(ttk.Frame, core.Pig):
 
     def show(self):
         pass
+
+
+    def keypress(self, event):
+        """ Pig keypress event """
+        print(event.keycode)
+
+        #FIXME -- probably want a string rather than keycode
+
+        self.event_queue.push(event.keycode)
 
 
 
@@ -442,6 +453,11 @@ class AppEventLoop:
 
     tk specific application event loop
     """
+    def __init__(self, app=None):
+
+        if app is None:
+            self.app = Tk()
+    
 
     async def flush(self):
         """  Wait for an event to arrive in the queue.

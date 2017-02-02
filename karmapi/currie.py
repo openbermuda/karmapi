@@ -13,7 +13,8 @@ So there is a pig farm and piglets running everywhere.
 
 And currie doing magic.
 """
-from karmapi import pig
+from karmapi import pig, piglet
+from karmapi import widgets
 import curio
 import tkinter
 
@@ -30,18 +31,31 @@ class PigFarm:
 
         self.piglets = curio.UniversalQueue()
 
+        self.builds = curio.UniversalQueue()
+
         # start a gui eventloop
-        pass
+        self.eloop = piglet.EventLoop()
+        self.piglets.put(self.eloop.run())
 
 
+    def add(self, pig):
 
-    def build(self, meta):
+        self.builds.put(pig)
+    
+
+    async def build(self):
         """ Do the piglet build """
 
-        piglet = backend.build(meta)
+        while True:
+            meta = await self.builds.get()
+        
+            #piglet = pig.build(meta)
+            
+            piglet = meta(self.eloop.app.winfo_toplevel())
+            piglet.pack()
+            print('built', piglet)
 
-        self.piglets.push(piglet)
-
+            await self.piglets.put(piglet.run())
 
 
     async def run(self):
@@ -54,14 +68,34 @@ class PigFarm:
         # spawn a task to deal with mouse events
 
         # ... spawn tasks to deal with any events
-        
+
+        builder = await curio.spawn(self.build())
 
         while True:
             while self.piglets:
+                print('piglets', self.piglets.qsize())
                 # spawn a task for each piglet
-                piglet = self.piglets.pop()
+                piglet = await self.piglets.get()
 
-                await curio.spawn(piglet.run())
+                print('spawning', piglet)
+
+                await curio.spawn(piglet)
 
             # wait for an event
-            event = await self.event.pop()
+            event = await self.event.get()
+            print(self, event)
+
+
+def main():
+
+    farm = PigFarm()
+
+    farm.add(widgets.InfinitySlalom)
+
+    curio.run(farm.run())
+
+
+if __name__ == '__main__':
+
+    main()
+    

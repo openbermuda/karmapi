@@ -355,9 +355,11 @@ class EventLoop(AppEventLoop):
 
     def __init__(self, app=None):
 
-        super().__init__()
+        super().__init__(app)
 
-        self.app = app
+        if app:
+            self.app = app
+            
         self.queue = curio.Queue()
 
         if sys.platform == 'win32':
