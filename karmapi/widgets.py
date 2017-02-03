@@ -2,11 +2,13 @@
 Widgets for pig
 """
 
-from karmapi import pig
+from karmapi import pig, base
 
 import curio
 
-import numpy as np
+import pandas
+np = pandas.np
+
 from numpy import random
 
 import math
@@ -122,6 +124,63 @@ class InfinitySlalom(pig.Video):
                 
                 await curio.sleep(1)
 
+class SonoGram(pig.Video):
+
+    def plot(self):
+        pass
+    
+    async def run(self):
+
+        from karmapi import hush
+
+        mic = hush.get_stream()
+        
+        data = hush.record(mic)
+
+        print(type(data[0]))
+
+        print(data[0][:10])
+                  
+
+        ix = 0
+        end = None
+        offset = 0
+        while True:
+
+            zz = hush.decode(data[ix])
+            print(len(zz))
+
+
+            so = []
+            for frame in data:
+                zz = hush.decode(frame)
+                so.append(np.fft.fft(zz))
+            
+            so = pandas.np.array(so)
+
+            n = so.shape[1]
+
+            #print(max(zz))
+            #print(min(zz))
+            #print(len(zz[::2]))
+
+
+            #self.axes.subplot(112)
+            #self.axes.clear()
+            #self.axes.hold(True)
+            #self.axes.plot(zz[0::2])
+            #self.axes.subplot(112)
+            #self.axes.plot(zz[1::2])
+            self.axes.imshow(so.T.real)
+
+            self.draw()
+            await curio.sleep(1)
+
+            ix += 1
+
+            if ix >= len(data):
+                ix = 0
+                
 
 class CurioMonitor:
 

@@ -10,8 +10,20 @@ import curio
 
 class Pig:
 
+    # default mapping of keys to karma
+    keymap_karma = dict(
+        a='begin',
+        e='end',
+        u='up',
+        d='down',
+        p='previous',
+        n='next',
+        z='zoom',
+        )
+
     def __init__(self, *args, **kwargs):
 
+        self.keymap = keymap_karma.copy()
         
         self.event_queue = curio.UniversalQueue()
 

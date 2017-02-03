@@ -6,6 +6,7 @@ For now this is about getting a signal: a stream of sound frames to analyse.
 
 from matplotlib import pyplot
 import pyaudio
+import numpy as np
 
 CHUNK = 1024
 FORMAT = pyaudio.paInt16
@@ -36,6 +37,18 @@ def record(stream):
 
     return frames
 
+
+def decode(frame):
+
+    data = [int(x) for x in frame]
+
+    fixed = []
+    for x in data:
+        if x > 128:
+            x -= 256
+        fixed.append(x)
+    
+    return fixed
 
 
 

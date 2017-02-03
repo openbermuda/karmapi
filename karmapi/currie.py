@@ -50,13 +50,17 @@ class PigFarm:
             meta = await self.builds.get()
         
             #piglet = pig.build(meta)
-            
+
             piglet = meta(self.eloop.app.winfo_toplevel())
+            piglet.bind('<Key>', self.keypress)
             piglet.pack()
             print('built', piglet)
 
             await self.piglets.put(piglet.run())
 
+    def keypress(self, event):
+        
+        print('currie event', event)
 
     async def run(self):
         """ Make the pigs run """
@@ -91,8 +95,9 @@ def main():
     farm = PigFarm()
 
     from karmapi.mclock2 import GuidoClock
-    farm.add(widgets.InfinitySlalom)
-    farm.add(GuidoClock)
+    farm.add(widgets.SonoGram)
+    #farm.add(widgets.InfinitySlalom)
+    #farm.add(GuidoClock)
 
     curio.run(farm.run())
 
