@@ -1,3 +1,9 @@
+"""
+Hush: separates the signal from the noise.
+
+For now this is about getting a signal: a stream of sound frames to analyse.
+"""
+
 from matplotlib import pyplot
 import pyaudio
 
