@@ -78,7 +78,7 @@ class Connect:
     def __init__(self, *args, **kwargs):
         """ Fixme: configure stream according to **kwargs """
 
-        self.mike = get_stream()
+        self.mick = get_stream()
 
         self.queue = curio.UniversalQueue()
 
@@ -93,7 +93,7 @@ class Connect:
 
     async def read(self, chunk):
 
-        return self.mic.read(chunk)
+        return self.mick.read(chunk)
 
     async def get(self):
 
