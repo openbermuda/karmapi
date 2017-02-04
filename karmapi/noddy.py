@@ -1,3 +1,16 @@
+
+"""
+Noddy
+=====
+
+Something playful.
+
+A place to try something, see what happens.
+
+Keep it short, go back in time.
+
+"""
+
 import sys
 
 import argparse
@@ -23,3 +36,7 @@ if __name__ == '__main__':
     if args.thresh > 10:
 
         print('bigly')
+
+    elif args.thresh < 5:
+
+        print('fake')
