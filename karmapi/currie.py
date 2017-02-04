@@ -13,10 +13,7 @@ So there is a pig farm and piglets running everywhere.
 
 And currie doing magic.
 """
-from karmapi import pig, piglet
-from karmapi import widgets
 import curio
-import tkinter
 
 
 
@@ -33,7 +30,9 @@ class PigFarm:
 
         self.builds = curio.UniversalQueue()
 
-        # start a gui eventloop
+        from karmapi import piglet
+
+        # this probably needs to be a co-routine?
         self.eloop = piglet.EventLoop()
         self.piglets.put(self.eloop.run())
 
@@ -91,6 +90,28 @@ class PigFarm:
 
 
 def main():
+
+    import argparse
+    
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--pig', default='tk')
+    parser.add_argument('--file')
+    parser.add_argument('--thresh', type=float, default=10.0)
+
+    
+    args = parser.parse_args()
+
+    # import from pig stuff here, after talking to joy
+    from karmapi import joy
+    joy.set_backend(args.pig)
+
+    
+    from karmapi import pig, piglet
+    from karmapi import widgets
+
+    # what's this doing here?
+    #import tkinter
 
     farm = PigFarm()
 
