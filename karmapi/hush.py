@@ -88,7 +88,7 @@ class Connect:
         while True:
             data = await self.read(CHUNK)
 
-            self.queue.put(data)
+            await self.queue.put(data)
 
 
     async def read(self, chunk):
@@ -108,6 +108,9 @@ async def run():
     connect = Connect()
     print(connect.mick)
 
+    # set the connection to start collecting frames
+    frames = await curio.spawn(connect.frames())
+
     while True:
 
         data = await connect.get()
@@ -118,7 +121,7 @@ def main():
 
     
 
-    curio.run(run())
+    curio.run(run(), with_monitor=True)
 
 
 
