@@ -98,7 +98,7 @@ class Connect:
     async def get(self):
 
             
-        data = await self.queue.pop()
+        data = await self.queue.get()
 
         return data
         
