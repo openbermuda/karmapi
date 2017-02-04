@@ -38,6 +38,7 @@ setup(
             'checkmate = karmapi.checksum:main',
             'joy = karmapi.pigjoy:main',
             'currie = karmapi.currie:main',
+            'hush = karmapi.hush:main',
             ],
         },
     keywords='data pi karma',

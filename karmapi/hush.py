@@ -18,6 +18,7 @@ https://github.com/lemonzi/VoCoMi/nuance.py
 For now, goal is sonograms: pictures of the sound as it goes by.
 
 """
+import curio
 
 from matplotlib import pyplot
 import pyaudio
@@ -65,7 +66,59 @@ def decode(frame):
     
     return fixed
 
+class Connect:
+    """ Connect to a stream 
 
+    Provides a co-routine to allow aysnchronous putting of data frames into a queue.
+
+    await get() and you can pop stuff off the queue.
+    """
+
+
+    def __init__(self, *args, **kwargs):
+        """ Fixme: configure stream according to **kwargs """
+
+        self.mike = get_stream()
+
+        self.queue = curio.UniversalQueue()
+
+    async def frames(self):
+        """ Keep reading frames, add them to the queue """
+
+        while True:
+            data = await self.read(CHUNK)
+
+            self.queue.put(data)
+
+
+    async def read(self, chunk):
+
+        return self.mic.read(chunk)
+
+    async def get(self):
+
+            
+        data = await self.queue.pop()
+
+        return data
+        
+async def run():
+    """ Run this thing under curio  """
+    
+    connect = Connect()
+    print(connect.mic)
+
+    while True:
+
+        data = await connect.get()
+
+        print('got data:', len(data))
+    
+def main():
+
+    
+
+    curio.run(run())
 
 
 
