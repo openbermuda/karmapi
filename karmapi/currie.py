@@ -117,8 +117,8 @@ def main():
 
     from karmapi.mclock2 import GuidoClock
     farm.add(widgets.SonoGram)
-    #farm.add(widgets.InfinitySlalom)
-    #farm.add(GuidoClock)
+    farm.add(widgets.InfinitySlalom)
+    farm.add(GuidoClock)
 
     curio.run(farm.run())
 
