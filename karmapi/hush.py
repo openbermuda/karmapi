@@ -106,7 +106,7 @@ async def run():
     """ Run this thing under curio  """
     
     connect = Connect()
-    print(connect.mic)
+    print(connect.mick)
 
     while True:
 
