@@ -2,6 +2,21 @@
 Hush: separates the signal from the noise.
 
 For now this is about getting a signal: a stream of sound frames to analyse.
+
+Things to do:
+
+Look at pyaudio, does it already know about async?
+
+This looks interesting:
+
+https://github.com/lemonzi/VoCoMi
+
+And this seems to have solved a lot of problems nicely:
+
+https://github.com/lemonzi/VoCoMi/nuance.py
+
+For now, goal is sonograms: pictures of the sound as it goes by.
+
 """
 
 from matplotlib import pyplot
