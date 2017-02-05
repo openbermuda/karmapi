@@ -91,9 +91,20 @@ class InfinitySlalom(pig.Video):
 
         A little help sleeping from curio
         """
+        from karmapi import hush
+
+        # listen
+        mick = hush.Connect()
+
+        await mick.frames()
+        
         self.axes.hold(True)
 
         while True:
+
+            data = await mick.get()
+            print('infinite data:', len(data))
+            
             await curio.sleep(self.interval)
 
             if random.random() < 0.25:
