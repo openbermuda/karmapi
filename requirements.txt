@@ -1,6 +1,11 @@
 jupyter
 matplotlib
 pandas
+pyaudio
+curio
+
 #sense_hat
-#gpio_zero
-pyqt5
+#gpio_zero 
+
+#pyqt5
+#tkinter, with luck it comes with python.

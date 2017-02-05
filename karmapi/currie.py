@@ -99,6 +99,8 @@ def main():
     parser.add_argument('--file')
     parser.add_argument('--thresh', type=float, default=10.0)
 
+    parser.add_argument('--monitor', action='store_true')
+
     
     args = parser.parse_args()
 
@@ -116,11 +118,16 @@ def main():
     farm = PigFarm()
 
     from karmapi.mclock2 import GuidoClock
+
+    if args.monitor:
+        
+        farm.add(widgets.Curio)
+
     farm.add(widgets.SonoGram)
     farm.add(widgets.InfinitySlalom)
     farm.add(GuidoClock)
 
-    curio.run(farm.run())
+    curio.run(farm.run(), with_monitor=args.monitor)
 
 
 if __name__ == '__main__':
