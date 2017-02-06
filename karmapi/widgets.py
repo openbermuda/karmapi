@@ -228,7 +228,7 @@ class Curio(pig.Docs):
         """ Set up the widget """
         super().__init__(parent)
 
-        self.bindkey(self.dokey)
+        #self.bindkey(self.dokey)
 
 
     def keyPressEvent(self, event):
@@ -318,6 +318,11 @@ class Curio(pig.Docs):
         self.mon = CurioMonitor()
         self.task_id = 0
         self.dokey('P')
+
+        while True:
+            event = await self.event_queue.get()
+
+            print(event)
 
 
         

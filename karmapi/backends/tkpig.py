@@ -172,7 +172,7 @@ class Pig(ttk.Frame, core.Pig):
 
 
 
-class Docs(Text):
+class Docs(Pig):
     """ Docs widget """
     def __init__(self, parent, doc=None):
         """ Initialise the widget 
@@ -182,22 +182,26 @@ class Docs(Text):
         print('Docs', parent)
         super().__init__(parent)
 
+        self.text = Text()
+
+        VBoxLayout().addWidget(self.text)
+
         if doc is None:
-            "Show docs here"
+            doc = "Show docs here"
             
-        self.text = "<b>hello world</b>"
+        self.message = doc
 
     def set_text(self, text):
 
         print(text)
-        #self.delete('start', 'end')
-        self.insert('end', text)
+        self.text.delete('1.0', 'end')
+        self.text.insert('end', text)
 
-    def bindkey(self, f):
+    def xbindkey(self, f):
         from functools import partial
         self.bind('<Key>', partial(self.keypress, cb=f))
 
-    def keypress(self, event, cb):
+    def xkeypress(self, event, cb):
 
         print(dir(event))
         print(event.keycode)
