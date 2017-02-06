@@ -60,6 +60,7 @@ class PigFarm:
     def keypress(self, event):
         
         print('currie event', event)
+        # Fixme -- turn these into events that we can push onto piglet queues
 
     async def run(self):
         """ Make the pigs run """
@@ -120,14 +121,14 @@ def main():
     from karmapi.mclock2 import GuidoClock
 
     if args.monitor:
-        
+
         farm.add(widgets.Curio)
 
     #farm.add(widgets.SonoGram)
     farm.add(widgets.InfinitySlalom)
     farm.add(GuidoClock)
 
-    curio.run(farm.run(), with_monitor=args.monitor)
+    curio.run(farm.run(), with_monitor=True)
 
 
 if __name__ == '__main__':

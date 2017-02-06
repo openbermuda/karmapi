@@ -96,7 +96,7 @@ class InfinitySlalom(pig.Video):
         # listen
         mick = hush.Connect()
 
-        await mick.frames()
+        await curio.spawn(mick.frames())
         
         self.axes.hold(True)
 
@@ -300,6 +300,9 @@ class Curio(pig.Docs):
 
     async def run(self):
         
+
+        # spawn super()'s run co-routine
+        await curio.spawn(super().run())
         
         self.mon = CurioMonitor()
         self.task_id = 0

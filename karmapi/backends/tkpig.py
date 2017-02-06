@@ -146,8 +146,6 @@ class Pig(ttk.Frame, core.Pig):
         print(super(core.Pig, self).__init__)
 
         print('XXXXX')
-        super(core.Pig, self).__init__()
-
         print('creating pig widget and binding keys')
 
         self.bind('<Key>', self.keypress)
@@ -167,8 +165,8 @@ class Pig(ttk.Frame, core.Pig):
 
     def keypress(self, event):
         """ Pig keypress event """
-        print(event.keycode)
-
+        print('PIGKEY', event.keycode)
+        
         #FIXME -- probably want a string rather than keycode
 
         self.event_queue.push(event.keycode)
@@ -478,11 +476,12 @@ class AppEventLoop:
         self.app.bind('<Key>', self.keypress)
 
     def keypress(self, event):
-
+        """ Just use this to check key events hitting top level """
         print('tk app event loop', event)
         print(event.char, event.keysym, event.keycode)
 
         print
+        return True
 
     async def flush(self):
         """  Wait for an event to arrive in the queue.

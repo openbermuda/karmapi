@@ -38,6 +38,8 @@ class Pig:
 
     async def run(self):
 
+        print(Pig, 'run cooroutine starting')
+
         while True:
             event = await self.event_queue.pop()
 
@@ -53,4 +55,6 @@ class Pig:
         if method:
 
             return await method()
+        
+
         
