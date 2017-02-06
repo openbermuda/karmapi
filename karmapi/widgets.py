@@ -228,20 +228,6 @@ class Curio(pig.Docs):
         """ Set up the widget """
         super().__init__(parent)
 
-        #self.bindkey(self.dokey)
-
-
-    def keyPressEvent(self, event):
-
-        print(event)
-        #print([x for x in dir(event)])
-        key = event.key()
-        if key > 256:
-            return
-        
-        key = chr(key)
-
-        self.dokey(key)
 
     def show_previous(self):
 

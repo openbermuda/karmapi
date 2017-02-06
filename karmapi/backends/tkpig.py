@@ -138,9 +138,11 @@ class Pig(ttk.Frame, core.Pig):
 
     def __init__(self, parent, *args):
 
-        super().__init__(parent)
+        ttk.Frame.__init__(self, parent)
+        core.Pig.__init__(self, parent)
 
         print('initialising core.Pig base')
+        for x in Pig.__mro__: print(x)
         print(super(core.Pig, self).__init__)
 
         print('XXXXX')
