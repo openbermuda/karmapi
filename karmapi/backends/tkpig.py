@@ -140,16 +140,17 @@ class Pig(ttk.Frame, core.Pig):
 
         super().__init__(parent)
 
+        print('initialising core.Pig base')
+        print(super(core.Pig, self).__init__)
+
+        print('XXXXX')
+        super(core.Pig, self).__init__()
+
         print('creating pig widget and binding keys')
 
         self.bind('<Key>', self.keypress)
-        self.bind('a', self.keypress)
-        
-    def keyPressEvent(self, event):
-        """ Transalte tk keypresses into karma """
-        print('key pressed', event)
-        
 
+        
     def setLayout(self, layout):
 
         pass
@@ -182,6 +183,8 @@ class Docs(Pig):
         print('Docs', parent)
         super().__init__(parent)
 
+        print(self.event_queue)
+
         self.text = Text()
 
         VBoxLayout().addWidget(self.text)
@@ -194,19 +197,11 @@ class Docs(Pig):
     def set_text(self, text):
 
         print(text)
+        self.text.config(state='normal')
         self.text.delete('1.0', 'end')
         self.text.insert('end', text)
+        self.text.config(state='disabled')
 
-    def xbindkey(self, f):
-        from functools import partial
-        self.bind('<Key>', partial(self.keypress, cb=f))
-
-    def xkeypress(self, event, cb):
-
-        print(dir(event))
-        print(event.keycode)
-        print(event, cb)
-        cb(str(event.keycode))
     
 def get_widget(path):
 

@@ -24,8 +24,11 @@ class Pig:
     def __init__(self, *args, **kwargs):
 
         self.keymap = keymap_karma.copy()
-        
+
+        print('core pig creating self.event_queue')
         self.event_queue = curio.UniversalQueue()
+
+        print('Creating Pig with event queue', self.event_queue)
 
     async def karma(self, event):
         """ Turn events into karma """

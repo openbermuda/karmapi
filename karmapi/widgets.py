@@ -322,7 +322,8 @@ class Curio(pig.Docs):
         while True:
             event = await self.event_queue.get()
 
-            print(event)
+            print('curio monitor:', event)
+            self.dokey(event)
 
 
         
