@@ -141,13 +141,9 @@ class Pig(ttk.Frame, core.Pig):
         ttk.Frame.__init__(self, parent)
         core.Pig.__init__(self, parent)
 
-        print('initialising core.Pig base')
-        for x in Pig.__mro__: print(x)
         print(super(core.Pig, self).__init__)
 
-        print('XXXXX')
-        print('creating pig widget and binding keys')
-
+        # FIXME: bind more events -- or let the Farm worry about that?
         self.bind('<Key>', self.keypress)
 
         

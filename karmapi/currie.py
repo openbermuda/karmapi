@@ -15,6 +15,7 @@ And currie doing magic.
 """
 import curio
 
+from karmapi import hush
 
 
 class PigFarm:
@@ -36,10 +37,23 @@ class PigFarm:
         self.eloop = piglet.EventLoop()
         self.piglets.put(self.eloop.run())
 
+        self.micks = curio.UniversalQueue()
+
+    def status(self):
+
+        print('builds: ', self.builds.qsize())
+        print('piglets::', self.piglets.qsize())
+        print('micks:', self.micks.qsize())
+
 
     def add(self, pig):
+        print('pigfarm adding', pig)
 
         self.builds.put(pig)
+
+    def add_mick(self, mick):
+
+        self.micks.put(mick)
     
 
     async def build(self):
@@ -47,13 +61,17 @@ class PigFarm:
 
         while True:
             meta = await self.builds.get()
+            print('building piglet:', meta)
         
             #piglet = pig.build(meta)
 
             piglet = meta(self.eloop.app.winfo_toplevel())
             piglet.bind('<Key>', self.keypress)
             piglet.pack()
-            print('built', piglet)
+
+            # let the piglets see the farm
+            piglet.farm = self
+            print('built', meta, piglet)
 
             await self.piglets.put(piglet.run())
 
@@ -77,7 +95,7 @@ class PigFarm:
 
         while True:
             while self.piglets:
-                print('piglets', self.piglets.qsize())
+                print('awaiting piglets', self.piglets.qsize())
                 # spawn a task for each piglet
                 piglet = await self.piglets.get()
 
@@ -118,15 +136,25 @@ def main():
 
     farm = PigFarm()
 
+    print('building farm')
+    farm.status()
+    
     from karmapi.mclock2 import GuidoClock
 
     if args.monitor:
 
         farm.add(widgets.Curio)
 
-    #farm.add(widgets.SonoGram)
+    farm.add(widgets.SonoGram)
     farm.add(widgets.InfinitySlalom)
     farm.add(GuidoClock)
+    #farm.add(piglet.Image)
+
+    # add a couiple of micks to the Farm
+    farm.add_mick(hush.Connect())
+    farm.add_mick(hush.Connect())
+
+    farm.status()
 
     curio.run(farm.run(), with_monitor=True)
 

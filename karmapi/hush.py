@@ -101,6 +101,10 @@ class Connect:
         data = await self.queue.get()
 
         return data
+
+    def decode(self, data):
+
+        return decode(data)
         
 async def run():
     """ Run this thing under curio  """

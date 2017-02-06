@@ -83,6 +83,26 @@ class InfinitySlalom(pig.Video):
         #curio.run(self.updater(), selector=selector)
         pass
 
+    async def get_source(self):
+
+        return await self.farm.micks.get()
+
+    async def read(self):
+
+
+        print('xxxxxxxxxxxxxx', self.mick)
+
+        # need to fire up the frames co-routine?
+        await curio.spawn(self.mick.frames())
+
+        while True:
+            data = await self.mick.get()
+
+            data = self.mick.decode(data)
+            
+            self.sono.append(base.fft.fft(data))
+            
+
 
     async def run(self):
         """ Run the animation 
@@ -93,14 +113,29 @@ class InfinitySlalom(pig.Video):
         """
         from karmapi import hush
 
-        # listen
-        mick = hush.Connect()
+        self.sono = []
 
-        await curio.spawn(mick.frames())
+        self.mick = await self.get_source()
+
+        await curio.spawn(self.read())
         
         self.axes.hold(True)
 
         while True:
+
+            if not self.sono:
+                await curio.sleep(0.2)
+                continue
+                
+            sono = pandas.np.array(self.sono)
+            print(sono.T.real.shape)
+            
+            self.axes.imshow(sono.T.real, aspect='auto')
+            self.draw()
+            await curio.sleep(0.2)
+
+            #### FIXME temp hacking
+            continue
 
             data = await mick.get()
             print('infinite data:', len(data))
@@ -140,59 +175,58 @@ class SonoGram(pig.Video):
     def plot(self):
         pass
     
-    async def run(self):
+    async def get_source(self):
 
+        return await self.farm.micks.get()
+
+    async def read(self):
+
+
+        print('xxxxxxxxxxxxxx', self.mick)
+
+        # need to fire up the frames co-routine?
+        await curio.spawn(self.mick.frames())
+
+        while True:
+            data = await self.mick.get()
+
+            data = self.mick.decode(data)
+            
+            self.sono.append(base.fft.fft(data))
+            
+
+    async def run(self):
+        """ Run the animation 
+        
+        Loop forever updating the figure
+
+        A little help sleeping from curio
+        """
         from karmapi import hush
 
-        mic = hush.get_stream()
+        self.sono = []
+
+        self.mick = await self.get_source()
+
+        await curio.spawn(self.read())
         
-        data = hush.record(mic)
+        self.axes.hold(True)
 
-        print(type(data[0]))
-
-        print(data[0][:10])
-                  
-
-        ix = 0
-        end = None
-        offset = 0
         while True:
 
-            zz = hush.decode(data[ix])
-            print(len(zz))
-
-
-            so = []
-            for frame in data:
-                zz = hush.decode(frame)
-                so.append(np.fft.fft(zz))
-            
-            so = pandas.np.array(so)
-
-            n = so.shape[1]
-
-            #print(max(zz))
-            #print(min(zz))
-            #print(len(zz[::2]))
-
-
-            #self.axes.subplot(112)
-            #self.axes.clear()
-            #self.axes.hold(True)
-            #self.axes.plot(zz[0::2])
-            #self.axes.subplot(112)
-            #self.axes.plot(zz[1::2])
-            self.axes.imshow(so.T.real)
-
-            self.draw()
-            await curio.sleep(1)
-
-            ix += 1
-
-            if ix >= len(data):
-                ix = 0
+            if not self.sono:
+                await curio.sleep(0.2)
+                continue
                 
+            sono = pandas.np.array(self.sono)
+            print(sono.T.real.shape)
+            
+            self.axes.imshow(sono.T.real, aspect='auto')
+            self.draw()
+            await curio.sleep(0.2)
 
+            # FIXME: shrink sono from time to time
+            
 class CurioMonitor:
 
     def __init__(self):
