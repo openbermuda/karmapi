@@ -186,15 +186,17 @@ class SonoGram(pig.Video):
         print('xxxxxxxxxxxxxx', self.mick)
 
         # need to fire up the frames co-routine?
+        print('firing up frame reader')
         await curio.spawn(self.mick.frames())
 
         self.data = deque()
 
         while True:
+            #print('waiting on data')
             data = await self.mick.get()
 
-            print('got data in sonogram', len(data), type(data))
-            if len(data) != 2048: break
+            #print('got data in sonogram', len(data), type(data))
+            if 0 != (len(data) % 2048): break
 
             # quit reading if no data
             if not data:
@@ -249,11 +251,11 @@ class SonoGram(pig.Video):
 
             #self.axes.set_title('{} {}'.format(offset, end))
 
-            self.axes.imshow(sono[:, offset:end].T.real, aspect='auto')
+            self.axes.plot(self.data[random.randint(len(self.data))][::10])
+            #self.axes.imshow(sono[:, offset:end].T.imag, aspect='auto')
             #print(sono)
-            #self.axes.imshow(sono.T.real, aspect='auto')
+            #self.axes.imshow(sono.T.imag, aspect='auto')
 
-            #self.axes.plot(self.data[random.randint(len(self.data))])
             self.draw()
             await curio.sleep(0.2)
 
