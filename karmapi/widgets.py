@@ -1,6 +1,7 @@
 """
 Widgets for pig
 """
+from collections import deque
 
 from karmapi import pig, base
 
@@ -187,12 +188,26 @@ class SonoGram(pig.Video):
         # need to fire up the frames co-routine?
         await curio.spawn(self.mick.frames())
 
+        self.data = deque()
+
         while True:
             data = await self.mick.get()
 
             data = self.mick.decode(data)
-            
+            data = data[::2]
+            #data = data[1::2]
+
+            self.data.append(data)
+
             self.sono.append(base.fft.fft(data))
+
+            while len(self.sono) > 100:
+                self.sono.popleft()
+
+                
+            while len(self.sono) > 100:
+                self.data.popleft()
+                
             
 
     async def run(self):
@@ -204,13 +219,13 @@ class SonoGram(pig.Video):
         """
         from karmapi import hush
 
-        self.sono = []
+        self.sono = deque()
 
         self.mick = await self.get_source()
 
         await curio.spawn(self.read())
         
-        self.axes.hold(True)
+        #self.axes.hold(True)
 
         while True:
 
@@ -218,12 +233,23 @@ class SonoGram(pig.Video):
                 await curio.sleep(0.2)
                 continue
                 
-            sono = pandas.np.array(self.sono)
-            print(sono.T.real.shape)
-            
-            self.axes.imshow(sono.T.real, aspect='auto')
+            sono = pandas.np.array([x for x in self.sono])
+            print('full sono size', sono.T.real.shape)
+            offset = 0
+            end = 30
+            print('part sono size', sono[:, offset:end].T.shape)
+
+            self.axes.set_title('{} {}'.format(offset, end))
+            self.axes.imshow(sono[:, offset:end].T.real, aspect='auto')
+            #self.axes.plot(self.data[-1])
             self.draw()
             await curio.sleep(0.2)
+
+            offset += 1
+            end += 1
+            if offset > 1000:
+                offset = 0
+                end = 30
 
             # FIXME: shrink sono from time to time
             
