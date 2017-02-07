@@ -138,18 +138,15 @@ class Pig(ttk.Frame, core.Pig):
 
     def __init__(self, parent, *args):
 
-        super().__init__(parent)
+        ttk.Frame.__init__(self, parent)
+        core.Pig.__init__(self, parent)
 
-        print('creating pig widget and binding keys')
+        print(super(core.Pig, self).__init__)
 
+        # FIXME: bind more events -- or let the Farm worry about that?
         self.bind('<Key>', self.keypress)
-        self.bind('a', self.keypress)
-        
-    def keyPressEvent(self, event):
-        """ Transalte tk keypresses into karma """
-        print('key pressed', event)
-        
 
+        
     def setLayout(self, layout):
 
         pass
@@ -164,15 +161,15 @@ class Pig(ttk.Frame, core.Pig):
 
     def keypress(self, event):
         """ Pig keypress event """
-        print(event.keycode)
-
+        print('PIGKEY', event.keycode)
+        
         #FIXME -- probably want a string rather than keycode
 
         self.event_queue.push(event.keycode)
 
 
 
-class Docs(Text):
+class Docs(Pig):
     """ Docs widget """
     def __init__(self, parent, doc=None):
         """ Initialise the widget 
@@ -182,27 +179,25 @@ class Docs(Text):
         print('Docs', parent)
         super().__init__(parent)
 
+        print(self.event_queue)
+
+        self.text = Text()
+
+        VBoxLayout().addWidget(self.text)
+
         if doc is None:
-            "Show docs here"
+            doc = "Show docs here"
             
-        self.text = "<b>hello world</b>"
+        self.message = doc
 
     def set_text(self, text):
 
         print(text)
-        #self.delete('start', 'end')
-        self.insert('end', text)
+        self.text.config(state='normal')
+        self.text.delete('1.0', 'end')
+        self.text.insert('end', text)
+        self.text.config(state='disabled')
 
-    def bindkey(self, f):
-        from functools import partial
-        self.bind('<Key>', partial(self.keypress, cb=f))
-
-    def keypress(self, event, cb):
-
-        print(dir(event))
-        print(event.keycode)
-        print(event, cb)
-        cb(str(event.keycode))
     
 def get_widget(path):
 
@@ -477,11 +472,12 @@ class AppEventLoop:
         self.app.bind('<Key>', self.keypress)
 
     def keypress(self, event):
-
+        """ Just use this to check key events hitting top level """
         print('tk app event loop', event)
         print(event.char, event.keysym, event.keycode)
 
         print
+        return True
 
     async def flush(self):
         """  Wait for an event to arrive in the queue.

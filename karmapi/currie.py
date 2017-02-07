@@ -15,6 +15,7 @@ And currie doing magic.
 """
 import curio
 
+from karmapi import hush
 
 
 class PigFarm:
@@ -36,10 +37,23 @@ class PigFarm:
         self.eloop = piglet.EventLoop()
         self.piglets.put(self.eloop.run())
 
+        self.micks = curio.UniversalQueue()
+
+    def status(self):
+
+        print('builds: ', self.builds.qsize())
+        print('piglets::', self.piglets.qsize())
+        print('micks:', self.micks.qsize())
+
 
     def add(self, pig):
+        print('pigfarm adding', pig)
 
         self.builds.put(pig)
+
+    def add_mick(self, mick):
+
+        self.micks.put(mick)
     
 
     async def build(self):
@@ -47,19 +61,24 @@ class PigFarm:
 
         while True:
             meta = await self.builds.get()
+            print('building piglet:', meta)
         
             #piglet = pig.build(meta)
 
             piglet = meta(self.eloop.app.winfo_toplevel())
             piglet.bind('<Key>', self.keypress)
             piglet.pack()
-            print('built', piglet)
+
+            # let the piglets see the farm
+            piglet.farm = self
+            print('built', meta, piglet)
 
             await self.piglets.put(piglet.run())
 
     def keypress(self, event):
         
         print('currie event', event)
+        # Fixme -- turn these into events that we can push onto piglet queues
 
     async def run(self):
         """ Make the pigs run """
@@ -76,7 +95,7 @@ class PigFarm:
 
         while True:
             while self.piglets:
-                print('piglets', self.piglets.qsize())
+                print('awaiting piglets', self.piglets.qsize())
                 # spawn a task for each piglet
                 piglet = await self.piglets.get()
 
@@ -96,7 +115,7 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--pig', default='tk')
-    parser.add_argument('--file')
+    parser.add_argument('--wave')
     parser.add_argument('--thresh', type=float, default=10.0)
 
     parser.add_argument('--monitor', action='store_true')
@@ -117,17 +136,31 @@ def main():
 
     farm = PigFarm()
 
+    print('building farm')
+    farm.status()
+    
     from karmapi.mclock2 import GuidoClock
 
     if args.monitor:
-        
+
         farm.add(widgets.Curio)
 
     farm.add(widgets.SonoGram)
-    farm.add(widgets.InfinitySlalom)
+    #farm.add(widgets.InfinitySlalom)
     farm.add(GuidoClock)
+    #farm.add(piglet.Image)
 
-    curio.run(farm.run(), with_monitor=args.monitor)
+    # add a couple of micks to the Farm
+    if args.wave:
+        farm.add_mick(hush.Connect(hush.open_wave(args.wave)))
+        farm.add_mick(hush.Connect(hush.open_wave(args.wave)))
+    else:
+        farm.add_mick(hush.Connect())
+        farm.add_mick(hush.Connect())
+
+    farm.status()
+
+    curio.run(farm.run(), with_monitor=True)
 
 
 if __name__ == '__main__':

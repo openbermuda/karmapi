@@ -23,9 +23,12 @@ class Pig:
 
     def __init__(self, *args, **kwargs):
 
-        self.keymap = keymap_karma.copy()
-        
+        self.keymap = self.keymap_karma.copy()
+
+        print('core pig creating self.event_queue')
         self.event_queue = curio.UniversalQueue()
+
+        print('Creating Pig with event queue', self.event_queue)
 
     async def karma(self, event):
         """ Turn events into karma """
@@ -34,6 +37,8 @@ class Pig:
 
 
     async def run(self):
+
+        print(Pig, 'run cooroutine starting')
 
         while True:
             event = await self.event_queue.pop()
@@ -50,4 +55,6 @@ class Pig:
         if method:
 
             return await method()
+        
+
         

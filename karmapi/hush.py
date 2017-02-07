@@ -22,6 +22,7 @@ import curio
 
 from matplotlib import pyplot
 import pyaudio
+import wave
 import numpy as np
 
 CHUNK = 1024
@@ -75,10 +76,13 @@ class Connect:
     """
 
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, mick = None, *args, **kwargs):
         """ Fixme: configure stream according to **kwargs """
 
-        self.mick = get_stream()
+        if mick is None:
+            self.mick = get_stream()
+        else:
+            self.mick = mick
 
         self.queue = curio.UniversalQueue()
 
@@ -101,6 +105,10 @@ class Connect:
         data = await self.queue.get()
 
         return data
+
+    def decode(self, data):
+
+        return decode(data)
         
 async def run():
     """ Run this thing under curio  """
@@ -116,6 +124,17 @@ async def run():
         data = await connect.get()
 
         print('got data:', len(data))
+
+
+def open_wave(name):
+
+    wf = wave.open(name, 'rb')
+
+    # monkey patch
+    wf.read = wf.readframes
+
+    return wf
+                        
     
 def main():
 
