@@ -193,8 +193,15 @@ class SonoGram(pig.Video):
         while True:
             data = await self.mick.get()
 
+            print('got data in sonogram', len(data), type(data))
+            if len(data) != 2048: break
+
+            # quit reading if no data
+            if not data:
+                break
+            
             data = self.mick.decode(data)
-            data = data[::2]
+            #data = data[::2]
             #data = data[1::2]
 
             self.data.append(data)
@@ -232,16 +239,21 @@ class SonoGram(pig.Video):
             if not self.sono:
                 await curio.sleep(0.2)
                 continue
-                
+
+            print(len(self.sono), len(self.data))
             sono = pandas.np.array([x for x in self.sono])
             print('full sono size', sono.T.real.shape)
-            offset = 0
-            end = 30
-            print('part sono size', sono[:, offset:end].T.shape)
+            offset = 800
+            end = 1000
+            #print('part sono size', sono[:, offset:end].T.shape)
 
-            self.axes.set_title('{} {}'.format(offset, end))
+            #self.axes.set_title('{} {}'.format(offset, end))
+
             self.axes.imshow(sono[:, offset:end].T.real, aspect='auto')
-            #self.axes.plot(self.data[-1])
+            #print(sono)
+            #self.axes.imshow(sono.T.real, aspect='auto')
+
+            #self.axes.plot(self.data[random.randint(len(self.data))])
             self.draw()
             await curio.sleep(0.2)
 

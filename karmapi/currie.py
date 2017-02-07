@@ -115,7 +115,7 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--pig', default='tk')
-    parser.add_argument('--file')
+    parser.add_argument('--wave')
     parser.add_argument('--thresh', type=float, default=10.0)
 
     parser.add_argument('--monitor', action='store_true')
@@ -150,9 +150,13 @@ def main():
     farm.add(GuidoClock)
     #farm.add(piglet.Image)
 
-    # add a couiple of micks to the Farm
-    farm.add_mick(hush.Connect())
-    farm.add_mick(hush.Connect())
+    # add a couple of micks to the Farm
+    if args.wave:
+        farm.add_mick(hush.Connect(hush.open_wave(args.wave)))
+        farm.add_mick(hush.Connect(hush.open_wave(args.wave)))
+    else:
+        farm.add_mick(hush.Connect())
+        farm.add_mick(hush.Connect())
 
     farm.status()
 
