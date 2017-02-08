@@ -280,11 +280,11 @@ class PlotImage(Pig):
 
     This is just a wrapper around matplotlib FigureCanvas.
     """
-    def __init__(self, parent, width=5, height=4, dpi=100, **kwargs):
+    def __init__(self, parent, width=8, height=8, dpi=100, **kwargs):
 
         super().__init__(parent)
 
-        fig = Figure(figsize=(width, height), dpi=dpi, **kwargs)
+        fig = Figure(dpi=dpi, **kwargs)
         self.image = FigureCanvas(fig, master=self)
         self.image._tkcanvas.pack(expand=1, fill=tkinter.BOTH)
 

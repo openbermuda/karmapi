@@ -146,8 +146,8 @@ def main():
         farm.add(widgets.Curio)
 
     farm.add(widgets.SonoGram)
-    #farm.add(widgets.InfinitySlalom)
-    farm.add(GuidoClock)
+    farm.add(widgets.InfinitySlalom)
+    #farm.add(GuidoClock)
     #farm.add(piglet.Image)
 
     # add a couple of micks to the Farm
