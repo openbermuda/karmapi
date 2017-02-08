@@ -21,6 +21,8 @@ For now, goal is sonograms: pictures of the sound as it goes by.
 import curio
 
 from matplotlib import pyplot
+import struct
+
 import pyaudio
 import wave
 import numpy as np
@@ -31,6 +33,13 @@ CHANNELS = 2
 RATE = 44100
 RECORD_SECONDS = 5
 WAVE_OUTPUT_FILENAME = "output.wav"
+
+
+def bytestoshorts(data):
+
+    n = len(data) / 2
+    return struct.unpack('%dh' % n, data)
+    
 
 def get_stream():
 
@@ -44,6 +53,7 @@ def get_stream():
 
     return stream
 
+
 def record(stream):
 
     frames = []
@@ -55,24 +65,42 @@ def record(stream):
     return frames
 
 
-def decode(frame):
+def decode(frame, channel=0, channels=2, samplesize=2):
+    """ Decode frame and return data for given channel """
+    bytes_per_record = channels * samplesize
 
+    
     data = [int(x) for x in frame]
 
+    low = [x + 128 for x in data[1::1]]
+    high = [x * 256 for x in data[0::1]]
+
     fixed = []
-    for x in data:
-        if x > 128:
-            x -= 256
-        fixed.append(x)
-    
+    for x, y in zip(high, low):
+        
+        fixed.append(x + y)
+
     return fixed
+
+
+def bytestreams(frame, channels=4):
+
+    data = {}
+
+    frame = [int(x) for x in frame]
+    
+    for channel in range(channels):
+
+        data['c%d' % channel] = frame[channel::channels]
+
+    return data
 
 class Connect:
     """ Connect to a stream 
 
     Provides a co-routine to allow aysnchronous putting of data frames into a queue.
 
-    await get() and you can pop stuff off the queue.
+    await get() and you can pop stuff off the queue
     """
 
 
@@ -107,9 +135,10 @@ class Connect:
         return data
 
     def decode(self, data):
-
-        return decode(data)
+    
+        return bytestoshorts(data)
         
+
 async def run():
     """ Run this thing under curio  """
     
