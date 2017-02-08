@@ -124,22 +124,9 @@ class InfinitySlalom(pig.Video):
 
         while True:
 
-            if not self.sono:
-                await curio.sleep(0.2)
-                continue
-                
-            sono = pandas.np.array(self.sono)
-            print(sono.T.real.shape)
-            
-            self.axes.imshow(sono.T.real, aspect='auto')
-            self.draw()
-            await curio.sleep(0.2)
 
-            #### FIXME temp hacking
-            continue
-
-            data = await mick.get()
-            print('infinite data:', len(data))
+            #data = await mick.get()
+            #print('infinite data:', len(data))
             
             await curio.sleep(self.interval)
 
@@ -186,15 +173,17 @@ class SonoGram(pig.Video):
         print('xxxxxxxxxxxxxx', self.mick)
 
         # need to fire up the frames co-routine?
+        print('firing up frame reader')
         await curio.spawn(self.mick.frames())
 
         self.data = deque()
 
         while True:
+            #print('waiting on data')
             data = await self.mick.get()
 
-            print('got data in sonogram', len(data), type(data))
-            if len(data) != 2048: break
+            #print('got data in sonogram', len(data), type(data))
+            if 0 != (len(data) % 2048): break
 
             # quit reading if no data
             if not data:
@@ -240,20 +229,28 @@ class SonoGram(pig.Video):
                 await curio.sleep(0.2)
                 continue
 
-            print(len(self.sono), len(self.data))
-            sono = pandas.np.array([x for x in self.sono])
-            print('full sono size', sono.T.real.shape)
-            offset = 800
-            end = 1000
+            #print(len(self.sono), len(self.data))
+            #sono = pandas.np.array([x for x in self.sono])
+            #print('full sono size', sono.T.real.shape)
+            offset = 20
+            end = -1
             #print('part sono size', sono[:, offset:end].T.shape)
 
             #self.axes.set_title('{} {}'.format(offset, end))
 
-            self.axes.imshow(sono[:, offset:end].T.real, aspect='auto')
-            #print(sono)
-            #self.axes.imshow(sono.T.real, aspect='auto')
-
             #self.axes.plot(self.data[random.randint(len(self.data))])
+
+            sono = base.sono(self.data[-1][::2])
+            sono = pandas.np.array(sono)
+
+            print(sono.shape, len(self.data))
+
+            sono = sono[:, 5:20]
+            
+            self.axes.imshow(sono.T.real, aspect='auto')
+            #print(sono)
+            #self.axes.imshow(sono.T.imag, aspect='auto')
+
             self.draw()
             await curio.sleep(0.2)
 
