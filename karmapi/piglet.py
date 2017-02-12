@@ -499,15 +499,16 @@ class XKCD(PlotImage):
 class Image(PlotImage):
 
 
-    def __init__(self, parent, path=None, title=None):
+    def __init__(self, parent, image=None, title=None, galleries=None):
 
-        if path is None:
-            path = '/home/jng/devel/karmapi/docs/pycaribbean/princess_cricket.jpg'
-        self.path = path
+        from ripl import imagefind
+        
+        self.path = '/home/jng/devel/karmapi/docs/pycaribbean/princess_cricket.jpg'
+
+        if galleries:
+            self.path = imagefind.interpret(dict(galleries=galleries, image=image))
 
         super().__init__(parent)
-
-        print(path)
 
 
     def plot(self):

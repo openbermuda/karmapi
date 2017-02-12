@@ -118,6 +118,8 @@ def main():
 
     parser.add_argument('--pig', default='tk')
     parser.add_argument('--wave')
+    parser.add_argument('--gallery', nargs='*', default=['../gallery'])
+    
     parser.add_argument('--thresh', type=float, default=10.0)
 
     parser.add_argument('--monitor', action='store_true')
@@ -140,15 +142,16 @@ def main():
 
     print('building farm')
     farm.status()
-    
     from karmapi.mclock2 import GuidoClock
 
     if args.monitor:
 
         farm.add(widgets.Curio)
 
-    print(piglet.Image)
-    farm.add(piglet.Image, dict(path='fork_in_road.jpg'))
+    im_info = dict(galleries=args.gallery, image='tree')
+    print(piglet.Image, im_info)
+    
+    farm.add(piglet.Image, im_info)
     #farm.add(widgets.SonoGram)
     #farm.add(piglet.XKCD)
     #farm.add(widgets.InfinitySlalom)
