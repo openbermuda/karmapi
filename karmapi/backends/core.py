@@ -41,7 +41,7 @@ class Pig:
         print(Pig, 'run cooroutine starting')
 
         while True:
-            event = await self.event_queue.pop()
+            event = await self.event_queue.get()
 
             print(self, 'got an event', event)
             await self.process(event)

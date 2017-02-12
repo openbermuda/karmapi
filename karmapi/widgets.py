@@ -1,6 +1,9 @@
 """
 Widgets for pig
 """
+
+import PIL
+
 from collections import deque
 
 from karmapi import pig, base
@@ -195,13 +198,13 @@ class SonoGram(pig.Video):
 
             self.data.append(data)
 
-            self.sono.append(base.fft.fft(data))
+            self.sono.append(base.fft.fft(data[::2]))
 
             while len(self.sono) > 100:
                 self.sono.popleft()
 
                 
-            while len(self.sono) > 100:
+            while len(self.data) > 100:
                 self.data.popleft()
                 
             
@@ -238,21 +241,21 @@ class SonoGram(pig.Video):
 
             #self.axes.set_title('{} {}'.format(offset, end))
 
-            #self.axes.plot(self.data[random.randint(len(self.data))])
+            self.axes.plot(self.data[-1])
 
-            sono = base.sono(self.data[-1][::2])
-            sono = pandas.np.array(sono)
+            #sono = base.sono(self.data[-1][::2])
+            sono = pandas.np.array(self.sono)
 
             print(sono.shape, len(self.data))
 
-            sono = sono[:, 5:20]
+            sono = sono[:, 0:20]
             
-            self.axes.imshow(sono.T.real, aspect='auto')
+            #self.axes.imshow(sono.T.real, aspect='auto')
             #print(sono)
             #self.axes.imshow(sono.T.imag, aspect='auto')
 
             self.draw()
-            await curio.sleep(0.2)
+            await curio.sleep(0.01)
 
             offset += 1
             end += 1

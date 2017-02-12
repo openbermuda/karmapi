@@ -240,27 +240,6 @@ class button(ttk.Button):
 
 
 
-class Image(ttk.Label):
-
-    def __init__(self, parent, meta=None):
-
-        super().__init__(parent)
-
-        self.setAutoFillBackground(True)
-        
-        meta = meta or {}
-
-        path = meta.get('path',
-                        Path(__file__).parent / 'pig.png')
-
-        p = self.palette()
-        image = qtgui.QPixmap(str(path))
-        #self.setPixmap(image.scaled(image.width(), image.height(),
-        #                            qt.KeepAspectRatio))
-        self.setPixmap(image.scaled(self.size(),
-                                    qt.KeepAspectRatio,
-                                    qt.SmoothTransformation))
-        self.setScaledContents(True)
 
 
 class Canvas(Pig):
@@ -325,7 +304,9 @@ class PlotImage(Pig):
         """
         self.axes.plot(self.data)
         #self.axes.imshow(self.data)
-        
+
+
+
 class KPlot(PlotImage):
 
     def compute_data(self):
@@ -354,9 +335,6 @@ class XKCD(PlotImage):
 
 
 
-class ZoomImage(Image):
-    pass
-        
 class Video(PlotImage):
     """ a video widget
 
@@ -550,8 +528,10 @@ class Application(Tk):
     
 class Label(ttk.Label):
 
-    def __init__(self, parent, text):
+    def __init__(self, parent, text=None):
 
+
+        text = text or 'hello world'
         super().__init__(parent, text=text)
 
 

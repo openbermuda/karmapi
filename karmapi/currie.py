@@ -46,10 +46,12 @@ class PigFarm:
         print('micks:', self.micks.qsize())
 
 
-    def add(self, pig):
-        print('pigfarm adding', pig)
+    def add(self, pig, kwargs=None):
 
-        self.builds.put(pig)
+        kwargs = kwargs or {}
+        print('pigfarm adding', pig, kwargs)
+
+        self.builds.put((pig, kwargs))
 
     def add_mick(self, mick):
 
@@ -60,12 +62,12 @@ class PigFarm:
         """ Do the piglet build """
 
         while True:
-            meta = await self.builds.get()
+            meta, kwargs = await self.builds.get()
             print('building piglet:', meta)
         
             #piglet = pig.build(meta)
 
-            piglet = meta(self.eloop.app.winfo_toplevel())
+            piglet = meta(self.eloop.app.winfo_toplevel(), **kwargs)
             piglet.bind('<Key>', self.keypress)
             piglet.pack()
 
@@ -145,10 +147,13 @@ def main():
 
         farm.add(widgets.Curio)
 
-    farm.add(widgets.SonoGram)
-    farm.add(widgets.InfinitySlalom)
+    print(piglet.Image)
+    farm.add(piglet.Image, dict(path='fork_in_road.jpg'))
+    #farm.add(widgets.SonoGram)
+    #farm.add(piglet.XKCD)
+    #farm.add(widgets.InfinitySlalom)
     #farm.add(GuidoClock)
-    #farm.add(piglet.Image)
+    #farm.add(piglet.Label)
 
     # add a couple of micks to the Farm
     if args.wave:

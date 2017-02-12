@@ -1,6 +1,8 @@
 """
 Pig widgets
 """
+
+import PIL
 import curio
 from concurrent.futures import ProcessPoolExecutor
 
@@ -494,9 +496,33 @@ class XKCD(PlotImage):
             self.axes.set_ylabel('my overall health')
 
 
+class Image(PlotImage):
 
-class ZoomImage(Image):
-    pass
+
+    def __init__(self, parent, path=None, title=None):
+
+        if path is None:
+            path = '/home/jng/devel/karmapi/docs/pycaribbean/princess_cricket.jpg'
+        self.path = path
+
+        super().__init__(parent)
+
+        print(path)
+
+
+    def plot(self):
+
+        im = PIL.Image.open(self.path)
+
+        self.axes.imshow(im)
+
+        self.axes.set_title('Princess Cricket')
+
+        self.axes.set_xticks([])
+        self.axes.set_yticks([])
+        
+
+
         
 class Video(PlotImage):
     """ a video widget
