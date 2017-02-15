@@ -46,61 +46,6 @@ def printf(*args, **kwargs):
     print(*args, flush=True, **kwargs)
 
 
-def xmeta():
-    """ Return description of a pig """
-    info = dict(
-        title = "PIGS",
-        info = dict(foo=27, bar='open'),
-        parms = [{'label': 'path'}],
-        tabs = [
-            {'name': 'curio',
-             'widgets': [
-                 ["karmapi.widgets.Curio"]]},
-                 
-            {'name': 'example',
-             'widgets': [
-                 ["PlotImage", "Video"],
-                 ["karmapi.widgets.Circle"],
-                 ["Docs", "KPlot"],
-                 [{'name': 'Run'}]]},
-                 
-            {'name': 'perspective',
-             'widgets': [["XKCD"]]},
-             
-            {'name': 'interest',
-             'widgets': [
-                 ["karmapi.widgets.InfinitySlalom",
-                  "karmapi.widgets.InfinitySlalom"]]},
-                 
-            {'name': 'goals'},
-            {'name': 'score'},
-            {'name': 'table'},
-            {'name': 'yosser'}]) 
-    return info
-
-def meta():
-    """ Return description of a pig """
-    info = dict(
-        title = "PIGS",
-        info = dict(foo=27, bar='open'),
-        parms = [{'label': 'path'}],
-        tabs = [
-            {'name': 'curio',
-             'widgets2': [['PlotImage', 'XKCD']],
-             'widgets': [
-                 ["karmapi.widgets.Curio"]]},
-            {'name': 'curio2'},
-            {'name': 'goals'},
-            {'name': 'interest',
-             'widgets': [
-                 ["karmapi.widgets.InfinitySlalom",
-                  "karmapi.widgets.InfinitySlalom"]]},
-            {'name': 'score'},
-            {'name': 'table'},
-            {'name': 'yosser'}])
-    
-    return info
-
 
 def bindings():
     """ Return the bindings between widgets and callbacks """
@@ -240,39 +185,31 @@ class button(ttk.Button):
 
 
 
-class Image(ttk.Label):
-
-    def __init__(self, parent, meta=None):
-
-        super().__init__(parent)
-
-        self.setAutoFillBackground(True)
-        
-        meta = meta or {}
-
-        path = meta.get('path',
-                        Path(__file__).parent / 'pig.png')
-
-        p = self.palette()
-        image = qtgui.QPixmap(str(path))
-        #self.setPixmap(image.scaled(image.width(), image.height(),
-        #                            qt.KeepAspectRatio))
-        self.setPixmap(image.scaled(self.size(),
-                                    qt.KeepAspectRatio,
-                                    qt.SmoothTransformation))
-        self.setScaledContents(True)
 
 
 class Canvas(Pig):
 
     
-    def __init__(self, parent, width=5, height=4, dpi=100, **kwargs):
+    def __init__(self, parent, **kwargs):
 
         super().__init__(parent)
 
-        self.canvas = tkinter.Canvas(parent)
+        self.canvas = tkinter.Canvas(self)
 
         VBoxLayout().addWidget(self.canvas)
+
+
+        self.canvas.bind("<Configure>", self.on_configure)
+        
+
+    def on_configure(self, event):
+
+        print('new bad size:', event.width, event.height)
+        self.recalc(event.width, event.height)
+
+    def recalc(self, width, height):
+
+        pass
 
         
 class PlotImage(Pig):
@@ -325,7 +262,9 @@ class PlotImage(Pig):
         """
         self.axes.plot(self.data)
         #self.axes.imshow(self.data)
-        
+
+
+
 class KPlot(PlotImage):
 
     def compute_data(self):
@@ -354,9 +293,6 @@ class XKCD(PlotImage):
 
 
 
-class ZoomImage(Image):
-    pass
-        
 class Video(PlotImage):
     """ a video widget
 
@@ -469,14 +405,20 @@ class AppEventLoop:
         if app is None:
             self.app = Tk()
 
+        self.events = curio.UniversalQueue()
         self.app.bind('<Key>', self.keypress)
+
+    def set_event_queue(self, events):
+
+        self.events = events
 
     def keypress(self, event):
         """ Just use this to check key events hitting top level """
         print('tk app event loop', event)
         print(event.char, event.keysym, event.keycode)
 
-        print
+        self.events.put(event)
+        
         return True
 
     async def flush(self):
@@ -550,8 +492,10 @@ class Application(Tk):
     
 class Label(ttk.Label):
 
-    def __init__(self, parent, text):
+    def __init__(self, parent, text=None):
 
+
+        text = text or 'hello world'
         super().__init__(parent, text=text)
 
 

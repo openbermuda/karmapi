@@ -27,7 +27,7 @@ global APP
 from karmapi.piglet import (
     # widgetw
     Pigs, Text, Docs, Grid, ParmGrid, GridBase, Canvas,
-    LabelGrid, Image, PlotImage, KPlot, XKCD, ZoomImage, Video,
+    LabelGrid, Image, PlotImage, KPlot, XKCD, Video,
     Table, EventLoop, Application, Piglet, TabWidget,
     GridLayout, VBoxLayout, HBoxLayout,
 

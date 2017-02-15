@@ -13,6 +13,7 @@ So there is a pig farm and piglets running everywhere.
 
 And currie doing magic.
 """
+from collections import deque
 import curio
 
 from karmapi import hush
@@ -23,7 +24,7 @@ class PigFarm:
 
     def __init__(self, meta=None, events=None):
 
-        self.event = events # curio.UniversalQueue()
+        self.event = curio.UniversalQueue()
 
         self.piglet_event = curio.UniversalQueue()
 
@@ -31,10 +32,15 @@ class PigFarm:
 
         self.builds = curio.UniversalQueue()
 
+        self.widgets = deque()
+        self.current = None
+
         from karmapi import piglet
 
         # this probably needs to be a co-routine?
         self.eloop = piglet.EventLoop()
+        self.eloop.set_event_queue(self.event)
+        
         self.piglets.put(self.eloop.run())
 
         self.micks = curio.UniversalQueue()
@@ -46,10 +52,12 @@ class PigFarm:
         print('micks:', self.micks.qsize())
 
 
-    def add(self, pig):
-        print('pigfarm adding', pig)
+    def add(self, pig, kwargs=None):
 
-        self.builds.put(pig)
+        kwargs = kwargs or {}
+        print('pigfarm adding', pig, kwargs)
+
+        self.builds.put((pig, kwargs))
 
     def add_mick(self, mick):
 
@@ -60,14 +68,15 @@ class PigFarm:
         """ Do the piglet build """
 
         while True:
-            meta = await self.builds.get()
+            meta, kwargs = await self.builds.get()
             print('building piglet:', meta)
         
             #piglet = pig.build(meta)
 
-            piglet = meta(self.eloop.app.winfo_toplevel())
+            piglet = meta(self.eloop.app.winfo_toplevel(), **kwargs)
             piglet.bind('<Key>', self.keypress)
-            piglet.pack()
+
+            self.widgets.append(piglet)
 
             # let the piglets see the farm
             piglet.farm = self
@@ -75,10 +84,24 @@ class PigFarm:
 
             await self.piglets.put(piglet.run())
 
+    def next(self):
+        """ Show next widget """
+        print('current', self.current)
+        if self.current:
+            self.current.pack_forget()
+
+            self.widgets.append(self.current)
+
+        self.current = self.widgets.popleft()
+        self.current.pack(fill='both', expand=1)
+        
+
     def keypress(self, event):
         
         print('currie event', event)
         # Fixme -- turn these into events that we can push onto piglet queues
+
+        self.events.put(event)
 
     async def run(self):
         """ Make the pigs run """
@@ -94,8 +117,7 @@ class PigFarm:
         builder = await curio.spawn(self.build())
 
         while True:
-            while self.piglets:
-                print('awaiting piglets', self.piglets.qsize())
+            while self.piglets.qsize():
                 # spawn a task for each piglet
                 piglet = await self.piglets.get()
 
@@ -103,9 +125,18 @@ class PigFarm:
 
                 await curio.spawn(piglet)
 
+                await curio.sleep(1)
+
             # wait for an event
-            event = await self.event.get()
-            print(self, event)
+            #event = await self.event.get()
+            #print(self, event)
+
+            # cycle through the widgets
+            print()
+            print('next widget')
+            self.next()
+            await curio.sleep(1)
+
 
 
 def main():
@@ -116,6 +147,8 @@ def main():
 
     parser.add_argument('--pig', default='tk')
     parser.add_argument('--wave')
+    parser.add_argument('--gallery', nargs='*', default=['../gallery'])
+    
     parser.add_argument('--thresh', type=float, default=10.0)
 
     parser.add_argument('--monitor', action='store_true')
@@ -138,17 +171,23 @@ def main():
 
     print('building farm')
     farm.status()
-    
     from karmapi.mclock2 import GuidoClock
+    from karmapi.bats import StingingBats
 
     if args.monitor:
 
         farm.add(widgets.Curio)
 
+    im_info = dict(galleries=args.gallery, image='princess')
+    print(piglet.Image, im_info)
+    
+    farm.add(piglet.Image, im_info)
+    farm.add(StingingBats)
     farm.add(widgets.SonoGram)
+    farm.add(piglet.XKCD)
     farm.add(widgets.InfinitySlalom)
-    #farm.add(GuidoClock)
-    #farm.add(piglet.Image)
+    farm.add(GuidoClock)
+    #farm.add(piglet.Label)
 
     # add a couple of micks to the Farm
     if args.wave:
