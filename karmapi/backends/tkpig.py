@@ -46,61 +46,6 @@ def printf(*args, **kwargs):
     print(*args, flush=True, **kwargs)
 
 
-def xmeta():
-    """ Return description of a pig """
-    info = dict(
-        title = "PIGS",
-        info = dict(foo=27, bar='open'),
-        parms = [{'label': 'path'}],
-        tabs = [
-            {'name': 'curio',
-             'widgets': [
-                 ["karmapi.widgets.Curio"]]},
-                 
-            {'name': 'example',
-             'widgets': [
-                 ["PlotImage", "Video"],
-                 ["karmapi.widgets.Circle"],
-                 ["Docs", "KPlot"],
-                 [{'name': 'Run'}]]},
-                 
-            {'name': 'perspective',
-             'widgets': [["XKCD"]]},
-             
-            {'name': 'interest',
-             'widgets': [
-                 ["karmapi.widgets.InfinitySlalom",
-                  "karmapi.widgets.InfinitySlalom"]]},
-                 
-            {'name': 'goals'},
-            {'name': 'score'},
-            {'name': 'table'},
-            {'name': 'yosser'}]) 
-    return info
-
-def meta():
-    """ Return description of a pig """
-    info = dict(
-        title = "PIGS",
-        info = dict(foo=27, bar='open'),
-        parms = [{'label': 'path'}],
-        tabs = [
-            {'name': 'curio',
-             'widgets2': [['PlotImage', 'XKCD']],
-             'widgets': [
-                 ["karmapi.widgets.Curio"]]},
-            {'name': 'curio2'},
-            {'name': 'goals'},
-            {'name': 'interest',
-             'widgets': [
-                 ["karmapi.widgets.InfinitySlalom",
-                  "karmapi.widgets.InfinitySlalom"]]},
-            {'name': 'score'},
-            {'name': 'table'},
-            {'name': 'yosser'}])
-    
-    return info
-
 
 def bindings():
     """ Return the bindings between widgets and callbacks """
@@ -245,11 +190,11 @@ class button(ttk.Button):
 class Canvas(Pig):
 
     
-    def __init__(self, parent, width=5, height=4, dpi=100, **kwargs):
+    def __init__(self, parent, **kwargs):
 
         super().__init__(parent)
 
-        self.canvas = tkinter.Canvas(parent)
+        self.canvas = tkinter.Canvas(self)
 
         VBoxLayout().addWidget(self.canvas)
 
@@ -447,14 +392,20 @@ class AppEventLoop:
         if app is None:
             self.app = Tk()
 
+        self.events = curio.UniversalQueue()
         self.app.bind('<Key>', self.keypress)
+
+    def set_event_queue(self, events):
+
+        self.events = events
 
     def keypress(self, event):
         """ Just use this to check key events hitting top level """
         print('tk app event loop', event)
         print(event.char, event.keysym, event.keycode)
 
-        print
+        self.events.put(event)
+        
         return True
 
     async def flush(self):
