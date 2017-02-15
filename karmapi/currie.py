@@ -172,6 +172,7 @@ def main():
     print('building farm')
     farm.status()
     from karmapi.mclock2 import GuidoClock
+    from karmapi.bats import StingingBats
 
     if args.monitor:
 
@@ -181,6 +182,7 @@ def main():
     print(piglet.Image, im_info)
     
     #farm.add(piglet.Image, im_info)
+    farm.add(StingingBats)
     farm.add(widgets.SonoGram)
     #farm.add(piglet.XKCD)
     farm.add(widgets.InfinitySlalom)
