@@ -198,6 +198,19 @@ class Canvas(Pig):
 
         VBoxLayout().addWidget(self.canvas)
 
+
+        self.canvas.bind("<Configure>", self.on_configure)
+        
+
+    def on_configure(self, event):
+
+        print('new bad size:', event.width, event.height)
+        self.recalc(event.width, event.height)
+
+    def recalc(self, width, height):
+
+        pass
+
         
 class PlotImage(Pig):
     """ An image widget

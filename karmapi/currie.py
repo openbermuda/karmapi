@@ -181,10 +181,10 @@ def main():
     im_info = dict(galleries=args.gallery, image='princess')
     print(piglet.Image, im_info)
     
-    #farm.add(piglet.Image, im_info)
+    farm.add(piglet.Image, im_info)
     farm.add(StingingBats)
     farm.add(widgets.SonoGram)
-    #farm.add(piglet.XKCD)
+    farm.add(piglet.XKCD)
     farm.add(widgets.InfinitySlalom)
     farm.add(GuidoClock)
     #farm.add(piglet.Label)

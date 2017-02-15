@@ -9,23 +9,17 @@ class StingingBats(pig.Canvas):
 
         super().__init__(parent)
 
-        radius = 200
-        self.radius = 200
-        self.canvas.configure(bg='black', width=2*radius, height=2*radius)
+        self.width = self.height = 200
+        self.canvas.configure(bg='black', width=self.width, height=self.height)
 
-        self.canvas.bind("<Configure>", self.on_configure)
-
-    def on_configure(self, event):
-        self.recalc(event.width, event.height)
 
     def recalc(self, width, height):
-        radius = min(width, height) // 2
+
         self.width = width
         self.height = height
-        self.radius = radius
-        self.canvas.configure(scrollregion=(-width//2, -height//2,
-                                            width//2, height//2))
-
+        #self.canvas.configure(scrollregion=(-width//2, -height//2,
+        #                                    width//2, height//2))
+        self.canvas.configure(scrollregion=(0, 0, width, height))
 
 
     async def run(self):
@@ -41,7 +35,7 @@ class StingingBats(pig.Canvas):
 
         for x, y in bats:
 
-            xx = int(self.radius * x)
-            yy = int(self.radius * y)
+            xx = int(self.width * x)
+            yy = int(self.height * y)
 
             self.canvas.create_oval(xx-3, yy-3, xx+3, yy+3, fill='red')
