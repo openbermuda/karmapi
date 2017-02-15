@@ -18,8 +18,6 @@ snowy.jpg
 princess_cricket.jpg
 
 
-tree.jpg
-
 # Fork in the Road
 
 fork.jpg
