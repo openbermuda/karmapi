@@ -13,7 +13,7 @@ Johnny GILly
 snowy.jpg
 
 
-#Princess Cricket
+# ..
 
 princess_cricket.jpg
 
@@ -25,7 +25,7 @@ fork.jpg
 
 # Chess
 
-chess
+chess.jpg
 
 # Sudoku
 
@@ -54,6 +54,6 @@ jupiter.jpg
 
 # Tree of Hearts
 
-tree.jpg
+tree_of_hearts.jpg
 
 

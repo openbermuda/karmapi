@@ -417,7 +417,7 @@ class AppEventLoop:
         print('tk app event loop', event)
         print(event.char, event.keysym, event.keycode)
 
-        self.events.put(event)
+        self.events.put(event.char)
         
         return True
 

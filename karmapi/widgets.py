@@ -163,6 +163,14 @@ class InfinitySlalom(pig.Video):
 
 class SonoGram(pig.Video):
 
+    def __init__(self, parent, sono=None):
+
+        super().__init__(parent)
+
+        self.plottype = 'wave'
+        if sono:
+            self.plottype = 'sono'
+
     def plot(self):
         pass
     
@@ -241,18 +249,22 @@ class SonoGram(pig.Video):
 
             #self.axes.set_title('{} {}'.format(offset, end))
 
-            self.axes.plot(self.data[-1])
+            if self.plottype != 'sono':
+                
+                self.axes.plot(self.data[-1])
 
-            #sono = base.sono(self.data[-1][::2])
-            sono = pandas.np.array(self.sono)
+            else:
+                #sono = base.sono(self.data[-1][::2])
+                sono = pandas.np.array(self.sono)
 
-            print(sono.shape, len(self.data))
+                #print(sono.shape, len(self.data))
 
-            sono = sono[:, 0:20]
+                sono = sono[:, 0:20]
             
-            #self.axes.imshow(sono.T.real, aspect='auto')
-            #print(sono)
-            #self.axes.imshow(sono.T.imag, aspect='auto')
+                self.axes.imshow(sono.T.real, aspect='auto')
+
+                #print(sono)
+                #self.axes.imshow(sono.T.imag, aspect='auto')
 
             self.draw()
             await curio.sleep(0.01)
