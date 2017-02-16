@@ -15,12 +15,10 @@ snowy.jpg
 
 # ..
 
+
 princess_cricket.jpg
 
-
-# Fork in the Road
-
-fork.jpg
+fork.jpg tree_of.jpg
 
 
 # Chess

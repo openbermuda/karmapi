@@ -203,7 +203,8 @@ def main():
     farm.status()
     from karmapi.mclock2 import GuidoClock
     from karmapi.bats import StingingBats
-
+    from karmapi.tankrain import TankRain
+    
     if args.monitor:
 
         farm.add(widgets.Curio)
@@ -213,6 +214,7 @@ def main():
     
     farm.add(piglet.Image, im_info)
     farm.add(StingingBats)
+    farm.add(TankRain)
     #farm.add(widgets.SonoGram)
     farm.add(widgets.SonoGram, dict(sono=True))
     #farm.add(piglet.XKCD)

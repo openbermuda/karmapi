@@ -11,6 +11,8 @@ from pathlib import Path
 
 from collections import defaultdict
 
+import curio
+
 from karmapi import show
 
 from karmapi import pig
@@ -46,13 +48,13 @@ def meta():
 class TankRain(pig.Video):
     """ Widget to show tankrain images """
 
-    def __init__(self, *args):
+    def __init__(self, parent, *args):
         
         self.ix = 0
         self.paths = [x for x in self.images()]
         print(self.paths)
         
-        super().__init__(0.1)
+        super().__init__(parent)
 
 
     def compute_data(self):
@@ -63,8 +65,8 @@ class TankRain(pig.Video):
 
         if ix < len(self.paths):
             im = Image.open(self.paths[ix])
-        else:
-            im = [list(range(10)) for x in range(10)]
+
+        print('tankrain', ix, len(self.paths), self.paths[ix])
         
         ix = ix + 1
         if ix == len(self.paths):
@@ -74,13 +76,21 @@ class TankRain(pig.Video):
         self.data = im
 
     def images(self):
-        path = Path('tankrain/2016/10/12')
+        path = Path('~/karmapi/tankrain/2016/10/13').expanduser()
 
-        
-        for image in path.glob('local*.png'):
+        version = 'local'
+        for image in sorted(path.glob('{}*.png'.format(version))):
             yield image
-            
 
+    async def run(self):
+
+        while True:
+
+            self.compute_data()
+            self.plot()
+            self.draw()
+
+            await curio.sleep(.1)
 
 
 class ParishImage(TankRain):
