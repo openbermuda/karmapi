@@ -121,10 +121,7 @@ class InfinitySlalom(pig.Video):
 
         A little help sleeping from curio
         """
-        from karmapi import hush
-
         self.sono = []
-
         
         self.axes.hold(True)
 
@@ -220,14 +217,7 @@ class SonoGram(pig.Video):
                 
             
 
-    async def run(self):
-        """ Run the animation 
-        
-        Loop forever updating the figure
-
-        A little help sleeping from curio
-        """
-        from karmapi import hush
+    async def start(self):
 
         self.sono = deque()
 
@@ -235,6 +225,14 @@ class SonoGram(pig.Video):
 
         await curio.spawn(self.read())
         
+
+    async def run(self):
+        """ Run the animation 
+        
+        Loop forever updating the figure
+
+        A little help sleeping from curio
+        """
         #self.axes.hold(True)
 
         while True:

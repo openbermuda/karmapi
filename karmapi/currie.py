@@ -82,18 +82,17 @@ class PigFarm:
             piglet.farm = self
             print('built', meta, piglet)
 
-            await self.piglets.put(piglet.run())
+            await self.piglets.put(piglet.start())
 
     async def start_piglet(self):
 
         self.current.pack(fill='both', expand=1)
-
         self.current_task = await curio.spawn(self.current.run())
         
     async def stop_piglet(self):
 
-        self.current.pack_forget()
         await self.current_task.cancel()
+        self.current.pack_forget()
 
 
     async def next(self):
