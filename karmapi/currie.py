@@ -96,6 +96,17 @@ class PigFarm:
         self.current.pack(fill='both', expand=1)
         
 
+    def previous(self):
+        """ Show next widget """
+        print('going to previous', self.current)
+        if self.current:
+            self.current.pack_forget()
+
+            self.widgets.appendleft(self.current)
+
+        self.current = self.widgets.pop()
+        self.current.pack(fill='both', expand=1)
+
     def keypress(self, event):
         
         print('currie event', event)
@@ -133,10 +144,29 @@ class PigFarm:
 
             # cycle through the widgets
             print()
-            print('next widget')
-            self.next()
-            await curio.sleep(1)
+            #self.next()
+            #await curio.sleep(1)
 
+            event = await self.event.get()
+
+            await self.process_event(event)
+
+            print(event, type(event))
+
+            print('eq', self.event.qsize())
+
+
+
+    async def process_event(self, event):
+        
+            if event == 'n':
+
+                self.next()
+
+            elif event == 'p':
+
+                self.previous()
+            
 
 
 def main():
@@ -173,18 +203,21 @@ def main():
     farm.status()
     from karmapi.mclock2 import GuidoClock
     from karmapi.bats import StingingBats
-
+    from karmapi.tankrain import TankRain
+    
     if args.monitor:
 
         farm.add(widgets.Curio)
 
-    im_info = dict(galleries=args.gallery, image='princess')
+    im_info = dict(galleries=args.gallery, image='princess_cricket.jpg')
     print(piglet.Image, im_info)
     
     farm.add(piglet.Image, im_info)
     farm.add(StingingBats)
-    farm.add(widgets.SonoGram)
-    farm.add(piglet.XKCD)
+    farm.add(TankRain)
+    #farm.add(widgets.SonoGram)
+    farm.add(widgets.SonoGram, dict(sono=True))
+    #farm.add(piglet.XKCD)
     farm.add(widgets.InfinitySlalom)
     farm.add(GuidoClock)
     #farm.add(piglet.Label)

@@ -25,6 +25,12 @@ class StingingBats(pig.Canvas):
     async def run(self):
 
         while True:
+
+            if random.random() < 0.01:
+                # random bat removal
+                print('deleting bats')
+                self.canvas.delete('all')
+                
             self.redraw()
             await curio.sleep(0.1)
 
@@ -33,9 +39,15 @@ class StingingBats(pig.Canvas):
 
         bats = [(random.random(), random.random()) for x in range(random.randint(1, 10))]
 
+        colours = ['red', 'magenta', 'skyblue', 'orange', 'yellow']
+
         for x, y in bats:
 
             xx = int(self.width * x)
             yy = int(self.height * y)
 
-            self.canvas.create_oval(xx-3, yy-3, xx+3, yy+3, fill='red')
+            size = random.randint(1, 3)
+
+            colour = colours[random.randint(0, len(colours) - 1)]
+
+            self.canvas.create_oval(xx-size, yy-size, xx+size, yy+size, fill=colour)
