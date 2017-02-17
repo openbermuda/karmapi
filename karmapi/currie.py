@@ -35,6 +35,8 @@ class PigFarm:
         self.widgets = deque()
         self.current = None
 
+        self.create_event_map()
+        
         from karmapi import piglet
 
         # this probably needs to be a co-routine?
@@ -44,6 +46,16 @@ class PigFarm:
         self.piglets.put(self.eloop.run())
 
         self.micks = curio.UniversalQueue()
+
+    def add_event_map(self, event, coro):
+
+        self.event_map[event] = coro
+
+    def create_event_map(self):
+
+        self.event_map = {}
+        self.add_event_map('p', self.previous)
+        self.add_event_map('n', self.next)
 
     def status(self):
 
@@ -168,14 +180,18 @@ class PigFarm:
 
 
     async def process_event(self, event):
+        """ Dispatch events when they come in """
+
+        coro = self.event_map.get(event)
+
+        if coro is None and self.current:
+            coro = self.current.event_map.get(event)
+
+        if coro:
+            await coro()
+        else:
+            print('no callback for event', event)
         
-            if event == 'n':
-                
-                await self.next()
-
-            elif event == 'p':
-
-                await self.previous()
             
 
 

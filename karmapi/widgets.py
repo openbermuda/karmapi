@@ -314,6 +314,14 @@ class Curio(pig.Docs):
         """ Set up the widget """
         super().__init__(parent)
 
+        self.create_event_map()
+
+
+    def create_event_map(self):
+
+        self.add_event_map(' ', self.update)
+        self.add_event_map('j', self.previous)
+        self.add_event_map('k', self.next)
 
     def show_previous(self):
 
@@ -331,9 +339,11 @@ class Curio(pig.Docs):
                 text += self.mon.where(self.task_id).decode()
                 return text
         
-        
+
+            
     def show_next(self):
 
+        print('show_next')
         text, tasks = self.get_tasks()
 
         max_id = max(tasks)
@@ -361,7 +371,19 @@ class Curio(pig.Docs):
                 tasks.add(int(task))
 
         return text, tasks
-        
+
+
+    async def update(self):
+
+        self.dokey('P')
+
+    async def next(self):
+
+        self.dokey('K')
+
+    async def previous(self):
+
+        self.dokey('J')
 
     def dokey(self, key):
 
