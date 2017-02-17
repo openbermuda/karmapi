@@ -237,11 +237,11 @@ def main():
 
     images = [
         'princess_cricket.jpg',
-        'tree_of_hearts.jpg',
         'fork_in_road.jpg',
+        'tree_of_hearts.jpg',
         'chess.jpg',
         'lock.jpg',
-        'curio.jpg',
+        'air_water.jpg',
         'venus.jpg']
 
     

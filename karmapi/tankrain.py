@@ -50,11 +50,20 @@ class TankRain(pig.Video):
 
     def __init__(self, parent, *args):
         
-        self.ix = 0
-        self.paths = [x for x in self.images()]
-        
+        self.version = 'local'
+        self.load_images()
+
         super().__init__(parent)
 
+        self.add_event_map('w', self.wide)
+        self.add_event_map('l', self.local)
+        self.add_event_map('b', self.parish)
+
+
+    def load_images(self):
+        
+        self.paths = [x for x in self.images()]
+        self.ix = 0
 
     def compute_data(self):
 
@@ -76,8 +85,25 @@ class TankRain(pig.Video):
         path = Path('~/karmapi/tankrain/2016/10/13').expanduser()
 
         version = 'local'
-        for image in sorted(path.glob('{}*.png'.format(version))):
+        for image in sorted(path.glob('{}*.png'.format(self.version))):
             yield image
+
+
+    async def local(self):
+
+        self.version = 'local'
+        self.load_images()
+
+    async def wide(self):
+
+        self.version = 'wide'
+        self.load_images()
+
+    async def parish(self):
+
+        self.version = 'parish'
+        self.load_images()
+
 
     async def run(self):
 
