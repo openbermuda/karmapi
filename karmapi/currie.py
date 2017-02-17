@@ -82,30 +82,43 @@ class PigFarm:
             piglet.farm = self
             print('built', meta, piglet)
 
-            await self.piglets.put(piglet.run())
+            #await self.piglets.put(piglet.run())
 
-    def next(self):
+    async def start_piglet(self):
+
+        self.current.pack(fill='both', expand=1)
+
+        self.current_task = await curio.spawn(self.current.run())
+        
+    async def stop_piglet(self):
+
+        self.current.pack_forget()
+        await self.current_task.cancel()
+
+
+    async def next(self):
         """ Show next widget """
         print('current', self.current)
         if self.current:
-            self.current.pack_forget()
-
             self.widgets.append(self.current)
 
+            await self.stop_piglet()
+
         self.current = self.widgets.popleft()
-        self.current.pack(fill='both', expand=1)
+        await self.start_piglet()
         
 
-    def previous(self):
+    async def previous(self):
         """ Show next widget """
         print('going to previous', self.current)
         if self.current:
-            self.current.pack_forget()
-
+            
             self.widgets.appendleft(self.current)
 
+            await self.stop_piglet()
+
         self.current = self.widgets.pop()
-        self.current.pack(fill='both', expand=1)
+        await self.start_piglet()
 
     def keypress(self, event):
         
@@ -160,12 +173,12 @@ class PigFarm:
     async def process_event(self, event):
         
             if event == 'n':
-
-                self.next()
+                
+                await self.next()
 
             elif event == 'p':
 
-                self.previous()
+                await self.previous()
             
 
 
@@ -209,24 +222,33 @@ def main():
 
         farm.add(widgets.Curio)
 
-    im_info = dict(galleries=args.gallery, image='princess_cricket.jpg')
-    print(piglet.Image, im_info)
+    images = [
+        'princess_cricket.jpg',
+        'tree_of_hearts.jpg',
+        'fork_in_road.jpg']
+
     
-    farm.add(piglet.Image, im_info)
+    im_info = dict(galleries=args.gallery)
+
+    for im in images:
+        im_info['image'] = im
+        farm.add(piglet.Image, im_info.copy())
+
     farm.add(StingingBats)
     farm.add(TankRain)
-    #farm.add(widgets.SonoGram)
+    farm.add(widgets.SonoGram)
     farm.add(widgets.SonoGram, dict(sono=True))
-    #farm.add(piglet.XKCD)
+    farm.add(piglet.XKCD)
     farm.add(widgets.InfinitySlalom)
     farm.add(GuidoClock)
-    #farm.add(piglet.Label)
 
     # add a couple of micks to the Farm
     if args.wave:
         farm.add_mick(hush.Connect(hush.open_wave(args.wave)))
         farm.add_mick(hush.Connect(hush.open_wave(args.wave)))
+        farm.add_mick(hush.Connect(hush.open_wave(args.wave)))
     else:
+        farm.add_mick(hush.Connect())
         farm.add_mick(hush.Connect())
         farm.add_mick(hush.Connect())
 
