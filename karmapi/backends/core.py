@@ -36,6 +36,9 @@ class Pig:
         await self.event_queue.push(event)
 
 
+    async def start(self):
+        pass
+    
     async def run(self):
 
         print(Pig, 'run cooroutine starting')

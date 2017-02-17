@@ -107,6 +107,12 @@ class InfinitySlalom(pig.Video):
             self.sono.append(base.fft.fft(data))
             
 
+    async def start(self):
+
+        self.mick = await self.get_source()
+
+        await curio.spawn(self.read())
+        
 
     async def run(self):
         """ Run the animation 
@@ -119,9 +125,6 @@ class InfinitySlalom(pig.Video):
 
         self.sono = []
 
-        self.mick = await self.get_source()
-
-        await curio.spawn(self.read())
         
         self.axes.hold(True)
 

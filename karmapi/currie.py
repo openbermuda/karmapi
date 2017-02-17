@@ -82,7 +82,7 @@ class PigFarm:
             piglet.farm = self
             print('built', meta, piglet)
 
-            #await self.piglets.put(piglet.run())
+            await self.piglets.put(piglet.run())
 
     async def start_piglet(self):
 
@@ -148,8 +148,6 @@ class PigFarm:
                 print('spawning', piglet)
 
                 await curio.spawn(piglet)
-
-                await curio.sleep(1)
 
             # wait for an event
             #event = await self.event.get()

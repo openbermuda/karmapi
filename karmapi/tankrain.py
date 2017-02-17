@@ -52,7 +52,6 @@ class TankRain(pig.Video):
         
         self.ix = 0
         self.paths = [x for x in self.images()]
-        print(self.paths)
         
         super().__init__(parent)
 
@@ -66,8 +65,6 @@ class TankRain(pig.Video):
         if ix < len(self.paths):
             im = Image.open(self.paths[ix])
 
-        print('tankrain', ix, len(self.paths), self.paths[ix])
-        
         ix = ix + 1
         if ix == len(self.paths):
             ix = 0
