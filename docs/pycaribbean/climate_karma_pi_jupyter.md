@@ -25,14 +25,6 @@ fork.jpg tree_of.jpg
 
 chess.jpg
 
-# Sudoku
-
-sudoku
-
-# Rock Island
-
-rock_island.jpg
-
 # GIL
 
 lock.jpg
@@ -48,7 +40,7 @@ joaquin.jpg
 
 # Jupyter
 
-jupiter.jpg
+venus.jpg
 
 # Tree of Hearts
 

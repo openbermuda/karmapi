@@ -236,6 +236,7 @@ def main():
         farm.add(piglet.Image, im_info.copy())
 
     farm.add(StingingBats)
+    farm.add(widgets.Curio)
     farm.add(TankRain)
     farm.add(widgets.SonoGram)
     farm.add(widgets.SonoGram, dict(sono=True))

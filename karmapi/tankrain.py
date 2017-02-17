@@ -13,7 +13,7 @@ from collections import defaultdict
 
 import curio
 
-from karmapi import show
+from karmapi import show, base
 
 from karmapi import pig
 
@@ -81,13 +81,32 @@ class TankRain(pig.Video):
 
     async def run(self):
 
+        
+        
         while True:
 
+            tt = base.Timer()
+            
+            tt.time('start')
             self.compute_data()
-            self.plot()
-            self.draw()
+            tt.time('compute')
 
-            await curio.sleep(.1)
+            self.plot()
+            tt.time('plot')
+
+
+            print(self.draw)
+            self.draw()
+            tt.time('draw')
+
+            sleep = 0.01
+            print('tankrain', sleep)
+            await curio.sleep(sleep)
+            tt.time('sleep')
+
+            print(tt.stats())
+
+
 
 
 class ParishImage(TankRain):

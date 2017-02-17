@@ -109,6 +109,7 @@ class InfinitySlalom(pig.Video):
 
     async def start(self):
 
+        self.sono = []
         self.mick = await self.get_source()
 
         await curio.spawn(self.read())
@@ -383,14 +384,18 @@ class Curio(pig.Docs):
         self.set_text(text)
 
 
+    async def start(self):
+
+        self.mon = CurioMonitor()
+        self.task_id = 0
+
+
     async def run(self):
         
 
         # spawn super()'s run co-routine
-        await curio.spawn(super().run())
+        #await curio.spawn(super().run())
         
-        self.mon = CurioMonitor()
-        self.task_id = 0
         self.dokey('P')
 
         while True:

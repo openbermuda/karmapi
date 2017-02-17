@@ -508,7 +508,7 @@ class Image(PlotImage):
         if galleries:
             self.path = imagefind.interpret(dict(galleries=galleries, image=image))
 
-        self.title = title or image or ''
+        self.title = title or ''
 
         super().__init__(parent)
 
