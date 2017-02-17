@@ -508,16 +508,21 @@ class Image(PlotImage):
         if galleries:
             self.path = imagefind.interpret(dict(galleries=galleries, image=image))
 
+        self.title = title or image or ''
+
         super().__init__(parent)
 
 
     def plot(self):
 
-        im = PIL.Image.open(self.path)
+        try:
+            im = PIL.Image.open(self.path)
+            self.axes.imshow(im)
+        except:
+            pass
 
-        self.axes.imshow(im)
 
-        self.axes.set_title('Princess Cricket')
+        self.axes.set_title(self.title)
 
         self.axes.set_xticks([])
         self.axes.set_yticks([])

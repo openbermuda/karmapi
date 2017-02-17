@@ -222,7 +222,11 @@ def main():
     images = [
         'princess_cricket.jpg',
         'tree_of_hearts.jpg',
-        'fork_in_road.jpg']
+        'fork_in_road.jpg',
+        'chess.jpg',
+        'lock.jpg',
+        'curio.jpg',
+        'venus.jpg']
 
     
     im_info = dict(galleries=args.gallery)
