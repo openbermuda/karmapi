@@ -178,7 +178,9 @@ class SonoGram(pig.Video):
     def create_event_map(self):
 
         self.add_event_map('d', self.down)
-        self.add_event_map('u', self.down)
+        self.add_event_map('u', self.up)
+        self.add_event_map('w', self.wide)
+        self.add_event_map('s', self.slim)
 
     async def down(self):
 
@@ -189,6 +191,14 @@ class SonoGram(pig.Video):
 
         self.offset -= 1
         self.end -= 1
+
+    async def slim(self):
+
+        self.end -= 5
+
+    async def wide(self):
+
+        self.end += 5
 
     def plot(self):
         pass
@@ -283,7 +293,10 @@ class SonoGram(pig.Video):
                 #print(self.offset, self.end)
                 sono = sono[:, self.offset:self.end]
 
-                self.axes.imshow(sono.T.real, aspect='auto')
+                power = ((sono.real * sono.real) + (sono.imag * sono.imag)) ** 0.5
+
+                #self.axes.imshow(sono.T.real, aspect='auto')
+                self.axes.imshow(power.T.real, aspect='auto')
                 title = 'offset: {} end: {}'.format(self.offset, self.end)
                 self.axes.set_title(title)
 

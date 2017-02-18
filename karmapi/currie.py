@@ -241,7 +241,7 @@ def main():
         dict(image='tree_of_hearts.jpg', title='Tree of Hearts'),
         dict(image='chess.jpg', title='Branching'),
         dict(image='lock.jpg', title='Global Interpreter Lock'),
-        dict(image='air_water.jpg', title='Curio'),
+        dict(image='air_water.jpg', title='async def(): await run()'),
         dict(image='venus.jpg', title='Jupyter')]
 
     
