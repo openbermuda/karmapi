@@ -172,6 +172,24 @@ class SonoGram(pig.Video):
         if sono:
             self.plottype = 'sono'
 
+        self.create_event_map()
+
+
+    def create_event_map(self):
+
+        self.add_event_map('d', self.down)
+        self.add_event_map('u', self.down)
+
+    async def down(self):
+
+        self.offset += 1
+        self.end += 1
+
+    async def up(self):
+
+        self.offset -= 1
+        self.end -= 1
+
     def plot(self):
         pass
     
@@ -236,6 +254,9 @@ class SonoGram(pig.Video):
         """
         #self.axes.hold(True)
 
+        self.offset = 0
+        self.end = 20
+        
         while True:
 
             if not self.sono:
@@ -245,8 +266,6 @@ class SonoGram(pig.Video):
             #print(len(self.sono), len(self.data))
             #sono = pandas.np.array([x for x in self.sono])
             #print('full sono size', sono.T.real.shape)
-            offset = 20
-            end = -1
             #print('part sono size', sono[:, offset:end].T.shape)
 
             #self.axes.set_title('{} {}'.format(offset, end))
@@ -261,23 +280,16 @@ class SonoGram(pig.Video):
 
                 #print(sono.shape, len(self.data))
 
-                sono = sono[:, 0:20]
-            
-                self.axes.imshow(sono.T.real, aspect='auto')
+                #print(self.offset, self.end)
+                sono = sono[:, self.offset:self.end]
 
-                #print(sono)
-                #self.axes.imshow(sono.T.imag, aspect='auto')
+                self.axes.imshow(sono.T.real, aspect='auto')
+                title = 'offset: {} end: {}'.format(self.offset, self.end)
+                self.axes.set_title(title)
 
             self.draw()
             await curio.sleep(0.01)
 
-            offset += 1
-            end += 1
-            if offset > 1000:
-                offset = 0
-                end = 30
-
-            # FIXME: shrink sono from time to time
             
 class CurioMonitor:
 
