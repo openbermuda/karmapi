@@ -10,22 +10,43 @@ class StingingBats(pig.Canvas):
         super().__init__(parent)
 
         self.width = self.height = 200
+        self.minswarms = 20
+        self.maxswarms = 50
         self.canvas.configure(bg='black', width=self.width, height=self.height)
 
+        self.create_event_map()
         self.create_swarms()
+
+    def create_event_map(self):
+
+        self.add_event_map('j', self.fewer)
+        self.add_event_map('k', self.more)
+
+    async def fewer(self):
+
+        self.minswarms = max(1, self.minswarms - 5)
+        self.maxswarms = max(1, self.maxswarms - 5)
+        self.create_swarms()
+
+    async def more(self):
+
+        self.minswarms = max(1, self.minswarms + 5)
+        self.maxswarms = max(1, self.maxswarms + 5)
+        self.create_swarms()
+
+
         
     def create_swarms(self):
         
         print('new swarms')
-        self.swarms = [Swarm() for x in range(random.randint(20, 50))]
+        self.swarms = [Swarm() for x in range(random.randint(self.minswarms, self.maxswarms))]
 
 
     def recalc(self, width, height):
 
         self.width = width
         self.height = height
-        #self.canvas.configure(scrollregion=(-width//2, -height//2,
-        #                                    width//2, height//2))
+
         self.canvas.configure(scrollregion=(0, 0, width, height))
 
 
@@ -57,7 +78,6 @@ class Swarm:
         self.xmove = random.random() / 10.0
 
         self.ymove = random.random() / 10.0
-
 
     def draw(self, canvas, width, height):
 
