@@ -128,16 +128,14 @@ class TankRain(pig.Video):
             tt.time('plot')
 
 
-            print(self.draw)
             self.draw()
             tt.time('draw')
 
             sleep = 0.01
-            print('tankrain', sleep)
             await curio.sleep(sleep)
             tt.time('sleep')
 
-            print(tt.stats())
+            #print(tt.stats())
 
 
 
