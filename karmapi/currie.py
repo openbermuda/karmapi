@@ -236,19 +236,19 @@ def main():
         farm.add(widgets.Curio)
 
     images = [
-        'princess_cricket.jpg',
-        'fork_in_road.jpg',
-        'tree_of_hearts.jpg',
-        'chess.jpg',
-        'lock.jpg',
-        'air_water.jpg',
-        'venus.jpg']
+        dict(image='princess_cricket.jpg', title='Princess Cricket'),
+        dict(image='fork_in_road.jpg', title='Fork in the Road'),
+        dict(image='tree_of_hearts.jpg', title='Tree of Hearts'),
+        dict(image='chess.jpg', title='Branching'),
+        dict(image='lock.jpg', title='Global Interpreter Lock'),
+        dict(image='air_water.jpg', title='Curio'),
+        dict(image='venus.jpg', title='Jupyter')]
 
     
     im_info = dict(galleries=args.gallery)
 
     for im in images:
-        im_info['image'] = im
+        im_info.update(im)
         farm.add(piglet.Image, im_info.copy())
 
     farm.add(StingingBats)
