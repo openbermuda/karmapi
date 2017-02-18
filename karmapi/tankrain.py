@@ -73,15 +73,22 @@ class TankRain(pig.Video):
 
         if ix < len(self.paths):
             im = Image.open(self.paths[ix])
+        else:
+            # FIXME -- create an image that shows there is no data
+            # for now, lets just show a rainbow
+            rainbow = [x for x in range(100)]
+            im = [rainbow] * 100
 
         ix = ix + 1
         if ix == len(self.paths):
             ix = 0
         self.ix = ix
                             
-        self.data = im
+        self.data = im 
 
     def images(self):
+
+        # FIXME -- create key bindings to select time
         path = Path('~/karmapi/tankrain/2016/10/13').expanduser()
 
         version = 'local'
