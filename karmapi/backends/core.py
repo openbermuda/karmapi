@@ -30,12 +30,21 @@ class Pig:
 
         print('Creating Pig with event queue', self.event_queue)
 
+        self.event_map = {}
+
+    def add_event_map(self, event, coro):
+
+        self.event_map[event] = coro
+
     async def karma(self, event):
         """ Turn events into karma """
 
         await self.event_queue.push(event)
 
 
+    async def start(self):
+        pass
+    
     async def run(self):
 
         print(Pig, 'run cooroutine starting')

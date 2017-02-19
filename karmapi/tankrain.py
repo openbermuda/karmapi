@@ -13,7 +13,7 @@ from collections import defaultdict
 
 import curio
 
-from karmapi import show
+from karmapi import show, base
 
 from karmapi import pig
 
@@ -50,12 +50,20 @@ class TankRain(pig.Video):
 
     def __init__(self, parent, *args):
         
-        self.ix = 0
-        self.paths = [x for x in self.images()]
-        print(self.paths)
-        
+        self.version = 'local'
+        self.load_images()
+
         super().__init__(parent)
 
+        self.add_event_map('w', self.wide)
+        self.add_event_map('l', self.local)
+        self.add_event_map('b', self.parish)
+
+
+    def load_images(self):
+        
+        self.paths = [x for x in self.images()]
+        self.ix = 0
 
     def compute_data(self):
 
@@ -65,32 +73,71 @@ class TankRain(pig.Video):
 
         if ix < len(self.paths):
             im = Image.open(self.paths[ix])
+        else:
+            # FIXME -- create an image that shows there is no data
+            # for now, lets just show a rainbow
+            rainbow = [x for x in range(100)]
+            im = [rainbow] * 100
 
-        print('tankrain', ix, len(self.paths), self.paths[ix])
-        
         ix = ix + 1
         if ix == len(self.paths):
             ix = 0
         self.ix = ix
                             
-        self.data = im
+        self.data = im 
 
     def images(self):
+
+        # FIXME -- create key bindings to select time
         path = Path('~/karmapi/tankrain/2016/10/13').expanduser()
 
         version = 'local'
-        for image in sorted(path.glob('{}*.png'.format(version))):
+        for image in sorted(path.glob('{}*.png'.format(self.version))):
             yield image
+
+
+    async def local(self):
+
+        self.version = 'local'
+        self.load_images()
+
+    async def wide(self):
+
+        self.version = 'wide'
+        self.load_images()
+
+    async def parish(self):
+
+        self.version = 'parish'
+        self.load_images()
+
 
     async def run(self):
 
+        
+        
         while True:
 
+            tt = base.Timer()
+            
+            tt.time('start')
             self.compute_data()
-            self.plot()
-            self.draw()
+            tt.time('compute')
 
-            await curio.sleep(.1)
+            self.plot()
+            tt.time('plot')
+
+
+            self.draw()
+            tt.time('draw')
+
+            sleep = 0.01
+            await curio.sleep(sleep)
+            tt.time('sleep')
+
+            #print(tt.stats())
+
+
 
 
 class ParishImage(TankRain):

@@ -126,7 +126,7 @@ class Docs(Pig):
 
         print(self.event_queue)
 
-        self.text = Text()
+        self.text = Text(self)
 
         VBoxLayout().addWidget(self.text)
 

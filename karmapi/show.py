@@ -3,7 +3,6 @@ Show images.
 """
 from IPython import display
 
-import imageio
 import pandas
 from PIL import Image
 
@@ -32,6 +31,7 @@ def hshow(path):
 
 def movie(images, path=None, **kwargs):
     """ Create a movie for images """
+    import imageio
     if path is None:
         path = imageio.RETURN_BYTES
         
@@ -40,7 +40,7 @@ def movie(images, path=None, **kwargs):
 
 def load(path):
 
-    return imageio.imread(str(path))
+    return Image.open(str(path))
 
 def save(path, image):
 

@@ -1,4 +1,4 @@
-# Python Karma Pi and Jupyter
+# Climate Karma Pi and Jupyter
 
 John Gill
 
@@ -25,14 +25,6 @@ fork.jpg tree_of.jpg
 
 chess.jpg
 
-# Sudoku
-
-sudoku
-
-# Rock Island
-
-rock_island.jpg
-
 # GIL
 
 lock.jpg
@@ -40,7 +32,7 @@ lock.jpg
 
 #async def(): await run()
 
-curio.jpg
+air_water.jpg
 
 # Climate
 
@@ -48,7 +40,7 @@ joaquin.jpg
 
 # Jupyter
 
-jupiter.jpg
+venus.jpg
 
 # Tree of Hearts
 

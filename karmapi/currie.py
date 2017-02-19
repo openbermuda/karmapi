@@ -35,6 +35,8 @@ class PigFarm:
         self.widgets = deque()
         self.current = None
 
+        self.create_event_map()
+        
         from karmapi import piglet
 
         # this probably needs to be a co-routine?
@@ -44,6 +46,16 @@ class PigFarm:
         self.piglets.put(self.eloop.run())
 
         self.micks = curio.UniversalQueue()
+
+    def add_event_map(self, event, coro):
+
+        self.event_map[event] = coro
+
+    def create_event_map(self):
+
+        self.event_map = {}
+        self.add_event_map('p', self.previous)
+        self.add_event_map('n', self.next)
 
     def status(self):
 
@@ -82,30 +94,42 @@ class PigFarm:
             piglet.farm = self
             print('built', meta, piglet)
 
-            await self.piglets.put(piglet.run())
+            await self.piglets.put(piglet.start())
 
-    def next(self):
+    async def start_piglet(self):
+
+        self.current.pack(fill='both', expand=1)
+        self.current_task = await curio.spawn(self.current.run())
+        
+    async def stop_piglet(self):
+
+        await self.current_task.cancel()
+        self.current.pack_forget()
+
+
+    async def next(self):
         """ Show next widget """
         print('current', self.current)
         if self.current:
-            self.current.pack_forget()
-
             self.widgets.append(self.current)
 
+            await self.stop_piglet()
+
         self.current = self.widgets.popleft()
-        self.current.pack(fill='both', expand=1)
+        await self.start_piglet()
         
 
-    def previous(self):
+    async def previous(self):
         """ Show next widget """
         print('going to previous', self.current)
         if self.current:
-            self.current.pack_forget()
-
+            
             self.widgets.appendleft(self.current)
 
+            await self.stop_piglet()
+
         self.current = self.widgets.pop()
-        self.current.pack(fill='both', expand=1)
+        await self.start_piglet()
 
     def keypress(self, event):
         
@@ -136,8 +160,6 @@ class PigFarm:
 
                 await curio.spawn(piglet)
 
-                await curio.sleep(1)
-
             # wait for an event
             #event = await self.event.get()
             #print(self, event)
@@ -158,14 +180,18 @@ class PigFarm:
 
 
     async def process_event(self, event):
+        """ Dispatch events when they come in """
+
+        coro = self.event_map.get(event)
+
+        if coro is None and self.current:
+            coro = self.current.event_map.get(event)
+
+        if coro:
+            await coro()
+        else:
+            print('no callback for event', event)
         
-            if event == 'n':
-
-                self.next()
-
-            elif event == 'p':
-
-                self.previous()
             
 
 
@@ -182,6 +208,7 @@ def main():
     parser.add_argument('--thresh', type=float, default=10.0)
 
     parser.add_argument('--monitor', action='store_true')
+    parser.add_argument('--nomon', action='store_false', default=True)
 
     
     args = parser.parse_args()
@@ -209,30 +236,51 @@ def main():
 
         farm.add(widgets.Curio)
 
-    im_info = dict(galleries=args.gallery, image='princess_cricket.jpg')
-    print(piglet.Image, im_info)
-    
-    farm.add(piglet.Image, im_info)
+    images = [
+        dict(image='climate_karma_pi_and_jupyter.png', title=''),
+        dict(image='gil_ly_.png', title=''),
+        dict(image='princess_cricket.jpg', title='Princess Cricket'),
+        dict(image='fork_in_road.jpg', title='Fork in the Road'),
+        dict(image='tree_of_hearts.jpg', title='Tree of Hearts'),
+        dict(image='chess.jpg', title='Branching'),
+        dict(image='lock.jpg', title='Global Interpreter Lock'),
+        dict(image='air_water.jpg', title='async def(): await run()'),
+        dict(image='venus.jpg', title='Jupyter')]
+
+    print('galleries', args.gallery)
+        
+    im_info = dict(galleries=args.gallery)
+
+    for im in images:
+        im_info.update(im)
+        farm.add(piglet.Image, im_info.copy())
+
     farm.add(StingingBats)
+
+    if args.nomon:
+        farm.add(widgets.Curio)
+
     farm.add(TankRain)
-    #farm.add(widgets.SonoGram)
+    farm.add(widgets.SonoGram)
     farm.add(widgets.SonoGram, dict(sono=True))
-    #farm.add(piglet.XKCD)
+    farm.add(piglet.XKCD)
     farm.add(widgets.InfinitySlalom)
     farm.add(GuidoClock)
-    #farm.add(piglet.Label)
 
     # add a couple of micks to the Farm
     if args.wave:
         farm.add_mick(hush.Connect(hush.open_wave(args.wave)))
         farm.add_mick(hush.Connect(hush.open_wave(args.wave)))
+        farm.add_mick(hush.Connect(hush.open_wave(args.wave)))
     else:
+        farm.add_mick(hush.Connect())
         farm.add_mick(hush.Connect())
         farm.add_mick(hush.Connect())
 
     farm.status()
 
-    curio.run(farm.run(), with_monitor=True)
+    print('args.nomon', args.nomon)
+    curio.run(farm.run(), with_monitor=args.nomon)
 
 
 if __name__ == '__main__':
