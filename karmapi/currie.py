@@ -208,6 +208,7 @@ def main():
     parser.add_argument('--thresh', type=float, default=10.0)
 
     parser.add_argument('--monitor', action='store_true')
+    parser.add_argument('--nomon', action='store_false', default=True)
 
     
     args = parser.parse_args()
@@ -236,6 +237,8 @@ def main():
         farm.add(widgets.Curio)
 
     images = [
+        dict(image='climate_karma_pi_and_jupyter.png', title=''),
+        dict(image='gil_ly_.png', title=''),
         dict(image='princess_cricket.jpg', title='Princess Cricket'),
         dict(image='fork_in_road.jpg', title='Fork in the Road'),
         dict(image='tree_of_hearts.jpg', title='Tree of Hearts'),
@@ -244,7 +247,8 @@ def main():
         dict(image='air_water.jpg', title='async def(): await run()'),
         dict(image='venus.jpg', title='Jupyter')]
 
-    
+    print('galleries', args.gallery)
+        
     im_info = dict(galleries=args.gallery)
 
     for im in images:
@@ -252,7 +256,10 @@ def main():
         farm.add(piglet.Image, im_info.copy())
 
     farm.add(StingingBats)
-    farm.add(widgets.Curio)
+
+    if args.nomon:
+        farm.add(widgets.Curio)
+
     farm.add(TankRain)
     farm.add(widgets.SonoGram)
     farm.add(widgets.SonoGram, dict(sono=True))
@@ -272,7 +279,8 @@ def main():
 
     farm.status()
 
-    curio.run(farm.run(), with_monitor=True)
+    print('args.nomon', args.nomon)
+    curio.run(farm.run(), with_monitor=args.nomon)
 
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-# Python Karma Pi and Jupyter
+# Climate Karma Pi and Jupyter
 
 John Gill
 

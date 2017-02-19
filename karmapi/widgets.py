@@ -91,29 +91,10 @@ class InfinitySlalom(pig.Video):
 
         return await self.farm.micks.get()
 
-    async def read(self):
-
-
-        print('xxxxxxxxxxxxxx', self.mick)
-
-        # need to fire up the frames co-routine?
-        await curio.spawn(self.mick.frames())
-
-        while True:
-            data = await self.mick.get()
-
-            data = self.mick.decode(data)
-            
-            self.sono.append(base.fft.fft(data))
-            
-
     async def start(self):
 
-        self.sono = []
         self.mick = await self.get_source()
 
-        await curio.spawn(self.read())
-        
 
     async def run(self):
         """ Run the animation 
@@ -122,7 +103,6 @@ class InfinitySlalom(pig.Video):
 
         A little help sleeping from curio
         """
-        self.sono = []
         
         self.axes.hold(True)
 
@@ -173,6 +153,7 @@ class SonoGram(pig.Video):
             self.plottype = 'sono'
 
         self.create_event_map()
+        self.samples = 1
 
 
     def create_event_map(self):
@@ -181,6 +162,8 @@ class SonoGram(pig.Video):
         self.add_event_map('u', self.up)
         self.add_event_map('w', self.wide)
         self.add_event_map('s', self.slim)
+        self.add_event_map('a', self.upsample)
+        self.add_event_map('z', self.downsample)
 
     async def down(self):
 
@@ -191,6 +174,17 @@ class SonoGram(pig.Video):
 
         self.offset -= 1
         self.end -= 1
+
+    async def upsample(self):
+
+        self.samples += 1
+        self.init_data()
+
+    async def downsample(self):
+
+        if self.samples > 1:
+            self.samples -= 1
+            self.init_data()
 
     async def slim(self):
 
@@ -220,9 +214,17 @@ class SonoGram(pig.Video):
 
         while True:
             #print('waiting on data')
-            data = await self.mick.get()
+            data = b''
 
-            #print('got data in sonogram', len(data), type(data))
+            nsample = self.samples
+            for sample in range(self.samples):
+                data += await self.mick.get()
+
+            if nsample != self.samples:
+                continue
+            
+
+            print('got data in sonogram', len(data), type(data))
             if 0 != (len(data) % 2048): break
 
             # quit reading if no data
@@ -232,10 +234,13 @@ class SonoGram(pig.Video):
             data = self.mick.decode(data)
             #data = data[::2]
             #data = data[1::2]
+            data = np.arange(1024)
+            data = data * math.pi / random.randint(1, 10)
+            data = np.sin(data)
 
             self.data.append(data)
 
-            self.sono.append(base.fft.fft(data[::2]))
+            self.sono.append(base.fft.fft(data[::2 * self.samples]))
 
             while len(self.sono) > 100:
                 self.sono.popleft()
@@ -244,11 +249,15 @@ class SonoGram(pig.Video):
             while len(self.data) > 100:
                 self.data.popleft()
                 
-            
+
+    def init_data(self):
+
+        self.sono = deque()
+        self.data = deque()
 
     async def start(self):
 
-        self.sono = deque()
+        self.init_data()
 
         self.mick = await self.get_source()
 
@@ -282,7 +291,11 @@ class SonoGram(pig.Video):
 
             if self.plottype != 'sono':
                 
-                self.axes.plot(self.data[-1])
+                #self.axes.hold(True)
+                self.axes.plot(self.data[-1][::2])
+                self.axes.plot(self.data[-1][1::2])
+                #self.axes.plot(range(100))
+                #self.axes.plot(range(10, 110))
 
             else:
                 #sono = base.sono(self.data[-1][::2])
@@ -297,7 +310,9 @@ class SonoGram(pig.Video):
 
                 #self.axes.imshow(sono.T.real, aspect='auto')
                 self.axes.imshow(power.T.real, aspect='auto')
-                title = 'offset: {} end: {}'.format(self.offset, self.end)
+                title = 'offset: {} end: {} samples: {}'.format(
+                    self.offset, self.end, self.samples)
+                
                 self.axes.set_title(title)
 
             self.draw()
