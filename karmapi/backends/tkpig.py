@@ -137,7 +137,6 @@ class Docs(Pig):
 
     def set_text(self, text):
 
-        print(text)
         self.text.config(state='normal')
         self.text.delete('1.0', 'end')
         self.text.insert('end', text)
