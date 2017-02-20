@@ -58,12 +58,16 @@ class TankRain(pig.Video):
         self.add_event_map('w', self.wide)
         self.add_event_map('l', self.local)
         self.add_event_map('b', self.parish)
+        self.add_event_map('s', self.slower)
+        self.add_event_map('f', self.faster)
+        self.add_event_map('r', self.reverse)
 
 
     def load_images(self):
         
         self.paths = [x for x in self.images()]
         self.ix = 0
+        self.inc = 1
 
     def compute_data(self):
 
@@ -79,9 +83,12 @@ class TankRain(pig.Video):
             rainbow = [x for x in range(100)]
             im = [rainbow] * 100
 
-        ix = ix + 1
+        ix = ix + self.inc
         if ix == len(self.paths):
             ix = 0
+        if ix < 0:
+            ix = len(self.paths) - 1
+            
         self.ix = ix
                             
         self.data = im 
@@ -112,6 +119,18 @@ class TankRain(pig.Video):
         self.load_images()
 
 
+    async def slower(self):
+
+        self.interval *= 2
+
+    async def faster(self):
+
+        self.interval /= 2
+
+    async def reverse(self):
+
+        self.inc *= -1
+
     async def run(self):
 
         
@@ -132,7 +151,7 @@ class TankRain(pig.Video):
             tt.time('draw')
 
             sleep = 0.01
-            await curio.sleep(sleep)
+            await curio.sleep(self.interval)
             tt.time('sleep')
 
             #print(tt.stats())
