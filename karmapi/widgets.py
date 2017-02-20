@@ -1,6 +1,7 @@
 """
 Widgets for pig
 """
+from datetime import datetime
 
 import PIL
 
@@ -144,13 +145,11 @@ class InfinitySlalom(pig.Video):
 
 class SonoGram(pig.Video):
 
-    def __init__(self, parent, sono=None):
+    def __init__(self, parent):
 
         super().__init__(parent)
 
         self.plottype = 'wave'
-        if sono:
-            self.plottype = 'sono'
 
         self.create_event_map()
         self.samples = 1
@@ -164,6 +163,14 @@ class SonoGram(pig.Video):
         self.add_event_map('s', self.slim)
         self.add_event_map('a', self.upsample)
         self.add_event_map('z', self.downsample)
+        self.add_event_map('t', self.toggle_plottype)
+
+    async def toggle_plottype(self):
+
+        if self.plottype != 'sono':
+            self.plottype = 'sono'
+        else:
+            self.plottype = 'wave'
 
     async def down(self):
 
@@ -218,13 +225,13 @@ class SonoGram(pig.Video):
 
             nsample = self.samples
             for sample in range(self.samples):
-                data += await self.mick.get()
+                data, timestamp = await self.mick.get()
+                data += data
 
             if nsample != self.samples:
                 continue
-            
 
-            print('got data in sonogram', len(data), type(data))
+            #print('got data in sonogram', len(data), type(data))
             if 0 != (len(data) % 2048): break
 
             # quit reading if no data
@@ -232,20 +239,16 @@ class SonoGram(pig.Video):
                 break
             
             data = self.mick.decode(data)
+            sono = base.fft.fft(data[::2 * self.samples])
+
             #data = data[::2]
             #data = data[1::2]
-            data = np.arange(1024)
-            data = data * math.pi / random.randint(1, 10)
-            data = np.sin(data)
+            #data = np.arange(1024)
+            #data = data * math.pi / random.randint(1, 10)
+            #data = np.sin(data)
 
-            self.data.append(data)
+            self.data.append((data, sono, timestamp))
 
-            self.sono.append(base.fft.fft(data[::2 * self.samples]))
-
-            while len(self.sono) > 100:
-                self.sono.popleft()
-
-                
             while len(self.data) > 100:
                 self.data.popleft()
                 
@@ -278,7 +281,7 @@ class SonoGram(pig.Video):
         
         while True:
 
-            if not self.sono:
+            if not self.data:
                 await curio.sleep(0.2)
                 continue
 
@@ -289,17 +292,22 @@ class SonoGram(pig.Video):
 
             #self.axes.set_title('{} {}'.format(offset, end))
 
+            data, sono, timestamp = self.data[-1]
+            print(timestamp)
             if self.plottype != 'sono':
                 
                 #self.axes.hold(True)
-                self.axes.plot(self.data[-1][::2])
-                self.axes.plot(self.data[-1][1::2])
+                self.axes.plot(data[::2])
+                #self.axes.plot(data[-1][1::2])
+                self.axes.set_ylim(ymin=-30000, ymax=30000)
                 #self.axes.plot(range(100))
                 #self.axes.plot(range(10, 110))
 
+                self.axes.set_title('{} {}'.format(str(timestamp), str(datetime.now())))
+
             else:
                 #sono = base.sono(self.data[-1][::2])
-                sono = pandas.np.array(self.sono)
+                sono = pandas.np.array(sono)
 
                 #print(sono.shape, len(self.data))
 
@@ -310,8 +318,9 @@ class SonoGram(pig.Video):
 
                 #self.axes.imshow(sono.T.real, aspect='auto')
                 self.axes.imshow(power.T.real, aspect='auto')
-                title = 'offset: {} end: {} samples: {}'.format(
-                    self.offset, self.end, self.samples)
+                title = 'offset: {} end: {} samples: {} {}, {}'.format(
+                    self.offset, self.end, self.samples,
+                    str(timestamp), str(datetime.now()))
                 
                 self.axes.set_title(title)
 
@@ -363,7 +372,7 @@ class Curio(pig.Docs):
         self.add_event_map('j', self.previous)
         self.add_event_map('k', self.next)
 
-    def show_previous(self):
+    async def previous(self):
 
         text, tasks = self.get_tasks()
 
@@ -377,13 +386,13 @@ class Curio(pig.Docs):
             if self.task_id in tasks:
                 text += "\nWhere {}:\n\n".format(self.task_id)
                 text += self.mon.where(self.task_id).decode()
-                return text
+                break
+
+        self.set_text(text)
         
-
             
-    def show_next(self):
+    async def next(self):
 
-        print('show_next')
         text, tasks = self.get_tasks()
 
         max_id = max(tasks)
@@ -395,7 +404,10 @@ class Curio(pig.Docs):
             if self.task_id in tasks:
                 text += "\nWhere {}:\n\n".format(self.task_id)
                 text += self.mon.where(self.task_id).decode()
-                return text
+
+                break
+
+        self.set_text(text)
 
 
     def get_tasks(self):
@@ -415,59 +427,18 @@ class Curio(pig.Docs):
 
     async def update(self):
 
-        self.dokey('P')
-
-    async def next(self):
-
-        self.dokey('K')
-
-    async def previous(self):
-
-        self.dokey('J')
-
-    def dokey(self, key):
-
-        m = self.mon
-        
-        text = m.ps().decode()
-            
-        if key.isdigit():
-
-            ikey = int(key)
-            text += "\nWhere {}\n\n".format(ikey)
-            text += m.where(ikey).decode()
-
-        elif key == 'J':
-            text = self.show_previous()
-
-        elif key == 'K':
-            text = self.show_next()
-            
-        self.set_text(text)
-
+        self.set_text(self.get_tasks()[0])
 
     async def start(self):
 
         self.mon = CurioMonitor()
         self.task_id = 0
 
-
     async def run(self):
-        
 
-        # spawn super()'s run co-routine
-        #await curio.spawn(super().run())
-        
-        self.dokey('P')
-
-        while True:
-            event = await self.event_queue.get()
-
-            print('curio monitor:', event)
-            self.dokey(event)
+        await self.update()
 
 
-        
 def get_widget(path):
 
     parts = path.split('.')

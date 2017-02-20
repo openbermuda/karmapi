@@ -242,16 +242,19 @@ def main():
         dict(image='princess_cricket.jpg', title='Princess Cricket'),
         dict(image='fork_in_road.jpg', title='Fork in the Road'),
         dict(image='tree_of_hearts.jpg', title='Tree of Hearts'),
-        dict(image='chess.jpg', title='Branching'),
+        #dict(image='chess.jpg', title='Branching'),
         dict(image='lock.jpg', title='Global Interpreter Lock'),
         dict(image='air_water.jpg', title='async def(): await run()'),
         dict(image='venus.jpg', title='Jupyter')]
+
+    from karmapi import sunny
 
     print('galleries', args.gallery)
         
     im_info = dict(galleries=args.gallery)
 
     for im in images:
+        continue
         im_info.update(im)
         farm.add(piglet.Image, im_info.copy())
 
@@ -260,21 +263,17 @@ def main():
     if args.nomon:
         farm.add(widgets.Curio)
 
-    farm.add(TankRain)
+    #farm.add(TankRain)
+    #farm.add(sunny.Sunspot)
     farm.add(widgets.SonoGram)
-    farm.add(widgets.SonoGram, dict(sono=True))
-    farm.add(piglet.XKCD)
-    farm.add(widgets.InfinitySlalom)
+    #farm.add(piglet.XKCD)
+    #farm.add(widgets.InfinitySlalom)
     farm.add(GuidoClock)
 
     # add a couple of micks to the Farm
     if args.wave:
         farm.add_mick(hush.Connect(hush.open_wave(args.wave)))
-        farm.add_mick(hush.Connect(hush.open_wave(args.wave)))
-        farm.add_mick(hush.Connect(hush.open_wave(args.wave)))
     else:
-        farm.add_mick(hush.Connect())
-        farm.add_mick(hush.Connect())
         farm.add_mick(hush.Connect())
 
     farm.status()
