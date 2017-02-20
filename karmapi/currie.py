@@ -58,11 +58,6 @@ class PigFarm:
         self.add_event_map('n', self.next)
         self.add_event_map('h', self.help)
 
-    async def help(self):
-
-        from karmapi import piglet
-
-        piglet.Help('hello world\nfoo\nbar')
 
     def status(self):
 
@@ -113,6 +108,24 @@ class PigFarm:
         await self.current_task.cancel()
         self.current.pack_forget()
 
+    async def help(self):
+        """ Show help """
+        print('Help')
+        print(self.event_map)
+
+        keys = {}
+        if self.current:
+            keys = self.current.event_map.copy()
+
+        keys.update(self.event_map)
+        msg = ''
+        for key, value in sorted(keys.items()):
+            msg += '{} {}\n'.format(key, value.__doc__)
+
+        from karmapi import piglet
+
+        piglet.Help(msg)
+
 
     async def next(self):
         """ Show next widget """
@@ -127,7 +140,7 @@ class PigFarm:
         
 
     async def previous(self):
-        """ Show next widget """
+        """ Show previous widget """
         print('going to previous', self.current)
         if self.current:
             
