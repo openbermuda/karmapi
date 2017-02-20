@@ -250,7 +250,8 @@ class SonoGram(pig.Video):
             self.data.append((data, sono, timestamp))
 
             while len(self.data) > 100:
-                self.data.popleft()
+                data, timestamp = self.data.popleft()
+                print('popping', timestamp)
                 
 
     def init_data(self):
