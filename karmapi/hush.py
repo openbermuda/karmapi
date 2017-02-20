@@ -18,6 +18,7 @@ https://github.com/lemonzi/VoCoMi/nuance.py
 For now, goal is sonograms: pictures of the sound as it goes by.
 
 """
+from datetime import datetime
 import curio
 
 from matplotlib import pyplot
@@ -118,9 +119,10 @@ class Connect:
         """ Keep reading frames, add them to the queue """
 
         while True:
+            timestamp = datetime.now()
             data = await self.read(CHUNK)
 
-            await self.queue.put(data)
+            await self.queue.put((data, timestamp))
 
 
     async def read(self, chunk):
