@@ -303,7 +303,7 @@ class SonoGram(pig.Video):
                 #self.axes.plot(range(100))
                 #self.axes.plot(range(10, 110))
 
-                self.axes.set_title('{} {}'.format(str(timestamp), str(datetime.now())))
+                self.axes.set_title('{}'.format(str(datetime.now() - timestamp)))
 
             else:
                 #sono = base.sono(self.data[-1][::2])
