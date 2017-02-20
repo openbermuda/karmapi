@@ -154,8 +154,6 @@ async def run():
 
         data = await connect.get()
 
-        print('got data:', len(data))
-
 
 def open_wave(name):
 

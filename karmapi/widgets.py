@@ -293,7 +293,6 @@ class SonoGram(pig.Video):
             #self.axes.set_title('{} {}'.format(offset, end))
 
             data, sono, timestamp = self.data[-1]
-            print(data)
             print(timestamp)
             if self.plottype != 'sono':
                 
@@ -373,7 +372,7 @@ class Curio(pig.Docs):
         self.add_event_map('j', self.previous)
         self.add_event_map('k', self.next)
 
-    def show_previous(self):
+    async def previous(self):
 
         text, tasks = self.get_tasks()
 
@@ -387,13 +386,13 @@ class Curio(pig.Docs):
             if self.task_id in tasks:
                 text += "\nWhere {}:\n\n".format(self.task_id)
                 text += self.mon.where(self.task_id).decode()
-                return text
+                break
+
+        self.set_text(text)
         
-
             
-    def show_next(self):
+    async def next(self):
 
-        print('show_next')
         text, tasks = self.get_tasks()
 
         max_id = max(tasks)
@@ -405,7 +404,10 @@ class Curio(pig.Docs):
             if self.task_id in tasks:
                 text += "\nWhere {}:\n\n".format(self.task_id)
                 text += self.mon.where(self.task_id).decode()
-                return text
+
+                break
+
+        self.set_text(text)
 
 
     def get_tasks(self):
@@ -425,59 +427,18 @@ class Curio(pig.Docs):
 
     async def update(self):
 
-        self.dokey('P')
-
-    async def next(self):
-
-        self.dokey('K')
-
-    async def previous(self):
-
-        self.dokey('J')
-
-    def dokey(self, key):
-
-        m = self.mon
-        
-        text = m.ps().decode()
-            
-        if key.isdigit():
-
-            ikey = int(key)
-            text += "\nWhere {}\n\n".format(ikey)
-            text += m.where(ikey).decode()
-
-        elif key == 'J':
-            text = self.show_previous()
-
-        elif key == 'K':
-            text = self.show_next()
-            
-        self.set_text(text)
-
+        self.set_text(self.get_tasks()[0])
 
     async def start(self):
 
         self.mon = CurioMonitor()
         self.task_id = 0
 
-
     async def run(self):
-        
 
-        # spawn super()'s run co-routine
-        #await curio.spawn(super().run())
-        
-        self.dokey('P')
-
-        while True:
-            event = await self.event_queue.get()
-
-            print('curio monitor:', event)
-            self.dokey(event)
+        await self.update()
 
 
-        
 def get_widget(path):
 
     parts = path.split('.')
