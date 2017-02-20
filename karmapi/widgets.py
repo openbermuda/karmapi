@@ -250,8 +250,7 @@ class SonoGram(pig.Video):
             self.data.append((data, sono, timestamp))
 
             while len(self.data) > 100:
-                data, timestamp = self.data.popleft()
-                print('popping', timestamp)
+                data, sono, timestamp = self.data.popleft()
                 
 
     def init_data(self):
@@ -308,6 +307,7 @@ class SonoGram(pig.Video):
 
             else:
                 #sono = base.sono(self.data[-1][::2])
+                sono = [x[1] for x in self.data]
                 sono = pandas.np.array(sono)
 
                 #print(sono.shape, len(self.data))
