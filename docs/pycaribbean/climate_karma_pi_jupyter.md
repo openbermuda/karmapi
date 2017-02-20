@@ -6,6 +6,10 @@ https://github.com/openbermuda
 
 https://github.com/openbermuda/karmapi
 
+swfiua@gmail.com
+
+@swfiua
+
 # GIL(ly))
 
 Johnny GILly
