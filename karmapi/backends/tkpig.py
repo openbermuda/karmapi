@@ -19,7 +19,7 @@ import pandas
 random = pandas.np.random
 
 import tkinter
-from tkinter import Tk, ttk, Text
+from tkinter import Tk, ttk, Text, messagebox
 
 from matplotlib.backends.backend_tkagg import FigureCanvas, FigureManager
 
@@ -113,6 +113,14 @@ class Pig(ttk.Frame, core.Pig):
         self.event_queue.push(event.keycode)
 
 
+class Help:
+
+    def __init__(self, msg):
+
+        msg = msg or "Help Me!"
+        
+        messagebox.showinfo(message=msg)
+        
 
 class Docs(Pig):
     """ Docs widget """

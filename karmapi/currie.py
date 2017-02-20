@@ -56,6 +56,13 @@ class PigFarm:
         self.event_map = {}
         self.add_event_map('p', self.previous)
         self.add_event_map('n', self.next)
+        self.add_event_map('h', self.help)
+
+    async def help(self):
+
+        from karmapi import piglet
+
+        piglet.Help('hello world\nfoo\nbar')
 
     def status(self):
 
