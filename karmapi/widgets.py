@@ -14,6 +14,8 @@ import curio
 import pandas
 np = pandas.np
 
+from matplotlib import ticker
+
 from numpy import random
 
 import math
@@ -153,6 +155,7 @@ class SonoGram(pig.Video):
 
         self.create_event_map()
         self.samples = 1
+        self.channel = 0
 
 
     def create_event_map(self):
@@ -164,8 +167,10 @@ class SonoGram(pig.Video):
         self.add_event_map('a', self.upsample)
         self.add_event_map('z', self.downsample)
         self.add_event_map('t', self.toggle_plottype)
+        self.add_event_map('c', self.toggle_channel)
 
     async def toggle_plottype(self):
+        """ Toggle between wave and sonogram """
 
         if self.plottype != 'sono':
             self.plottype = 'sono'
@@ -173,33 +178,47 @@ class SonoGram(pig.Video):
             self.plottype = 'wave'
 
     async def down(self):
-
+        """ Increase offset  """
         self.offset += 1
         self.end += 1
 
     async def up(self):
+        """ Decrease offset """
 
         self.offset -= 1
         self.end -= 1
 
     async def upsample(self):
+        """ Increase time window  """
 
         self.samples += 1
         self.init_data()
 
     async def downsample(self):
+        """ Decrease time window """
 
         if self.samples > 1:
             self.samples -= 1
             self.init_data()
 
     async def slim(self):
+        """ Shrink frequency window """
 
         self.end -= 5
 
     async def wide(self):
+        """ Widen frequency window """
 
         self.end += 5
+
+    async def toggle_channel(self):
+        """ Toggle channel """
+
+        if self.channel:
+            self.channel = 0
+        else:
+            self.channel = 1
+
 
     def plot(self):
         pass
@@ -250,17 +269,10 @@ class SonoGram(pig.Video):
             self.data.append((data, sono, timestamp))
 
             while len(self.data) > 100:
-                data, sono, timestamp = self.data.popleft()
-                
+                self.data.popleft()
 
-    def init_data(self):
-
-        self.sono = deque()
-        self.data = deque()
 
     async def start(self):
-
-        self.init_data()
 
         self.mick = await self.get_source()
 
@@ -277,7 +289,7 @@ class SonoGram(pig.Video):
         #self.axes.hold(True)
 
         self.offset = 0
-        self.end = 20
+        self.end = 100
         
         while True:
 
@@ -292,12 +304,16 @@ class SonoGram(pig.Video):
 
             #self.axes.set_title('{} {}'.format(offset, end))
 
-            data, sono, timestamp = self.data[-1]
-            print(timestamp)
+            data, sono, timestamp = self.data.pop()
+
             if self.plottype != 'sono':
                 
                 #self.axes.hold(True)
-                self.axes.plot(data[::2])
+                samples = int(len(data) / 2)
+                start = self.channel * samples
+                end = start + samples
+                
+                self.axes.plot(data[start:end])
                 #self.axes.plot(data[-1][1::2])
                 self.axes.set_ylim(ymin=-30000, ymax=30000)
                 #self.axes.plot(range(100))
@@ -310,18 +326,27 @@ class SonoGram(pig.Video):
                 sono = [x[1] for x in self.data]
                 sono = pandas.np.array(sono)
 
-                #print(sono.shape, len(self.data))
-
-                #print(self.offset, self.end)
                 sono = sono[:, self.offset:self.end]
-
-                power = ((sono.real * sono.real) + (sono.imag * sono.imag)) ** 0.5
-
-                #self.axes.imshow(sono.T.real, aspect='auto')
+                
+                power = abs(sono)
+                    
                 self.axes.imshow(power.T.real, aspect='auto')
-                title = 'offset: {} end: {} samples: {} {}, {}'.format(
+                title = 'offset: {} end: {} samples: {} delay: {}'.format(
                     self.offset, self.end, self.samples,
-                    str(timestamp), str(datetime.now()))
+                    str(datetime.now() - timestamp))
+
+                def freq_format(x, pos=None):
+
+                    rate = self.mick.rate()
+                    frames = self.mick.frame_size()
+
+                    xx = x + self.offset
+
+                    hertz = (xx / frames) * rate
+
+                    return '{:.1f}'.format(hertz)
+                
+                self.axes.yaxis.set_major_formatter(ticker.FuncFormatter(freq_format))
                 
                 self.axes.set_title(title)
 

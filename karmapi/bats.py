@@ -12,7 +12,16 @@ class StingingBats(pig.Canvas):
         self.width = self.height = 200
         self.minswarms = 20
         self.maxswarms = 50
-        self.canvas.configure(bg='black', width=self.width, height=self.height)
+        self.themes = []
+        self.themes.append(Theme())
+        self.themes.append(Theme(
+            background='#0d0d0d',
+            colours=['#b35900', '#804000', '#663300', '#662200', '#b36b00']))
+        self.themes.append(Theme(colours=['green', 'yellow', 'red']))
+        self.theme = self.themes[0]
+
+        self.canvas.configure(bg=self.theme.background,
+            width=self.width, height=self.height)
 
         self.create_event_map()
         self.create_swarms()
@@ -21,23 +30,43 @@ class StingingBats(pig.Canvas):
 
         self.add_event_map('j', self.fewer)
         self.add_event_map('k', self.more)
+        self.add_event_map('f', self.fast)
+        self.add_event_map('s', self.slow)
+        self.add_event_map('t', self.next_theme)
+
+
+    async def next_theme(self):
+        '''Toggles color scheme'''
+
+        self.theme = self.themes[random.randint(0, len(self.themes) - 1)]
+        self.canvas.configure(bg=self.theme.background)
 
     async def fewer(self):
+        '''Fewer bats displayed'''
 
         self.minswarms = max(1, self.minswarms - 5)
         self.maxswarms = max(1, self.maxswarms - 5)
         self.create_swarms()
 
     async def more(self):
+        '''More bats displayed'''
 
         self.minswarms = max(1, self.minswarms + 5)
         self.maxswarms = max(1, self.maxswarms + 5)
         self.create_swarms()
 
+    async def fast(self):
+        '''Faster bats'''
 
-        
+        self.sleep -= 0.05
+
+    async def slow(self):
+        '''Slower bats'''
+
+        self.sleep += 0.05
+
     def create_swarms(self):
-        
+
         print('new swarms')
         self.swarms = [Swarm() for x in range(random.randint(self.minswarms, self.maxswarms))]
 
@@ -51,18 +80,41 @@ class StingingBats(pig.Canvas):
 
 
     async def run(self):
+        self.sleep = 0.1
 
         while True:
             if random.random() < 0.01:
                 self.create_swarms()
-            
+
             self.canvas.delete('all')
 
             for swarm in self.swarms:
-                swarm.draw(self.canvas, self.width, self.height)
-                
-            await curio.sleep(0.1)
+                swarm.draw(self.canvas, self.width, self.height,
+                        self.theme.colours)
 
+            await curio.sleep(self.sleep)
+
+class Theme:
+
+    def __init__(self, background=None, colours=None):
+
+        if background is None:
+            background = 'black'
+        if colours is None:
+            colours = ['red', 'magenta', 'skyblue', 'orange', 'yellow']
+
+        self.background = background
+        self.palettes =[]
+        self.palettes.append(colours)
+        self.colours = colours
+
+    def add_colours(self, colours):
+
+        self.palettes.append(colours)
+
+    def choose_colours(self):
+
+        return self.palettes[random.randint(0, len(self.palettes))]
 
 class Swarm:
 
@@ -79,14 +131,12 @@ class Swarm:
 
         self.ymove = random.random() / 10.0
 
-    def draw(self, canvas, width, height):
-
-        colours = ['red', 'magenta', 'skyblue', 'orange', 'yellow']
+    def draw(self, canvas, width, height, colours):
 
         for x, y in self.bats:
 
             xx = int(width * x * self.scale) + int(width * self.xx)
-            yy = int(height * y * self.scale) + int(width * self.yy) 
+            yy = int(height * y * self.scale) + int(width * self.yy)
 
             self.xx += (random.random() - 0.5) * self.xmove
             self.yy += (random.random() - 0.5) * self.ymove
