@@ -28,12 +28,13 @@ import pyaudio
 import wave
 import numpy as np
 
+from karmapi import base
+
 CHUNK = 1024
 FORMAT = pyaudio.paInt16
 CHANNELS = 2
 RATE = 44100
 RECORD_SECONDS = 5
-WAVE_OUTPUT_FILENAME = "output.wav"
 
 
 def bytestoshorts(data):
@@ -113,7 +114,15 @@ class Connect:
         else:
             self.mick = mick
 
-        self.queue = curio.UniversalQueue(maxsize=20)
+        self.queue = curio.UniversalQueue(maxsize=2)
+
+    def rate(self):
+
+        return self.mick._rate
+
+    def frame_size(self):
+
+        return self.mick._frames_per_buffer
 
     async def frames(self):
         """ Keep reading frames, add them to the queue """
@@ -172,4 +181,28 @@ def main():
     curio.run(run(), with_monitor=True)
 
 
+class FreqGen:
 
+    def __init__(self):
+
+        self.mick = Connect()
+
+
+    def start(self)
+
+        data, timestamp = await self.mick.get()
+
+        data = self.mick.decode(data)
+        sono = base.fft.fft(data[::2 * self.samples])
+
+            #data = data[::2]
+            #data = data[1::2]
+            #data = np.arange(1024)
+            #data = data * math.pi / random.randint(1, 10)
+            #data = np.sin(data)
+
+            self.data.append((data, sono, timestamp))
+
+            while len(self.data) > 100:
+                self.data.popleft()
+        
