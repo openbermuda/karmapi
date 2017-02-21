@@ -188,21 +188,17 @@ class FreqGen:
         self.mick = Connect()
 
 
-    def start(self)
+    async def start(self):
 
         data, timestamp = await self.mick.get()
 
         data = self.mick.decode(data)
-        sono = base.fft.fft(data[::2 * self.samples])
+        sono = base.fft.fft(data)
 
-            #data = data[::2]
-            #data = data[1::2]
-            #data = np.arange(1024)
-            #data = data * math.pi / random.randint(1, 10)
-            #data = np.sin(data)
+        rate = self.mick.rate()
+        frames = self.mick.frame_size()
 
-            self.data.append((data, sono, timestamp))
+        power = abs(sono)
 
-            while len(self.data) > 100:
-                self.data.popleft()
+        hertz = (xx / frames) * rate
         
