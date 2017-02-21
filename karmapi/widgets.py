@@ -166,6 +166,7 @@ class SonoGram(pig.Video):
         self.add_event_map('t', self.toggle_plottype)
 
     async def toggle_plottype(self):
+        """ Toggle between wave and sonogram """
 
         if self.plottype != 'sono':
             self.plottype = 'sono'
@@ -173,31 +174,36 @@ class SonoGram(pig.Video):
             self.plottype = 'wave'
 
     async def down(self):
-
+        """ Increase offset  """
         self.offset += 1
         self.end += 1
 
     async def up(self):
+        """ Decrease offset """
 
         self.offset -= 1
         self.end -= 1
 
     async def upsample(self):
+        """ Increase time window  """
 
         self.samples += 1
         self.init_data()
 
     async def downsample(self):
+        """ Decrease time window """
 
         if self.samples > 1:
             self.samples -= 1
             self.init_data()
 
     async def slim(self):
+        """ Shrink frequency window """
 
         self.end -= 5
 
     async def wide(self):
+        """ Widen frequency window """
 
         self.end += 5
 
@@ -250,17 +256,10 @@ class SonoGram(pig.Video):
             self.data.append((data, sono, timestamp))
 
             while len(self.data) > 100:
-                data, sono, timestamp = self.data.popleft()
-                
+                self.data.popleft()
 
-    def init_data(self):
-
-        self.sono = deque()
-        self.data = deque()
 
     async def start(self):
-
-        self.init_data()
 
         self.mick = await self.get_source()
 
@@ -277,7 +276,7 @@ class SonoGram(pig.Video):
         #self.axes.hold(True)
 
         self.offset = 0
-        self.end = 20
+        self.end = 100
         
         while True:
 
@@ -292,8 +291,8 @@ class SonoGram(pig.Video):
 
             #self.axes.set_title('{} {}'.format(offset, end))
 
-            data, sono, timestamp = self.data[-1]
-            print(timestamp)
+            data, sono, timestamp = self.data.pop()
+
             if self.plottype != 'sono':
                 
                 #self.axes.hold(True)
@@ -319,9 +318,9 @@ class SonoGram(pig.Video):
 
                 #self.axes.imshow(sono.T.real, aspect='auto')
                 self.axes.imshow(power.T.real, aspect='auto')
-                title = 'offset: {} end: {} samples: {} {}, {}'.format(
+                title = 'offset: {} end: {} samples: {} delay: {}'.format(
                     self.offset, self.end, self.samples,
-                    str(timestamp), str(datetime.now()))
+                    str(datetime.now() - timestamp))
                 
                 self.axes.set_title(title)
 

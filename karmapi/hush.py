@@ -113,7 +113,7 @@ class Connect:
         else:
             self.mick = mick
 
-        self.queue = curio.UniversalQueue()
+        self.queue = curio.UniversalQueue(maxsize=20)
 
     async def frames(self):
         """ Keep reading frames, add them to the queue """
