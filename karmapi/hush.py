@@ -166,8 +166,8 @@ class Wave:
         if mode == 'square':
             plus = [3000] * 16
             minus = [-3000] * 16
-        else:
             data = (plus + minus) * 32
+        else:
             data = np.arange(2048)
             data = np.sin(data * math.pi / 50.0) * (2**15 - 1)
 
