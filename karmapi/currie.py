@@ -294,7 +294,8 @@ def main():
     if args.wave:
         farm.add_mick(hush.Connect(hush.open_wave(args.wave)))
     else:
-        farm.add_mick(hush.Connect())
+        #farm.add_mick(hush.Connect())
+        farm.add_mick(hush.Wave())
 
     farm.status()
 

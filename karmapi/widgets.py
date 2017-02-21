@@ -164,8 +164,6 @@ class SonoGram(pig.Video):
         self.add_event_map('u', self.up)
         self.add_event_map('w', self.wide)
         self.add_event_map('s', self.slim)
-        self.add_event_map('a', self.upsample)
-        self.add_event_map('z', self.downsample)
         self.add_event_map('t', self.toggle_plottype)
         self.add_event_map('c', self.toggle_channel)
 
@@ -187,19 +185,6 @@ class SonoGram(pig.Video):
 
         self.offset -= 1
         self.end -= 1
-
-    async def upsample(self):
-        """ Increase time window  """
-
-        self.samples += 1
-        self.init_data()
-
-    async def downsample(self):
-        """ Decrease time window """
-
-        if self.samples > 1:
-            self.samples -= 1
-            self.init_data()
 
     async def slim(self):
         """ Shrink frequency window """
@@ -240,31 +225,14 @@ class SonoGram(pig.Video):
 
         while True:
             #print('waiting on data')
-            data = b''
+            data, timestamp = await self.mick.get()
 
-            nsample = self.samples
-            for sample in range(self.samples):
-                data, timestamp = await self.mick.get()
-                data += data
+            nn = int(len(data) / 2)
 
-            if nsample != self.samples:
-                continue
-
-            #print('got data in sonogram', len(data), type(data))
-            if 0 != (len(data) % 2048): break
-
-            # quit reading if no data
-            if not data:
-                break
-            
-            data = self.mick.decode(data)
-            sono = base.fft.fft(data[::2 * self.samples])
-
-            #data = data[::2]
-            #data = data[1::2]
-            #data = np.arange(1024)
-            #data = data * math.pi / random.randint(1, 10)
-            #data = np.sin(data)
+            start = nn * self.channel
+            end = start + nn
+            #print('sono', start, end)
+            sono = base.fft.fft(data[start:end])
 
             self.data.append((data, sono, timestamp))
 
@@ -331,8 +299,8 @@ class SonoGram(pig.Video):
                 power = abs(sono)
                     
                 self.axes.imshow(power.T.real, aspect='auto')
-                title = 'offset: {} end: {} samples: {} delay: {}'.format(
-                    self.offset, self.end, self.samples,
+                title = 'offset: {} end: {} channel: {} delay: {}'.format(
+                    self.offset, self.end, self.channel,
                     str(datetime.now() - timestamp))
 
                 def freq_format(x, pos=None):
@@ -342,7 +310,7 @@ class SonoGram(pig.Video):
 
                     xx = x + self.offset
 
-                    hertz = (xx / frames) * rate
+                    hertz = (xx / frames) * (rate * 2.0)
 
                     return '{:.1f}'.format(hertz)
                 

@@ -19,6 +19,8 @@ For now, goal is sonograms: pictures of the sound as it goes by.
 
 """
 from datetime import datetime
+import math
+
 import curio
 
 from matplotlib import pyplot
@@ -143,13 +145,59 @@ class Connect:
             
         data = await self.queue.get()
 
-        return data
+        return self.decode(data)
 
     def decode(self, data):
     
         return bytestoshorts(data)
         
 
+class Wave:
+    """ Create a sine wave for sound """
+
+
+    def __init__(self, mode = None, *args, **kwargs):
+        """ Fixme: configure stream according to **kwargs """
+
+        self.queue = curio.UniversalQueue(maxsize=2)
+
+        n = 2048
+
+        if mode == 'square':
+            plus = [3000] * 16
+            minus = [-3000] * 16
+        else:
+            data = (plus + minus) * 32
+            data = np.arange(2048)
+            data = np.sin(data * math.pi / 50.0) * (2**15 - 1)
+
+
+        self.data = data
+
+
+    def rate(self):
+
+        return 44100
+
+    def frame_size(self):
+
+        return 1024
+
+    async def frames(self):
+        """ Keep reading frames, add them to the queue """
+
+        while True:
+            timestamp = datetime.now()
+            await self.queue.put((self.data, timestamp))
+
+
+    async def get(self):
+            
+        data = await self.queue.get()
+
+        return data
+
+    
 async def run():
     """ Run this thing under curio  """
     
@@ -190,15 +238,27 @@ class FreqGen:
 
     async def start(self):
 
-        data, timestamp = await self.mick.get()
-
-        data = self.mick.decode(data)
-        sono = base.fft.fft(data)
+        await curio.spawn(self.mick.frames())
 
         rate = self.mick.rate()
         frames = self.mick.frame_size()
 
-        power = abs(sono)
+        
+        while True:
+        
+            data, timestamp = await self.mick.get()
 
-        hertz = (xx / frames) * rate
+            data = self.mick.decode(data)
+            sono = base.fft.fft(data[:int(len(data)/2)])
+
+
+            power = abs(sono)
+
+            xx = np.argmax(power)
+        
+            hertz = (xx / frames) * rate * 0.5
+
+            print('{} {}'.format(timestamp, hertz))
+
+        
         
