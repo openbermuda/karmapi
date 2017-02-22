@@ -139,7 +139,7 @@ class SonoGram(pig.Video):
         self.end = 100
         self.sonos = deque()
 
-        #await curio.spawn(self.read())
+        await curio.spawn(self.read())
         
         while True:
 
