@@ -296,8 +296,9 @@ def main():
         farm.add_mick(hush.Connect(hush.open_wave(args.wave)))
     else:
         farm.add_mick(hush.Connect())
-        farm.add_mick(hush.Wave(mode='square'))
-        farm.add_mick(hush.Wave())
+        #farm.add_mick(hush.Wave(mode='square'))
+        #farm.add_mick(hush.Wave())
+        #farm.add_mick(hush.Wave())
 
     farm.status()
 

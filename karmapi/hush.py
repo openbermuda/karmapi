@@ -129,18 +129,31 @@ class Connect:
     async def start(self):
         """ Keep reading frames, add them to the queue """
 
+        rate = 0
+        start = datetime.now()
         while True:
             timestamp = datetime.now()
-            data = self.mick.read(CHUNK)
 
+            if (timestamp - start).seconds > 0:
+                print(timestamp, rate)
+                rate = 0
+                start = timestamp
+                
+            rate += 1
+            
+            data = await self.read(CHUNK)
+            rate += 1
             await self.queue.put((data, timestamp))
 
+
+
+    async def read(self, chunk):
+
+        return self.mick.read(chunk)
 
     async def get(self):
             
         data, timestamp = await self.queue.get()
-
-        print('delta', datetime.now() - timestamp)
 
         return self.decode(data), timestamp
 
