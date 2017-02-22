@@ -166,6 +166,7 @@ class SonoGram(pig.Video):
         self.add_event_map('s', self.slim)
         self.add_event_map('t', self.toggle_plottype)
         self.add_event_map('c', self.toggle_channel)
+        self.add_event_map('m', self.next_mick)
 
     async def toggle_plottype(self):
         """ Toggle between wave and sonogram """
@@ -212,40 +213,27 @@ class SonoGram(pig.Video):
 
         return await self.farm.micks.get()
 
-    async def read(self):
+    def sono_calc(self, data):
 
+        nn = int(len(data) / 2)
 
-        print('xxxxxxxxxxxxxx', self.mick)
+        start = nn * self.channel
+        end = start + nn
 
-        # need to fire up the frames co-routine?
-        print('firing up frame reader')
-        await curio.spawn(self.mick.frames())
+        return base.fft.fft(data[start:end])
+        
 
-        self.data = deque()
+    async def next_mick(self):
+        """ Move to next mick source """
+        await self.farm.micks.put(self.mick)
 
-        while True:
-            #print('waiting on data')
-            data, timestamp = await self.mick.get()
-
-            nn = int(len(data) / 2)
-
-            start = nn * self.channel
-            end = start + nn
-            #print('sono', start, end)
-            sono = base.fft.fft(data[start:end])
-
-            self.data.append((data, sono, timestamp))
-
-            while len(self.data) > 100:
-                self.data.popleft()
+        self.mick = await self.get_source()
 
 
     async def start(self):
 
         self.mick = await self.get_source()
 
-        await curio.spawn(self.read())
-        
 
     async def run(self):
         """ Run the animation 
@@ -258,24 +246,16 @@ class SonoGram(pig.Video):
 
         self.offset = 0
         self.end = 100
+        self.sonos = deque()
         
         while True:
 
-            if not self.data:
-                await curio.sleep(0.2)
-                continue
 
-            #print(len(self.sono), len(self.data))
-            #sono = pandas.np.array([x for x in self.sono])
-            #print('full sono size', sono.T.real.shape)
-            #print('part sono size', sono[:, offset:end].T.shape)
+            data, timestamp = await self.mick.get()
 
-            #self.axes.set_title('{} {}'.format(offset, end))
-
-            data, sono, timestamp = self.data.pop()
-
+            self.sonos.append((self.sono_calc(data), timestamp))
+            
             if self.plottype != 'sono':
-                
                 #self.axes.hold(True)
                 samples = int(len(data) / 2)
                 start = self.channel * samples
@@ -291,17 +271,18 @@ class SonoGram(pig.Video):
 
             else:
                 #sono = base.sono(self.data[-1][::2])
-                sono = [x[1] for x in self.data]
-                sono = pandas.np.array(sono)
+                sono = pandas.np.array([x[0] for x in self.sonos])
+
+                print(self.sonos[0][1], self.sonos[-1][1])
 
                 sono = sono[:, self.offset:self.end]
                 
                 power = abs(sono)
                     
                 self.axes.imshow(power.T.real, aspect='auto')
-                title = 'offset: {} end: {} channel: {} delay: {}'.format(
+                title = 'offset: {} end: {} channel: {} delay: {} {}'.format(
                     self.offset, self.end, self.channel,
-                    str(datetime.now() - timestamp))
+                    str(datetime.now() - timestamp), timestamp)
 
                 def freq_format(x, pos=None):
 
@@ -319,6 +300,10 @@ class SonoGram(pig.Video):
                 self.axes.set_title(title)
 
             self.draw()
+            
+            while len(self.sonos) > 100:
+                self.sonos.popleft()
+
             await curio.sleep(0.01)
 
             

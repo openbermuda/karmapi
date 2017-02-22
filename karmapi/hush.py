@@ -126,26 +126,23 @@ class Connect:
 
         return self.mick._frames_per_buffer
 
-    async def frames(self):
+    async def start(self):
         """ Keep reading frames, add them to the queue """
 
         while True:
             timestamp = datetime.now()
-            data = await self.read(CHUNK)
+            data = self.mick.read(CHUNK)
 
             await self.queue.put((data, timestamp))
 
 
-    async def read(self, chunk):
-
-        return self.mick.read(chunk)
-
     async def get(self):
-
             
-        data = await self.queue.get()
+        data, timestamp = await self.queue.get()
 
-        return self.decode(data)
+        print('delta', datetime.now() - timestamp)
+
+        return self.decode(data), timestamp
 
     def decode(self, data):
     
@@ -156,7 +153,7 @@ class Wave:
     """ Create a sine wave for sound """
 
 
-    def __init__(self, mode = None, *args, **kwargs):
+    def __init__(self, mode = None, scale=50, *args, **kwargs):
         """ Fixme: configure stream according to **kwargs """
 
         self.queue = curio.UniversalQueue(maxsize=2)
@@ -166,11 +163,10 @@ class Wave:
         if mode == 'square':
             plus = [3000] * 16
             minus = [-3000] * 16
-            data = (plus + minus) * 32
+            data = (plus + minus) * 64
         else:
-            data = np.arange(2048)
+            data = np.arange(n)
             data = np.sin(data * math.pi / 50.0) * (2**15 - 1)
-
 
         self.data = data
 
@@ -183,7 +179,7 @@ class Wave:
 
         return 1024
 
-    async def frames(self):
+    async def start(self):
         """ Keep reading frames, add them to the queue """
 
         while True:

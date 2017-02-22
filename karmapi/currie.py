@@ -76,6 +76,7 @@ class PigFarm:
     def add_mick(self, mick):
 
         self.micks.put(mick)
+        self.piglets.put(mick.start())
     
 
     async def build(self):
@@ -294,7 +295,8 @@ def main():
     if args.wave:
         farm.add_mick(hush.Connect(hush.open_wave(args.wave)))
     else:
-        #farm.add_mick(hush.Connect())
+        farm.add_mick(hush.Connect())
+        farm.add_mick(hush.Wave(mode='square'))
         farm.add_mick(hush.Wave())
 
     farm.status()
