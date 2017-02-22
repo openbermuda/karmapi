@@ -219,15 +219,10 @@ class PigFarm:
 
     async def show_monitor(self):
 
-        # create a new toplevel
         from karmapi import widgets
-        top = Toplevel()
-        mon = widgets.Curio(top)
-        mon.pack(expand=1, fill='both')
-        await curio.spawn(mon.start())
-        await curio.spawn(mon.run())
-
-        await curio.spawn(self.mon_update(mon))
+        farm = PigFarm()
+        farm.add(widgets.Curio)
+        await curio.spawn(farm.run())
 
     async def mon_update(self, mon):
 
