@@ -143,7 +143,7 @@ class Connect:
             
             data = self.mick.read(CHUNK)
             rate += 1
-            await self.queue.put((data, timestamp))
+            await self.queue.put((self.decode(data), timestamp))
 
 
     async def read(self, chunk):
@@ -152,9 +152,8 @@ class Connect:
 
     async def get(self):
             
-        data, timestamp = await self.queue.get()
+        return await self.queue.get()
 
-        return self.decode(data), timestamp
 
     def decode(self, data):
     
