@@ -18,6 +18,8 @@ import curio
 
 from karmapi import hush
 
+from tkinter import Toplevel
+
 
 class PigFarm:
     """ A pig farm event loop """
@@ -57,6 +59,7 @@ class PigFarm:
         self.add_event_map('p', self.previous)
         self.add_event_map('n', self.next)
         self.add_event_map('h', self.help)
+        self.add_event_map('c', self.show_monitor)
 
 
     def status(self):
@@ -213,6 +216,26 @@ class PigFarm:
         else:
             print('no callback for event', event)
         
+
+    async def show_monitor(self):
+
+        # create a new toplevel
+        from karmapi import widgets
+        top = Toplevel()
+        mon = widgets.Curio(top)
+        mon.pack(expand=1, fill='both')
+        await curio.spawn(mon.start())
+        await curio.spawn(mon.run())
+
+        await curio.spawn(self.mon_update(mon))
+
+    async def mon_update(self, mon):
+
+        while True:
+            #await mon.update()
+            await mon.next()
+            await curio.sleep(1)
+
             
 
 
@@ -241,6 +264,7 @@ def main():
     
     from karmapi import pig, piglet
     from karmapi import widgets
+    from karmapi import sonogram
 
     # what's this doing here?
     #import tkinter
@@ -281,12 +305,9 @@ def main():
 
     farm.add(StingingBats)
 
-    if args.nomon:
-        farm.add(widgets.Curio)
-
     #farm.add(TankRain)
     #farm.add(sunny.Sunspot)
-    farm.add(widgets.SonoGram)
+    farm.add(sonogram.SonoGram)
     #farm.add(piglet.XKCD)
     #farm.add(widgets.InfinitySlalom)
     farm.add(GuidoClock)
@@ -296,13 +317,11 @@ def main():
         farm.add_mick(hush.Connect(hush.open_wave(args.wave)))
     else:
         farm.add_mick(hush.Connect())
-        #farm.add_mick(hush.Wave(mode='square'))
-        #farm.add_mick(hush.Wave())
-        #farm.add_mick(hush.Wave())
+        farm.add_mick(hush.Wave(mode='square'))
+        farm.add_mick(hush.Wave())
 
     farm.status()
 
-    print('args.nomon', args.nomon)
     curio.run(farm.run(), with_monitor=args.nomon)
 
 
