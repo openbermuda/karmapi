@@ -141,10 +141,9 @@ class Connect:
                 
             rate += 1
             
-            data = await self.read(CHUNK)
+            data = self.mick.read(CHUNK)
             rate += 1
             await self.queue.put((data, timestamp))
-
 
 
     async def read(self, chunk):
