@@ -147,24 +147,17 @@ class SonoGram(pig.Video):
                 await curio.sleep(0.01)
                 continue
 
-            print('waiting for data')
-            #data, timestamp = self.data.pop()
             data, timestamp = await self.mick.get()
-            print('got data')
 
             self.sonos.append((self.sono_calc(data), timestamp))
             
             if self.plottype != 'sono':
-                #self.axes.hold(True)
                 samples = int(len(data) / 2)
                 start = self.channel * samples
                 end = start + samples
                 
                 self.axes.plot(data[start:end])
-                #self.axes.plot(data[-1][1::2])
                 self.axes.set_ylim(ymin=-30000, ymax=30000)
-                #self.axes.plot(range(100))
-                #self.axes.plot(range(10, 110))
 
                 self.axes.set_title('{}'.format(str(datetime.now() - timestamp)))
 
@@ -172,13 +165,15 @@ class SonoGram(pig.Video):
                 #sono = base.sono(self.data[-1][::2])
                 sono = pandas.np.array([x[0] for x in self.sonos])
 
-                print(self.sonos[0][1], self.sonos[-1][1])
-
                 sono = sono[:, self.offset:self.end]
                 
                 power = abs(sono)
+
+                vmax = power[-1].max()
+                vmin = 0
+                #print(max(power))
                     
-                self.axes.imshow(power.T.real, aspect='auto')
+                self.axes.imshow(power.T.real, aspect='auto', vmax=vmax, vmin=vmin)
                 title = 'offset: {} end: {} channel: {} delay: {} {}'.format(
                     self.offset, self.end, self.channel,
                     str(datetime.now() - timestamp), timestamp)

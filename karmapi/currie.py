@@ -307,6 +307,9 @@ def main():
     #farm.add(widgets.InfinitySlalom)
     farm.add(GuidoClock)
 
+    from karmapi import prime
+    farm.add(prime.Prime)
+
     # add a couple of micks to the Farm
     if args.wave:
         farm.add_mick(hush.Connect(hush.open_wave(args.wave)))

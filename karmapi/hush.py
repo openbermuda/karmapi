@@ -32,7 +32,7 @@ import numpy as np
 
 from karmapi import base
 
-CHUNK = 1024
+CHUNK = 1024 * 4
 FORMAT = pyaudio.paInt16
 CHANNELS = 2
 RATE = 44100
@@ -135,7 +135,6 @@ class Connect:
             timestamp = datetime.now()
 
             if (timestamp - start).seconds > 0:
-                print(timestamp, rate)
                 rate = 0
                 start = timestamp
                 
@@ -169,15 +168,18 @@ class Wave:
 
         self.queue = curio.UniversalQueue(maxsize=2)
 
-        n = 2048
+        n = 2 * CHUNK
 
         if mode == 'square':
+            frames = int(n / 32)
             plus = [3000] * 16
             minus = [-3000] * 16
-            data = (plus + minus) * 64
+            data = (plus + minus) * frames
         else:
             data = np.arange(n)
             data = np.sin(data * math.pi / 50.0) * (2**15 - 1)
+
+        print('xxxxxxxxxxxxxxxxx', mode, len(data))
 
         self.data = data
 
@@ -209,7 +211,6 @@ async def run():
     """ Run this thing under curio  """
     
     connect = Connect()
-    print(connect.mick)
 
     # set the connection to start collecting frames
     frames = await curio.spawn(connect.frames())

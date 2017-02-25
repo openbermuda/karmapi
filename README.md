@@ -36,3 +36,35 @@ http://releases.ubuntu.com/ubuntu-core/16/ubuntu-core-16-pi3.img.xz
 
 xzcat ~/Downloads/ubuntu-core-16-pi3.img.xz | sudo dd of=/dev/sdX bs=32M
 sync
+
+
+Learning puython
+================
+
+The python 3 tutorial is a great place to start:
+
+https://docs.python.org/3/tutorial/
+
+Pick a section that interests you.
+
+
+Other stuff
+===========
+
+curio
+-----
+
+jupyter
+-------
+
+matplotlib
+----------
+
+pandas
+------
+
+tkinter
+-------
+
+CKAN
+----
