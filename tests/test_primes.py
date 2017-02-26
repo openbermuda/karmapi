@@ -9,15 +9,23 @@ import unittest
 import hypothesis
 
 
-from karmapi import primes
+from karmapi import prime
 
 class Prime(unittest.TestCase):
 
 
-    def test_isprime(self):
+    def _test_isprime(self):
+
+        # FIXME find elsewhere
+        from elsewhere import isprime
+
+        self.assertEqual(
+            prime.isprime(2), isprime(2))
+
+    def test_is2prime(self):
 
 
         self.assertEqual(
-            primes.isprime(2), isprime(2))
+            prime.isprime(2), True)
 
         
