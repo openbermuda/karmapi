@@ -38,8 +38,8 @@ xzcat ~/Downloads/ubuntu-core-16-pi3.img.xz | sudo dd of=/dev/sdX bs=32M
 sync
 
 
-Learning puython
-================
+Learning python
+===============
 
 The python 3 tutorial is a great place to start:
 
