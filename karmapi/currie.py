@@ -294,17 +294,16 @@ def main():
     im_info = dict(galleries=args.gallery)
 
     for im in images:
-        continue
         im_info.update(im)
         farm.add(piglet.Image, im_info.copy())
 
     farm.add(StingingBats)
 
-    #farm.add(TankRain)
-    #farm.add(sunny.Sunspot)
+    farm.add(TankRain)
+    farm.add(sunny.Sunspot)
     farm.add(sonogram.SonoGram)
-    #farm.add(piglet.XKCD)
-    #farm.add(widgets.InfinitySlalom)
+    farm.add(piglet.XKCD)
+    farm.add(widgets.InfinitySlalom)
     farm.add(GuidoClock)
 
     from karmapi import prime
