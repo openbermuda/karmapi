@@ -6,11 +6,11 @@ class TestNullCode(unittest.TestCase):
 
     def test_null_code(self):
 
-        try:
+        with self.assertRaises(ValueError) as cm:
 
-            from . import null_code
+            import null_code
 
-        except ValueError as error:
-            print(error)
 
-            raise(error)
+        error = cm.exception
+        assert(str(error) == 'source code string cannot contain null bytes')
+
