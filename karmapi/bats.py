@@ -145,7 +145,7 @@ class Swarm:
         for x, y in self.bats:
 
             xx = int(width * x * self.scale) + int(width * self.xx)
-            yy = int(height * y * self.scale) + int(width * self.yy)
+            yy = int(height * y * self.scale) + int(height * self.yy)
 
             self.xx += (random.random() - 0.5) * self.xmove
             self.yy += (random.random() - 0.5) * self.ymove
@@ -193,7 +193,7 @@ class SwoopingMantaRay:
         self.xx = min(max(self.xx, -0.1), 1.1)
         self.yy = min(max(self.yy, -0.1), 1.1)
 
-        size = random.randint(5, 21)
+        size = random.randint(10, 50)
 
         head_colour = colours[random.randint(0, len(colours) - 1)]
         tail_colour = colours[random.randint(0, len(colours) - 1)]
@@ -201,8 +201,12 @@ class SwoopingMantaRay:
 
         extent = random.randint(20, 40)
         print('drawing manta ray')
-        canvas.create_arc(self.xx-size, self.yy-size, self.xx+size, self.yy+size,
-                          start=self.angle, extent=extent, fill=head_colour)
+        xx = self.xx * width
+        yy = self.yy * height
+        canvas.create_arc(xx-size, yy-size, xx+size, yy+size,
+                          start=self.angle, extent=extent/2, fill=head_colour)
+        canvas.create_arc(xx-size, yy-size, xx+size, yy+size,
+                          start=self.angle + extent/2, extent=extent/2, fill=tail_colour)
         
 
         # FIXME: draw tail -- sine wave angle of dangle based on dx, dy
