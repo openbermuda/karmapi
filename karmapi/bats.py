@@ -2,6 +2,7 @@ from karmapi import pig
 
 import curio
 import random
+import math
 
 class StingingBats(pig.Canvas):
 
@@ -168,27 +169,30 @@ class SwoopingMantaRay:
         self.xx = random.random()
         self.yy = random.random()
 
-        self.scale = random.random() / 10.0
+        self.clockwise = -1
+        self.angle = random.random() * 360.
 
-        self.xmove = random.random() / 10.0
-
-        self.ymove = random.random() / 10.0
+        self.speed = random.random() / 5.0
+        
+        self.step = 0
+        self.this_step = random.randint(40, 100)
 
 
     def draw(self, canvas, width, height, colours):
 
 
-        #xx = int(width * x * self.scale) + int(width * self.xx)
-        #yy = int(height * y * self.scale) + int(width * self.yy)
+        delta = random.random() * self.speed
 
+        rangle = 2 * math.pi * self.angle / 360.
+        dx = math.cos(rangle) * delta
+        dy = math.sin(rangle) * delta
 
-        dx = (random.random() - 0.5) * self.xmove
-        dy = (random.random() - 0.5) * self.ymove
         self.xx += dx
         self.yy += dy
 
         # FIXME set angle based on direction of movement
-        self.angle = random.random() * 360.
+        dangle = random.random() * 3.0
+        self.angle += dangle * self.clockwise
 
         self.xx = min(max(self.xx, -0.1), 1.1)
         self.yy = min(max(self.yy, -0.1), 1.1)
@@ -208,6 +212,13 @@ class SwoopingMantaRay:
         canvas.create_arc(xx-size, yy-size, xx+size, yy+size,
                           start=self.angle + extent/2, extent=extent/2, fill=tail_colour)
         
+
+        self.step += 1
+
+        if 0 == self.step % self.this_step:
+            self.clockwise *= -1
+
+            self.this_step = random.randint(40, 100)
 
         # FIXME: draw tail -- sine wave angle of dangle based on dx, dy
         

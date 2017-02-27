@@ -276,6 +276,7 @@ def main():
 
         farm.add(widgets.Curio)
 
+    farm.add(StingingBats)
     images = [
         dict(image='climate_karma_pi_and_jupyter.png', title=''),
         dict(image='gil_ly_.png', title=''),
