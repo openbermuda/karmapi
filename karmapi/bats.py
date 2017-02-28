@@ -172,7 +172,7 @@ class SwoopingMantaRay:
         self.clockwise = -1
         self.angle = random.random() * 360.
 
-        self.speed = random.random() / 5.0
+        self.speed = random.random() / 2
         
         self.step = 0
         self.this_step = random.randint(40, 100)
@@ -191,7 +191,7 @@ class SwoopingMantaRay:
         self.yy += dy
 
         # FIXME set angle based on direction of movement
-        dangle = random.random() * 3.0
+        dangle = random.random() * 20.0
         self.angle += dangle * self.clockwise
 
         self.xx = min(max(self.xx, -0.1), 1.1)
@@ -204,7 +204,7 @@ class SwoopingMantaRay:
         
 
         extent = random.randint(20, 40)
-        print('drawing manta ray')
+
         xx = self.xx * width
         yy = self.yy * height
         canvas.create_arc(xx-size, yy-size, xx+size, yy+size,
