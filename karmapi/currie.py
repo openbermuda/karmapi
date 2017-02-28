@@ -18,6 +18,8 @@ import curio
 
 from karmapi import hush
 
+from tkinter import Toplevel
+
 
 class PigFarm:
     """ A pig farm event loop """
@@ -57,6 +59,7 @@ class PigFarm:
         self.add_event_map('p', self.previous)
         self.add_event_map('n', self.next)
         self.add_event_map('h', self.help)
+        self.add_event_map('c', self.show_monitor)
 
 
     def status(self):
@@ -76,6 +79,7 @@ class PigFarm:
     def add_mick(self, mick):
 
         self.micks.put(mick)
+        self.piglets.put(mick.start())
     
 
     async def build(self):
@@ -212,6 +216,21 @@ class PigFarm:
         else:
             print('no callback for event', event)
         
+
+    async def show_monitor(self):
+
+        from karmapi import widgets
+        farm = PigFarm()
+        farm.add(widgets.Curio)
+        await curio.spawn(farm.run())
+
+    async def mon_update(self, mon):
+
+        while True:
+            #await mon.update()
+            await mon.next()
+            await curio.sleep(1)
+
             
 
 
@@ -240,6 +259,7 @@ def main():
     
     from karmapi import pig, piglet
     from karmapi import widgets
+    from karmapi import sonogram
 
     # what's this doing here?
     #import tkinter
@@ -256,6 +276,7 @@ def main():
 
         farm.add(widgets.Curio)
 
+    farm.add(StingingBats)
     images = [
         dict(image='climate_karma_pi_and_jupyter.png', title=''),
         dict(image='gil_ly_.png', title=''),
@@ -274,31 +295,31 @@ def main():
     im_info = dict(galleries=args.gallery)
 
     for im in images:
-        continue
         im_info.update(im)
         farm.add(piglet.Image, im_info.copy())
 
     farm.add(StingingBats)
 
-    if args.nomon:
-        farm.add(widgets.Curio)
-
-    #farm.add(TankRain)
-    #farm.add(sunny.Sunspot)
-    farm.add(widgets.SonoGram)
-    #farm.add(piglet.XKCD)
-    #farm.add(widgets.InfinitySlalom)
+    farm.add(TankRain)
+    farm.add(sunny.Sunspot)
+    farm.add(sonogram.SonoGram)
+    farm.add(piglet.XKCD)
+    farm.add(widgets.InfinitySlalom)
     farm.add(GuidoClock)
+
+    from karmapi import prime
+    farm.add(prime.Prime)
 
     # add a couple of micks to the Farm
     if args.wave:
         farm.add_mick(hush.Connect(hush.open_wave(args.wave)))
     else:
         farm.add_mick(hush.Connect())
+        farm.add_mick(hush.Wave(mode='square'))
+        farm.add_mick(hush.Wave())
 
     farm.status()
 
-    print('args.nomon', args.nomon)
     curio.run(farm.run(), with_monitor=args.nomon)
 
 

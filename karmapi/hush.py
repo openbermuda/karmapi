@@ -19,6 +19,8 @@ For now, goal is sonograms: pictures of the sound as it goes by.
 
 """
 from datetime import datetime
+import math
+
 import curio
 
 from matplotlib import pyplot
@@ -30,7 +32,7 @@ import numpy as np
 
 from karmapi import base
 
-CHUNK = 1024
+CHUNK = 1024 * 4
 FORMAT = pyaudio.paInt16
 CHANNELS = 2
 RATE = 44100
@@ -124,14 +126,23 @@ class Connect:
 
         return self.mick._frames_per_buffer
 
-    async def frames(self):
+    async def start(self):
         """ Keep reading frames, add them to the queue """
 
+        rate = 0
+        start = datetime.now()
         while True:
             timestamp = datetime.now()
-            data = await self.read(CHUNK)
 
-            await self.queue.put((data, timestamp))
+            if (timestamp - start).seconds > 0:
+                rate = 0
+                start = timestamp
+                
+            rate += 1
+            
+            data = self.mick.read(CHUNK)
+            rate += 1
+            await self.queue.put((self.decode(data), timestamp))
 
 
     async def read(self, chunk):
@@ -139,22 +150,67 @@ class Connect:
         return self.mick.read(chunk)
 
     async def get(self):
-
             
-        data = await self.queue.get()
+        return await self.queue.get()
 
-        return data
 
     def decode(self, data):
     
         return bytestoshorts(data)
         
 
+class Wave:
+    """ Create a sine wave for sound """
+
+
+    def __init__(self, mode = None, scale=50, *args, **kwargs):
+        """ Fixme: configure stream according to **kwargs """
+
+        self.queue = curio.UniversalQueue(maxsize=2)
+
+        n = 2 * CHUNK
+
+        if mode == 'square':
+            frames = int(n / 32)
+            plus = [3000] * 16
+            minus = [-3000] * 16
+            data = (plus + minus) * frames
+        else:
+            data = np.arange(n)
+            data = np.sin(data * math.pi / 50.0) * (2**15 - 1)
+
+        print('xxxxxxxxxxxxxxxxx', mode, len(data))
+
+        self.data = data
+
+
+    def rate(self):
+
+        return 44100
+
+    def frame_size(self):
+
+        return 1024
+
+    async def start(self):
+        """ Keep reading frames, add them to the queue """
+
+        while True:
+            timestamp = datetime.now()
+            await self.queue.put((self.data, timestamp))
+
+
+    async def get(self):
+            
+        data = await self.queue.get()
+
+        return data
+
+    
 async def run():
     """ Run this thing under curio  """
     
     connect = Connect()
-    print(connect.mick)
 
     # set the connection to start collecting frames
     frames = await curio.spawn(connect.frames())
@@ -190,15 +246,27 @@ class FreqGen:
 
     async def start(self):
 
-        data, timestamp = await self.mick.get()
-
-        data = self.mick.decode(data)
-        sono = base.fft.fft(data)
+        await curio.spawn(self.mick.frames())
 
         rate = self.mick.rate()
         frames = self.mick.frame_size()
 
-        power = abs(sono)
+        
+        while True:
+        
+            data, timestamp = await self.mick.get()
 
-        hertz = (xx / frames) * rate
+            data = self.mick.decode(data)
+            sono = base.fft.fft(data[:int(len(data)/2)])
+
+
+            power = abs(sono)
+
+            xx = np.argmax(power)
+        
+            hertz = (xx / frames) * rate * 0.5
+
+            print('{} {}'.format(timestamp, hertz))
+
+        
         

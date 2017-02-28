@@ -2,6 +2,7 @@ from karmapi import pig
 
 import curio
 import random
+import math
 
 class StingingBats(pig.Canvas):
 
@@ -68,7 +69,11 @@ class StingingBats(pig.Canvas):
     def create_swarms(self):
 
         print('new swarms')
-        self.swarms = [Swarm() for x in range(random.randint(self.minswarms, self.maxswarms))]
+        self.swarms = [Swarm()
+                           for x in range(random.randint(self.minswarms, self.maxswarms))]
+
+        self.rays = [SwoopingMantaRay()
+                         for x in range(random.randint(self.minswarms, self.maxswarms))]
 
 
     def recalc(self, width, height):
@@ -90,7 +95,11 @@ class StingingBats(pig.Canvas):
 
             for swarm in self.swarms:
                 swarm.draw(self.canvas, self.width, self.height,
-                        self.theme.colours)
+                            self.theme.colours)
+
+            for ray in self.rays:
+                ray.draw(self.canvas, self.width, self.height,
+                            self.theme.colours)
 
             await curio.sleep(self.sleep)
 
@@ -131,12 +140,13 @@ class Swarm:
 
         self.ymove = random.random() / 10.0
 
+
     def draw(self, canvas, width, height, colours):
 
         for x, y in self.bats:
 
             xx = int(width * x * self.scale) + int(width * self.xx)
-            yy = int(height * y * self.scale) + int(width * self.yy)
+            yy = int(height * y * self.scale) + int(height * self.yy)
 
             self.xx += (random.random() - 0.5) * self.xmove
             self.yy += (random.random() - 0.5) * self.ymove
@@ -149,3 +159,67 @@ class Swarm:
             colour = colours[random.randint(0, len(colours) - 1)]
 
             canvas.create_oval(xx-size, yy-size, xx+size, yy+size, fill=colour)
+            
+
+class SwoopingMantaRay:
+
+
+    def __init__(self):
+
+        self.xx = random.random()
+        self.yy = random.random()
+
+        self.clockwise = -1
+        self.angle = random.random() * 360.
+
+        self.speed = random.random() / 2
+        
+        self.step = 0
+        self.this_step = random.randint(40, 100)
+
+
+    def draw(self, canvas, width, height, colours):
+
+
+        delta = random.random() * self.speed
+
+        rangle = 2 * math.pi * self.angle / 360.
+        dx = math.cos(rangle) * delta
+        dy = math.sin(rangle) * delta
+
+        self.xx += dx
+        self.yy += dy
+
+        # FIXME set angle based on direction of movement
+        dangle = random.random() * 20.0
+        self.angle += dangle * self.clockwise
+
+        self.xx = min(max(self.xx, -0.1), 1.1)
+        self.yy = min(max(self.yy, -0.1), 1.1)
+
+        size = random.randint(10, 50)
+
+        head_colour = colours[random.randint(0, len(colours) - 1)]
+        tail_colour = colours[random.randint(0, len(colours) - 1)]
+        
+
+        extent = random.randint(20, 40)
+
+        xx = self.xx * width
+        yy = self.yy * height
+        canvas.create_arc(xx-size, yy-size, xx+size, yy+size,
+                          start=self.angle, extent=extent/2, fill=head_colour)
+        canvas.create_arc(xx-size, yy-size, xx+size, yy+size,
+                          start=self.angle + extent/2, extent=extent/2, fill=tail_colour)
+        
+
+        self.step += 1
+
+        if 0 == self.step % self.this_step:
+            self.clockwise *= -1
+
+            self.this_step = random.randint(40, 100)
+
+        # FIXME: draw tail -- sine wave angle of dangle based on dx, dy
+        
+        

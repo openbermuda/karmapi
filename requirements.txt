@@ -1,11 +1,15 @@
-#jupyter
-#matplotlib
-pandas
-pyaudio
-curio
+ 
+jupyter
+#matplotlib  # jupyter should provide this
+pandas       # this might provide matplotib
+pyaudio      # for sound
+curio        # for async magic
 
-#sense_hat
-#gpio_zero 
+#sense_hat   # if you are on a pi with a sense hat
+#gpio_zero   # if you are on a pi
 
-#pyqt5
 #tkinter, with luck it comes with python.
+
+pytest       # to run the test(s)
+hypotheses   # needed to make writing tests fun
+
