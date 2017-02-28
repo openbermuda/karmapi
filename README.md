@@ -122,9 +122,46 @@ Pick a section that interests you.
 
 ## Install
 
+pip install karmapi
+
+### FIXME
+
+Need to do a release with a sane set of requirements,
+
+Want something that installs on a pi reasonably quickly,
+
+[Assume pi already has python3.6]
+
 ## Readthedocs
+
+This might already be working.  FIXME check,
+
+Docs need a fair bit of work, but better docstrings in the code turn into pretty good docs.
 
 ## Release
 
 
 ## Develop
+
+git clone https://github.com/openbermuda/karmapi
+
+cd karmapi
+
+python3 setup.py develop --user
+
+
+## TODO
+
+### Piglets
+
+Console -- take a look at IDLE
+
+MagicCarpet
+
+### Hush
+
+Eigen-vectors
+
+Share micks with others.
+
+Share yossers with others,
