@@ -303,7 +303,7 @@ def main():
             farm.add(piglet.Image, im_info.copy())
 
     farm.add(talk.Talk)
-    farm.add(dice.SwoopingMantaRay)
+    farm.add(dice.StingingBats)
     farm.add(StingingBats)
 
     farm.add(TankRain)
