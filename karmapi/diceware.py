@@ -9,6 +9,7 @@ But use this to learn how.
 """
 
 class SwoopingMantaRay:
+    """ Throw dice, pick words """
 
 
     def __init__(self):
