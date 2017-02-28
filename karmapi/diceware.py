@@ -9,7 +9,7 @@ But use this to learn how.
 """
 
 from karmapi import pig
-
+from karmapi.bats import Theme, Swarm
 import curio
 import random
 import math
