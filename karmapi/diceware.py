@@ -22,6 +22,10 @@ class StingingBats(pig.Canvas):
         super().__init__(parent)
 
         self.width = self.height = 200
+
+        self.size = 6
+        self.sides = 6
+        
         self.minswarms = 20
         self.maxswarms = 50
         self.themes = []
@@ -44,6 +48,7 @@ class StingingBats(pig.Canvas):
         self.add_event_map('k', self.more)
         self.add_event_map('f', self.fast)
         self.add_event_map('s', self.slow)
+        self.add_event_map('r', self.roll)
         self.add_event_map('t', self.next_theme)
 
 
@@ -76,6 +81,11 @@ class StingingBats(pig.Canvas):
         '''Slower bats'''
 
         self.sleep += 0.05
+
+    async def roll(self):
+        ''' roll the dice '''
+
+        self.data = [random.randint(1, self.sides + 1) for die in range(self.size)]
 
     def create_swarms(self):
 
