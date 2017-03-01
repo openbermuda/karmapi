@@ -307,7 +307,7 @@ def main():
     farm.add(StingingBats)
 
     farm.add(TankRain)
-    farm.add(sunny.Sunspot)
+    #farm.add(sunny.Sunspot)
     farm.add(sonogram.SonoGram)
     farm.add(piglet.XKCD)
     farm.add(widgets.InfinitySlalom)
