@@ -1,9 +1,11 @@
  
 jupyter
-#matplotlib  # jupyter should provide this
+matplotlib  # jupyter should provide this.. maybe it doesn't
 pandas       # this might provide matplotib
 pyaudio      # for sound
 curio        # for async magic
+
+Pillow       # pillow for PIL for images
 
 #sense_hat   # if you are on a pi with a sense hat
 #gpio_zero   # if you are on a pi
