@@ -1,4 +1,4 @@
- 
+ripl
 jupyter
 #matplotlib  # jupyter should provide this
 pandas       # this might provide matplotib
@@ -11,5 +11,4 @@ curio        # for async magic
 #tkinter, with luck it comes with python.
 
 pytest       # to run the test(s)
-hypotheses   # needed to make writing tests fun
-
+hypothesis   # needed to make writing tests fun
