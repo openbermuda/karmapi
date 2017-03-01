@@ -140,6 +140,9 @@ Docs need a fair bit of work, but better docstrings in the code turn into pretty
 
 ## Release
 
+pip3.x install karmapi
+
+x = 5 or 6, may be just 3.6 soon.
 
 ## Develop
 
@@ -147,8 +150,25 @@ git clone https://github.com/openbermuda/karmapi
 
 cd karmapi
 
-python3 setup.py develop --user
+pip3.6 -e ,
 
+## Python3.6 on Ubuntu 16.10
+
+    git clone https://github.com/python/cpython
+
+checkout 3.6 branch, then:
+
+    ./configure
+    make
+    make install
+
+### Things to do first
+
+Some dev libraries need installing into Ubuntu for certain features to be built into the python.
+
+tkinter is one part you need to make sure *tk-8.6-dev* is installed before ./configure.
+
+The good news is that after the intitial build it all runs pretty fast.
 
 ## TODO
 
