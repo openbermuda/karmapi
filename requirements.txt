@@ -1,4 +1,4 @@
- 
+ripl
 jupyter
 matplotlib  # jupyter should provide this.. maybe it doesn't
 pandas       # this might provide matplotib
