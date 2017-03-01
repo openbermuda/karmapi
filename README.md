@@ -144,6 +144,25 @@ pip3.x install karmapi
 
 x = 5 or 6, may be just 3.6 soon.
 
+### Making a new release
+
+Install some stuff needed to help with building releases:
+
+   pip3.6 install twine wheel
+
+Build a source releas (this just creates a tarball in the dists/ subfolder):
+
+   python setup.py sdist
+
+Build a binary release as a wheel (:
+
+   python setup.py bdist_wheel
+
+Upload to PyPi with twine (you will need a username and password that
+has access to the project you are trying to update):
+
+   twine upload dist/*
+
 ## Develop
 
 git clone https://github.com/openbermuda/karmapi
