@@ -25,6 +25,7 @@ class StingingBats(pig.Canvas):
 
         self.size = 6
         self.sides = 6
+        self.canvas_text = None
         
         self.minswarms = 20
         self.maxswarms = 50
@@ -87,6 +88,11 @@ class StingingBats(pig.Canvas):
 
         self.data = [random.randint(1, self.sides + 1) for die in range(self.size)]
 
+        print(f'{self.data}')
+
+        self.canvas_text = f'{self.data}'
+        
+
     def create_swarms(self):
 
         print('new swarms')
@@ -121,6 +127,11 @@ class StingingBats(pig.Canvas):
             for ray in self.rays:
                 ray.draw(self.canvas, self.width, self.height,
                             self.theme.colours)
+
+            if self.canvas_text:
+                self.canvas.create_text((self.width * 0.1, self.height * 0.9),
+                                        text=self.canvas_text, fill='red')
+
 
             await curio.sleep(self.sleep)
 
