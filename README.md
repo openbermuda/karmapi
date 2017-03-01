@@ -162,6 +162,8 @@ MagicCarpet
 
 Eigen-vectors
 
+Sync movement of sonogram with beat
+
 Share micks with others.
 
 Share yossers with others,

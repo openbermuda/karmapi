@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 
-__version__ = '0.5'
+__version__ = '0.51'
 
 here = path.abspath(path.dirname(__file__))
 
@@ -28,7 +28,7 @@ setup(
     classifiers = [
       'Development Status :: 3 - Alpha',
       'Intended Audience :: End Users/Desktop',
-      'Programming Language :: Python :: 3',
+      'Programming Language :: Python :: 3.5',
     ],
     entry_points = {
         'console_scripts': [

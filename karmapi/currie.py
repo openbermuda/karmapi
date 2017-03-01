@@ -242,7 +242,8 @@ def main():
 
     parser.add_argument('--pig', default='tk')
     parser.add_argument('--wave')
-    parser.add_argument('--gallery', nargs='*', default=['../gallery'])
+    parser.add_argument('--gallery', nargs='*', default=['.', '../gallery'])
+    parser.add_argument('--images', default=False, action='store_true')
     
     parser.add_argument('--thresh', type=float, default=10.0)
 
@@ -271,12 +272,13 @@ def main():
     from karmapi.mclock2 import GuidoClock
     from karmapi.bats import StingingBats
     from karmapi.tankrain import TankRain
+    from karmapi import diceware as dice
+    from karmapi import talk
     
     if args.monitor:
 
         farm.add(widgets.Curio)
 
-    farm.add(StingingBats)
     images = [
         dict(image='climate_karma_pi_and_jupyter.png', title=''),
         dict(image='gil_ly_.png', title=''),
@@ -288,16 +290,20 @@ def main():
         dict(image='air_water.jpg', title='async def(): await run()'),
         dict(image='venus.jpg', title='Jupyter')]
 
+
     from karmapi import sunny
 
     print('galleries', args.gallery)
         
     im_info = dict(galleries=args.gallery)
 
-    for im in images:
-        im_info.update(im)
-        farm.add(piglet.Image, im_info.copy())
+    if args.images:
+        for im in images:
+            im_info.update(im)
+            farm.add(piglet.Image, im_info.copy())
 
+    farm.add(talk.Talk)
+    farm.add(dice.StingingBats)
     farm.add(StingingBats)
 
     farm.add(TankRain)
