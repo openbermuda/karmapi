@@ -152,7 +152,7 @@ cd karmapi
 
 pip3.6 -e ,
 
-## Python3.6 on Ubuntu 16.10
+## Python3.6 on Ubuntu 16.04
 
     git clone https://github.com/python/cpython
 
@@ -162,6 +162,8 @@ checkout 3.6 branch, then:
     make
     make install
 
+Note: python3.6 can be installed (from universe) with apt on Ubuntu >= 16.10.
+
 ### Things to do first
 
 Some dev libraries need installing into Ubuntu for certain features to be built into the python.
@@ -169,6 +171,12 @@ Some dev libraries need installing into Ubuntu for certain features to be built 
 tkinter is one part you need to make sure *tk-8.6-dev* is installed before ./configure.
 
 The good news is that after the intitial build it all runs pretty fast.
+
+* tk-8.6-dev -- for tkinter
+
+* libbz2-dev -- compression library
+
+* libssl-dev -- for ssl support required for pip3.6 to work.
 
 ## TODO
 
