@@ -6,6 +6,12 @@ Don't do it this way, use real dice, its more fun.
 
 But use this to learn how.
 
+To learn more about dice ware passwords follow this link:
+http://world.std.com/~reinhold/diceware.html
+
+To view the words download the file here and place it where StingingBats can find it:
+http://world.std.com/%7Ereinhold/diceware.wordlist.asc
+
 """
 
 from karmapi import pig
@@ -32,7 +38,7 @@ class StingingBats(pig.Canvas):
         self.size = 5
         self.sides = 6
         self.canvas_text = None
-        
+
         self.minswarms = 20
         self.maxswarms = 50
         self.themes = []
@@ -109,16 +115,10 @@ class StingingBats(pig.Canvas):
 
         self.data = [random.randint(1, self.sides) for die in range(self.size)]
 
-        total = 0
-        for die in self.data:
-            total += (total * self.size) + die
+        print(f'{self.data}')
 
-        self.total = total
+        self.canvas_text = f'{self.data}   {self.sides ** self.size}'
 
-        print(f'{self.data} {total}')
-
-        self.canvas_text = f'{self.data}    {total}   {self.sides ** self.size}'
-        
 
     def create_swarms(self):
 
@@ -141,32 +141,32 @@ class StingingBats(pig.Canvas):
         """ Draw a digit like a die """
         digits = {
             1: ((0,0,0), (0,1,0), (0,0,0)),
-            2: ((1,0,0), (0,0,0), (0,0,1)),
-            3: ((1,0,0), (0,1,0), (0,0,1)),
+            2: ((0,0,1), (0,0,0), (1,0,0)),
+            3: ((0,0,1), (0,1,0), (1,0,0)),
             4: ((1,0,1), (0,0,0), (1,0,1)),
             5: ((1,0,1), (0,1,0), (1,0,1)),
-            6: ((1,0,1), (1,0,1), (1,0,1))}
+            6: ((1,1,1), (0,0,0), (1,1,1))}
 
-        
+
         self.draw_pixel(digits[die], x, y, size, size, 10)
 
     def draw_pixel(self, data, x, y, width, height, size, colour=None):
 
         #colour = 'red'
         colour = colour or self.random_colour()
-        
+
         for ix, row in enumerate(data):
             for jx, col in enumerate(row):
 
                 xx = (ix * width) + x
-                
+
                 yy = (jx * height) + x
 
                 #print(f'zzzz {xx} {yy} {size}, {colour}')
-                
+
                 if col:
                     self.canvas.create_arc(xx-size, yy-size, xx+size, yy+size,
-                        start=0, extent=180, fill=colour)
+                        start=0, extent=359.99, fill=colour)
 
     def random_colour(self):
 
@@ -202,14 +202,14 @@ class StingingBats(pig.Canvas):
         text = self.dice_ware_text()
         self.canvas.create_text(totsize - (2 * gap), yy, fill=self.random_colour(),
                                 text=text, font=BIGLY)
-        
+
         for die in self.data:
             self.draw_digit(xx, yy, gap * 0.4, die)
 
             xx += gap
             yy += gap
 
-            
+
 
     async def run(self):
         self.sleep = 0.1
@@ -251,7 +251,7 @@ class SwoopingMantaRay:
         self.angle = random.random() * 360.
 
         self.speed = random.random() / 2
-        
+
         self.step = 0
         self.this_step = random.randint(40, 100)
 
@@ -278,7 +278,7 @@ class SwoopingMantaRay:
 
         head_colour = colours[random.randint(0, len(colours) - 1)]
         tail_colour = colours[random.randint(0, len(colours) - 1)]
-        
+
 
         extent = random.randint(20, 40)
 
@@ -288,7 +288,7 @@ class SwoopingMantaRay:
                           start=self.angle, extent=extent/2, fill=head_colour)
         canvas.create_arc(xx-size, yy-size, xx+size, yy+size,
                           start=self.angle + extent/2, extent=extent/2, fill=tail_colour)
-        
+
 
         self.step += 1
 
@@ -309,7 +309,7 @@ def load_words(infile):
 
             fields = row.split()
             key = tuple(int(x) for x in fields[0])
-            
+
             words[key] = fields[-1]
 
-    return words            
+    return words
