@@ -178,11 +178,11 @@ class StingingBats(pig.Canvas):
 
         # FIXME get a diceware list of words
         # Also, remind me to write a bit about why real dice are better
-        if self.words and self.total <= len(self.words):
-            return self.words[self.total - 1]
-            
-        
-        return "no dice"
+
+        try:
+            return self.words[tuple(self.data)]
+        except:
+            return "no dice"
 
     def draw_dice(self):
         """ Draw the dice """
@@ -195,7 +195,6 @@ class StingingBats(pig.Canvas):
         xx = gap / 2
         yy = gap / 2
 
-        print(self.height, self.width)
         ygap = (self.height / 3) / (self.size - 1)
 
         text = self.dice_ware_text()
@@ -203,10 +202,8 @@ class StingingBats(pig.Canvas):
                                 text=text, font=BIGLY)
         
         for die in self.data:
-            #print(f'drawing {xx} {yy} {gap} {die}')
             self.draw_digit(xx, yy, gap * 0.4, die)
 
-            #print(xx, yy)
             xx += gap
             yy += gap
 
@@ -303,10 +300,14 @@ class SwoopingMantaRay:
 
 def load_words(infile):
 
-    words = []
+    words = {}
     six = set([str(x) for x in range(1, 7)])
     for row in infile:
         if row[0] in six:
-            words.append(row.split()[-1])
+
+            fields = row.split()
+            key = tuple(int(x) for x in fields[0])
+            
+            words[key] = fields[-1]
 
     return words            
