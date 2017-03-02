@@ -69,18 +69,6 @@ Karma Phy - Looks better spelt with a K
 
 Karma Pi - Phy for physics, pi for math.
 
-# Install
-
-To install from source:
-
-   python setup.py install
-
-
-To install in development mode:
-
-   python setup.py develop --user
-
-
 ## Ubuntu on Pi
 
 
