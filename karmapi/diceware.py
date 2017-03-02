@@ -119,7 +119,7 @@ class StingingBats(pig.Canvas):
             3: (1,0,0, 0,1,0, 0,0,1),
             4: (1,0,1, 0,0,0, 1,0,1),
             5: (1,0,1, 0,1,0, 1,0,1),
-            6: (1,0,1, 1,0,1, 1,0,1))
+            6: (1,0,1, 1,0,1, 1,0,1)}
 
         self.draw_pixel(digits[die], x, y, 10, 10)
 
@@ -143,7 +143,7 @@ class StingingBats(pig.Canvas):
         #FIXME make the tkinter part async
 
         gap = self.width / (1 + self.size)
-        for die in self.data::
+        for die in self.data:
 
             self.draw_digit(x, y, self.size, die)
 
