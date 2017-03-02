@@ -122,9 +122,9 @@ class StingingBats(pig.Canvas):
             6: ((1,0,1), (1,0,1), (1,0,1))}
 
         
-        self.draw_pixel(digits[die], x, y, size, size, 10, 10)
+        self.draw_pixel(digits[die], x, y, size, size, 10)
 
-    def draw_pixel(self, data, x, y, width, height):
+    def draw_pixel(self, data, x, y, width, height, size):
 
         for ix, row in enumerate(data):
             for jx, col in enumerate(row):
@@ -134,7 +134,7 @@ class StingingBats(pig.Canvas):
                 xx = (ix * width) + x
                 
                 yy = (jx * height) + x
-                self.canvas,create_arc(xx-size, yy-size, xx+size, yy+size,
+                self.canvas.create_arc(xx-size, yy-size, xx+size, yy+size,
                      start=0, extent=360, fill=colour)
 
     def random_colour(self):
