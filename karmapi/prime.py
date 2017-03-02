@@ -75,7 +75,7 @@ def isprime(n):
     #if n in set(PRIMES):
     #    return True
 
-    end = (n ** 0.5) + 1
+    end = n ** 0.5
     for x in PRIMES:
         if x > end:
             break
