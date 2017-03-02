@@ -69,6 +69,15 @@ Karma Phy - Looks better spelt with a K
 
 Karma Pi - Phy for physics, pi for math.
 
+# Install
+
+To install in development mode:
+
+  Navigate to the karmapi folder
+
+  pip3.6 install -e .
+
+
 ## Ubuntu on Pi
 
 
@@ -107,10 +116,6 @@ Pick a section that interests you.
 ## CKAN
 
 
-
-## Install
-
-pip install karmapi
 
 ### FIXME
 
