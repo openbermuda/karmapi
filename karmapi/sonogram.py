@@ -85,7 +85,7 @@ class SonoGram(pig.Video):
 
     def plot(self):
         pass
-    
+
     async def get_source(self):
 
         return await self.farm.micks.get()
@@ -98,7 +98,7 @@ class SonoGram(pig.Video):
         end = start + nn
 
         return base.fft.fft(data[start:end])
-        
+
 
     async def next_mick(self):
         """ Move to next mick source """
@@ -112,7 +112,7 @@ class SonoGram(pig.Video):
 
         # need to fire up the frames co-routine?
         while True:
-                
+
             data = await self.mick.get()
 
             self.data.append(data)
@@ -127,8 +127,8 @@ class SonoGram(pig.Video):
 
 
     async def run(self):
-        """ Run the animation 
-        
+        """ Run the animation
+
         Loop forever updating the figure
 
         A little help sleeping from curio
@@ -140,7 +140,7 @@ class SonoGram(pig.Video):
         self.sonos = deque()
 
         await curio.spawn(self.read())
-        
+
         while True:
 
             if not self.data:
@@ -150,12 +150,12 @@ class SonoGram(pig.Video):
             data, timestamp = await self.mick.get()
 
             self.sonos.append((self.sono_calc(data), timestamp))
-            
+
             if self.plottype != 'sono':
                 samples = int(len(data) / 2)
                 start = self.channel * samples
                 end = start + samples
-                
+
                 self.axes.plot(data[start:end])
                 self.axes.set_ylim(ymin=-30000, ymax=30000)
 
@@ -166,13 +166,13 @@ class SonoGram(pig.Video):
                 sono = pandas.np.array([x[0] for x in self.sonos])
 
                 sono = sono[:, self.offset:self.end]
-                
+
                 power = abs(sono)
 
                 vmax = power[-1].max()
                 vmin = 0
                 #print(max(power))
-                    
+
                 self.axes.imshow(power.T.real, aspect='auto', vmax=vmax, vmin=vmin)
                 title = 'offset: {} end: {} channel: {} delay: {} {}'.format(
                     self.offset, self.end, self.channel,
@@ -188,14 +188,12 @@ class SonoGram(pig.Video):
                     hertz = (xx / frames) * (rate * 2.0)
 
                     return '{:.1f}'.format(hertz)
-                
+
                 self.axes.yaxis.set_major_formatter(ticker.FuncFormatter(freq_format))
-                
+
                 self.axes.set_title(title)
 
             self.draw()
-            
+
             while len(self.sonos) > 100:
                 self.sonos.popleft()
-
-            await curio.sleep(0.01)

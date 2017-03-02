@@ -43,7 +43,7 @@ def bytestoshorts(data):
 
     n = len(data) / 2
     return struct.unpack('%dh' % n, data)
-    
+
 
 def get_stream():
 
@@ -73,7 +73,7 @@ def decode(frame, channel=0, channels=2, samplesize=2):
     """ Decode frame and return data for given channel """
     bytes_per_record = channels * samplesize
 
-    
+
     data = [int(x) for x in frame]
 
     low = [x + 128 for x in data[1::1]]
@@ -81,7 +81,7 @@ def decode(frame, channel=0, channels=2, samplesize=2):
 
     fixed = []
     for x, y in zip(high, low):
-        
+
         fixed.append(x + y)
 
     return fixed
@@ -92,7 +92,7 @@ def bytestreams(frame, channels=4):
     data = {}
 
     frame = [int(x) for x in frame]
-    
+
     for channel in range(channels):
 
         data['c%d' % channel] = frame[channel::channels]
@@ -100,7 +100,7 @@ def bytestreams(frame, channels=4):
     return data
 
 class Connect:
-    """ Connect to a stream 
+    """ Connect to a stream
 
     Provides a co-routine to allow aysnchronous putting of data frames into a queue.
 
@@ -137,9 +137,9 @@ class Connect:
             if (timestamp - start).seconds > 0:
                 rate = 0
                 start = timestamp
-                
+
             rate += 1
-            
+
             data = self.mick.read(CHUNK)
             rate += 1
             await self.queue.put((self.decode(data), timestamp))
@@ -150,14 +150,14 @@ class Connect:
         return self.mick.read(chunk)
 
     async def get(self):
-            
+
         return await self.queue.get()
 
 
     def decode(self, data):
-    
+
         return bytestoshorts(data)
-        
+
 
 class Wave:
     """ Create a sine wave for sound """
@@ -201,15 +201,15 @@ class Wave:
 
 
     async def get(self):
-            
+
         data = await self.queue.get()
 
         return data
 
-    
+
 async def run():
     """ Run this thing under curio  """
-    
+
     connect = Connect()
 
     # set the connection to start collecting frames
@@ -228,11 +228,11 @@ def open_wave(name):
     wf.read = wf.readframes
 
     return wf
-                        
-    
+
+
 def main():
 
-    
+
 
     curio.run(run(), with_monitor=True)
 
@@ -251,9 +251,9 @@ class FreqGen:
         rate = self.mick.rate()
         frames = self.mick.frame_size()
 
-        
+
         while True:
-        
+
             data, timestamp = await self.mick.get()
 
             data = self.mick.decode(data)
@@ -263,10 +263,7 @@ class FreqGen:
             power = abs(sono)
 
             xx = np.argmax(power)
-        
+
             hertz = (xx / frames) * rate * 0.5
 
             print('{} {}'.format(timestamp, hertz))
-
-        
-        
