@@ -23,7 +23,7 @@ class StingingBats(pig.Canvas):
 
         self.width = self.height = 200
 
-        self.size = 6
+        self.size = 5
         self.sides = 6
         self.canvas_text = None
         
@@ -51,6 +51,19 @@ class StingingBats(pig.Canvas):
         self.add_event_map('s', self.slow)
         self.add_event_map('r', self.roll)
         self.add_event_map('t', self.next_theme)
+        self.add_event_map('u', self.up)
+        self.add_event_map('d', self.down)
+
+    async def up(self):
+        """ Increase the number of dice """
+
+        self.size += 1
+
+
+    async def down(self):
+        """ Decrease the number of dice """
+
+        self.size -= 1
 
 
     async def next_theme(self):
@@ -88,9 +101,15 @@ class StingingBats(pig.Canvas):
 
         self.data = [random.randint(1, self.sides) for die in range(self.size)]
 
-        print(f'{self.data}')
+        total = 0
+        for die in self.data:
+            total += (total * self.size) + die
 
-        self.canvas_text = f'{self.data}'
+        self.total = total
+
+        print(f'{self.data} {total}')
+
+        self.canvas_text = f'{self.data}    {total}   {self.sides ** self.size}'
         
 
     def create_swarms(self):
@@ -134,7 +153,7 @@ class StingingBats(pig.Canvas):
                 
                 yy = (jx * height) + x
 
-                print(f'zzzz {xx} {yy} {size}, {colour}')
+                #print(f'zzzz {xx} {yy} {size}, {colour}')
                 colour = 'red'
                 if col:
                     self.canvas.create_arc(xx-size, yy-size, xx+size, yy+size,
@@ -170,7 +189,7 @@ class StingingBats(pig.Canvas):
                                 text=text)
         
         for die in self.data:
-            print(f'drawing {xx} {yy} {gap} {die}')
+            #print(f'drawing {xx} {yy} {gap} {die}')
             self.draw_digit(xx, yy, gap * 0.4, die)
 
             xx += gap
