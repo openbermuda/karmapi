@@ -146,7 +146,15 @@ class StingingBats(pig.Canvas):
 
         return colours[random.randint(0, len(colours) - 1)]
 
+
+    def dice_ware_text(self):
+        """ Return password for current data """
+
+        # FIXME get a diceware list of words
+        # Also, remind me to write a bit about why real dice are better
         
+        return "no dice"
+
     def draw_dice(self):
         """ Draw the dice """
 
@@ -156,11 +164,17 @@ class StingingBats(pig.Canvas):
 
         xx = gap / 2
         yy = self.height * 0.3
+
+        text = self.dice_ware_text()
+        self.canvas.create_text(xx, yy + (1.5 * gap), fill='blue',
+                                text=text)
         
         for die in self.data:
             print(f'drawing {xx} {yy} {gap} {die}')
             self.draw_digit(xx, yy, gap * 0.4, die)
+
             xx += gap
+
             
 
     async def run(self):
