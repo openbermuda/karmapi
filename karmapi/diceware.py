@@ -86,7 +86,7 @@ class StingingBats(pig.Canvas):
     async def roll(self):
         ''' roll the dice '''
 
-        self.data = [random.randint(1, self.sides + 1) for die in range(self.size)]
+        self.data = [random.randint(1, self.sides) for die in range(self.size)]
 
         print(f'{self.data}')
 
@@ -95,7 +95,6 @@ class StingingBats(pig.Canvas):
 
     def create_swarms(self):
 
-        print('new swarms')
         self.swarms = [Swarm()
                            for x in range(random.randint(self.minswarms, self.maxswarms))]
 
@@ -134,8 +133,12 @@ class StingingBats(pig.Canvas):
                 xx = (ix * width) + x
                 
                 yy = (jx * height) + x
-                self.canvas.create_arc(xx-size, yy-size, xx+size, yy+size,
-                     start=0, extent=360, fill=colour)
+
+                print(f'zzzz {xx} {yy} {size}, {colour}')
+                colour = 'red'
+                if col:
+                    self.canvas.create_arc(xx-size, yy-size, xx+size, yy+size,
+                        start=0, extent=180, fill=colour)
 
     def random_colour(self):
 
@@ -155,8 +158,9 @@ class StingingBats(pig.Canvas):
         yy = self.height * 0.3
         
         for die in self.data:
+            print(f'drawing {xx} {yy} {gap} {die}')
             self.draw_digit(xx, yy, gap * 0.4, die)
-            self.xx += gap
+            xx += gap
             
 
     async def run(self):
