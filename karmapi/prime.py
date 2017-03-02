@@ -67,14 +67,15 @@ class Prime(Video):
                 
 
 
-PRIMES = set([2, 3])
+PRIMES = [2, 3]
 
 def isprime(n):
 
-    if n in PRIMES:
-        return True
+    # FIXME -- creating a set each time is probably slow
+    #if n in set(PRIMES):
+    #    return True
 
-    end = (n ** 0.5) + 1
+    end = n ** 0.5
     for x in PRIMES:
         if x > end:
             break

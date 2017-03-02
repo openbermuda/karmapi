@@ -72,7 +72,9 @@ Karma Pi - Phy for physics, pi for math.
 # Install
 
 To install in development mode:
+
   Navigate to the karmapi folder
+
   pip3.6 install -e .
 
 

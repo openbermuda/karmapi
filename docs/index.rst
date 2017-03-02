@@ -49,6 +49,14 @@ Astro pi
    astro_pi
 
 
+Eric
+====
+
+.. toctree::
+
+   eric
+
+
 Indices and tables
 ==================
 

@@ -15,6 +15,7 @@ And currie doing magic.
 """
 from collections import deque
 import curio
+from pathlib import Path
 
 from karmapi import hush
 
@@ -249,7 +250,7 @@ def main():
 
     parser.add_argument('--monitor', action='store_true')
     parser.add_argument('--nomon', action='store_false', default=True)
-
+    parser.add_argument('--words', default='diceware.wordlist.asc')
     
     args = parser.parse_args()
 
@@ -302,8 +303,15 @@ def main():
             im_info.update(im)
             farm.add(piglet.Image, im_info.copy())
 
+
+    words = Path(args.words)
+    if words.exists():
+        words = words.open()
+    else:
+        words = None
+        
     farm.add(talk.Talk)
-    farm.add(dice.StingingBats)
+    farm.add(dice.StingingBats, dict(words=words))
     farm.add(StingingBats)
 
     farm.add(TankRain)

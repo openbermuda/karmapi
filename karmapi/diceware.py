@@ -14,16 +14,22 @@ import curio
 import random
 import math
 
+BIGLY = 'helvetica 20 bold'
 
 class StingingBats(pig.Canvas):
 
-    def __init__(self, parent):
+    def __init__(self, parent, words=None):
 
         super().__init__(parent)
 
         self.width = self.height = 200
 
-        self.size = 6
+        if words:
+            self.words = load_words(words)
+        else:
+            self.words = None
+
+        self.size = 5
         self.sides = 6
         self.canvas_text = None
         
@@ -51,6 +57,19 @@ class StingingBats(pig.Canvas):
         self.add_event_map('s', self.slow)
         self.add_event_map('r', self.roll)
         self.add_event_map('t', self.next_theme)
+        self.add_event_map('u', self.up)
+        self.add_event_map('d', self.down)
+
+    async def up(self):
+        """ Increase the number of dice """
+
+        self.size += 1
+
+
+    async def down(self):
+        """ Decrease the number of dice """
+
+        self.size -= 1
 
 
     async def next_theme(self):
@@ -86,16 +105,21 @@ class StingingBats(pig.Canvas):
     async def roll(self):
         ''' roll the dice '''
 
-        self.data = [random.randint(1, self.sides + 1) for die in range(self.size)]
+        self.data = [random.randint(1, self.sides) for die in range(self.size)]
 
-        print(f'{self.data}')
+        total = 0
+        for die in self.data:
+            total += (total * self.size) + die
 
-        self.canvas_text = f'{self.data}'
+        self.total = total
+
+        print(f'{self.data} {total}')
+
+        self.canvas_text = f'{self.data}    {total}   {self.sides ** self.size}'
         
 
     def create_swarms(self):
 
-        print('new swarms')
         self.swarms = [Swarm()
                            for x in range(random.randint(self.minswarms, self.maxswarms))]
 
@@ -110,6 +134,80 @@ class StingingBats(pig.Canvas):
 
         self.canvas.configure(scrollregion=(0, 0, width, height))
 
+
+    def draw_digit(self, x, y, size, die):
+        """ Draw a digit like a die """
+        digits = {
+            1: ((0,0,0), (0,1,0), (0,0,0)),
+            2: ((1,0,0), (0,0,0), (0,0,1)),
+            3: ((1,0,0), (0,1,0), (0,0,1)),
+            4: ((1,0,1), (0,0,0), (1,0,1)),
+            5: ((1,0,1), (0,1,0), (1,0,1)),
+            6: ((1,0,1), (1,0,1), (1,0,1))}
+
+        
+        self.draw_pixel(digits[die], x, y, size, size, 10)
+
+    def draw_pixel(self, data, x, y, width, height, size, colour=None):
+
+        #colour = 'red'
+        colour = colour or self.random_colour()
+        
+        for ix, row in enumerate(data):
+            for jx, col in enumerate(row):
+
+                xx = (ix * width) + x
+                
+                yy = (jx * height) + x
+
+                #print(f'zzzz {xx} {yy} {size}, {colour}')
+                
+                if col:
+                    self.canvas.create_arc(xx-size, yy-size, xx+size, yy+size,
+                        start=0, extent=180, fill=colour)
+
+    def random_colour(self):
+
+        colours = self.theme.colours
+
+        return colours[random.randint(0, len(colours) - 1)]
+
+
+    def dice_ware_text(self):
+        """ Return password for current data """
+
+        # FIXME get a diceware list of words
+        # Also, remind me to write a bit about why real dice are better
+
+        try:
+            return self.words[tuple(self.data)]
+        except:
+            return "no dice"
+
+    def draw_dice(self):
+        """ Draw the dice """
+
+        #FIXME make the tkinter part async
+        totsize = min(self.width, self.height)
+
+        gap = totsize / (1 + self.size)
+
+        xx = gap / 2
+        yy = gap / 2
+
+        ygap = (self.height / 3) / (self.size - 1)
+
+        text = self.dice_ware_text()
+        self.canvas.create_text(totsize - (2 * gap), yy, fill=self.random_colour(),
+                                text=text, font=BIGLY)
+        
+        for die in self.data:
+            self.draw_digit(xx, yy, gap * 0.4, die)
+
+            xx += gap
+            yy += gap
+
+            
 
     async def run(self):
         self.sleep = 0.1
@@ -129,8 +227,10 @@ class StingingBats(pig.Canvas):
                             self.theme.colours)
 
             if self.canvas_text:
-                self.canvas.create_text((self.width * 0.1, self.height * 0.9),
-                                        text=self.canvas_text, fill='red')
+                self.canvas.create_text((self.width * 0.3, self.height * 0.9),
+                                        text=self.canvas_text, fill='yellow',
+                                        font=BIGLY)
+                self.draw_dice()
 
 
             await curio.sleep(self.sleep)
@@ -152,7 +252,6 @@ class SwoopingMantaRay:
         
         self.step = 0
         self.this_step = random.randint(40, 100)
-
 
     def draw(self, canvas, width, height, colours):
 
@@ -197,3 +296,18 @@ class SwoopingMantaRay:
             self.this_step = random.randint(40, 100)
 
         # FIXME: draw tail -- sine wave angle of dangle based on dx, dy
+
+
+def load_words(infile):
+
+    words = {}
+    six = set([str(x) for x in range(1, 7)])
+    for row in infile:
+        if row[0] in six:
+
+            fields = row.split()
+            key = tuple(int(x) for x in fields[0])
+            
+            words[key] = fields[-1]
+
+    return words            

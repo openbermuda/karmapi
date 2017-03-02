@@ -55,9 +55,11 @@ class Prime(unittest.TestCase):
     def test_isnprime(self, n):
 
         is_it_prime = isprime(n)
+
+        karma_prime = prime.isprime(n)
         
         if is_it_prime != None:
             # if isprime knows, check it agrees with our version
         
-            assert(isprime(n) == prime.isprime(n))
+            assert(is_it_prime == karma_prime)
         
