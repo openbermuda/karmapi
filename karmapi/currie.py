@@ -39,13 +39,13 @@ class PigFarm:
         self.current = None
 
         self.create_event_map()
-        
+
         from karmapi import piglet
 
         # this probably needs to be a co-routine?
         self.eloop = piglet.EventLoop()
         self.eloop.set_event_queue(self.event)
-        
+
         self.piglets.put(self.eloop.run())
 
         self.micks = curio.UniversalQueue()
@@ -81,7 +81,7 @@ class PigFarm:
 
         self.micks.put(mick)
         self.piglets.put(mick.start())
-    
+
 
     async def build(self):
         """ Do the piglet build """
@@ -89,7 +89,7 @@ class PigFarm:
         while True:
             meta, kwargs = await self.builds.get()
             print('building piglet:', meta)
-        
+
             #piglet = pig.build(meta)
 
             piglet = meta(self.eloop.app.winfo_toplevel(), **kwargs)
@@ -107,7 +107,7 @@ class PigFarm:
 
         self.current.pack(fill='both', expand=1)
         self.current_task = await curio.spawn(self.current.run())
-        
+
     async def stop_piglet(self):
 
         await self.current_task.cancel()
@@ -142,13 +142,13 @@ class PigFarm:
 
         self.current = self.widgets.popleft()
         await self.start_piglet()
-        
+
 
     async def previous(self):
         """ Show previous widget """
         print('going to previous', self.current)
         if self.current:
-            
+
             self.widgets.appendleft(self.current)
 
             await self.stop_piglet()
@@ -157,7 +157,7 @@ class PigFarm:
         await self.start_piglet()
 
     def keypress(self, event):
-        
+
         print('currie event', event)
         # Fixme -- turn these into events that we can push onto piglet queues
 
@@ -216,10 +216,11 @@ class PigFarm:
             await coro()
         else:
             print('no callback for event', event)
-        
+
 
     async def show_monitor(self):
-
+        """ Show curio monitor """
+        
         from karmapi import widgets
         farm = PigFarm()
         farm.add(widgets.Curio)
@@ -232,33 +233,33 @@ class PigFarm:
             await mon.next()
             await curio.sleep(1)
 
-            
+
 
 
 def main():
 
     import argparse
-    
+
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--pig', default='tk')
     parser.add_argument('--wave')
     parser.add_argument('--gallery', nargs='*', default=['.', '../gallery'])
     parser.add_argument('--images', default=False, action='store_true')
-    
+
     parser.add_argument('--thresh', type=float, default=10.0)
 
     parser.add_argument('--monitor', action='store_true')
     parser.add_argument('--nomon', action='store_false', default=True)
     parser.add_argument('--words', default='diceware.wordlist.asc')
-    
+
     args = parser.parse_args()
 
     # import from pig stuff here, after talking to joy
     from karmapi import joy
     joy.set_backend(args.pig)
 
-    
+
     from karmapi import pig, piglet
     from karmapi import widgets
     from karmapi import sonogram
@@ -275,7 +276,7 @@ def main():
     from karmapi.tankrain import TankRain
     from karmapi import diceware as dice
     from karmapi import talk
-    
+
     if args.monitor:
 
         farm.add(widgets.Curio)
@@ -295,7 +296,7 @@ def main():
     from karmapi import sunny
 
     print('galleries', args.gallery)
-        
+
     im_info = dict(galleries=args.gallery)
 
     if args.images:
@@ -309,7 +310,7 @@ def main():
         words = words.open()
     else:
         words = None
-        
+
     farm.add(talk.Talk)
     farm.add(dice.StingingBats, dict(words=words))
     farm.add(StingingBats)
@@ -340,4 +341,3 @@ def main():
 if __name__ == '__main__':
 
     main()
-    
