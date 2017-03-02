@@ -142,19 +142,20 @@ class StingingBats(pig.Canvas):
         
         self.draw_pixel(digits[die], x, y, size, size, 10)
 
-    def draw_pixel(self, data, x, y, width, height, size):
+    def draw_pixel(self, data, x, y, width, height, size, colour=None):
 
+        #colour = 'red'
+        colour = colour or self.random_colour()
+        
         for ix, row in enumerate(data):
             for jx, col in enumerate(row):
 
-                colour = self.random_colour()
-                
                 xx = (ix * width) + x
                 
                 yy = (jx * height) + x
 
                 #print(f'zzzz {xx} {yy} {size}, {colour}')
-                colour = 'red'
+                
                 if col:
                     self.canvas.create_arc(xx-size, yy-size, xx+size, yy+size,
                         start=0, extent=180, fill=colour)
@@ -178,21 +179,27 @@ class StingingBats(pig.Canvas):
         """ Draw the dice """
 
         #FIXME make the tkinter part async
+        totsize = min(self.width, self.height)
 
-        gap = self.width / (1 + self.size)
+        gap = totsize / (1 + self.size)
 
         xx = gap / 2
-        yy = self.height * 0.3
+        yy = gap / 2
+
+        print(self.height, self.width)
+        ygap = (self.height / 3) / (self.size - 1)
 
         text = self.dice_ware_text()
-        self.canvas.create_text(xx, yy + (1.5 * gap), fill='blue',
-                                text=text)
+        self.canvas.create_text(totsize - (2 * gap), yy, fill=self.random_colour(),
+                                text=text, font='Large')
         
         for die in self.data:
             #print(f'drawing {xx} {yy} {gap} {die}')
             self.draw_digit(xx, yy, gap * 0.4, die)
 
+            #print(xx, yy)
             xx += gap
+            yy += gap
 
             
 
