@@ -64,12 +64,14 @@ class StingingBats(pig.Canvas):
         """ Increase the number of dice """
 
         self.size += 1
+        await self.roll()
 
 
     async def down(self):
         """ Decrease the number of dice """
 
         self.size -= 1
+        await self.roll()
 
 
     async def next_theme(self):
