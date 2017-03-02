@@ -214,8 +214,9 @@ class StingingBats(pig.Canvas):
                             self.theme.colours)
 
             if self.canvas_text:
-                self.canvas.create_text((self.width * 0.1, self.height * 0.9),
-                                        text=self.canvas_text, fill='red')
+                self.canvas.create_text((self.width * 0.3, self.height * 0.9),
+                                        text=self.canvas_text, fill='yellow',
+                                        font='Large')
                 self.draw_dice()
 
 
