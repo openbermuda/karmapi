@@ -111,6 +111,44 @@ class StingingBats(pig.Canvas):
         self.canvas.configure(scrollregion=(0, 0, width, height))
 
 
+    def draw_digit(self, x, y, n, die):
+        """ Draw a digit like a die """
+        digits = {
+            1: (0,0,0, 0,1,0, 0,0,0),
+            2: (1,0,0, 0,0,0, 0,0,1),
+            3: (1,0,0, 0,1,0, 0,0,1),
+            4: (1,0,1, 0,0,0, 1,0,1),
+            5: (1,0,1, 0,1,0, 1,0,1),
+            6: (1,0,1, 1,0,1, 1,0,1))
+
+        self.draw_pixel(digits[die], x, y, 10, 10)
+
+    def draw_pixel(self, data, x, y, width, height):
+
+        for ix, row in enumerate(data):
+            for jx, col in enumerate(row):
+
+                colour = colours[random.randint(0, len(colours) - 1)]
+                
+                xx = (ix * gap) + x
+                
+                yy = (jx * gap) + x
+                self.canvas,create_arc(xx-size, yy-size, xx+size, yy+size,
+                     start=0, extent=360, fill=colour)
+        
+        
+    def draw_dice(self):
+        """ Draw the dice """
+
+        #FIXME make the tkinter part async
+
+        gap = self.width / (1 + self.size)
+        for die in self.data::
+
+            self.draw_digit(x, y, self.size, die)
+
+            
+
     async def run(self):
         self.sleep = 0.1
 
@@ -131,6 +169,7 @@ class StingingBats(pig.Canvas):
             if self.canvas_text:
                 self.canvas.create_text((self.width * 0.1, self.height * 0.9),
                                         text=self.canvas_text, fill='red')
+                self.draw_dice()
 
 
             await curio.sleep(self.sleep)
@@ -152,7 +191,6 @@ class SwoopingMantaRay:
         
         self.step = 0
         self.this_step = random.randint(40, 100)
-
 
     def draw(self, canvas, width, height, colours):
 
