@@ -18,11 +18,16 @@ BIGLY = 'helvetica 20 bold'
 
 class StingingBats(pig.Canvas):
 
-    def __init__(self, parent):
+    def __init__(self, parent, words=None):
 
         super().__init__(parent)
 
         self.width = self.height = 200
+
+        if words:
+            self.words = load_words(words)
+        else:
+            self.words = None
 
         self.size = 5
         self.sides = 6
@@ -173,6 +178,9 @@ class StingingBats(pig.Canvas):
 
         # FIXME get a diceware list of words
         # Also, remind me to write a bit about why real dice are better
+        if self.words and self.total <= len(self.words):
+            return self.words[self.total - 1]
+            
         
         return "no dice"
 
@@ -291,3 +299,14 @@ class SwoopingMantaRay:
             self.this_step = random.randint(40, 100)
 
         # FIXME: draw tail -- sine wave angle of dangle based on dx, dy
+
+
+def load_words(infile):
+
+    words = []
+    six = set([str(x) for x in range(1, 7)])
+    for row in infile:
+        if row[0] in six:
+            words.append(row.split()[-1])
+
+    return words            
