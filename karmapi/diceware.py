@@ -14,6 +14,7 @@ import curio
 import random
 import math
 
+BIGLY = 'helvetica 20 bold'
 
 class StingingBats(pig.Canvas):
 
@@ -191,7 +192,7 @@ class StingingBats(pig.Canvas):
 
         text = self.dice_ware_text()
         self.canvas.create_text(totsize - (2 * gap), yy, fill=self.random_colour(),
-                                text=text, font='Large')
+                                text=text, font=BIGLY)
         
         for die in self.data:
             #print(f'drawing {xx} {yy} {gap} {die}')
@@ -223,7 +224,7 @@ class StingingBats(pig.Canvas):
             if self.canvas_text:
                 self.canvas.create_text((self.width * 0.3, self.height * 0.9),
                                         text=self.canvas_text, fill='yellow',
-                                        font='Large')
+                                        font=BIGLY)
                 self.draw_dice()
 
 
