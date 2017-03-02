@@ -69,18 +69,6 @@ Karma Phy - Looks better spelt with a K
 
 Karma Pi - Phy for physics, pi for math.
 
-# Install
-
-To install from source:
-
-   python setup.py install
-
-
-To install in development mode:
-
-   python setup.py develop --user
-
-
 ## Ubuntu on Pi
 
 
@@ -140,6 +128,28 @@ Docs need a fair bit of work, but better docstrings in the code turn into pretty
 
 ## Release
 
+pip3.x install karmapi
+
+x = 5 or 6, may be just 3.6 soon.
+
+### Making a new release
+
+Install some stuff needed to help with building releases:
+
+   pip3.6 install twine wheel
+
+Build a source releas (this just creates a tarball in the dists/ subfolder):
+
+   python setup.py sdist
+
+Build a binary release as a wheel (:
+
+   python setup.py bdist_wheel
+
+Upload to PyPi with twine (you will need a username and password that
+has access to the project you are trying to update):
+
+   twine upload dist/*
 
 ## Develop
 
@@ -147,8 +157,33 @@ git clone https://github.com/openbermuda/karmapi
 
 cd karmapi
 
-python3 setup.py develop --user
+pip3.6 -e ,
 
+## Python3.6 on Ubuntu 16.04
+
+    git clone https://github.com/python/cpython
+
+checkout 3.6 branch, then:
+
+    ./configure
+    make
+    make install
+
+Note: python3.6 can be installed (from universe) with apt on Ubuntu >= 16.10.
+
+### Things to do first
+
+Some dev libraries need installing into Ubuntu for certain features to be built into the python.
+
+tkinter is one part you need to make sure *tk-8.6-dev* is installed before ./configure.
+
+The good news is that after the intitial build it all runs pretty fast.
+
+* tk-8.6-dev -- for tkinter
+
+* libbz2-dev -- compression library
+
+* libssl-dev -- for ssl support required for pip3.6 to work.
 
 ## TODO
 
