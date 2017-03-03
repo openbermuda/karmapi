@@ -36,13 +36,22 @@ For now, aiming for a python console.
 
 """
 
-import idlelib
+from idlelib import pyshell
 
 from karmapi import piglet
 
 class Eric(piglet.Pig):
     """ An async python console, using IDLE """
-    pass
+
+    def __init__(self, parent):
+
+        #flist=None, filename=None, key=None, root=None):
+        self.console = pyshell.PyShellEditorWindow(
+            None, None, None,  parent)
+
+
+
+
     
 
 
