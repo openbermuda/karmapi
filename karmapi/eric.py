@@ -15,9 +15,25 @@ the jelly will be set.
 
 No jelly here, but Idle: an interactive python promt.
 
+You can ask the prompt about python, see how it works,
+
 Come here to import a module, see what it does, read the code.
 
 Change the code, see what happens.
+
+
+IDLE
+----
+
+IDLE is built with *idlelib*, part of core python.
+
+It implements some interesting widgets, in tkinter.  There is quite a
+bit of duplication between karmapi piglets, PigFarm and IDLE.
+
+Making it all async might be interesting.
+
+For now, aiming for a python console. 
+
 """
 
 import idlelib
