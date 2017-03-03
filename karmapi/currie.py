@@ -240,6 +240,9 @@ class PigFarm:
         from karmapi.eric import  Eric
         farm = PigFarm()
         farm.add(Eric)
+
+        farm.eloop.app.winfo_toplevel().withdraw()
+        
         await curio.spawn(farm.run())
 
 
