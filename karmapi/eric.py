@@ -46,8 +46,12 @@ class Eric(piglet.Pig):
     def __init__(self, parent):
 
         #flist=None, filename=None, key=None, root=None):
+        flist = pyshell.PyShellFileList(parent)
+        pyshell.use_subprocess = True
+        
+        flist.open_shell()
         self.console = pyshell.PyShellEditorWindow(
-            None, None, None,  parent)
+            flist, None, None,  parent)
 
 
 
