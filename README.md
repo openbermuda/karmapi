@@ -71,12 +71,24 @@ Karma Pi - Phy for physics, pi for math.
 
 # Install
 
-To install in development mode:
+Using pip::
 
-  Navigate to the karmapi folder
+   pip install karmapi
 
-  pip3.6 install -e .
+From source (eg git repository)::
 
+   pip install ,
+
+
+To install in development mode,   Navigate to the karmapi folder, then run::
+
+  pip install -e .
+
+The *-e* flag just says *install in editable mode*.
+
+## pip
+
+You may need to run *pip3.6*  to get the *pip* that goes with your python3.6.
 
 ## Ubuntu on Pi
 
@@ -115,8 +127,6 @@ Pick a section that interests you.
 
 ## CKAN
 
-
-
 ### FIXME
 
 Need to do a release with a sane set of requirements,
@@ -132,6 +142,10 @@ This might already be working.  FIXME check,
 Docs need a fair bit of work, but better docstrings in the code turn into pretty good docs.
 
 ## Release
+
+A release is overdue.  The next one will require python3.6.
+
+For now, probably best to install from source code,
 
 pip3.x install karmapi
 
