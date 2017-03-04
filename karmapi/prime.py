@@ -69,7 +69,7 @@ class Prime(Video):
 
 PRIMES = [2, 3]
 
-def isprime(n):
+def isprime(n, verbose=None):
 
     # FIXME -- creating a set each time is probably slow
     #if n in set(PRIMES):
@@ -81,6 +81,7 @@ def isprime(n):
             break
         
         if 0 == n % x:
+            if verbose: print(f'{x}')
             return False
 
     return True
