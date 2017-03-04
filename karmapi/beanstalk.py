@@ -9,6 +9,10 @@ being supported betweend int and complex.
 I've no ides where these imaginary numbers are coming from.
 
 """
+import math
+import random
+
+from karmapi import pig
 from karmapi.prime import isprime
 
 def is3xprime(x):
@@ -38,5 +42,27 @@ def magic_seed(x=3000657567, k=30):
     return is3xprime(yy)    
         
 
-        
+class BeanStalk:
+    """ Draw a beanstalk given a magic seed """
 
+    def __init__(self):
+
+        self.xx = random.random()
+        self.yy = random.random()
+
+        self.x = 3000657567
+
+        self.step = 1
+
+    def step(self, delta=1):
+
+        self.x += self.delta
+        self.xx = random.random()
+        self.yy = random.random()
+
+    def draw(self, width, height, colour):
+
+
+        self.create_text(self.xx, self.yy, fill=colour, font=pig.BIGLY_FONT,
+                         text=f'{self.x}: {magic_seed(self.x)}')
+        

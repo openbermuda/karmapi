@@ -16,11 +16,13 @@ http://world.std.com/%7Ereinhold/diceware.wordlist.asc
 
 from karmapi import pig
 from karmapi.bats import Theme, Swarm
+from karmapi.beanstalk import BeanStalk
+
 import curio
 import random
 import math
 
-BIGLY = 'helvetica 20 bold'
+BIGLY = pig.BIGLY_FONT
 
 class StingingBats(pig.Canvas):
 
@@ -54,6 +56,7 @@ class StingingBats(pig.Canvas):
 
         self.create_event_map()
         self.create_swarms()
+        self.create_beanstalks()
 
     def create_event_map(self):
 
@@ -65,6 +68,11 @@ class StingingBats(pig.Canvas):
         self.add_event_map('t', self.next_theme)
         self.add_event_map('u', self.up)
         self.add_event_map('d', self.down)
+
+
+    def create_beanstalks(self):
+
+        self.beanstalk = BeanStalk()
 
     async def up(self):
         """ Increase the number of dice """
@@ -208,6 +216,9 @@ class StingingBats(pig.Canvas):
 
             xx += gap
             yy += gap
+
+        self.beanstalk.draw(self.width, self.height, self.random_colour())
+        self,beanstalk.step()
 
 
 
