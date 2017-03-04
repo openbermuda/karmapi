@@ -61,6 +61,7 @@ class PigFarm:
         self.add_event_map('n', self.next)
         self.add_event_map('h', self.help)
         self.add_event_map('c', self.show_monitor)
+        self.add_event_map('e', self.show_eric)
 
 
     def status(self):
@@ -232,6 +233,14 @@ class PigFarm:
             #await mon.update()
             await mon.next()
             await curio.sleep(1)
+
+    async def show_eric(self):
+        """ Show eric idle """
+        
+        from karmapi.eric import  Eric
+        farm = PigFarm()
+        farm.add(Eric)
+        await curio.spawn(farm.run())
 
 
 
