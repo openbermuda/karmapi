@@ -34,6 +34,15 @@ Making it all async might be interesting.
 
 For now, aiming for a python console. 
 
+
+Getting a curious "AttributeError:  'Eric' object has no attribute _w"
+
+This happens in PigFarm.build().
+
+_w might be meant to be some sort of file descriptor, maybe output files?
+
+Finding IDLE fun to use.
+
 """
 
 from idlelib import pyshell
