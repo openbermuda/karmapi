@@ -74,7 +74,7 @@ class StingingBats(pig.Canvas):
 
         self.beanstalks = []
 
-        self.beanstalk = BeanStalk()
+        self.beanstalk = BeanStalk(1)
 
     async def up(self):
         """ Increase the number of dice """
