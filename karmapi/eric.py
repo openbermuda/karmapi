@@ -49,6 +49,10 @@ from idlelib import pyshell
 
 from karmapi import piglet
 
+def doc(x):
+
+    print(x.__doc__)
+
 class Eric(piglet.Pig):
     """ An async python console, using IDLE """
 
