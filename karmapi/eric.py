@@ -59,8 +59,12 @@ class Eric(piglet.Pig):
         pyshell.use_subprocess = True
         
         flist.open_shell()
+
+        # FIXME -- add files to open in idle editor
+        
+        
         self.console = pyshell.PyShellEditorWindow(
-            flist, None, None,  parent)
+            flist, __file__, None,  parent)
 
 
 

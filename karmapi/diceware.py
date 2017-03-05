@@ -54,9 +54,9 @@ class StingingBats(pig.Canvas):
         self.canvas.configure(bg=self.theme.background,
             width=self.width, height=self.height)
 
+        self.create_beanstalks()
         self.create_event_map()
         self.create_swarms()
-        self.create_beanstalks()
 
     def create_event_map(self):
 
@@ -71,6 +71,8 @@ class StingingBats(pig.Canvas):
 
 
     def create_beanstalks(self):
+
+        self.beanstalks = []
 
         self.beanstalk = BeanStalk()
 
@@ -217,9 +219,12 @@ class StingingBats(pig.Canvas):
             xx += gap
             yy += gap
 
-        self.beanstalk.draw(self.width, self.height, self.random_colour())
-        self,beanstalk.step()
 
+
+    def draw_beanstalks(self):
+
+        for beanstalk in self.beanstalks:
+            beanstalk.draw(self.canvas, self.width, self.height, self.random_colour())
 
 
     async def run(self):
@@ -245,7 +250,15 @@ class StingingBats(pig.Canvas):
                                         font=BIGLY)
                 self.draw_dice()
 
+            if self.beanstalks:
+                self.draw_beanstalks()
 
+            self.beanstalk.step()
+            
+            if self.beanstalk.is_magic():
+                self.beanstalks.append(
+                    BeanStalk(self.beanstalk.x))
+            
             await curio.sleep(self.sleep)
 
 

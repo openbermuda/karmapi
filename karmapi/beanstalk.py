@@ -45,24 +45,33 @@ def magic_seed(x=3000657567, k=30):
 class BeanStalk:
     """ Draw a beanstalk given a magic seed """
 
-    def __init__(self):
+    def __init__(self, x=None):
 
         self.xx = random.random()
         self.yy = random.random()
 
-        self.x = 3000657567
+        self.x = x or 3000657567
 
-        self.step = 1
+        self.delta = 1
 
     def step(self, delta=1):
 
         self.x += self.delta
-        self.xx = random.random()
-        self.yy = random.random()
+        if random.random() < 0.01:
+            self.xx = random.random()
+            self.yy = random.random()
 
-    def draw(self, width, height, colour):
 
+    def is_magic(self):
 
-        self.create_text(self.xx, self.yy, fill=colour, font=pig.BIGLY_FONT,
-                         text=f'{self.x}: {magic_seed(self.x)}')
+        return magic_seed(self.x)
+
+    def draw(self, canvas, width, height, colour):
+
+        xx = self.xx * width
+        yy = self.yy * width
+
+        canvas.create_text(
+            xx, yy, fill=colour, font=pig.BIGLY_FONT,
+            text=f'{self.x}')
         
