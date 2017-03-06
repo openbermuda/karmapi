@@ -201,6 +201,9 @@ class Canvas(Pig):
 
         super().__init__(parent)
 
+        self.width = 400
+        self.height = 600
+
         self.canvas = tkinter.Canvas(self)
 
         VBoxLayout().addWidget(self.canvas)
@@ -216,7 +219,11 @@ class Canvas(Pig):
 
     def recalc(self, width, height):
 
-        pass
+        self.width = width
+        self.height = height
+
+        self.canvas.configure(scrollregion=(0, 0, width, height))
+
 
         
 class PlotImage(Pig):
