@@ -56,7 +56,7 @@ def doc(x):
 class Eric(piglet.Pig):
     """ An async python console, using IDLE """
 
-    def __init__(self, parent):
+    def __init__(self, parent, filename=None):
 
         #flist=None, filename=None, key=None, root=None):
         flist = pyshell.PyShellFileList(parent)
@@ -65,13 +65,10 @@ class Eric(piglet.Pig):
         flist.open_shell()
 
         # FIXME -- add files to open in idle editor
-        filename = __file__
+        filename = filename or __file__
 
-        if hasattr(self, filename):
-            filename = self.filename
-            
         self.console = pyshell.PyShellEditorWindow(
-            flist, __file__, None,  parent)
+            flist, filename, None,  parent)
 
     async def run(self):
 
@@ -79,7 +76,9 @@ class Eric(piglet.Pig):
 
     async def start(self):
 
-        pass
+        if self.farm.current:
+            self,filename = instpect.getsourcefile(self.farm.current)
+
 
 
 
