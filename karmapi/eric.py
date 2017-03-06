@@ -65,11 +65,21 @@ class Eric(piglet.Pig):
         flist.open_shell()
 
         # FIXME -- add files to open in idle editor
-        
-        
+        filename = __file__
+
+        if hasattr(self, filename):
+            filename = self.filename
+            
         self.console = pyshell.PyShellEditorWindow(
             flist, __file__, None,  parent)
 
+    async def run(self):
+
+        pass
+
+    async def start(self):
+
+        pass
 
 
 
