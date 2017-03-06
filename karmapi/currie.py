@@ -38,6 +38,7 @@ class PigFarm:
 
         self.widgets = deque()
         self.current = None
+        self.eric = None
 
         self.create_event_map()
 
@@ -237,6 +238,10 @@ class PigFarm:
 
     async def show_eric(self):
         """ Show eric idle """
+
+        if self.eric:
+            return
+        self.eric = True
         
         from karmapi.eric import  Eric
         farm = PigFarm()
