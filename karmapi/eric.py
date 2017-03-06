@@ -77,7 +77,7 @@ class Eric(piglet.Pig):
     async def start(self):
 
         if self.farm.current:
-            self,filename = instpect.getsourcefile(self.farm.current)
+            self.filename = instpect.getsourcefile(self.farm.current)
 
 
 
