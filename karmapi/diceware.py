@@ -16,11 +16,13 @@ http://world.std.com/%7Ereinhold/diceware.wordlist.asc
 
 from karmapi import pig
 from karmapi.bats import Theme, Swarm
+from karmapi.beanstalk import BeanStalk
+
 import curio
 import random
 import math
 
-BIGLY = 'helvetica 20 bold'
+BIGLY = pig.BIGLY_FONT
 
 class StingingBats(pig.Canvas):
 
@@ -52,6 +54,7 @@ class StingingBats(pig.Canvas):
         self.canvas.configure(bg=self.theme.background,
             width=self.width, height=self.height)
 
+        self.create_beanstalks()
         self.create_event_map()
         self.create_swarms()
 
@@ -65,6 +68,13 @@ class StingingBats(pig.Canvas):
         self.add_event_map('t', self.next_theme)
         self.add_event_map('u', self.up)
         self.add_event_map('d', self.down)
+
+
+    def create_beanstalks(self):
+
+        self.beanstalks = []
+
+        self.beanstalk = BeanStalk(1)
 
     async def up(self):
         """ Increase the number of dice """
@@ -211,6 +221,12 @@ class StingingBats(pig.Canvas):
 
 
 
+    def draw_beanstalks(self):
+
+        for beanstalk in self.beanstalks:
+            beanstalk.draw(self.canvas, self.width, self.height, self.random_colour())
+
+
     async def run(self):
         self.sleep = 0.1
 
@@ -234,7 +250,15 @@ class StingingBats(pig.Canvas):
                                         font=BIGLY)
                 self.draw_dice()
 
+            if self.beanstalks:
+                self.draw_beanstalks()
 
+            self.beanstalk.step()
+            
+            if self.beanstalk.is_magic():
+                self.beanstalks.append(
+                    BeanStalk(self.beanstalk.x))
+            
             await curio.sleep(self.sleep)
 
 

@@ -10,7 +10,6 @@ class StingingBats(pig.Canvas):
 
         super().__init__(parent)
 
-        self.width = self.height = 200
         self.minswarms = 20
         self.maxswarms = 50
         self.themes = []
@@ -74,14 +73,6 @@ class StingingBats(pig.Canvas):
 
         self.rays = [SwoopingMantaRay()
                          for x in range(random.randint(self.minswarms, self.maxswarms))]
-
-
-    def recalc(self, width, height):
-
-        self.width = width
-        self.height = height
-
-        self.canvas.configure(scrollregion=(0, 0, width, height))
 
 
     async def run(self):

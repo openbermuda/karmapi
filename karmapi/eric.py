@@ -34,11 +34,24 @@ Making it all async might be interesting.
 
 For now, aiming for a python console. 
 
+
+Getting a curious "AttributeError:  'Eric' object has no attribute _w"
+
+This happens in PigFarm.build().
+
+_w might be meant to be some sort of file descriptor, maybe output files?
+
+Finding IDLE fun to use.
+
 """
 
 from idlelib import pyshell
 
 from karmapi import piglet
+
+def doc(x):
+
+    print(x.__doc__)
 
 class Eric(piglet.Pig):
     """ An async python console, using IDLE """
@@ -50,9 +63,23 @@ class Eric(piglet.Pig):
         pyshell.use_subprocess = True
         
         flist.open_shell()
-        self.console = pyshell.PyShellEditorWindow(
-            flist, None, None,  parent)
 
+        # FIXME -- add files to open in idle editor
+        filename = __file__
+
+        if hasattr(self, filename):
+            filename = self.filename
+            
+        self.console = pyshell.PyShellEditorWindow(
+            flist, __file__, None,  parent)
+
+    async def run(self):
+
+        pass
+
+    async def start(self):
+
+        pass
 
 
 

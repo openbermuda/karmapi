@@ -36,7 +36,7 @@ from karmapi.piglet import (
 
 APP = None
 
-
+BIGLY_FONT = 'helvetica 20 bold'
 
 def meta():
     """ Return description of a pig """

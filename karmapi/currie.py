@@ -264,6 +264,10 @@ def main():
     parser.add_argument('--monitor', action='store_true')
     parser.add_argument('--nomon', action='store_false', default=True)
     parser.add_argument('--words', default='diceware.wordlist.asc')
+    parser.add_argument(
+        '--files',
+        nargs='+',
+        default=__file__)
 
     args = parser.parse_args()
 
@@ -306,6 +310,8 @@ def main():
 
 
     from karmapi import sunny
+
+    farm.files = args.files
 
     print('galleries', args.gallery)
 
