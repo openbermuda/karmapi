@@ -16,6 +16,7 @@ And currie doing magic.
 from collections import deque
 import curio
 from pathlib import Path
+import inspect
 
 from karmapi import hush
 
@@ -239,7 +240,10 @@ class PigFarm:
         
         from karmapi.eric import  Eric
         farm = PigFarm()
-        farm.add(Eric)
+        filename = None
+        if self.current:
+            filename = inspect.getsourcefile(self.current.__class__)
+        farm.add(Eric, dict(filename=filename))
 
         farm.eloop.app.winfo_toplevel().withdraw()
         
