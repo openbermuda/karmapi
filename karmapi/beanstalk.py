@@ -64,8 +64,10 @@ class BeanStalk:
         data = np.array(self.image.getdata())
         print('got array')
         #data = data.reshape(self.image.size + (3,))
-        self.image_data = data
-        self.image_data = pyplot.imread(image_name)
+        width, height = self.image.size
+        data = data.reshape((height, width, 3))
+        self.image_data = np.array(data, dtype=np.uint8)
+        #self.image_data = pyplot.imread(image_name)
 
         t2 = time.time()
         print('image load time', t2 - t)
@@ -100,7 +102,7 @@ class BeanStalk:
 
             if self.phim is None:
                 width, height = self.image.size
-                width = height = 100
+                #width = height = 100
                 phim = PhotoImage(master=canvas, width=width, height=height)
 
                 bbox = np.array((
@@ -111,9 +113,10 @@ class BeanStalk:
                                     for x in range(width)]
                                     for z in range(height)], dtype=np.uint8)
 
-                self.image_data = data
+                #self.image_data = data
                 self.phim = phim
 
+            print(self.image_data.shape, self.image_data.dtype)
             canvas.create_image(xx, yy, image=self.phim)
             blit(self.phim, self.image_data)
 
@@ -125,36 +128,6 @@ class BeanStalk:
             xx, yy, fill=colour, font=pig.BIGLY_FONT,
             text=f'{self.x}')
 
-
-
-
-        
-def xblit(photoimage, aggimage, bbox=None, colormode=1):
-    """ From matplotlib tkagg backend 
-
-    Pick this apart to get fast images on a tkcanvas.
-    """
-    tk = photoimage.tk
-
-    if bbox is not None:
-        bbox_array = bbox.__array__()
-    else:
-        bbox_array = None
-    data = np.asarray(aggimage)
-    try:
-        tk.call(
-            "PyAggImagePhoto", photoimage,
-            id(data), colormode, id(bbox_array))
-    except Tk.TclError:
-        try:
-            try:
-                _tkagg.tkinit(tk.interpaddr(), 1)
-            except AttributeError:
-                _tkagg.tkinit(id(tk), 0)
-            tk.call("PyAggImagePhoto", photoimage,
-                    id(data), colormode, id(bbox_array))
-        except (ImportError, AttributeError, Tk.TclError):
-            raise
 
 
 if __name__ == '__main__':
