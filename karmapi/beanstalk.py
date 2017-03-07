@@ -12,6 +12,8 @@ I've no ides where these imaginary numbers are coming from.
 import math
 import random
 from pathlib import Path
+import time
+
 from tkinter import PhotoImage
 from PIL import Image, ImageTk
 
@@ -50,7 +52,7 @@ class BeanField(pig.Canvas):
 
         super().__init__(parent)
 
-        self.beanstalk = BeanStalk()
+        self.beanstalk = BeanStalk(1)
         self.beanstalks = []
 
     def draw_beanstalks(self):
@@ -58,6 +60,17 @@ class BeanField(pig.Canvas):
         for beanstalk in self.beanstalks:
             beanstalk.draw(self.canvas, self.width, self.height, 'red')
 
+
+    def prune(self):
+
+        beans = []
+        tt = time.time()
+        for bean in self.beanstalks:
+            if (tt - bean.create_time) < 20:
+                beans.append(bean)
+                
+        self.beanstalks = beans
+        
 
     async def run(self):
         self.sleep = 0.1
@@ -74,6 +87,7 @@ class BeanField(pig.Canvas):
             if self.beanstalks:
                 self.draw_beanstalks()
 
+            self.prune()
             await curio.sleep(self.sleep)
     
 
@@ -91,6 +105,8 @@ class BeanStalk:
         self.yy = random.random()
 
         self.x = x or 3000657567
+
+        self.create_time = time.time()
 
         self.delta = 1
 
@@ -114,7 +130,9 @@ class BeanStalk:
         
         if self.image:
 
-            self.image.putalpha(random.randint(150, 255))
+            tt = time.time()
+            alpha = 255 - (10 * (tt - self.create_time))
+            self.image.putalpha(int(alpha))
 
             self.phim = ImageTk.PhotoImage(self.image)
             canvas.create_image(xx, yy, image=self.phim)
