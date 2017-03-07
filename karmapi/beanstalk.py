@@ -11,6 +11,10 @@ I've no ides where these imaginary numbers are coming from.
 """
 import math
 import random
+from pathlib import Path
+from tkinter import PhotoImage
+#from PIL import Image
+#import numpy as np
 
 from karmapi import pig
 from karmapi.prime import isprime
@@ -74,4 +78,41 @@ class BeanStalk:
         canvas.create_text(
             xx, yy, fill=colour, font=pig.BIGLY_FONT,
             text=f'{self.x}')
+
+        image_name = Path(__file__).parent / 'tree_of_hearts.jpg'
+        print(image_name, image_name.exists())
+
+        im = PhotoImage(file=image_name)
+
+        #data = np.array(im.getdata())
+        #data = data.reshape(im.size + (3,))
         
+        canvas.create_image(xx, yy, image=im)
+
+        
+def blit(photoimage, aggimage, bbox=None, colormode=1):
+    """ From matplotlib tkagg backend 
+
+    Pick this apart to get fast images on a tkcanvas.
+    """
+    tk = photoimage.tk
+
+    if bbox is not None:
+        bbox_array = bbox.__array__()
+    else:
+        bbox_array = None
+    data = np.asarray(aggimage)
+    try:
+        tk.call(
+            "PyAggImagePhoto", photoimage,
+            id(data), colormode, id(bbox_array))
+    except Tk.TclError:
+        try:
+            try:
+                _tkagg.tkinit(tk.interpaddr(), 1)
+            except AttributeError:
+                _tkagg.tkinit(id(tk), 0)
+            tk.call("PyAggImagePhoto", photoimage,
+                    id(data), colormode, id(bbox_array))
+        except (ImportError, AttributeError, Tk.TclError):
+            raise
