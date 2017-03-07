@@ -55,22 +55,14 @@ class BeanStalk:
     def __init__(self, x=None):
 
         image_name = Path(__file__).parent / 'tree_of_hearts.jpg'
-        print('loading beanstalk image data')
-        import time
-        t = time.time()
+
         self.image = Image.open(image_name)
-        self.image = self.image.resize((250, 190))
-        print('image open')
+        self.image = self.image.resize((50, 38))
         data = np.array(self.image.getdata())
-        print('got array')
-        #data = data.reshape(self.image.size + (3,))
+
         width, height = self.image.size
         data = data.reshape((height, width, 3))
         self.image_data = np.array(data, dtype=np.uint8)
-        #self.image_data = pyplot.imread(image_name)
-
-        t2 = time.time()
-        print('image load time', t2 - t)
         
         self.xx = random.random()
         self.yy = random.random()
