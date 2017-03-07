@@ -17,6 +17,7 @@ from PIL import Image
 import numpy as np
 
 from matplotlib.backends.tkagg import blit
+from matplotlib import pyplot
 
 from karmapi import pig
 from karmapi.prime import isprime
@@ -54,11 +55,20 @@ class BeanStalk:
     def __init__(self, x=None):
 
         image_name = Path(__file__).parent / 'tree_of_hearts.jpg'
+        print('loading beanstalk image data')
+        import time
+        t = time.time()
         self.image = Image.open(image_name)
-
+        self.image = self.image.resize((250, 190))
+        print('image open')
         data = np.array(self.image.getdata())
-        data = data.reshape(self.image.size + (3,))
+        print('got array')
+        #data = data.reshape(self.image.size + (3,))
         self.image_data = data
+        self.image_data = pyplot.imread(image_name)
+
+        t2 = time.time()
+        print('image load time', t2 - t)
         
         self.xx = random.random()
         self.yy = random.random()
@@ -81,6 +91,7 @@ class BeanStalk:
 
     def draw(self, canvas, width, height, colour):
 
+        #print('DRAWING BEANSTALK')
         xx = self.xx * width
         yy = self.yy * width
 
@@ -90,7 +101,7 @@ class BeanStalk:
 
         
         if self.image:
-            return
+            #return
 
             width, height = self.image.size
             phim = PhotoImage(master=canvas, width=width, height=height)
@@ -99,8 +110,10 @@ class BeanStalk:
             bbox = np.array((
                 xx - 100, yy - 100,
                 xx + 100, yy + 100))
-            data = np.array([[random.random() for x in range(200)] for y in range(200)])
-            #blit(phim, data, bbox)
+            #data = np.array([[random.random() for x in range(width)] for y in range(height)])
+            #blit(phim, data)
+            print('BLIT', self.image_data.shape)
+            blit(phim, self.image_data)
             #blit(phim, self.image_data, bbox)
 
         
