@@ -13,11 +13,7 @@ import math
 import random
 from pathlib import Path
 from tkinter import PhotoImage
-from PIL import Image
-import numpy as np
-
-from matplotlib.backends.tkagg import blit
-from matplotlib import pyplot
+from PIL import Image, ImageTk
 
 from karmapi import pig
 from karmapi.prime import isprime
@@ -57,20 +53,14 @@ class BeanStalk:
         image_name = Path(__file__).parent / 'tree_of_hearts.jpg'
 
         self.image = Image.open(image_name)
-        self.image = self.image.resize((50, 38))
-        data = np.array(self.image.getdata())
+        self.image = self.image.resize((100, 76)).convert('RGBA')
 
-        width, height = self.image.size
-        data = data.reshape((height, width, 3))
-        self.image_data = np.array(data, dtype=np.uint8)
-        
         self.xx = random.random()
         self.yy = random.random()
 
         self.x = x or 3000657567
 
         self.delta = 1
-        self.phim = None
 
     def step(self, delta=1):
 
@@ -92,19 +82,14 @@ class BeanStalk:
         
         if self.image:
 
-            if self.phim is None:
-                width, height = self.image.size
-                #width = height = 100
-                phim = PhotoImage(master=canvas, width=width, height=height)
+            self.image.putalpha(random.randint(150, 255))
 
-                self.phim = phim
-
+            self.phim = ImageTk.PhotoImage(self.image)
             canvas.create_image(xx, yy, image=self.phim)
-            blit(self.phim, self.image_data)
 
         
         canvas.create_text(
-            xx, yy, fill=colour, font=pig.BIGLY_FONT,
+            xx, yy + 50, fill=colour, font=pig.BIGLY_FONT,
             text=f'{self.x}')
 
 
