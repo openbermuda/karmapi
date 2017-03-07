@@ -76,6 +76,7 @@ class BeanStalk:
         self.x = x or 3000657567
 
         self.delta = 1
+        self.phim = None
 
     def step(self, delta=1):
 
@@ -91,32 +92,40 @@ class BeanStalk:
 
     def draw(self, canvas, width, height, colour):
 
-        #print('DRAWING BEANSTALK')
         xx = self.xx * width
         yy = self.yy * width
 
+        
+        if self.image:
+
+            if self.phim is None:
+                width, height = self.image.size
+                width = height = 100
+                phim = PhotoImage(master=canvas, width=width, height=height)
+
+                bbox = np.array((
+                    xx - 100, yy - 100,
+                    xx + 100, yy + 100))
+
+                data = np.array([[[int(random.random() * 255) for x in range(3)]
+                                    for x in range(width)]
+                                    for z in range(height)], dtype=np.uint8)
+
+                self.image_data = data
+                self.phim = phim
+
+            canvas.create_image(xx, yy, image=self.phim)
+            blit(self.phim, self.image_data)
+
+            
+            #canvas.update()
+
+        
         canvas.create_text(
             xx, yy, fill=colour, font=pig.BIGLY_FONT,
             text=f'{self.x}')
 
-        
-        if self.image:
-            #return
 
-            width, height = self.image.size
-            phim = PhotoImage(master=canvas, width=width, height=height)
-            canvas.create_image(xx, yy, image=phim)
-
-            bbox = np.array((
-                xx - 100, yy - 100,
-                xx + 100, yy + 100))
-            #data = np.array([[random.random() for x in range(width)] for y in range(height)])
-            #blit(phim, data)
-            print('BLIT', self.image_data.shape)
-            blit(phim, self.image_data)
-            #blit(phim, self.image_data, bbox)
-
-        
 
 
         

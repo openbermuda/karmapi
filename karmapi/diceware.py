@@ -250,15 +250,15 @@ class StingingBats(pig.Canvas):
                                         font=BIGLY)
                 self.draw_dice()
 
-            if self.beanstalks:
-                self.draw_beanstalks()
-
             self.beanstalk.step()
             
             if self.beanstalk.is_magic():
                 self.beanstalks.append(
                     BeanStalk(self.beanstalk.x))
-            
+ 
+            if self.beanstalks:
+                self.draw_beanstalks()
+
             await curio.sleep(self.sleep)
 
 
