@@ -43,7 +43,39 @@ def magic_seed(x=3000657567, k=30):
     yy = (2 ** k) - p1
 
     return is3xprime(yy)    
-        
+
+class BeanField(pig.Canvas):
+
+    def __init__(self, parent):
+
+        super().__init__(parent)
+
+        self.beanstalk = BeanStalk()
+        self.beanstalks = []
+
+    def draw_beanstalks(self):
+
+        for beanstalk in self.beanstalks:
+            beanstalk.draw(self.canvas, self.width, self.height, 'red')
+
+
+    async def run(self):
+        self.sleep = 0.1
+
+        while True:
+            self.canvas.delete('all')
+
+            self.beanstalk.step()
+            
+            if self.beanstalk.is_magic():
+                self.beanstalks.append(
+                    BeanStalk(self.beanstalk.x))
+ 
+            if self.beanstalks:
+                self.draw_beanstalks()
+
+            await curio.sleep(self.sleep)
+    
 
 class BeanStalk:
     """ Draw a beanstalk given a magic seed """
@@ -105,11 +137,9 @@ if __name__ == '__main__':
     #farm.add(BattleShips)
 
     from karmapi.mclock2 import GuidoClock
-    from karmapi.diceware import StingingBats
     
     farm.add(GuidoClock)
-    farm.add(StingingBats)
-    farm.add(BeanStalk)
+    farm.add(BeanField)
 
     curio.run(farm.run(), with_monitor=False)
         
