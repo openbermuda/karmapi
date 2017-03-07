@@ -13,8 +13,8 @@ import math
 import random
 from pathlib import Path
 from tkinter import PhotoImage
-#from PIL import Image
-#import numpy as np
+from PIL import Image
+import numpy as np
 
 from karmapi import pig
 from karmapi.prime import isprime
@@ -51,6 +51,13 @@ class BeanStalk:
 
     def __init__(self, x=None):
 
+        image_name = Path(__file__).parent / 'tree_of_hearts.jpg'
+        self.image = Image.open(image_name)
+
+        data = np.array(self.image.getdata())
+        data = data.reshape(self.image.size + (3,))
+        self.image_data = data
+        
         self.xx = random.random()
         self.yy = random.random()
 
@@ -79,15 +86,21 @@ class BeanStalk:
             xx, yy, fill=colour, font=pig.BIGLY_FONT,
             text=f'{self.x}')
 
-        image_name = Path(__file__).parent / 'tree_of_hearts.jpg'
-        print(image_name, image_name.exists())
-
-        im = PhotoImage(file=image_name)
-
-        #data = np.array(im.getdata())
-        #data = data.reshape(im.size + (3,))
         
-        canvas.create_image(xx, yy, image=im)
+        if self.image:
+            
+
+            width, height = self.image.size
+            phim = PhotoImage(master=canvas, width=width, height=height)
+            canvas.create_image(xx, yy, image=phim)
+
+            bbox = np.array((
+                xx - 100, yy - 100,
+                xx + 100, yy + 100))
+            blit(phim, self.image_data, bbox)
+
+        
+
 
         
 def blit(photoimage, aggimage, bbox=None, colormode=1):
@@ -116,3 +129,24 @@ def blit(photoimage, aggimage, bbox=None, colormode=1):
                     id(data), colormode, id(bbox_array))
         except (ImportError, AttributeError, Tk.TclError):
             raise
+
+
+if __name__ == '__main__':
+
+    #main()
+    from karmapi import currie
+    import curio
+    
+    farm = currie.PigFarm()
+    
+    #farm.add(BattleShips)
+
+    from karmapi.mclock2 import GuidoClock
+    from karmapi.diceware import StingingBats
+    
+    farm.add(GuidoClock)
+    farm.add(StingingBats)
+    farm.add(BeanStalk)
+
+    curio.run(farm.run(), with_monitor=False)
+        

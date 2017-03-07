@@ -85,6 +85,10 @@ class PigFarm:
         self.micks.put(mick)
         self.piglets.put(mick.start())
 
+    def toplevel(self):
+        """ Return toplevel piglet """
+        return self.eloop.app.winfo_toplevel()
+
 
     async def build(self):
         """ Do the piglet build """
@@ -95,7 +99,7 @@ class PigFarm:
 
             #piglet = pig.build(meta)
 
-            piglet = meta(self.eloop.app.winfo_toplevel(), **kwargs)
+            piglet = meta(self.toplevel(), **kwargs)
             piglet.bind('<Key>', self.keypress)
 
             self.widgets.append(piglet)
@@ -250,7 +254,7 @@ class PigFarm:
             filename = inspect.getsourcefile(self.current.__class__)
         farm.add(Eric, dict(filename=filename))
 
-        farm.eloop.app.winfo_toplevel().withdraw()
+        farm.toplevel().withdraw()
         
         await curio.spawn(farm.run())
 
