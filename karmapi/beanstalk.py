@@ -16,6 +16,8 @@ from tkinter import PhotoImage
 from PIL import Image
 import numpy as np
 
+from matplotlib.backends.tkagg import blit
+
 from karmapi import pig
 from karmapi.prime import isprime
 
@@ -88,7 +90,7 @@ class BeanStalk:
 
         
         if self.image:
-            
+            return
 
             width, height = self.image.size
             phim = PhotoImage(master=canvas, width=width, height=height)
@@ -97,13 +99,15 @@ class BeanStalk:
             bbox = np.array((
                 xx - 100, yy - 100,
                 xx + 100, yy + 100))
-            blit(phim, self.image_data, bbox)
+            data = np.array([[random.random() for x in range(200)] for y in range(200)])
+            #blit(phim, data, bbox)
+            #blit(phim, self.image_data, bbox)
 
         
 
 
         
-def blit(photoimage, aggimage, bbox=None, colormode=1):
+def xblit(photoimage, aggimage, bbox=None, colormode=1):
     """ From matplotlib tkagg backend 
 
     Pick this apart to get fast images on a tkcanvas.
