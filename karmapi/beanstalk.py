@@ -97,23 +97,10 @@ class BeanStalk:
                 #width = height = 100
                 phim = PhotoImage(master=canvas, width=width, height=height)
 
-                bbox = np.array((
-                    xx - 100, yy - 100,
-                    xx + 100, yy + 100))
-
-                data = np.array([[[int(random.random() * 255) for x in range(3)]
-                                    for x in range(width)]
-                                    for z in range(height)], dtype=np.uint8)
-
-                #self.image_data = data
                 self.phim = phim
 
-            print(self.image_data.shape, self.image_data.dtype)
             canvas.create_image(xx, yy, image=self.phim)
             blit(self.phim, self.image_data)
-
-            
-            #canvas.update()
 
         
         canvas.create_text(
