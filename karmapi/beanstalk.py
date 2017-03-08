@@ -70,7 +70,7 @@ class BeanField(pig.Canvas):
         self.images = {}
 
         self.add_event_map('l', self.larger)
-        self.add_event_map('s', self.smaller)
+        self.add_event_map('k', self.smaller)
         self.add_event_map('s', self.slow_fade)
         self.add_event_map('f', self.fast_fade)
 
@@ -81,7 +81,7 @@ class BeanField(pig.Canvas):
     async def smaller(self):
         """ Smaller pictures """
 
-        self.scale += 50
+        self.scale -= 50
         
     async def slow_fade(self):
         """ Fade slower """
@@ -99,13 +99,10 @@ class BeanField(pig.Canvas):
         ximage = self.images.get(name)
 
         if ximage:
-            print('cached image')
             image, scale = ximage
-
             if scale == self.scale:
                 return image
 
-        print('opening', name)
         image = Image.open(name)
 
         width, height = image.size
