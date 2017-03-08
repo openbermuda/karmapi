@@ -199,7 +199,7 @@ class button(ttk.Button):
 class Canvas(Pig):
 
     
-    def __init__(self, parent, galleries=None, **kwargs):
+    def __init__(self, parent, gallery=None, **kwargs):
 
         super().__init__(parent)
 
@@ -208,7 +208,7 @@ class Canvas(Pig):
 
         self.canvas = tkinter.Canvas(self)
 
-        self.galleries = galleries or ['.', '../gallery']
+        self.gallery = gallery or ['.', '../gallery']
 
 
         VBoxLayout().addWidget(self.canvas)
@@ -232,7 +232,7 @@ class Canvas(Pig):
 
     def find_image(self, name):
             
-        return imagefind.interpret(dict(galleries=self,galleries, image=name))
+        return imagefind.interpret(dict(galleries=self.gallery, image=name))
 
         
 class PlotImage(Pig):
