@@ -217,6 +217,10 @@ class Canvas(Pig):
         self.canvas.bind("<Configure>", self.on_configure)
 
 
+    def set_background(self, colour='black'):
+
+        self.canvas.configure(bg=colour)
+    
     def on_configure(self, event):
 
         print('new bad size:', event.width, event.height)
@@ -234,7 +238,9 @@ class Canvas(Pig):
             
         return imagefind.interpret(dict(galleries=self.gallery, image=name))
 
-        
+
+
+    
 class PlotImage(Pig):
     """ An image widget
 
