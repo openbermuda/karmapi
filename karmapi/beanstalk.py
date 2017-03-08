@@ -65,13 +65,14 @@ class BeanField(pig.Canvas):
 
         self.beanstalk = BeanStalk(1)
         self.beanstalks = []
-        self.scale = 100
-        self.fade = 10
+        self.scale = 400
+        self.fade = 30
+        self.images = {}
 
         self.add_event_map('l', self.larger)
         self.add_event_map('s', self.smaller)
         self.add_event_map('s', self.slow_fade)
-        self.add_event_map('f', self.slow_fade)
+        self.add_event_map('f', self.fast_fade)
 
     async def larger(self):
         """ Larger pictures """
@@ -87,13 +88,22 @@ class BeanField(pig.Canvas):
 
         self.fade += 5
 
-    async def slow_faster(self):
+    async def fast_fade(self):
         """ Fade faster """
 
         if self.fade > 5:
             self.fade -= 5
 
     def load_image(self, name):
+
+        ximage = self.images.get(name)
+
+        if ximage:
+            print('cached image')
+            image, scale = ximage
+
+            if scale == self.scale:
+                return image
 
         print('opening', name)
         image = Image.open(name)
@@ -104,9 +114,13 @@ class BeanField(pig.Canvas):
 
         height /= wscale
         width /= wscale
+
         print(f'load {width} {height}')
         
         image = image.resize((int(width), int(height))).convert('RGBA')
+
+        # cache image
+        self.images[name] = image, self.scale
 
         return image
 
@@ -122,14 +136,14 @@ class BeanField(pig.Canvas):
         beans = []
         tt = time.time()
         for bean in self.beanstalks:
-            if (tt - bean.create_time) < 20:
+            if (tt - bean.create_time) < self.fade:
                 beans.append(bean)
                 
         self.beanstalks = beans
         
 
     async def run(self):
-        self.sleep = 0.1
+        self.sleep = 0.05
         self.set_background()
         
         while True:
@@ -199,7 +213,8 @@ class BeanStalk:
         if self.image:
 
             tt = time.time()
-            alpha = 255 - (self.fade * (tt - self.create_time))
+            fade = int(255 / self.fade)
+            alpha = 255 - (fade * (tt - self.create_time))
             self.image.putalpha(int(alpha))
 
             self.phim = ImageTk.PhotoImage(self.image)
