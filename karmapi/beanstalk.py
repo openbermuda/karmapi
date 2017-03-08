@@ -17,7 +17,7 @@ import time
 from tkinter import PhotoImage
 from PIL import Image, ImageTk
 
-from karmapi import pig
+from karmapi import pig, piglet
 from karmapi.prime import isprime
 
 def is3xprime(x):
@@ -94,12 +94,13 @@ class BeanField(pig.Canvas):
 class BeanStalk:
     """ Draw a beanstalk given a magic seed """
 
-    def __init__(self, x=None):
+    def __init__(self, x=None, name=None):
 
+        self.name = name
         image_name = Path(__file__).parent / 'tree_of_hearts.jpg'
 
-        self.image = Image.open(image_name)
-        self.image = self.image.resize((100, 76)).convert('RGBA')
+        self.images = []
+        self.image_pick = None
 
         self.xx = random.random()
         self.yy = random.random()
@@ -110,9 +111,33 @@ class BeanStalk:
 
         self.delta = 1
 
+    def add_image(self, inage_name, scale=100):
+        
+        image = Image.open(image_name)
+
+        width, height = image.size
+
+        wscale = width / scale
+
+        height *= wscale
+        widht *= wscale
+        
+        image = image.resize((int(width), int(height))).convert('RGBA')
+
+        self.images.append(image)
+
+
     def step(self, delta=1):
 
         self.x += self.delta
+
+        if len(self.images) < 10:
+            if self.name:
+                self.add_image(name)
+
+        if  self.images:
+            self.image_pick = random.randint(1, len(self.images))
+
         if random.random() < 0.01:
             self.xx = random.random()
             self.yy = random.random()
@@ -142,22 +167,28 @@ class BeanStalk:
             xx, yy + 50, fill=colour, font=pig.BIGLY_FONT,
             text=f'{self.x}')
 
+def main():
 
+    parser = argparse,ArgumentParser()
 
-if __name__ == '__main__':
+    parser.add_argument('--gallery', nargs='*', default=['.', '../gallery'])
 
-    #main()
+    args = parser.parse_args()
+
     from karmapi import currie
     import curio
     
     farm = currie.PigFarm()
     
-    #farm.add(BattleShips)
-
     from karmapi.mclock2 import GuidoClock
     
     farm.add(GuidoClock)
-    farm.add(BeanField)
+    farm.add(BeanField(galleries=args.galleries))
 
     curio.run(farm.run(), with_monitor=False)
+    
+
+if __name__ == '__main__':
+
+    main()
         

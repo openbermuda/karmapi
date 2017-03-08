@@ -31,6 +31,8 @@ from matplotlib import pyplot as plt
 
 from pandas.formats.format import EngFormatter
 
+from ripl import imagefind
+
 from karmapi import base, yosser
 
 from . import core
@@ -197,7 +199,7 @@ class button(ttk.Button):
 class Canvas(Pig):
 
     
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, galleries=None, **kwargs):
 
         super().__init__(parent)
 
@@ -206,11 +208,14 @@ class Canvas(Pig):
 
         self.canvas = tkinter.Canvas(self)
 
+        self.galleries = galleries or ['.', '../gallery']
+
+
         VBoxLayout().addWidget(self.canvas)
 
 
         self.canvas.bind("<Configure>", self.on_configure)
-        
+
 
     def on_configure(self, event):
 
@@ -224,6 +229,10 @@ class Canvas(Pig):
 
         self.canvas.configure(scrollregion=(0, 0, width, height))
 
+
+    def find_image(self, name):
+            
+        return imagefind.interpret(dict(galleries=self,galleries, image=name))
 
         
 class PlotImage(Pig):
