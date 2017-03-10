@@ -281,6 +281,7 @@ def main():
         '--files',
         nargs='+',
         default=__file__)
+    parser.add_argument('--nomick', action='store_true')
 
     args = parser.parse_args()
 
@@ -360,7 +361,8 @@ def main():
     if args.wave:
         farm.add_mick(hush.Connect(hush.open_wave(args.wave)))
     else:
-        farm.add_mick(hush.Connect())
+        if not args.nomick:
+            farm.add_mick(hush.Connect())
         farm.add_mick(hush.Wave(mode='square'))
         farm.add_mick(hush.Wave())
 
