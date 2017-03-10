@@ -14,7 +14,7 @@ from hypothesis.strategies import integers
 from karmapi import prime
 
 
-PRIMES = set([2, 3, 5, 7, 11, 13, 17, 19, 23])
+PRIMES = set([2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31])
 
 def isprime(n):
     """ In lieu of somebody else solving this problem 

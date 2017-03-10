@@ -71,7 +71,7 @@ def isprime(n, verbose=None):
 
     end = n ** 0.5
     
-    genprimes(n)
+    genprimes(end)
 
     for x in PRIMES:
         if x > end:
@@ -104,7 +104,7 @@ def genprimes(end):
 
     n = PRIMES[-1]
 
-    while n < end:
+    while n <= end:
         
         if isprime(n):
             PRIMES.append(n)
