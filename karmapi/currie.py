@@ -254,10 +254,10 @@ class PigFarm:
             filename = inspect.getsourcefile(self.current.__class__)
         farm.add(Eric, dict(filename=filename))
 
-        farm.toplevel().withdraw()
-        
         await curio.spawn(farm.run())
 
+        farm.toplevel().withdraw()
+        
 
 
 

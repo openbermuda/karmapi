@@ -135,7 +135,29 @@ Want something that installs on a pi reasonably quickly,
 
 [Assume pi already has python3.6]
 
-## Readthedocs
+## Documentation
+
+This README is the most current at the moment.
+
+There are *rst* files in the *docs* folder and a *conf.py* for *sphinx*::
+
+  pip install sphinx
+
+(pip3,6 if you have multiple pythons).
+
+After that just run:
+
+   make html
+
+This should build html docs in the folder *_build/html*.
+
+These can be served with python3::
+
+    python -m http.server
+
+This is not a secure server, but great for testing and on a trusted network.
+
+### Readthedocs
 
 This might already be working.  FIXME check,
 
