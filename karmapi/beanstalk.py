@@ -123,9 +123,13 @@ class BeanField(pig.Canvas):
 
 
     def draw_beanstalks(self):
-
+        """ Draw the beanstalks """
         for beanstalk in self.beanstalks:
-            beanstalk.draw(self.canvas, self.width, self.height, 'red')
+
+            try:
+                beanstalk.draw(self.canvas, self.width, self.height, 'red')
+            except RuntimeError as error:
+                print('Whoops -- run time error drawing', error)
 
 
     def prune(self):
@@ -151,7 +155,7 @@ class BeanField(pig.Canvas):
             if self.beanstalk.is_magic():
 
                 name = self.find_image(self.name)
-                print(name)
+                
                 image = self.load_image(name)
                 
                 self.beanstalks.append(
@@ -195,7 +199,8 @@ class BeanStalk:
 
     def is_magic(self):
 
-        return magic_seed(self.x)
+        return isprime(self.x)
+
 
     def draw(self, canvas, width, height, colour):
 

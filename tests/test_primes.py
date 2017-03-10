@@ -6,7 +6,7 @@ If you have an idea about primes you can test it here.
 
 import unittest
 
-from hypothesis import given
+from hypothesis import given, example
 
 from hypothesis.strategies import integers
 
@@ -14,7 +14,7 @@ from hypothesis.strategies import integers
 from karmapi import prime
 
 
-PRIMES = set([2, 3, 5, 7, 11, 13, 17, 19, 23])
+PRIMES = set([2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31])
 
 def isprime(n):
     """ In lieu of somebody else solving this problem 
@@ -52,6 +52,7 @@ class Prime(unittest.TestCase):
 
 
     @given(integers(min_value=2, max_value=10000))
+    @example(25)
     def test_isnprime(self, n):
 
         is_it_prime = isprime(n)
