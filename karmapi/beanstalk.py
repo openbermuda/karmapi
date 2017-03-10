@@ -199,7 +199,8 @@ class BeanStalk:
 
     def is_magic(self):
 
-        return magic_seed(self.x)
+        return isprime(self.x)
+
 
     def draw(self, canvas, width, height, colour):
 
