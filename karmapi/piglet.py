@@ -440,29 +440,65 @@ class MagicCarpet(PlotImage):
 
         print('MagicCarpet', *args)
 
-        self.image_state = False
-        self.table_state = False
+        self.mode = 'plot'
+
+        self.add_event_map('t', self.table)
 
     async def image(self):
         """ Toggle image state """
         pass
-        
+
+    def compute_data(self):
+
+        self.data = [[random.randint(x, 10 * x) for x in range(1, 6)] for y in range(3)] 
+
     async def table(self):
         """ Toggle image state """
 
-        # draw the data as a table
+        nextmode = dict(
+            plot='table',
+            table='both',
+            both='plot')
 
-    def load_table(self):
-        """ Load table data """
         self.axes.clear()
-        self.axes.table(self.data)
+        self.mode = nextmode.get(self.mode, 'table')
 
-    def load(self, data):
+        if self.mode != 'table':
+            self.plot()
 
-        print('magic carpet loading data', len(data))
-        self.data = data
+
+        if self.mode != 'plot':
+            self.draw_table()
+        
+        self.draw()
 
         
+        
+    def draw_table(self):
+
+        from matplotlib import colors, cm, table
+        norm = colors.Normalize()
+        #self.axes.clear()
+        colours = cm.get_cmap()(norm(self.data))
+        print(colours)
+
+        locs = list(table.Table.codes.keys())
+        loc = locs[random.randint(1, 17)]
+
+        colours[:, :, 3] = 0.5
+        self.axes.table(
+            cellText=self.data, cellColours=colours,
+            loc=loc)
+            #loc='upper_center')
+        self.axes.set_title(f'table location {loc}')
+        self.axes.set_axis_off()
+
+
+    async def run(self):
+
+        self.compute_data()
+        self.plot()
+        self.draw()
         
         
 class KPlot(PlotImage):
