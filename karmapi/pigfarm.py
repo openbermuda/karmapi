@@ -11,7 +11,10 @@ import curio
 from pathlib import Path
 import inspect
 
+from PIL import Image
+
 from karmapi import hush
+from karmapi import pig
 
 from tkinter import Toplevel
 
@@ -252,6 +255,8 @@ class PigFarm:
         farm.toplevel().withdraw()
         
 
+
+
 class Pig:
     """ Display piglets, part of a farm 
 
@@ -270,6 +275,86 @@ class Pig:
     """
     pass
 
+
+class Yard(pig.Canvas):
+    """ A place to draw piglets """
+    def __init__(self, parent, *args, **kwargs):
+
+        super().__init__(parent)
+
+        self.scale = 400
+        self.fade = 30
+        self.sleep = 0.05
+        self.naptime = self.sleep
+        self.images = {}
+
+
+        self.add_event_map('s', self.sleepy)
+        self.add_event_map('w', self.wakey)
+        
+        self.add_event_map('d', self.slow_fade)
+        self.add_event_map('f', self.fast_fade)
+
+        self.add_event_map('l', self.larger)
+        self.add_event_map('k', self.smaller)
+        
+
+    async def larger(self):
+        """ Larger pictures """
+        self.scale += 50
+
+    async def smaller(self):
+        """ Smaller pictures """
+
+        self.scale -= 50
+        
+    async def slow_fade(self):
+        """ Fade slower """
+
+        self.fade += 5
+
+    async def fast_fade(self):
+        """ Fade faster """
+
+        if self.fade > 5:
+            self.fade -= 5
+
+    async def sleepy(self):
+        """ sleep more """
+        self.sleep += self.naptime
+
+    async def wakey(self):
+        """ more awake """
+        if self.sleep > self.naptime:
+            self.sleep -= self.naptime
+        
+
+    def load_image(self, name):
+
+        ximage = self.images.get(name)
+
+        if ximage:
+            image, scale = ximage
+            if scale == self.scale:
+                return image
+
+        image = Image.open(name)
+
+        width, height = image.size
+
+        wscale = width / self.scale
+
+        height /= wscale
+        width /= wscale
+
+        print(f'load {width} {height}')
+        
+        image = image.resize((int(width), int(height))).convert('RGBA')
+
+        # cache image
+        self.images[name] = image, self.scale
+
+        return image
 
 class Piglet:
     """ A base piglet class 
