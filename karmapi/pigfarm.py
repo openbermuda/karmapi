@@ -356,6 +356,9 @@ class Yard(pig.Canvas):
 
         return image
 
+class MagicCarpet(pig.Video):
+    pass
+    
 class Piglet:
     """ A base piglet class 
 
