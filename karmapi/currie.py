@@ -343,6 +343,7 @@ def main():
     else:
         words = None
 
+    farm.add(piglet.MagicCarpet)
     farm.add(talk.Talk)
     farm.add(dice.StingingBats, dict(words=words))
     farm.add(StingingBats)

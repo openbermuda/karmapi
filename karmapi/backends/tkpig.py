@@ -263,9 +263,6 @@ class PlotImage(Pig):
         # We want the axes cleared every time plot() is called
         self.axes.hold(False)
 
-        self.compute_data()
-        self.plot()
-
 
     def __getattr__(self, attr):
 
@@ -291,6 +288,11 @@ class PlotImage(Pig):
         """
         self.axes.plot(self.data)
         #self.axes.imshow(self.data)
+
+    async def run(self):
+        
+        self.compute_data()
+        self.plot()
 
 
 
