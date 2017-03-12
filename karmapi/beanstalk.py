@@ -184,6 +184,9 @@ def main():
     parser.add_argument(
         '--snowy', action='store_true',
         help='random cat pictures')
+    parser.add_argument(
+        '--name', default='tree',
+        help='what to show')
                             
 
     args = parser.parse_args()
@@ -194,7 +197,7 @@ def main():
     
     farm.add(GuidoClock)
 
-    name = 'tree'
+    name = args.name
     if args.snowy:
         name = 'cat'
         
