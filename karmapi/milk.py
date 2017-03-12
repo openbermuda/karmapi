@@ -96,6 +96,32 @@ class Curio(pigfarm.Docs):
 
         return text, tasks
 
+    def task_info(self):
+
+        text = self.mon.ps().decode()
+        for line in text.split('\n'):
+            
+            if line.startswith('Task'):
+                continue
+            elif line.startswith('----'):
+                continue
+            elif line.startswith('curio'):
+                continue
+                
+            tid, state, cycles, timeout, name = line.split()
+
+            tid = int(tid)
+            cycles = int(cycles)
+            timeout = timeout or float(timeout)
+            
+            yield dict(
+                tid=tid,
+                state=state,
+                cycles=cycles,
+                timeout=timeout,
+                name=name)
+
+
 
     async def poll(self):
 
@@ -104,8 +130,9 @@ class Curio(pigfarm.Docs):
     async def magic(self):
         """ magic curio """
         print('magic time')
-        for text, task in self.get_tasks():
-            print(text)
+        for task in self.task_info():
+            print(task)
+
 
     async def start(self):
 
