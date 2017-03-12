@@ -44,6 +44,9 @@ def main():
         '--files',
         nargs='+',
         default=__file__)
+    parser.add_argument('--nomick', action='store_true')
+    parser.add_argument('--sense', action='store_true',
+                        help="if you have a sense hat")
 
     args = parser.parse_args()
 
@@ -120,11 +123,17 @@ def main():
     from karmapi import prime
     farm.add(prime.Prime)
 
+    if args.sense:
+        from karmapi import sense
+        farm.add(sense.WeatherHat)
+        farm.add(sense.OrientHat)
+
     # add a couple of micks to the Farm
     if args.wave:
         farm.add_mick(hush.Connect(hush.open_wave(args.wave)))
     else:
-        farm.add_mick(hush.Connect())
+        if not args.nomick:
+            farm.add_mick(hush.Connect())
         farm.add_mick(hush.Wave(mode='square'))
         farm.add_mick(hush.Wave())
 
