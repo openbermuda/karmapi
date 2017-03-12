@@ -28,6 +28,33 @@ class CurioMonitor:
         self.mon.send('where {}\n'.format(n).encode())
         return self.mon.recv(100000)
 
+    def task_info(self):
+
+        text = self.mon.ps().decode()
+        for line in text.split('\n'):
+            
+            if line.startswith('Task'):
+                continue
+            elif line.startswith('----'):
+                continue
+            elif line.startswith('curio'):
+                continue
+                
+            tid, state, cycles, timeout, name = line.split()
+
+            tid = int(tid)
+            cycles = int(cycles)
+            timeout = timeout or float(timeout)
+            
+            yield dict(
+                tid=tid,
+                state=state,
+                cycles=cycles,
+                timeout=timeout,
+                name=name)
+
+
+
 class Curio(pigfarm.Docs):
     """ A Curio Monitor 
 
@@ -52,6 +79,33 @@ class Curio(pigfarm.Docs):
 
         while True:
             self.task_id -= 1
+    def task_info(self):
+
+        text = self.mon.ps().decode()
+        for line in text.split('\n'):
+            
+            if line.startswith('Task'):
+                continue
+            elif line.startswith('----'):
+                continue
+            elif line.startswith('curio'):
+                continue
+                
+            tid, state, cycles, timeout, name = line.split()
+
+            tid = int(tid)
+            cycles = int(cycles)
+            timeout = timeout or float(timeout)
+            
+            yield dict(
+                tid=tid,
+                state=state,
+                cycles=cycles,
+                timeout=timeout,
+                name=name)
+
+
+
             if self.task_id < 0:
                 self.task_id = max_id
                 
@@ -96,42 +150,22 @@ class Curio(pigfarm.Docs):
 
         return text, tasks
 
-    def task_info(self):
-
-        text = self.mon.ps().decode()
-        for line in text.split('\n'):
-            
-            if line.startswith('Task'):
-                continue
-            elif line.startswith('----'):
-                continue
-            elif line.startswith('curio'):
-                continue
-                
-            tid, state, cycles, timeout, name = line.split()
-
-            tid = int(tid)
-            cycles = int(cycles)
-            timeout = timeout or float(timeout)
-            
-            yield dict(
-                tid=tid,
-                state=state,
-                cycles=cycles,
-                timeout=timeout,
-                name=name)
-
-
-
     async def poll(self):
 
         self.set_text(self.get_tasks()[0])
 
     async def magic(self):
-        """ magic curio """
-        print('magic time')
-        for task in self.task_info():
-            print(task)
+        """ magic curio 
+
+        Here we really want to keep polling the kernel
+        and display the data.
+
+        But I am thinking the curio monitor is really a mick, it is
+        as source of data.
+
+        So turn it into frames and then we can feed it to viewers.
+        """
+        self.farm.add(MilkOnMagicCarpet, dict(mon=self.mon))
 
 
     async def start(self):
@@ -142,3 +176,50 @@ class Curio(pigfarm.Docs):
     async def run(self):
 
         await self.poll()
+
+
+class MilkOnMagicCarpet(pigfarm.MagicCarpet):
+
+    def __init__(self, parent, mon=None):
+
+        super().__init__(parent)
+
+        self.mon = mon
+
+    async def start(self):
+
+        if not self.mon:
+            self.mon = CurioMonitor()
+        self.task_id = 0
+
+    async def run(self):
+        """ magic curio 
+
+        Here we really want to keep polling the kernel
+        and display the data.
+
+        But I am thinking the curio monitor is really a mick, it is
+        as source of data.
+
+        So turn it into frames and then we can feed it to viewers.
+        """
+
+        self.frames = []
+        while True:
+            print(self.sleep)
+            print('magic time')
+            tasks = list(self.task_info())
+
+            self.frames.append([x.cycles for x in tasks])
+
+            self.axes.imshow(self.frames)
+
+            self.prune()
+            
+            await curio.sleep(self.sleep)
+    
+
+    def prune(self):
+
+        if len(self.frames) > 100:
+            self.frames = self.frames[-100:]
