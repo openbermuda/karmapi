@@ -14,7 +14,7 @@ import inspect
 from PIL import Image
 
 from karmapi import hush
-from karmapi import pig
+from karmapi import piglet
 
 from tkinter import Toplevel
 
@@ -92,8 +92,6 @@ class PigFarm:
         while True:
             meta, kwargs = await self.builds.get()
             print('building piglet:', meta)
-
-            #piglet = pig.build(meta)
 
             piglet = meta(self.toplevel(), **kwargs)
             piglet.bind('<Key>', self.keypress)
@@ -274,17 +272,16 @@ class Pig:
     pass
 
 
-class Yard(pig.Canvas):
-    """ A place to draw piglets """
-    def __init__(self, parent, *args, **kwargs):
+class Space:
 
-        super().__init__(parent)
+    def __init__(self):
 
         self.scale = 400
         self.fade = 30
         self.sleep = 0.05
         self.naptime = self.sleep
         self.images = {}
+        self.artist = None
 
 
         self.add_event_map('s', self.sleepy)
@@ -295,6 +292,12 @@ class Yard(pig.Canvas):
 
         self.add_event_map('l', self.larger)
         self.add_event_map('k', self.smaller)
+
+
+    def __getattr__(self, attr):
+        """ Delegate to artist """
+        
+        return getattr(self.artist, attr)
         
 
     async def larger(self):
@@ -354,10 +357,23 @@ class Yard(pig.Canvas):
 
         return image
 
-class MagicCarpet(pig.Video):
-    pass
 
-class Docs(pig.Docs):
+class Yard(Space):
+    """ A place to draw piglets """
+    def __init__(self, parent, *args, **kwargs):
+
+
+        self.artist = piglet.Canvas(parent)
+        
+
+class MagicCarpet(piglet.PlotImage):
+
+    def __init__(self, parent):
+        
+        self.artist = piglet.PlotImage(parent)
+
+
+class Docs(piglet.Docs):
     pass
     
     
