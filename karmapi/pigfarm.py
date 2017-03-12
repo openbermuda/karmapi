@@ -224,10 +224,8 @@ class PigFarm:
     async def show_monitor(self):
         """ Show curio monitor """
         
-        from karmapi import widgets
-        farm = PigFarm()
-        farm.add(widgets.Curio)
-        await curio.spawn(farm.run())
+        from karmapi import milk
+        self.add(milk.Curio)
 
     async def mon_update(self, mon):
 
@@ -358,6 +356,10 @@ class Yard(pig.Canvas):
 
 class MagicCarpet(pig.Video):
     pass
+
+class Docs(pig.Docs):
+    pass
+    
     
 class Piglet:
     """ A base piglet class 

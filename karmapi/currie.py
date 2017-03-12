@@ -73,8 +73,8 @@ def main():
     from karmapi import talk
 
     if args.monitor:
-
-        farm.add(widgets.Curio)
+        from karmapi import milk
+        farm.add(milk.Curio)
 
     images = [
         dict(image='climate_karma_pi_and_jupyter.png', title=''),
