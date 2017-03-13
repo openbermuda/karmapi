@@ -14,7 +14,7 @@ import inspect
 from PIL import Image
 
 from karmapi import hush
-from karmapi import pig
+from karmapi import piglet
 
 from tkinter import Toplevel
 
@@ -93,10 +93,7 @@ class PigFarm:
             meta, kwargs = await self.builds.get()
             print('building piglet:', meta)
 
-            #piglet = pig.build(meta)
-
             piglet = meta(self.toplevel(), **kwargs)
-            piglet.bind('<Key>', self.keypress)
 
             self.widgets.append(piglet)
 
@@ -104,7 +101,7 @@ class PigFarm:
             piglet.farm = self
             print('built', meta, piglet)
 
-            await self.piglets.put(piglet.start())
+            await piglet.start()
 
     async def start_piglet(self):
 
@@ -119,11 +116,11 @@ class PigFarm:
     async def help(self):
         """ Show help """
         print('Help')
-        print(self.event_map)
 
         keys = {}
         if self.current:
             keys = self.current.event_map.copy()
+            print('current keys:', keys)
 
         keys.update(self.event_map)
         msg = ''
@@ -159,12 +156,6 @@ class PigFarm:
         self.current = self.widgets.pop()
         await self.start_piglet()
 
-    def keypress(self, event):
-
-        print('currie event', event)
-        # Fixme -- turn these into events that we can push onto piglet queues
-
-        self.events.put(event)
 
     async def run(self):
         """ Make the pigs run """
@@ -224,9 +215,9 @@ class PigFarm:
     async def show_monitor(self):
         """ Show curio monitor """
         
-        from karmapi import widgets
+        from karmapi import milk
         farm = PigFarm()
-        farm.add(widgets.Curio)
+        farm.add(milk.Curio)
         await curio.spawn(farm.run())
 
     async def mon_update(self, mon):
@@ -276,17 +267,17 @@ class Pig:
     pass
 
 
-class Yard(pig.Canvas):
-    """ A place to draw piglets """
-    def __init__(self, parent, *args, **kwargs):
+class Space:
 
-        super().__init__(parent)
+    def __init__(self):
 
         self.scale = 400
         self.fade = 30
         self.sleep = 0.05
         self.naptime = self.sleep
         self.images = {}
+        self.artist = None
+        self.event_map = {}
 
 
         self.add_event_map('s', self.sleepy)
@@ -297,6 +288,16 @@ class Yard(pig.Canvas):
 
         self.add_event_map('l', self.larger)
         self.add_event_map('k', self.smaller)
+
+    def add_event_map(self, event, coro):
+
+        self.event_map[event] = coro
+        
+
+    def __getattr__(self, attr):
+        """ Delegate to artist """
+        
+        return getattr(self.artist, attr)
         
 
     async def larger(self):
@@ -356,8 +357,28 @@ class Yard(pig.Canvas):
 
         return image
 
-class MagicCarpet(pig.Video):
+
+class Yard(Space):
+    """ A place to draw piglets """
+    def __init__(self, parent, *args, **kwargs):
+
+        super().__init__()
+
+        self.artist = piglet.Canvas(parent)
+        
+
+class MagicCarpet(Space):
+
+    def __init__(self, parent):
+        
+        super().__init__()
+
+        self.artist = piglet.PlotImage(parent)
+
+
+class Docs(piglet.Docs):
     pass
+    
     
 class Piglet:
     """ A base piglet class 

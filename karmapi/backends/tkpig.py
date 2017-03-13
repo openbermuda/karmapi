@@ -43,44 +43,6 @@ global YQ
 YQ = curio.Queue()
 APP = None
 
-def printf(*args, **kwargs):
-
-    print(*args, flush=True, **kwargs)
-
-
-
-def bindings():
-    """ Return the bindings between widgets and callbacks """
-    return {
-        'Run': 'runit'}
-
-def bind(piggy, binds):
-
-    for widget, binding in binds.items():
-
-        try:
-            w = piggy[widget]
-        except:
-            continue
-
-        try:
-            cb = getattr(piggy, binding)
-        except AttributeError:
-            cb = base.get_item(binding)
-
-        w.configure(command=cb)
-
-
-def get_parser():
-
-    parser = argparse.ArgumentParser()
-
-    # parser.add_argument()
-
-    return parser
-
-
-
 class Pig(ttk.Frame, core.Pig):
 
     def __init__(self, parent, *args):
@@ -89,9 +51,6 @@ class Pig(ttk.Frame, core.Pig):
         core.Pig.__init__(self, parent)
 
         print(super(core.Pig, self).__init__)
-
-        # FIXME: bind more events -- or let the Farm worry about that?
-        self.bind('<Key>', self.keypress)
 
         
     def setLayout(self, layout):
@@ -105,14 +64,6 @@ class Pig(ttk.Frame, core.Pig):
     def show(self):
         pass
 
-
-    def keypress(self, event):
-        """ Pig keypress event """
-        print('PIGKEY', event.keycode)
-        
-        #FIXME -- probably want a string rather than keycode
-
-        self.event_queue.push(event.keycode)
 
 
 class Help:
@@ -444,10 +395,7 @@ class AppEventLoop:
         self.events = events
 
     def keypress(self, event):
-        """ Just use this to check key events hitting top level """
-        print('tk app event loop', event)
-        print(event.char, event.keysym, event.keycode)
-
+        """ Take tk events and stick them in a curio queue """
         self.events.put(event.char)
         
         return True

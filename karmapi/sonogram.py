@@ -87,7 +87,6 @@ class SonoGram(pig.Video):
         pass
 
     async def get_source(self):
-
         return await self.farm.micks.get()
 
     def sono_calc(self, data):
@@ -123,6 +122,7 @@ class SonoGram(pig.Video):
 
     async def start(self):
 
+        self.farm.status()
         self.mick = await self.get_source()
 
 
@@ -170,6 +170,7 @@ class SonoGram(pig.Video):
                 power = abs(sono)
 
                 vmax = power[-1].max()
+                vmax = max([max(x) for x in power])
                 vmin = 0
                 #print(max(power))
 

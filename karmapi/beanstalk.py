@@ -70,8 +70,6 @@ class BeanField(pigfarm.Yard):
 
 
 
-
-
     def draw_beanstalks(self):
         """ Draw the beanstalks """
         for beanstalk in self.beanstalks:
