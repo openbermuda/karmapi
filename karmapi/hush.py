@@ -170,15 +170,20 @@ class Wave:
 
         n = 2 * CHUNK
 
-        if mode == 'square':
-            frames = int(n / 32)
-            plus = [3000] * 16
-            minus = [-3000] * 16
-            data = (plus + minus) * frames
-        else:
-            data = np.arange(n)
-            data = np.sin(data * math.pi / 50.0) * (2**15 - 1)
+        data = np.arange(n)
+        data = np.sin(data * math.pi / 50.0) * (2**15 - 1)
 
+        if mode == 'square':
+            maxval = (2 ** 15) - 1
+
+            square = []
+            for x in data:
+                if x > 0:
+                    square.append(maxval)
+                else:
+                    square.append(-maxval)
+            data = square
+                
         print('xxxxxxxxxxxxxxxxx', mode, len(data))
 
         self.data = data

@@ -96,8 +96,10 @@ class InfinitySlalom(pig.Video):
 
     async def start(self):
 
-        self.mick = await self.get_source()
 
+        # FIXME: let a data source such as a mick drive the animation
+        #self.mick = await self.get_source()
+        pass
 
     async def run(self):
         """ Run the animation 
