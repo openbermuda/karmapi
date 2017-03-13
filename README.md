@@ -169,10 +169,6 @@ A release is overdue.  The next one will require python3.6.
 
 For now, probably best to install from source code,
 
-pip3.x install karmapi
-
-x = 5 or 6, may be just 3.6 soon.
-
 ### Making a new release
 
 Install some stuff needed to help with building releases:

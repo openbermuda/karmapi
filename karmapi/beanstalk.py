@@ -23,8 +23,7 @@ import curio
 
 from karmapi import pig, piglet
 from karmapi.prime import isprime
-from karmapi import currie
-    
+from karmapi import pigfarm
 
 def is3xprime(x):
     """ Tests if n is 3 times a prime """
@@ -52,11 +51,11 @@ def magic_seed(x=3000657567, k=30):
 
     return is3xprime(yy)    
 
-class BeanField(pig.Canvas):
+class BeanField(pigfarm.Yard):
 
     def __init__(self, parent, gallery=None, name='tree'):
 
-        super().__init__(parent)
+        super().__init__(parent, gallery=gallery, name=name)
 
         self.name = name
         
@@ -69,57 +68,8 @@ class BeanField(pig.Canvas):
         self.fade = 30
         self.images = {}
 
-        self.add_event_map('l', self.larger)
-        self.add_event_map('k', self.smaller)
-        self.add_event_map('s', self.slow_fade)
-        self.add_event_map('f', self.fast_fade)
 
-    async def larger(self):
-        """ Larger pictures """
-        self.scale += 50
 
-    async def smaller(self):
-        """ Smaller pictures """
-
-        self.scale -= 50
-        
-    async def slow_fade(self):
-        """ Fade slower """
-
-        self.fade += 5
-
-    async def fast_fade(self):
-        """ Fade faster """
-
-        if self.fade > 5:
-            self.fade -= 5
-
-    def load_image(self, name):
-
-        ximage = self.images.get(name)
-
-        if ximage:
-            image, scale = ximage
-            if scale == self.scale:
-                return image
-
-        image = Image.open(name)
-
-        width, height = image.size
-
-        wscale = width / self.scale
-
-        height /= wscale
-        width /= wscale
-
-        print(f'load {width} {height}')
-        
-        image = image.resize((int(width), int(height))).convert('RGBA')
-
-        # cache image
-        self.images[name] = image, self.scale
-
-        return image
 
 
     def draw_beanstalks(self):
@@ -144,7 +94,9 @@ class BeanField(pig.Canvas):
         
 
     async def run(self):
+
         self.sleep = 0.05
+
         self.set_background()
         
         while True:
@@ -232,17 +184,20 @@ def main():
     parser.add_argument(
         '--snowy', action='store_true',
         help='random cat pictures')
+    parser.add_argument(
+        '--name', default='tree',
+        help='what to show')
                             
 
     args = parser.parse_args()
 
-    farm = currie.PigFarm()
+    farm = pigfarm.PigFarm()
     
     from karmapi.mclock2 import GuidoClock
     
     farm.add(GuidoClock)
 
-    name = 'tree'
+    name = args.name
     if args.snowy:
         name = 'cat'
         
