@@ -205,19 +205,21 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
         return self.state_map[state]
 
     async def states(self):
+        """ Show task states """
         if self.mode != 'states':
             self.frames = []
             
-        self.mode = 'states'
+        self.mode = 'state'
 
     async def timeouts(self):
+        """ Plot timeouts """
         if self.mode != 'timeout':
             self.frames = []
             
         self.mode = 'timeout'
 
     async def cycles(self):
-
+        """ Show task cycles """
         if self.mode != 'cycles':
             self.frames = []
 
@@ -246,8 +248,9 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
 
 
     async def run(self):
-        """ magic curio 
+        """ magic curio """
 
+        """
         Here we really want to keep polling the kernel
         and display the data.
 
