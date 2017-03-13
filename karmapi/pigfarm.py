@@ -94,7 +94,6 @@ class PigFarm:
             print('building piglet:', meta)
 
             piglet = meta(self.toplevel(), **kwargs)
-            piglet.bind('<Key>', self.keypress)
 
             self.widgets.append(piglet)
 
@@ -102,7 +101,7 @@ class PigFarm:
             piglet.farm = self
             print('built', meta, piglet)
 
-            await self.piglets.put(piglet.start())
+            await piglet.start()
 
     async def start_piglet(self):
 
@@ -117,11 +116,11 @@ class PigFarm:
     async def help(self):
         """ Show help """
         print('Help')
-        print(self.event_map)
 
         keys = {}
         if self.current:
             keys = self.current.event_map.copy()
+            print('current keys:', keys)
 
         keys.update(self.event_map)
         msg = ''
@@ -157,12 +156,6 @@ class PigFarm:
         self.current = self.widgets.pop()
         await self.start_piglet()
 
-    def keypress(self, event):
-
-        print('currie event', event)
-        # Fixme -- turn these into events that we can push onto piglet queues
-
-        self.events.put(event)
 
     async def run(self):
         """ Make the pigs run """
@@ -282,6 +275,7 @@ class Space:
         self.naptime = self.sleep
         self.images = {}
         self.artist = None
+        self.event_map = {}
 
 
         self.add_event_map('s', self.sleepy)
@@ -293,6 +287,10 @@ class Space:
         self.add_event_map('l', self.larger)
         self.add_event_map('k', self.smaller)
 
+    def add_event_map(self, event, coro):
+
+        self.event_map[event] = coro
+        
 
     def __getattr__(self, attr):
         """ Delegate to artist """
@@ -362,14 +360,17 @@ class Yard(Space):
     """ A place to draw piglets """
     def __init__(self, parent, *args, **kwargs):
 
+        super().__init__()
 
         self.artist = piglet.Canvas(parent)
         
 
-class MagicCarpet(piglet.PlotImage):
+class MagicCarpet(Space):
 
     def __init__(self, parent):
         
+        super().__init__()
+
         self.artist = piglet.PlotImage(parent)
 
 

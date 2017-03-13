@@ -74,7 +74,7 @@ class Pigs(Pig):
         for tab in self.meta.get('tabs', []):
 
             name = tab['name']
-            printf(name)
+            print(name)
 
             widgets = tab.get('widgets')
 
@@ -132,11 +132,11 @@ class Pigs(Pig):
         """
         from datetime import datetime
         sleep = random.randint(1, 20)
-        printf("running doit doit doit {} {}".format(sleep, datetime.now()))
+        print("running doit doit doit {} {}".format(sleep, datetime.now()))
         start = time.time()
         await curio.sleep(sleep)
         end = time.time()
-        printf('actual sleep {} {} {}'.format(
+        print('actual sleep {} {} {}'.format(
             sleep, end-start, datetime.now()))
         return sleep
 
@@ -284,7 +284,7 @@ class GridBase:
         layout.setColumnStretch(len(data.columns) + 1, 1)
         
         size = self.inner.minimumSize()
-        printf(size.width(), size.height())
+        print(size.width(), size.height())
         
         return
 
@@ -308,9 +308,9 @@ class LabelGrid(GridBase, Pig):
 
     def keyPressEvent(self, event):
 
-        printf(self.start_row, len(self.data))
+        print(self.start_row, len(self.data))
         key = event.key()
-        printf(key)
+        print(key)
         if key == qtcore.Qt.Key_Down:
             # scroll down one row
             self.start_row += 1
@@ -405,7 +405,7 @@ class EventLoop(AppEventLoop):
 
     def magic(self, event, *args, **kwargs):
         """ Gets called when magic is needed """
-        printf('magic', flush=True)
+        print('magic', flush=True)
         self.put(event)
 
 

@@ -208,7 +208,7 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
         while True:
             print(self.sleep)
             print('magic time')
-            tasks = list(self.task_info())
+            tasks = list(self.mon.task_info())
 
             self.frames.append([x.cycles for x in tasks])
 
