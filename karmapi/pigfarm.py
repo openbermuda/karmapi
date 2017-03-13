@@ -216,7 +216,9 @@ class PigFarm:
         """ Show curio monitor """
         
         from karmapi import milk
-        self.add(milk.Curio)
+        farm = PigFarm()
+        farm.add(milk.Curio)
+        await curio.spawn(farm.run())
 
     async def mon_update(self, mon):
 

@@ -1,4 +1,5 @@
 """ Milk Monitor """
+import numpy as np
 
 import curio
 
@@ -21,16 +22,16 @@ class CurioMonitor:
     def ps(self):
 
         self.mon.send(b'ps\n')
-        return self.mon.recv(100000)
+        return self.mon.recv(100000).decode()
                 
     def where(self, n):
 
         self.mon.send('where {}\n'.format(n).encode())
-        return self.mon.recv(100000)
+        return self.mon.recv(100000).decode()
 
     def task_info(self):
 
-        text = self.mon.ps().decode()
+        text = self.ps()
         for line in text.split('\n'):
             
             if line.startswith('Task'):
@@ -81,7 +82,7 @@ class Curio(pigfarm.Docs):
             self.task_id -= 1
     def task_info(self):
 
-        text = self.mon.ps().decode()
+        text = self.mon.ps()
         for line in text.split('\n'):
             
             if line.startswith('Task'):
@@ -111,7 +112,7 @@ class Curio(pigfarm.Docs):
                 
             if self.task_id in tasks:
                 text += "\nWhere {}:\n\n".format(self.task_id)
-                text += self.mon.where(self.task_id).decode()
+                text += self.mon.where(self.task_id)
                 break
 
         self.set_text(text)
@@ -129,7 +130,7 @@ class Curio(pigfarm.Docs):
                 self.task_id = 0
             if self.task_id in tasks:
                 text += "\nWhere {}:\n\n".format(self.task_id)
-                text += self.mon.where(self.task_id).decode()
+                text += self.mon.where(self.task_id)
 
                 break
 
@@ -142,7 +143,7 @@ class Curio(pigfarm.Docs):
 
         # get set of tasks -- be better to find the
         # curio kernel
-        text = self.mon.ps().decode()
+        text = self.mon.ps()
         for line in text.split('\n'):
             task = line.split()[0]
             if task.isdigit():
@@ -188,6 +189,7 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
 
     async def start(self):
 
+        self.frames = []
         if not self.mon:
             self.mon = CurioMonitor()
         self.task_id = 0
@@ -204,15 +206,19 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
         So turn it into frames and then we can feed it to viewers.
         """
 
-        self.frames = []
         while True:
             print(self.sleep)
             print('magic time')
             tasks = list(self.mon.task_info())
 
-            self.frames.append([x.cycles for x in tasks])
+            self.frames.append([x['cycles'] for x in tasks])
 
-            self.axes.imshow(self.frames)
+            
+            frames = np.array(self.frames)
+            print(len(tasks), len(self.frames), frames.shape)
+
+            self.axes.imshow(frames.T)
+            self.draw()
 
             self.prune()
             
