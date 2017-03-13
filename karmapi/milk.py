@@ -45,7 +45,10 @@ class CurioMonitor:
 
             tid = int(tid)
             cycles = int(cycles)
-            timeout = timeout or float(timeout)
+            if timeout == 'None':
+                timeout = 0.0
+            else:
+                timeout = float(timeout)
             
             yield dict(
                 tid=tid,
@@ -186,6 +189,39 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
         super().__init__(parent)
 
         self.mon = mon
+        self.mode = 'timeout'
+
+        self.state_map = {}
+        
+        self.add_event_map('s', self.states)
+        self.add_event_map('t', self.timeouts)
+        self.add_event_map('b', self.cycles)
+
+    def state_code(self, state):
+
+        if state not in self.state_map:
+            self.state_map[state] = len(self.state_map)
+
+        return self.state_map[state]
+
+    async def states(self):
+        if self.mode != 'states':
+            self.frames = []
+            
+        self.mode = 'states'
+
+    async def timeouts(self):
+        if self.mode != 'timeout':
+            self.frames = []
+            
+        self.mode = 'timeout'
+
+    async def cycles(self):
+
+        if self.mode != 'cycles':
+            self.frames = []
+
+        self.mode = 'cycles'
 
     async def start(self):
 
@@ -193,6 +229,21 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
         if not self.mon:
             self.mon = CurioMonitor()
         self.task_id = 0
+
+    def get_frame(self):
+        
+        tasks = list(self.mon.task_info())
+
+        frame = [x[self.mode] for x in tasks]
+
+        if self.mode == 'timeout':
+            frame = [x or 0.0 for x in frame]
+
+        elif self.mode == 'state':
+            frame = [self.state_code(x) for x in frame]
+
+        return frame                
+
 
     async def run(self):
         """ magic curio 
@@ -207,15 +258,17 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
         """
 
         while True:
-            print(self.sleep)
-            print('magic time')
             tasks = list(self.mon.task_info())
 
-            self.frames.append([x['cycles'] for x in tasks])
-
+            frame = self.get_frame()
+            if self.frames:
+                if len(frame) != len(self.frames[0]):
+                    self.frames = []
+                    
+            self.frames.append(self.get_frame())
             
             frames = np.array(self.frames)
-            print(len(tasks), len(self.frames), frames.shape)
+            print(frames.shape)
 
             self.axes.imshow(frames.T)
             self.draw()
