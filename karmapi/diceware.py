@@ -21,6 +21,7 @@ from karmapi.beanstalk import BeanStalk
 import curio
 import random
 import math
+import time
 
 BIGLY = pig.BIGLY_FONT
 
@@ -226,6 +227,16 @@ class StingingBats(pig.Canvas):
         for beanstalk in self.beanstalks:
             beanstalk.draw(self.canvas, self.width, self.height, self.random_colour())
 
+    def prune(self):
+
+        beans = []
+        tt = time.time()
+        for bean in self.beanstalks:
+            if (tt - bean.create_time) < 20:
+                beans.append(bean)
+                
+        self.beanstalks = beans
+        
 
     async def run(self):
         self.sleep = 0.1
@@ -250,15 +261,16 @@ class StingingBats(pig.Canvas):
                                         font=BIGLY)
                 self.draw_dice()
 
-            if self.beanstalks:
-                self.draw_beanstalks()
-
             self.beanstalk.step()
             
             if self.beanstalk.is_magic():
                 self.beanstalks.append(
                     BeanStalk(self.beanstalk.x))
-            
+ 
+            if self.beanstalks:
+                self.draw_beanstalks()
+                self.prune()
+
             await curio.sleep(self.sleep)
 
 

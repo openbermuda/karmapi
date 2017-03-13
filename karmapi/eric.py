@@ -44,6 +44,7 @@ _w might be meant to be some sort of file descriptor, maybe output files?
 Finding IDLE fun to use.
 
 """
+import inspect
 
 from idlelib import pyshell
 
@@ -52,6 +53,10 @@ from karmapi import piglet
 def doc(x):
 
     print(x.__doc__)
+
+def luke(x):
+
+    print(inspect.getsource(x))
 
 class Eric(piglet.Pig):
     """ An async python console, using IDLE """

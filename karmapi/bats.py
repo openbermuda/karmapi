@@ -39,7 +39,7 @@ class StingingBats(pig.Canvas):
         '''Toggles color scheme'''
 
         self.theme = self.themes[random.randint(0, len(self.themes) - 1)]
-        self.canvas.configure(bg=self.theme.background)
+        self.set_background(self.theme.background)
 
     async def fewer(self):
         '''Fewer bats displayed'''

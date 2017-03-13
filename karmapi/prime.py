@@ -64,18 +64,15 @@ class Prime(Video):
         #self.axes.plot(range(10))
 
 
-                
-
 
 PRIMES = [2, 3]
 
 def isprime(n, verbose=None):
 
-    # FIXME -- creating a set each time is probably slow
-    #if n in set(PRIMES):
-    #    return True
-
     end = n ** 0.5
+    
+    genprimes(end)
+
     for x in PRIMES:
         if x > end:
             break
@@ -85,6 +82,7 @@ def isprime(n, verbose=None):
             return False
 
     return True
+
 
 
 def genprime():
@@ -102,6 +100,18 @@ def genprime():
 
         n += 2
 
+def genprimes(end):
+
+    n = PRIMES[-1]
+
+    while n <= end:
+        
+        if isprime(n):
+            PRIMES.append(n)
+
+        n += 2
+
+    
 
 if __name__ == '__main__':
 

@@ -31,6 +31,8 @@ from matplotlib import pyplot as plt
 
 from pandas.formats.format import EngFormatter
 
+from ripl import imagefind
+
 from karmapi import base, yosser
 
 from . import core
@@ -197,7 +199,7 @@ class button(ttk.Button):
 class Canvas(Pig):
 
     
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, gallery=None, **kwargs):
 
         super().__init__(parent)
 
@@ -206,12 +208,19 @@ class Canvas(Pig):
 
         self.canvas = tkinter.Canvas(self)
 
+        self.gallery = gallery or ['.', '../gallery']
+
+
         VBoxLayout().addWidget(self.canvas)
 
 
         self.canvas.bind("<Configure>", self.on_configure)
-        
 
+
+    def set_background(self, colour='black'):
+
+        self.canvas.configure(bg=colour)
+    
     def on_configure(self, event):
 
         print('new bad size:', event.width, event.height)
@@ -225,7 +234,13 @@ class Canvas(Pig):
         self.canvas.configure(scrollregion=(0, 0, width, height))
 
 
-        
+    def find_image(self, name):
+            
+        return imagefind.interpret(dict(galleries=self.gallery, image=name))
+
+
+
+    
 class PlotImage(Pig):
     """ An image widget
 
@@ -247,9 +262,6 @@ class PlotImage(Pig):
         self.fig = fig
         # We want the axes cleared every time plot() is called
         self.axes.hold(False)
-
-        self.compute_data()
-        self.plot()
 
 
     def __getattr__(self, attr):
@@ -276,6 +288,11 @@ class PlotImage(Pig):
         """
         self.axes.plot(self.data)
         #self.axes.imshow(self.data)
+
+    async def run(self):
+        
+        self.compute_data()
+        self.plot()
 
 
 

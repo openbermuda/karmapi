@@ -38,6 +38,7 @@ class PigFarm:
 
         self.widgets = deque()
         self.current = None
+        self.eric = None
 
         self.create_event_map()
 
@@ -84,6 +85,10 @@ class PigFarm:
         self.micks.put(mick)
         self.piglets.put(mick.start())
 
+    def toplevel(self):
+        """ Return toplevel piglet """
+        return self.eloop.app.winfo_toplevel()
+
 
     async def build(self):
         """ Do the piglet build """
@@ -94,7 +99,7 @@ class PigFarm:
 
             #piglet = pig.build(meta)
 
-            piglet = meta(self.eloop.app.winfo_toplevel(), **kwargs)
+            piglet = meta(self.toplevel(), **kwargs)
             piglet.bind('<Key>', self.keypress)
 
             self.widgets.append(piglet)
@@ -237,6 +242,10 @@ class PigFarm:
 
     async def show_eric(self):
         """ Show eric idle """
+
+        if self.eric:
+            return
+        self.eric = True
         
         from karmapi.eric import  Eric
         farm = PigFarm()
@@ -245,10 +254,10 @@ class PigFarm:
             filename = inspect.getsourcefile(self.current.__class__)
         farm.add(Eric, dict(filename=filename))
 
-        farm.eloop.app.winfo_toplevel().withdraw()
-        
         await curio.spawn(farm.run())
 
+        farm.toplevel().withdraw()
+        
 
 
 
@@ -333,6 +342,7 @@ def main():
     else:
         words = None
 
+    farm.add(piglet.MagicCarpet)
     farm.add(talk.Talk)
     farm.add(dice.StingingBats, dict(words=words))
     farm.add(StingingBats)
