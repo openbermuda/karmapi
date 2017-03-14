@@ -196,11 +196,6 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
 
         self.state_map = {}
         
-        self.add_event_map('s', self.states)
-        self.add_event_map('t', self.timeouts)
-        self.add_event_map('b', self.cycles)
-
-
     def state_code(self, state):
 
         if state not in self.state_map:
@@ -208,26 +203,6 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
 
         return self.state_map[state]
 
-    async def states(self):
-        """ Show task states """
-        if self.mode != 'states':
-            self.frames = []
-            
-        self.mode = 'state'
-
-    async def timeouts(self):
-        """ Plot timeouts """
-        if self.mode != 'timeout':
-            self.frames = []
-            
-        self.mode = 'timeout'
-
-    async def cycles(self):
-        """ Show task cycles """
-        if self.mode != 'cycles':
-            self.frames = []
-
-        self.mode = 'cycles'
 
     async def start(self):
 
@@ -268,6 +243,7 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
 
         while True:
             if self.clear:
+                print('clearing axes')
                 self.axes.clear()
                 
             tasks = list(self.mon.task_info())
@@ -285,14 +261,12 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
                     
             #frame = self.get_frame()
             for axis, name in zip(self.subplots, self.fields):
-                print(name)
                 frames = [x[name] for x in self.frames]
             
                 frames = np.array(frames)
 
                 if self.log:
                     frames = np.log(frames)
-                print(frames.shape)
 
                 axis.imshow(frames.T)
                 axis.axes.set_title(f'{name} log: {self.log}')
