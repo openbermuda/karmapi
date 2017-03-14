@@ -201,7 +201,7 @@ def main():
         
     farm.add(BeanField, dict(gallery=args.gallery, name=name))
 
-    curio.run(farm.run(), with_monitor=False)
+    curio.run(farm.run(), with_monitor=True)
     
 
 if __name__ == '__main__':
