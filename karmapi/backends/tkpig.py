@@ -208,11 +208,9 @@ class PlotImage(Pig):
         #self.toolbar = NavigationToolbar2TkAgg(self.image, self)
         #self.toolbar.update()
         #self.toolbar.pack(expand=0)
-
+        
         self.axes = fig.add_subplot(111)
         self.fig = fig
-        # We want the axes cleared every time plot() is called
-        self.axes.hold(False)
 
 
     def __getattr__(self, attr):
@@ -224,21 +222,8 @@ class PlotImage(Pig):
         """ Over-ride to get whatever data you want to see
         
         """
-        #self.data = pandas.np.random.normal(size=(100, 100))
         self.data = pandas.np.random.randint(0,100, size=100)
 
-    def plot(self):
-        """ Display an image 
-
-        For example:
-        
-          t = pandas.np.arange(0.0, 3.0, 0.01)
-          s = sin(2*pi*t)
-          self.axes.plot(t, s)
-
-        """
-        self.axes.plot(self.data)
-        #self.axes.imshow(self.data)
 
     async def run(self):
         
