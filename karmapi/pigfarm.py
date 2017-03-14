@@ -375,6 +375,14 @@ class MagicCarpet(Space):
 
         self.artist = piglet.PlotImage(parent)
 
+        self.add_event_map('l', self.log_toggle)
+
+    async def log_toggle(self):
+        """ toggle log scale """
+        self.log = not self.log
+
+        
+
 
 class Docs(piglet.Docs):
     pass

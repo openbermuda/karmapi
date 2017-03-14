@@ -190,12 +190,14 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
 
         self.mon = mon
         self.mode = 'timeout'
+        self.log = False
 
         self.state_map = {}
         
         self.add_event_map('s', self.states)
         self.add_event_map('t', self.timeouts)
         self.add_event_map('b', self.cycles)
+
 
     def state_code(self, state):
 
@@ -271,9 +273,12 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
             self.frames.append(self.get_frame())
             
             frames = np.array(self.frames)
+            if self.log:
+                frames = np.log(frames)
             print(frames.shape)
 
             self.axes.imshow(frames.T)
+            self.axes.set_title(f'{self.mode} log: {self.log}')
             self.draw()
 
             self.prune()
