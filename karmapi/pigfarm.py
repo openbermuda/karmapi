@@ -403,6 +403,13 @@ class MagicCarpet(Space):
         """ toggle show table """
         self.table = not self.table
 
+    def clear_axes(self):
+
+        for axis in self.subplots:
+            axis.clear()
+
+    def clear_figure(self):
+        self.fig.clear()
 
 
 class Docs(piglet.Docs):
