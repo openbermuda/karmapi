@@ -223,6 +223,8 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
 
         return dict(cycles=cycles, timeout=timeout, state=state)
 
+    def framesize(self, frame):
+        return len(frame[self.fields[0]])
 
     async def run(self):
         """ magic curio """
@@ -237,20 +239,20 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
         So turn it into frames and then we can feed it to viewers.
         """
 
-        for axis in self.subplots:
-            #axis.set_bg_color('black')
-            pass
+        self.fig.set_facecolor('black')
+        self.fig.set_edgecolor('white')
 
         while True:
             if self.clear:
-                print('clearing axes')
-                self.axes.clear()
+                self.clear_axes()
                 
             tasks = list(self.mon.task_info())
 
             frame = self.get_frame()
+
             if self.frames:
-                if len(frame) != len(self.frames[0]):
+                # watch out for frame size changing if new tasks appear
+                if self.framesize(frame) != self.framesize(self.frames[-1]):
                     self.frames = []
 
             self.frames.append(frame)
@@ -259,7 +261,6 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
                 await curio.sleep(self.sleep)
                 continue
                     
-            #frame = self.get_frame()
             for axis, name in zip(self.subplots, self.fields):
                 frames = [x[name] for x in self.frames]
             
@@ -269,7 +270,7 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
                     frames = np.log(frames)
 
                 axis.imshow(frames.T)
-                axis.axes.set_title(f'{name} log: {self.log}')
+                axis.axes.set_title(f'{name} log: {self.log}', color='white')
                 
             self.draw()
 
