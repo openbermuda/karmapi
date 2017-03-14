@@ -197,7 +197,7 @@ class PlotImage(Pig):
 
     This is just a wrapper around matplotlib FigureCanvas.
     """
-    def __init__(self, parent, width=8, height=8, dpi=100, **kwargs):
+    def __init__(self, parent, axes=None, dpi=100, **kwargs):
 
         super().__init__(parent)
 
@@ -208,8 +208,14 @@ class PlotImage(Pig):
         #self.toolbar = NavigationToolbar2TkAgg(self.image, self)
         #self.toolbar.update()
         #self.toolbar.pack(expand=0)
-        
-        self.axes = fig.add_subplot(111)
+        if axes is None:
+            axes = [111]
+
+        self.subplots = []
+        for axis in axes:
+            self.axes = fig.add_subplot(axis)
+            self.subplots.append(self.axes)
+            
         self.fig = fig
 
 
