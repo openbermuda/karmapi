@@ -369,11 +369,26 @@ class Yard(Space):
 
 class MagicCarpet(Space):
 
-    def __init__(self, parent):
+    def __init__(self, parent=None, axes=None):
         
         super().__init__()
 
-        self.artist = piglet.PlotImage(parent)
+        self.artist = piglet.PlotImage(parent, axes=axes)
+
+        self.log = False
+        self.add_event_map('l', self.log_toggle)
+
+        self.clear = True
+        self.add_event_map('a', self.clear_toggle)
+
+    async def log_toggle(self):
+        """ toggle log scale """
+        self.log = not self.log
+
+    async def clear_toggle(self):
+        """ toggle axes clear """
+        self.clear = not self.clear
+
 
 
 class Docs(piglet.Docs):

@@ -197,7 +197,7 @@ class PlotImage(Pig):
 
     This is just a wrapper around matplotlib FigureCanvas.
     """
-    def __init__(self, parent, width=8, height=8, dpi=100, **kwargs):
+    def __init__(self, parent, axes=None, dpi=100, **kwargs):
 
         super().__init__(parent)
 
@@ -208,11 +208,15 @@ class PlotImage(Pig):
         #self.toolbar = NavigationToolbar2TkAgg(self.image, self)
         #self.toolbar.update()
         #self.toolbar.pack(expand=0)
+        if axes is None:
+            axes = [111]
 
-        self.axes = fig.add_subplot(111)
+        self.subplots = []
+        for axis in axes:
+            self.axes = fig.add_subplot(axis)
+            self.subplots.append(self.axes)
+            
         self.fig = fig
-        # We want the axes cleared every time plot() is called
-        self.axes.hold(False)
 
 
     def __getattr__(self, attr):
@@ -224,21 +228,8 @@ class PlotImage(Pig):
         """ Over-ride to get whatever data you want to see
         
         """
-        #self.data = pandas.np.random.normal(size=(100, 100))
         self.data = pandas.np.random.randint(0,100, size=100)
 
-    def plot(self):
-        """ Display an image 
-
-        For example:
-        
-          t = pandas.np.arange(0.0, 3.0, 0.01)
-          s = sin(2*pi*t)
-          self.axes.plot(t, s)
-
-        """
-        self.axes.plot(self.data)
-        #self.axes.imshow(self.data)
 
     async def run(self):
         

@@ -186,17 +186,16 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
 
     def __init__(self, parent, mon=None):
 
-        super().__init__(parent)
+        axes = [311, 312, 313]
+        
+        super().__init__(parent, axes=axes)
 
         self.mon = mon
         self.mode = 'timeout'
+        self.fields = ['cycles', 'timeout', 'state']
 
         self.state_map = {}
         
-        self.add_event_map('s', self.states)
-        self.add_event_map('t', self.timeouts)
-        self.add_event_map('b', self.cycles)
-
     def state_code(self, state):
 
         if state not in self.state_map:
@@ -204,26 +203,6 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
 
         return self.state_map[state]
 
-    async def states(self):
-        """ Show task states """
-        if self.mode != 'states':
-            self.frames = []
-            
-        self.mode = 'state'
-
-    async def timeouts(self):
-        """ Plot timeouts """
-        if self.mode != 'timeout':
-            self.frames = []
-            
-        self.mode = 'timeout'
-
-    async def cycles(self):
-        """ Show task cycles """
-        if self.mode != 'cycles':
-            self.frames = []
-
-        self.mode = 'cycles'
 
     async def start(self):
 
@@ -236,15 +215,13 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
         
         tasks = list(self.mon.task_info())
 
-        frame = [x[self.mode] for x in tasks]
+        cycles = [x['cycles'] for x in tasks]
 
-        if self.mode == 'timeout':
-            frame = [x or 0.0 for x in frame]
+        timeout =  [x['timeout'] or 0.0 for x in tasks]
 
-        elif self.mode == 'state':
-            frame = [self.state_code(x) for x in frame]
+        state = [self.state_code(x['state']) for x in tasks]
 
-        return frame                
+        return dict(cycles=cycles, timeout=timeout, state=state)
 
 
     async def run(self):
@@ -260,20 +237,40 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
         So turn it into frames and then we can feed it to viewers.
         """
 
+        for axis in self.subplots:
+            #axis.set_bg_color('black')
+            pass
+
         while True:
+            if self.clear:
+                print('clearing axes')
+                self.axes.clear()
+                
             tasks = list(self.mon.task_info())
 
             frame = self.get_frame()
             if self.frames:
                 if len(frame) != len(self.frames[0]):
                     self.frames = []
-                    
-            self.frames.append(self.get_frame())
-            
-            frames = np.array(self.frames)
-            print(frames.shape)
 
-            self.axes.imshow(frames.T)
+            self.frames.append(frame)
+
+            if len(self.frames) < 2:
+                await curio.sleep(self.sleep)
+                continue
+                    
+            #frame = self.get_frame()
+            for axis, name in zip(self.subplots, self.fields):
+                frames = [x[name] for x in self.frames]
+            
+                frames = np.array(frames)
+
+                if self.log:
+                    frames = np.log(frames)
+
+                axis.imshow(frames.T)
+                axis.axes.set_title(f'{name} log: {self.log}')
+                
             self.draw()
 
             self.prune()
