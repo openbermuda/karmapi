@@ -129,40 +129,44 @@ class TankRain(pigfarm.MagicCarpet):
             #print(tt.stats())
 
 
-
-def get_parser():
-
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('--pig', action='store_true')
-    parser.add_argument('--minutes', type=int, default=30)
-
-    return parser
-
-def main(args=None):
-    """ Retrieve images currently available 
-
-    There are usually six images available from the last half hour.
-    """
-
-    parser = get_parser()
-    args = parser.parse_args()
-
-    if args.pig:
-        import sys
-        farm = pigfarm.PigFarm()
-        farm.add(TankRain)
-        pigfarm.run(farm)
-        sys.exit()
-                  
-    minutes = args.minutes
-
-    images = defaultdict(list)
-
-    aminute = datetime.timedelta(minutes=1)
+async def fetch_part(name, data, minutes=30):
 
     timestamp = utcnow()
+    aminute = datetime.timedelta(minutes=1)
+    
+    # make timestamp an even minute
+    if timestamp.minute % 2:
+        timestamp -= aminute
 
+    end = timestamp - (minutes * aminute)
+    while timestamp > end:
+
+        path = Path(target.format(
+            date=timestamp,
+            suffix='.png',
+            name=name))
+
+        path = Path('~/karmapi').expanduser() / path
+
+        if not path.exists():
+            # need to fetch it
+            iurl = data['url'].format(
+                date=timestamp,
+                size=data['size'])
+
+            # fixme -- await an async http call
+            image = requests.get(iurl)
+
+            if image.status_code == requests.codes.ALL_OK:
+            # Save the imabe
+            
+                path.open('wb').write(image.content)
+            
+        timestamp -= (2 * aminute)
+
+    
+async def fetch(minutes):
+    """ Download images """
     iurls = dict(
         local  = dict(url=url + radar_template,
                       size=100),
@@ -172,49 +176,33 @@ def main(args=None):
                       size=0),
     )
 
-    # make timestamp an even minute
-    if timestamp.minute % 2:
-        timestamp -= aminute
 
-    end = timestamp - (minutes * aminute)
-    while timestamp > end:
+    for name, data in iurls.items():
+            
+        await fetch_part(name, data, minutes)
+        await curio.sleep(0)
+                
 
-        try:
-            for name, data in iurls.items():
-                iurl = data['url'].format(date=timestamp,
-                                         size=data['size'])
-                image = requests.get(iurl)
-                piurl = Path(iurl)
-                print(iurl)
+def main(args=None):
+    """ Retrieve images currently available 
 
-                if image.status_code == requests.codes.ALL_OK:
-                    images[name].append(dict(image=image.content,
-                                            time=timestamp,
-                                            suffix=piurl.suffix))
+    There are usually six images available from the last half hour.
+    """
 
-        except Exception as e:
-            raise e
-        
-        timestamp -= (2 * aminute)
+    parser = argparse.ArgumentParser()
 
-    
-    for name, items in images.items():
-        for item in items:
-            date = item['time']
-            image = item['image']
-            suffix = item['suffix']
+    parser.add_argument('--pig', action='store_true')
+    parser.add_argument('--minutes', type=int, default=30)
 
-            path = Path(target.format(
-                date=date,
-                suffix=suffix,
-                name=name))
+    args = parser.parse_args()
 
-            print('Creating', path)
-            path.parent.mkdir(exist_ok=True, parents=True)
-
-            with path.open('wb') as outfile:
-                outfile.write(image)
-
+    if args.pig:
+        farm = pigfarm.PigFarm()
+        farm.add(TankRain)
+        pigfarm.run(farm)
+        sys.exit()
+    else:
+        curio.run(fetch(args.minutes))
 
 if __name__ == '__main__':
     # Radar
