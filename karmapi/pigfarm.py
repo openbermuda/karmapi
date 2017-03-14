@@ -424,3 +424,8 @@ class Piglet:
     Run tasks.
     """
     pass
+
+
+def run(farm):
+
+    curio.run(farm.run(), with_monitor=True)
