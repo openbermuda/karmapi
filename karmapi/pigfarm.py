@@ -381,6 +381,12 @@ class MagicCarpet(Space):
         self.clear = True
         self.add_event_map('a', self.clear_toggle)
 
+        self.plot = False
+        self.add_event_map('g', self.plot_toggle)
+
+        self.table = False
+        self.add_event_map('t', self.table_toggle)
+
     async def log_toggle(self):
         """ toggle log scale """
         self.log = not self.log
@@ -388,6 +394,14 @@ class MagicCarpet(Space):
     async def clear_toggle(self):
         """ toggle axes clear """
         self.clear = not self.clear
+
+    async def plot_toggle(self):
+        """ toggle plot image """
+        self.plot = not self.plot
+
+    async def table_toggle(self):
+        """ toggle show table """
+        self.table = not self.table
 
 
 

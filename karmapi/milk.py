@@ -268,7 +268,10 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
                 if self.log:
                     frames = np.log(frames)
 
-                axis.imshow(frames.T)
+                if self.plot:
+                    axis.plot(frames.T)
+                else:
+                    axis.imshow(frames.T)
                 axis.axes.set_title(f'{name} log: {self.log}')
                 
             self.draw()
