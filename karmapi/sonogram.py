@@ -4,7 +4,7 @@ import PIL
 
 from collections import deque
 
-from karmapi import pig, base
+from karmapi import pigfarm, base
 
 import curio
 
@@ -20,7 +20,7 @@ import math
 PI = math.pi
 
 
-class SonoGram(pig.Video):
+class SonoGram(pigfarm.MagicCarpet):
 
     def __init__(self, parent):
 
@@ -142,6 +142,9 @@ class SonoGram(pig.Video):
         await curio.spawn(self.read())
 
         while True:
+
+            if self.clear:
+                self.clear_axes()
 
             if not self.data:
                 await curio.sleep(0.01)
