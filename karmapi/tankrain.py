@@ -39,9 +39,6 @@ class TankRain(pigfarm.MagicCarpet):
 
         super().__init__(parent)
 
-        self.add_event_map('w', self.wide)
-        self.add_event_map('l', self.local)
-        self.add_event_map('b', self.parish)
         self.add_event_map('r', self.reverse)
         self.add_event_map(' ', self.next_view)
 
@@ -84,21 +81,6 @@ class TankRain(pigfarm.MagicCarpet):
         for image in sorted(path.glob('{}*.png'.format(self.version))):
             yield image
 
-
-    async def local(self):
-
-        self.version = 'local'
-        self.load_images()
-
-    async def wide(self):
-
-        self.version = 'wide'
-        self.load_images()
-
-    async def parish(self):
-
-        self.version = 'parish'
-        self.load_images()
 
     async def next_view(self):
 
