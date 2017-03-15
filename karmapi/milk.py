@@ -239,8 +239,7 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
         So turn it into frames and then we can feed it to viewers.
         """
 
-        self.fig.set_facecolor('black')
-        self.fig.set_edgecolor('white')
+        self.dark()
 
         while True:
             if self.clear:

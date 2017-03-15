@@ -16,6 +16,7 @@ from karmapi import show, base
 
 from karmapi import pigfarm
 
+
 # Paths to data
 url = 'http://weather.bm/images/'
 
@@ -42,7 +43,7 @@ class TankRain(pigfarm.MagicCarpet):
         self.add_event_map('l', self.local)
         self.add_event_map('b', self.parish)
         self.add_event_map('r', self.reverse)
-
+        self.add_event_map(' ', self.next_view)
 
     def load_images(self):
         
@@ -99,34 +100,40 @@ class TankRain(pigfarm.MagicCarpet):
         self.version = 'parish'
         self.load_images()
 
+    async def next_view(self):
+
+        switch = dict(
+            wide='local',
+            local='parish',
+            parish='wide')
+        
+        self.version = switch[self.version]
+        
+        self.load_images()
 
     async def reverse(self):
 
         self.inc *= -1
 
+    async def start(self):
+        """ FIXME: get yoser to run fetch """
+        #farm.yosser.run(fetch, minutes=20, sleep=300)
+        pass
+
     async def run(self):
 
-        
+        self.dark()
         while True:
 
-            tt = base.Timer()
-            
-            tt.time('start')
             self.compute_data()
-            tt.time('compute')
-
+            self.axes.clear()
             self.axes.imshow(self.data)
-            tt.time('plot')
 
 
             self.draw()
-            tt.time('draw')
 
-            sleep = 0.01
             await curio.sleep(self.sleep)
-            tt.time('sleep')
 
-            #print(tt.stats())
 
 
 async def fetch_part(name, data, minutes=30):
@@ -139,6 +146,7 @@ async def fetch_part(name, data, minutes=30):
         timestamp -= aminute
 
     end = timestamp - (minutes * aminute)
+    bad = set()
     while timestamp > end:
 
         path = Path(target.format(
@@ -148,7 +156,7 @@ async def fetch_part(name, data, minutes=30):
 
         path = Path('~/karmapi').expanduser() / path
 
-        if not path.exists():
+        if not path.exists() and str(path) not in bad:
             # need to fetch it
             iurl = data['url'].format(
                 date=timestamp,
@@ -158,14 +166,16 @@ async def fetch_part(name, data, minutes=30):
             image = requests.get(iurl)
 
             if image.status_code == requests.codes.ALL_OK:
-            # Save the imabe
-            
+                # Save the imabe
+                path.parent.mkdir(exist_ok=True, parents=True)
                 path.open('wb').write(image.content)
+            else:
+                bad.add(str(path))
             
         timestamp -= (2 * aminute)
 
-    
-async def fetch(minutes):
+        
+async def fetch(minutes=30, sleep=300):
     """ Download images """
     iurls = dict(
         local  = dict(url=url + radar_template,
@@ -177,10 +187,11 @@ async def fetch(minutes):
     )
 
 
-    for name, data in iurls.items():
+    while True:
+        for name, data in iurls.items():
             
-        await fetch_part(name, data, minutes)
-        await curio.sleep(0)
+            await fetch_part(name, data, minutes)
+        await curio.sleep(300)
                 
 
 def main(args=None):
@@ -199,6 +210,10 @@ def main(args=None):
     if args.pig:
         farm = pigfarm.PigFarm()
         farm.add(TankRain)
+
+        from karmapi.mclock2 import GuidoClock
+        farm.add(GuidoClock)
+
         pigfarm.run(farm)
         sys.exit()
     else:

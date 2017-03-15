@@ -223,6 +223,10 @@ class PlotImage(Pig):
 
         return getattr(self.image, attr)
 
+    def dark(self):
+
+        self.fig.set_facecolor('black')
+        self.fig.set_edgecolor('white')
 
     def compute_data(self):
         """ Over-ride to get whatever data you want to see
