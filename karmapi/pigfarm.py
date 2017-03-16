@@ -438,6 +438,9 @@ class MagicCarpet(Space):
 
         stats, cells, rows, cols = self.frame_to_stats(data)
 
+        if self.log:
+            stats = stats.log()
+            
         colours = cm.get_cmap()(norm(stats.values))
         alpha = 0.2
         colours[:, :, 3] = alpha

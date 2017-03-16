@@ -51,8 +51,8 @@ class Magic(pigfarm.MagicCarpet):
         axes = self.subplots[0]
         for label in frame.columns:
             data = frame[label].copy()
-            #data = data.sort()
-            axes.plot(data, label=label)
+            data.sort()
+            axes.plot(data.values, label=label)
 
         self.axes = self.subplots[1]
         self.draw_table(frame, loc='center')
