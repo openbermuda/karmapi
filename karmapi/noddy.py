@@ -1,4 +1,3 @@
-
 """
 Noddy
 =====
@@ -23,14 +22,14 @@ class Magic(pigfarm.MagicCarpet):
 
     def __init__(self, parent=None, data=None):
 
-        super().__init__(parent)
+        super().__init__(parent, axes=[211, 212])
+
+        # hmm.. not sure where this belongs
+        pandas.set_eng_float_format(1, True)
 
         data = data or toy.distros(
             trials=10,
             groups=['abc', 'cde', 'xyz'])
-
-        print('ddddd', len(data))
-        print(data)
 
         frames = {}
         groups = []
@@ -49,12 +48,14 @@ class Magic(pigfarm.MagicCarpet):
 
         frame = self.frames[self.group]
 
-        print(frame.describe())
-
+        axes = self.subplots[0]
         for label in frame.columns:
-            self.axes.plot(frame[label], label=label)
+            data = frame[label].copy()
+            #data = data.sort()
+            axes.plot(data, label=label)
 
-        self.draw_table(data=frame.describe().values)
+        self.axes = self.subplots[1]
+        self.draw_table(frame, loc='center')
 
 def play(infile):
 
@@ -73,7 +74,6 @@ if __name__ == '__main__':
 
     print(args)
 
-    pandas.set_eng_float_format(1, True)
 
     if args.thresh > 10:
 

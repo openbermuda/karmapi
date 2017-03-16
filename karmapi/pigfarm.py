@@ -387,6 +387,24 @@ class MagicCarpet(Space):
         self.table = False
         self.add_event_map('t', self.table_toggle)
 
+    def frame_to_stats(self, frame):
+
+        stats = frame.describe()
+
+        stat_rows = str(stats).split('\n')
+        cells = [x[1:] for x in self.parse_describe(stat_rows)]
+
+        cols = stats.columns.values
+        rows = stats.index.values
+
+        return stats, cells, rows, cols
+
+    def parse_describe(self, rows):
+
+        for row in rows[1:]:
+            yield row.split()
+            
+        
     async def log_toggle(self):
         """ toggle log scale """
         self.log = not self.log
@@ -412,20 +430,27 @@ class MagicCarpet(Space):
         self.fig.clear()
 
 
-    def draw_table(self, loc='bottom', data=None, title=None):
+    def draw_table(self, data=None, title=None, loc='top'):
         """ Draw a table on the axes """
 
         from matplotlib import colors, cm, table
         norm = colors.Normalize()
 
-        colours = cm.get_cmap()(norm(data))
+        stats, cells, rows, cols = self.frame_to_stats(data)
 
+        print(stats.T)
+
+        #colours = cm.get_cmap()(norm(stats.values))
         alpha = 0.2
-        colours[:, :, 3] = alpha
+        #colours[:, :, 3] = alpha
+        colours = None
+
         self.axes.table(
-            cellText=data,
+            rowLabels=rows,
+            colLabels=cols,
+            cellText=cells,
             cellColours=colours,
-            cellEdgeColours=colours,
+            cellEdgeColour=colours,
             loc=loc)
 
         title = title or f'table location {loc}'
