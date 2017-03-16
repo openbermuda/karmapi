@@ -412,6 +412,28 @@ class MagicCarpet(Space):
         self.fig.clear()
 
 
+    def draw_table(self, loc='bottom', data=None, title=None):
+        """ Draw a table on the axes """
+
+        from matplotlib import colors, cm, table
+        norm = colors.Normalize()
+
+        colours = cm.get_cmap()(norm(data))
+
+        alpha = 0.2
+        colours[:, :, 3] = alpha
+        self.axes.table(
+            cellText=data,
+            cellColours=colours,
+            cellEdgeColours=colours,
+            loc=loc)
+
+        title = title or f'table location {loc}'
+        self.axes.set_title(title)
+        self.axes.set_axis_off()
+
+
+
 class Docs(piglet.Docs):
     pass
     

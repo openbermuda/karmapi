@@ -485,14 +485,21 @@ class MagicCarpet(PlotImage):
         locs = list(table.Table.codes.keys())
         loc = locs[random.randint(1, 17)]
 
-        colours[:, :, 3] = 0.5
+        alpha = 0.2
+        colours[:, :, 3] = alpha
         self.axes.table(
-            cellText=self.data, cellColours=colours,
+            cellText=self.data,
+            cellColours=colours,
+            cellEdgeColours=colours,
             loc=loc)
             #loc='upper_center')
         self.axes.set_title(f'table location {loc}')
         self.axes.set_axis_off()
 
+
+    def plot(self):
+
+        self.axes.plot(self.data)
 
     async def run(self):
 
