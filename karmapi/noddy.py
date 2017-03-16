@@ -28,9 +28,19 @@ class Magic(pigfarm.MagicCarpet):
         pandas.set_eng_float_format(1, True)
 
         data = data or toy.distros(
-            trials=100,
+            trials=1000,
             groups=['abc', 'cde', 'xyz'])
 
+        self.data = data
+
+        if data:
+            self.process_data()
+
+        self.add_event_map(' ', self.next_group)
+
+    def process_data(self):
+
+        data = self.data
         frames = {}
         groups = []
         for group, frame in data.items():
@@ -43,9 +53,6 @@ class Magic(pigfarm.MagicCarpet):
         self.group = 0
         self.groups = groups
 
-        self.add_event_map(' ', self.next_group)
-
-
     async def next_group(self):
         """ Next group """
         self.group += 1
@@ -54,9 +61,17 @@ class Magic(pigfarm.MagicCarpet):
             self.group = 0
 
         await self.event.put(self.group)
+
+
+    async def load_data(self):
+
+        while True:
+            self.data = await self.farm.data.get()
     
         
     async def run(self):
+
+        await pigfarm.spawn(self.load_data())
 
         while True:
             group = self.groups[self.group]

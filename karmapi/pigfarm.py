@@ -8,6 +8,8 @@ Pigs are windows, piglets are things running in the pig farm.
 
 from collections import deque
 import curio
+from curio import spawn
+
 from pathlib import Path
 import inspect
 
@@ -32,6 +34,10 @@ class PigFarm:
 
         self.builds = curio.UniversalQueue()
 
+        self.data = curio.UniversalQueue()
+
+        self.micks = curio.UniversalQueue()
+
         self.widgets = deque()
         self.current = None
         self.eric = None
@@ -46,7 +52,6 @@ class PigFarm:
 
         self.piglets.put(self.eloop.run())
 
-        self.micks = curio.UniversalQueue()
 
     def add_event_map(self, event, coro):
 
@@ -360,6 +365,11 @@ class Space:
 
         return image
 
+    async def load_data(self, data):
+
+        await self.data.put(data)
+
+
 
 class Yard(Space):
     """ A place to draw piglets """
@@ -469,7 +479,8 @@ class MagicCarpet(Space):
             bbox=bbox,
             loc=loc)
 
-        print('fontsize', tab._cells[0, 0].get_fontsize())
+        acell = tab._cells[0, 0]
+        print('fontsize', acell.get_fontsize())
 
         title = title or f'table location {loc}'
         self.axes.set_title(title)
