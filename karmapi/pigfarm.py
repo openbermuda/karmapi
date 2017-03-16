@@ -438,19 +438,16 @@ class MagicCarpet(Space):
 
         stats, cells, rows, cols = self.frame_to_stats(data)
 
-        print(stats.T)
-
-        #colours = cm.get_cmap()(norm(stats.values))
+        colours = cm.get_cmap()(norm(stats.values))
         alpha = 0.2
-        #colours[:, :, 3] = alpha
-        colours = None
+        colours[:, :, 3] = alpha
 
         self.axes.table(
             rowLabels=rows,
             colLabels=cols,
             cellText=cells,
             cellColours=colours,
-            cellEdgeColour=colours,
+            cellEdgeColours=colours,
             loc=loc)
 
         title = title or f'table location {loc}'
