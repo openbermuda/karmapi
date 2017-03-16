@@ -28,7 +28,7 @@ class Magic(pigfarm.MagicCarpet):
         pandas.set_eng_float_format(1, True)
 
         data = data or toy.distros(
-            trials=10,
+            trials=100,
             groups=['abc', 'cde', 'xyz'])
 
         frames = {}
@@ -40,22 +40,50 @@ class Magic(pigfarm.MagicCarpet):
             groups.append(group)
             
         self.frames = frames
-        self.group = groups[0]
+        self.group = 0
         self.groups = groups
 
+        self.add_event_map(' ', self.next_group)
 
+
+    async def next_group(self):
+        """ Next group """
+        self.group += 1
+
+        if self.group == len(self.groups):
+            self.group = 0
+
+        await self.event.put(self.group)
+    
+        
     async def run(self):
 
-        frame = self.frames[self.group]
+        while True:
+            group = self.groups[self.group]
+            frame = self.frames[group]
 
-        axes = self.subplots[0]
-        for label in frame.columns:
-            data = frame[label].copy()
-            data.sort()
-            axes.plot(data.values, label=label)
+            axes = self.subplots[0]
+            axes.clear()
+            col_colours = []
+            for label in frame.columns:
+                data = frame[label].copy()
+                data.sort_values(inplace=True)
+                if self.log:
+                    patch = axes.semilogy(data.values, label=label)
+                else:
+                    patch = axes.plot(data.values, label=label)
 
-        self.axes = self.subplots[1]
-        self.draw_table(frame, loc='center')
+                col_colours.append(patch[0].get_color())
+
+            from matplotlib import colors
+            col_colours = [colors.to_rgba(x, 0.2) for x in col_colours]
+
+            self.axes = self.subplots[1]
+            self.axes.clear()
+            self.draw_table(frame, loc='center', title=group, col_colours=col_colours)
+
+            self.draw()
+            self.group = await self.event.get()
 
 def play(infile):
 
@@ -71,8 +99,6 @@ if __name__ == '__main__':
 
     
     args = parser.parse_args()
-
-    print(args)
 
 
     if args.thresh > 10:

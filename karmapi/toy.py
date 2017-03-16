@@ -12,7 +12,9 @@ def distros(trials=10000, n=5, groups=None):
         gdata = {}
         data[group] = gdata
         for value in range(n):
-            values = [random.randint(10**5, 10**8) for x in range(trials)]
+            a = random.random()
+            b = random.random()
+            values = [random.gauss(a * 10**7, b * 10**6) for x in range(trials)]
 
             gdata[value] = values
 

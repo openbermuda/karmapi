@@ -134,6 +134,7 @@ class PigFarm:
 
     async def next(self):
         """ Show next widget """
+        if not len(self.widgets): return
         print('current', self.current)
         if self.current:
             self.widgets.append(self.current)
@@ -146,6 +147,7 @@ class PigFarm:
 
     async def previous(self):
         """ Show previous widget """
+        if not len(self.widgets): return
         print('going to previous', self.current)
         if self.current:
 
@@ -278,6 +280,7 @@ class Space:
         self.images = {}
         self.artist = None
         self.event_map = {}
+        self.event = curio.UniversalQueue()
 
 
         self.add_event_map('s', self.sleepy)
@@ -430,7 +433,14 @@ class MagicCarpet(Space):
         self.fig.clear()
 
 
-    def draw_table(self, data=None, title=None, loc='top'):
+    def draw_table(
+            self,
+            data=None,
+            title=None,
+            loc='top',
+            bbox=None,
+            row_colours=None,
+            col_colours=None):
         """ Draw a table on the axes """
 
         from matplotlib import colors, cm, table
@@ -439,19 +449,27 @@ class MagicCarpet(Space):
         stats, cells, rows, cols = self.frame_to_stats(data)
 
         if self.log:
-            stats = stats.log()
+            print('taking log of colour data')
+            import numpy as np
+            stats = np.log(stats)
             
         colours = cm.get_cmap()(norm(stats.values))
         alpha = 0.2
         colours[:, :, 3] = alpha
 
-        self.axes.table(
+        bbox = (0.0, 0.0, 1.0, 1.0)
+        tab = self.axes.table(
             rowLabels=rows,
+            rowColours=row_colours,
             colLabels=cols,
+            colColours=col_colours,
             cellText=cells,
             cellColours=colours,
             cellEdgeColours=colours,
+            bbox=bbox,
             loc=loc)
+
+        print('fontsize', tab._cells[0, 0].get_fontsize())
 
         title = title or f'table location {loc}'
         self.axes.set_title(title)
