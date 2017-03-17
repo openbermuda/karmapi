@@ -8,7 +8,7 @@ Pigs are windows, piglets are things running in the pig farm.
 
 from collections import deque
 import curio
-from curio import spawn
+from curio import spawn, sleep
 
 from pathlib import Path
 import inspect
@@ -232,7 +232,7 @@ class PigFarm:
         while True:
             #await mon.update()
             await mon.next()
-            await curio.sleep(1)
+            await sleep(1)
 
     async def show_eric(self):
         """ Show eric idle """

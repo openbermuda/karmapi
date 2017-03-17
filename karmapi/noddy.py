@@ -67,11 +67,35 @@ class Magic(pigfarm.MagicCarpet):
 
         while True:
             self.data = await self.farm.data.get()
-    
+            
+
+    async def tester(self):
+
+        dim = 4
+        text = [[42] * dim] * dim
+        rows = ['count'] * dim
+
+        ax = self.subplots[0]
+        ax.axis('off')
+        ax.table(rowLabels=rows, cellText=text, loc='center')
+
+        self.draw()
+        await pigfarm.sleep(5)
+        
+        #ax = self.subplots[1]
+        ax.clear()
+        ax.axis('off')
+        ax.table(rowLabels=rows, cellText=text, loc='center')
+        self.draw()
+        
+        await pigfarm.sleep(5)
+            
         
     async def run(self):
 
         await pigfarm.spawn(self.load_data())
+
+        await self.tester()
 
         while True:
             group = self.groups[self.group]
