@@ -48,7 +48,7 @@ class Magic(pigfarm.MagicCarpet):
 
             frames[group] = frame
             groups.append(group)
-            
+
         self.frames = frames
         self.group = 0
         self.groups = groups
@@ -67,6 +67,8 @@ class Magic(pigfarm.MagicCarpet):
 
         while True:
             self.data = await self.farm.data.get()
+
+            self.process_data()
             
 
     async def tester(self):
@@ -89,39 +91,51 @@ class Magic(pigfarm.MagicCarpet):
         self.draw()
         
         await pigfarm.sleep(5)
-            
+
+
+    def draw_plot(self):
+
+        group = self.groups[self.group]
+        frame = self.frames[group]
+
+        axes = self.subplots[0]
+        axes.clear()
+
+        # sort columns on mean
+        mean = frame.mean()
+        mean.sort()
+        frame = frame.ix[:, mean.index]
+        
+        col_colours = []
+        for label in frame.columns:
+            data = frame[label].copy()
+            data.sort_values(inplace=True)
+            if self.log:
+                patch = axes.semilogy(data.values, label=label)
+            else:
+                patch = axes.plot(data.values, label=label)
+
+            col_colours.append(patch[0].get_color())
+
+        from matplotlib import colors
+        col_colours = [colors.to_rgba(x, 0.2) for x in col_colours]
+
+        self.axes = self.subplots[1]
+        self.axes.clear()
+        self.draw_table(frame, loc='center', title=group, col_colours=col_colours)
+
+        self.draw()
+        
         
     async def run(self):
 
         await pigfarm.spawn(self.load_data())
 
-        await self.tester()
+        # have a key to cancel test?
+        #await self.tester()
 
         while True:
-            group = self.groups[self.group]
-            frame = self.frames[group]
-
-            axes = self.subplots[0]
-            axes.clear()
-            col_colours = []
-            for label in frame.columns:
-                data = frame[label].copy()
-                data.sort_values(inplace=True)
-                if self.log:
-                    patch = axes.semilogy(data.values, label=label)
-                else:
-                    patch = axes.plot(data.values, label=label)
-
-                col_colours.append(patch[0].get_color())
-
-            from matplotlib import colors
-            col_colours = [colors.to_rgba(x, 0.2) for x in col_colours]
-
-            self.axes = self.subplots[1]
-            self.axes.clear()
-            self.draw_table(frame, loc='center', title=group, col_colours=col_colours)
-
-            self.draw()
+            self.draw_plot()
             self.group = await self.event.get()
 
 def play(infile):
