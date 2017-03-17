@@ -65,6 +65,7 @@ class PigFarm:
         self.add_event_map('h', self.help)
         self.add_event_map('c', self.show_monitor)
         self.add_event_map('e', self.show_eric)
+        self.add_event_map('q', self.quit)
 
 
     def status(self):
@@ -111,7 +112,7 @@ class PigFarm:
     async def start_piglet(self):
 
         self.current.pack(fill='both', expand=1)
-        self.current_task = await curio.spawn(self.current.run())
+        self.current_task = await spawn(self.current.run())
 
     async def stop_piglet(self):
 
@@ -136,6 +137,10 @@ class PigFarm:
 
         piglet.Help(msg)
 
+    async def quit(self):
+        """ quit the farm """
+
+        await self.quit_event.set()
 
     async def next(self):
         """ Show next widget """
@@ -164,7 +169,7 @@ class PigFarm:
         await self.start_piglet()
 
 
-    async def run(self):
+    async def tend(self):
         """ Make the pigs run """
 
         # spawn a task for each piglet
@@ -174,7 +179,7 @@ class PigFarm:
         # spawn a task to deal with mouse events
 
         # ... spawn tasks to deal with any events
-
+        print(self.quit_event)
         builder = await curio.spawn(self.build())
 
         while True:
@@ -184,7 +189,7 @@ class PigFarm:
 
                 print('spawning', piglet)
 
-                await curio.spawn(piglet)
+                await spawn(piglet)
 
             # wait for an event
             #event = await self.event.get()
@@ -203,6 +208,20 @@ class PigFarm:
 
             print('eq', self.event.qsize())
 
+
+    async def run(self):
+
+        self.quit_event = curio.Event()
+        
+        runner = await spawn(self.tend())
+
+        await self.quit_event.wait()
+
+        print('over and out')
+
+        await runner.cancel()
+
+        print('runner gone')
 
 
     async def process_event(self, event):
@@ -225,7 +244,7 @@ class PigFarm:
         from karmapi import milk
         farm = PigFarm()
         farm.add(milk.Curio)
-        await curio.spawn(farm.run())
+        await spawn(farm.run())
 
     async def mon_update(self, mon):
 
@@ -248,7 +267,7 @@ class PigFarm:
             filename = inspect.getsourcefile(self.current.__class__)
         farm.add(Eric, dict(filename=filename))
 
-        await curio.spawn(farm.run())
+        await spawn(farm.run())
 
         farm.toplevel().withdraw()
         
@@ -503,5 +522,6 @@ class Piglet:
 
 
 def run(farm):
-
+    """  Run a farm """
     curio.run(farm.run(), with_monitor=True)
+
