@@ -32,26 +32,13 @@ class Magic(pigfarm.MagicCarpet):
             groups=['abc', 'cde', 'xyz'])
 
         self.data = data
+        self.tests = 0
 
         if data:
             self.process_data()
 
         self.add_event_map(' ', self.next_group)
 
-    def process_data(self):
-
-        data = self.data
-        frames = {}
-        groups = []
-        for group, frame in data.items():
-            frame = pandas.DataFrame(frame)
-
-            frames[group] = frame
-            groups.append(group)
-
-        self.frames = frames
-        self.group = 0
-        self.groups = groups
 
     async def next_group(self):
         """ Next group """
@@ -63,26 +50,26 @@ class Magic(pigfarm.MagicCarpet):
         await self.event.put(self.group)
 
 
-    async def load_data(self):
+ 
 
-        while True:
-            self.data = await self.farm.data.get()
+    async def tester(self, sleep=2):
 
-            self.process_data()
-            
+        print('NUMBER OF TESTS', self.tests)
+        self.tests += 1
 
-    async def tester(self):
-
-        dim = 4
+        from matplotlib import rcParams
+        dim = 1
         text = [[42] * dim] * dim
         rows = ['count'] * dim
 
+        self.subplots[1].axis('off')
         ax = self.subplots[0]
         ax.axis('off')
         ax.table(rowLabels=rows, cellText=text, loc='center')
 
+        print('calling self.draw from tester')
         self.draw()
-        await pigfarm.sleep(5)
+        await pigfarm.sleep(sleep)
         
         #ax = self.subplots[1]
         ax.clear()
@@ -90,7 +77,7 @@ class Magic(pigfarm.MagicCarpet):
         ax.table(rowLabels=rows, cellText=text, loc='center')
         self.draw()
         
-        await pigfarm.sleep(5)
+        await pigfarm.sleep(sleep)
 
 
     def draw_plot(self):
@@ -103,7 +90,7 @@ class Magic(pigfarm.MagicCarpet):
 
         # sort columns on mean
         mean = frame.mean()
-        mean.sort()
+        mean.sort_values(inplace=True)
         frame = frame.ix[:, mean.index]
         
         col_colours = []
@@ -123,16 +110,13 @@ class Magic(pigfarm.MagicCarpet):
         self.axes = self.subplots[1]
         self.axes.clear()
         self.draw_table(frame, loc='center', title=group, col_colours=col_colours)
-
         self.draw()
-        
         
     async def run(self):
 
         await pigfarm.spawn(self.load_data())
 
-        # have a key to cancel test?
-        #await self.tester()
+        await self.tester(sleep=3.01)
 
         while True:
             self.draw_plot()

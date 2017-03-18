@@ -435,7 +435,29 @@ class MagicCarpet(Space):
 
         for row in rows[1:]:
             yield row.split()
+
+    async def load_data(self):
+
+        while True:
+            self.data = await self.farm.data.get()
+
+            self.process_data()
             
+            
+    def process_data(self):
+
+        data = self.data
+        frames = {}
+        groups = []
+        for group, frame in data.items():
+            frame = pandas.DataFrame(frame)
+
+            frames[group] = frame
+            groups.append(group)
+
+        self.frames = frames
+        self.group = 0
+        self.groups = groups
         
     async def log_toggle(self):
         """ toggle log scale """
