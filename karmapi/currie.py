@@ -88,7 +88,7 @@ def main():
         dict(image='venus.jpg', title='Jupyter')]
 
 
-    from karmapi import sunny
+    from karmapi import sunny, noddy
 
     farm.files = args.files
 
@@ -108,7 +108,7 @@ def main():
     else:
         words = None
 
-    farm.add(piglet.MagicCarpet)
+    farm.add(noddy.Magic)
     farm.add(talk.Talk)
     farm.add(dice.StingingBats, dict(words=words))
     farm.add(StingingBats)

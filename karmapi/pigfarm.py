@@ -5,7 +5,7 @@ A collection of pigs and piglets.
 Pigs are windows, piglets are things running in the pig farm.
 
 """
-
+import pandas   # piglets and pandas together
 from collections import deque
 import curio
 from curio import spawn, sleep

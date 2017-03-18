@@ -428,51 +428,6 @@ class EventLoop(AppEventLoop):
 class Piglet(Pig):
     pass
         
-class MagicCarpet(PlotImage):
-    """ Magic data display 
-
-    image, table, plots and more
-    """
-
-    def __init__(self, parent, *args):
-
-        super().__init__(parent)
-
-        print('MagicCarpet', *args)
-
-        self.mode = 'plot'
-
-        self.add_event_map('t', self.table)
-
-    async def image(self):
-        """ Toggle image state """
-        pass
-
-    def compute_data(self):
-
-        self.data = [[random.randint(x, 10 * x) for x in range(1, 6)] for y in range(3)] 
-
-    async def table(self):
-        """ Toggle image state """
-
-        nextmode = dict(
-            plot='table',
-            table='both',
-            both='plot')
-
-        self.axes.clear()
-        self.mode = nextmode.get(self.mode, 'table')
-
-        if self.mode != 'table':
-            self.plot()
-
-
-        if self.mode != 'plot':
-            self.draw_table()
-        
-        self.draw()
-
-        
         
     def draw_table(self):
 

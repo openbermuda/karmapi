@@ -172,10 +172,14 @@ class SonoGram(pigfarm.MagicCarpet):
 
                 power = abs(sono)
 
+                if self.log:
+                    power = np.log(power)
+                    
                 vmax = power[-1].max()
                 vmax = max([max(x) for x in power])
                 vmin = 0
                 #print(max(power))
+                
 
                 self.axes.imshow(power.T.real, aspect='auto', vmax=vmax, vmin=vmin)
                 title = 'offset: {} end: {} channel: {} delay: {} {}'.format(
