@@ -131,13 +131,15 @@ async def fetch_part(name, data, minutes=30, timewarp=None):
     aminute = datetime.timedelta(minutes=1)
     
     # make timestamp an even minute
-    if timestamp.minute % 1:
-        timestamp -= aminute
+    # if timestamp.minute % 2:
+    #     timestamp -= aminute
 
     end = timestamp - (minutes * aminute)
     bad = set()
     checks = set()
+
     while timestamp > end:
+        timestamp -= aminute
 
         path = Path(target.format(
             date=timestamp,
@@ -146,38 +148,42 @@ async def fetch_part(name, data, minutes=30, timewarp=None):
 
         path = Path('~/karmapi').expanduser() / path
 
-        if not path.exists() and str(path) not in bad:
+        if path.exists():
+            print('already got', timestamp, name)
+            continue
 
-            # FIXME get a timewarp from the target.  Parish is on GMT
-            #if parish:
-            #    timewarp += parish_timewarp 
+        if str(path) in bad:
+            print('skipping bad', timestamp, name)
 
-            print('looking for', path)
-            # need to fetch it
-            iurl = data['url'].format(
-                date=timestamp,
-                size=data['size'])
+        # FIXME get a timewarp from the target.  Parish is on GMT
+        #if parish:
+        #    timewarp += parish_timewarp 
+
+        print('looking for', timestamp, name)
+        # need to fetch it
+        iurl = data['url'].format(
+            date=timestamp,
+            size=data['size'])
 
             
-            # fixme -- await an async http call
-            image = requests.get(iurl)
+        # fixme -- await an async http call
+        image = requests.get(iurl)
 
-            if image.status_code == requests.codes.ALL_OK:
-                # Save the imabe
-                # checksum the data
-                check = hash(image.content)
-                if check in checks:
-                    print('dupe', path)
-                else:
-                    print('GOT', path)
-                    path.parent.mkdir(exist_ok=True, parents=True)
-                    path.open('wb').write(image.content)
+        if image.status_code == requests.codes.ALL_OK:
+            # Save the imabe
+            # checksum the data
+            check = hash(image.content)
+            if check in checks:
+                print('dupe', timestamp, name)
             else:
-                print('bad', path)
-                bad.add(str(path))
+                print('GOT', timestamp, name)
+                path.parent.mkdir(exist_ok=True, parents=True)
+                path.open('wb').write(image.content)
+        else:
+            print('bad', path)
+            bad.add(str(path))
             
-        timestamp -= (2 * aminute)
-
+        print()
         
 async def fetch(minutes=30, sleep=300):
     """ Download images """
