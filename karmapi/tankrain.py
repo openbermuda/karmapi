@@ -14,7 +14,7 @@ import curio
 
 from karmapi import show, base
 
-from karmapi import pigfarm
+from karmapi import pigfarm, checksum
 
 
 # Paths to data
@@ -118,17 +118,25 @@ class TankRain(pigfarm.MagicCarpet):
 
 
 
-async def fetch_part(name, data, minutes=30):
+async def fetch_part(name, data, minutes=30, timewarp=None):
 
+    timewarp = datetime.timedelta()
+
+    #FIXME adjust for timewarp
+    
     timestamp = utcnow()
+
+    timestamp += timewarp
+    
     aminute = datetime.timedelta(minutes=1)
     
     # make timestamp an even minute
-    if timestamp.minute % 2:
+    if timestamp.minute % 1:
         timestamp -= aminute
 
     end = timestamp - (minutes * aminute)
     bad = set()
+    checks = set()
     while timestamp > end:
 
         path = Path(target.format(
@@ -139,19 +147,33 @@ async def fetch_part(name, data, minutes=30):
         path = Path('~/karmapi').expanduser() / path
 
         if not path.exists() and str(path) not in bad:
+
+            # FIXME get a timewarp from the target.  Parish is on GMT
+            #if parish:
+            #    timewarp += parish_timewarp 
+
+            print('looking for', path)
             # need to fetch it
             iurl = data['url'].format(
                 date=timestamp,
                 size=data['size'])
 
+            
             # fixme -- await an async http call
             image = requests.get(iurl)
 
             if image.status_code == requests.codes.ALL_OK:
                 # Save the imabe
-                path.parent.mkdir(exist_ok=True, parents=True)
-                path.open('wb').write(image.content)
+                # checksum the data
+                check = hash(image.content)
+                if check in checks:
+                    print('dupe', path)
+                else:
+                    print('GOT', path)
+                    path.parent.mkdir(exist_ok=True, parents=True)
+                    path.open('wb').write(image.content)
             else:
+                print('bad', path)
                 bad.add(str(path))
             
         timestamp -= (2 * aminute)
