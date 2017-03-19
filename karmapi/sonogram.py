@@ -34,6 +34,9 @@ class SonoGram(pigfarm.MagicCarpet):
         self.samples = 1
         self.channel = 0
 
+        # power spectrum so log may work better
+        self.log = True
+
 
     def create_event_map(self):
 
