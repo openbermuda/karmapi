@@ -118,11 +118,12 @@ class TankRain(pigfarm.MagicCarpet):
 
 
 
-async def fetch_part(name, data, minutes=30, timewarp=None):
+async def fetch_part(name, data, minutes=30, timewarp=None, bad=None):
 
     timewarp = datetime.timedelta()
 
     #FIXME adjust for timewarp
+    bad = bad or set()
     
     timestamp = utcnow()
 
@@ -135,7 +136,6 @@ async def fetch_part(name, data, minutes=30, timewarp=None):
     #     timestamp -= aminute
 
     end = timestamp - (minutes * aminute)
-    bad = set()
     checks = set()
 
     while timestamp > end:
@@ -154,6 +154,7 @@ async def fetch_part(name, data, minutes=30, timewarp=None):
 
         if str(path) in bad:
             print('skipping bad', timestamp, name)
+            continue
 
         # FIXME get a timewarp from the target.  Parish is on GMT
         #if parish:
@@ -180,8 +181,9 @@ async def fetch_part(name, data, minutes=30, timewarp=None):
                 path.parent.mkdir(exist_ok=True, parents=True)
                 path.open('wb').write(image.content)
         else:
-            print('bad', path)
             bad.add(str(path))
+            print('bad', path, len(bad))
+
             
         print()
         
@@ -198,9 +200,13 @@ async def fetch(minutes=30, sleep=300):
 
 
     while True:
+        bad = set()
         for name, data in iurls.items():
             
-            await fetch_part(name, data, minutes)
+            await fetch_part(name, data, minutes, bad)
+
+            # FIXME -- shrink bad from time to time
+            
         await curio.sleep(300)
                 
 
