@@ -37,19 +37,6 @@ class Magic(pigfarm.MagicCarpet):
         if data:
             self.process_data()
 
-        self.add_event_map(' ', self.next_group)
-
-
-    async def next_group(self):
-        """ Next group """
-        self.group += 1
-
-        if self.group == len(self.groups):
-            self.group = 0
-
-        await self.event.put(self.group)
-
-
  
 
     async def tester(self, sleep=2):

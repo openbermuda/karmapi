@@ -316,6 +316,9 @@ class Space:
         self.add_event_map('l', self.larger)
         self.add_event_map('k', self.smaller)
 
+        self.fix = False
+        self.add_event_map('x', self.fix_something)
+
     def add_event_map(self, event, coro):
 
         self.event_map[event] = coro
@@ -326,7 +329,10 @@ class Space:
         
         return getattr(self.artist, attr)
         
-
+    async def fix_something(self):
+        """ Fix """
+        self.fix = not self.fix
+        
     async def larger(self):
         """ Larger pictures """
         self.scale += 50
@@ -419,6 +425,11 @@ class MagicCarpet(Space):
         self.table = False
         self.add_event_map('t', self.table_toggle)
 
+        self.groups = []
+        self.group = None
+        self.add_event_map(' ', self.next_group)
+
+
     def frame_to_stats(self, frame):
 
         stats = frame.describe()
@@ -459,6 +470,7 @@ class MagicCarpet(Space):
         self.group = 0
         self.groups = groups
         
+
     async def log_toggle(self):
         """ toggle log scale """
         self.log = not self.log
@@ -474,6 +486,16 @@ class MagicCarpet(Space):
     async def table_toggle(self):
         """ toggle show table """
         self.table = not self.table
+
+    async def next_group(self):
+        """ Next group """
+        self.group += 1
+
+        if self.group == len(self.groups):
+            self.group = 0
+
+        await self.event.put(self.group)
+
 
     def clear_axes(self):
 

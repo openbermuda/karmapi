@@ -37,6 +37,10 @@ class SonoGram(pigfarm.MagicCarpet):
         # power spectrum so log may work better
         self.log = True
 
+        # fix sonogram scale
+        self.vmax = None
+        self.vmin = None
+
 
     def create_event_map(self):
 
@@ -47,6 +51,9 @@ class SonoGram(pigfarm.MagicCarpet):
         self.add_event_map('t', self.toggle_plottype)
         self.add_event_map('c', self.toggle_channel)
         self.add_event_map('m', self.next_mick)
+
+        self.pca = None
+        self.add_event_map('M',  self.do_principal_components)
 
     async def toggle_plottype(self):
         """ Toggle between wave and sonogram """
@@ -128,6 +135,60 @@ class SonoGram(pigfarm.MagicCarpet):
         self.farm.status()
         self.mick = await self.get_source()
 
+    async def do_principal_components(self):
+        """ Do principa component analysis of sonos """
+        if self.pca:
+            self.pca = None
+            return
+
+        # want to reduce dimensions of sono
+        pass
+
+    async def draw_sono(self):
+        """ Dras sonograph """
+        #sono = base.sono(self.data[-1][::2])
+        sono = pandas.np.array([x[0] for x in self.sonos])
+
+        sono = sono[:, self.offset:self.end]
+
+        power = abs(sono)
+
+        if self.log:
+            power = np.log(power)
+
+        vmin =0
+        if self.vmax is None:
+            vmax = power[-1].max()
+            vmax = max([max(x) for x in power])
+
+        if self.fix:
+            if self.vmax is None:
+                self.vmax = vmax
+
+            vmax = self.vmax
+        else:
+            self.vmax = self.vmin = None
+
+        self.axes.imshow(power.T.real, aspect='auto', vmax=vmax, vmin=vmin)
+        title = 'offset: {} end: {} channel: {} delay: {} {}'.format(
+            self.offset, self.end, self.channel,
+            str(datetime.now() - timestamp), timestamp)
+
+        def freq_format(x, pos=None):
+
+            rate = self.mick.rate()
+            frames = self.mick.frame_size()
+
+            xx = x + self.offset
+
+            hertz = (xx / frames) * (rate * 2.0)
+
+            return '{:.1f}'.format(hertz)
+
+        self.axes.yaxis.set_major_formatter(ticker.FuncFormatter(freq_format))
+
+        self.axes.set_title(title)
+
 
     async def run(self):
         """ Run the animation
@@ -168,42 +229,7 @@ class SonoGram(pigfarm.MagicCarpet):
                 self.axes.set_title('{}'.format(str(datetime.now() - timestamp)))
 
             else:
-                #sono = base.sono(self.data[-1][::2])
-                sono = pandas.np.array([x[0] for x in self.sonos])
-
-                sono = sono[:, self.offset:self.end]
-
-                power = abs(sono)
-
-                if self.log:
-                    power = np.log(power)
-                    
-                vmax = power[-1].max()
-                vmax = max([max(x) for x in power])
-                vmin = 0
-                #print(max(power))
-                
-
-                self.axes.imshow(power.T.real, aspect='auto', vmax=vmax, vmin=vmin)
-                title = 'offset: {} end: {} channel: {} delay: {} {}'.format(
-                    self.offset, self.end, self.channel,
-                    str(datetime.now() - timestamp), timestamp)
-
-                def freq_format(x, pos=None):
-
-                    rate = self.mick.rate()
-                    frames = self.mick.frame_size()
-
-                    xx = x + self.offset
-
-                    hertz = (xx / frames) * (rate * 2.0)
-
-                    return '{:.1f}'.format(hertz)
-
-                self.axes.yaxis.set_major_formatter(ticker.FuncFormatter(freq_format))
-
-                self.axes.set_title(title)
-
+                self.draw_sono()
             self.draw()
 
             while len(self.sonos) > 100:
