@@ -420,7 +420,7 @@ class AppEventLoop:
         while True:
 
             # FIXME - have Qt do the put when it wants refreshing
-            self.put(event)
+            await self.put(event)
             event += 1
 
             nap = await self.naptime(nap)

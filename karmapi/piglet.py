@@ -368,9 +368,9 @@ class EventLoop(AppEventLoop):
             self.ppe = ProcessPoolExecutor()
 
 
-    def put(self, event):
+    async def put(self, event):
         """ Maybe EventLoop is just a curio.EpicQueue? """
-        self.queue.put(event)
+        await self.queue.put(event)
 
     def submit_job(self, coro, afters=None, *args, **kwargs):
         """ Submit a coroutine to the job queue """
@@ -403,10 +403,10 @@ class EventLoop(AppEventLoop):
             print("doit slept for {} {}".format(result, end-start))
             
 
-    def magic(self, event, *args, **kwargs):
+    async def magic(self, event, *args, **kwargs):
         """ Gets called when magic is needed """
         print('magic', flush=True)
-        self.put(event)
+        await self.put(event)
 
 
     async def run(self):

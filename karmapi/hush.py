@@ -32,7 +32,7 @@ import pyaudio
 import wave
 import numpy as np
 
-from karmapi import base
+from karmapi import base, pigfarm, sonogram
 
 CHUNK = 1024 * 4
 FORMAT = pyaudio.paInt16
@@ -175,23 +175,31 @@ class Wave:
 
         n = 2 * CHUNK
 
+        data = self.sine_wave(n)
+
+        if mode == 'square':
+            data = self.sine_to_square(data)
+            
+        self.data = data
+
+    def sine_to_square(self, data):
+        maxval = (2 ** 15) - 1
+
+        square = []
+        for x in data:
+            if x > 0:
+                square.append(maxval)
+            else:
+                square.append(-maxval)
+        return square
+
+    
+    def sine_wave(self, n):
+
         data = np.arange(n)
         data = np.sin(data * math.pi / 50.0) * (2**15 - 1)
 
-        if mode == 'square':
-            maxval = (2 ** 15) - 1
-
-            square = []
-            for x in data:
-                if x > 0:
-                    square.append(maxval)
-                else:
-                    square.append(-maxval)
-            data = square
-                
-        print('xxxxxxxxxxxxxxxxx', mode, len(data))
-
-        self.data = data
+        return data
 
 
     def rate(self):
@@ -303,14 +311,30 @@ def main(args=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('--outfile', default='out.hush')
     parser.add_argument('--record', action='store_true')
+    parser.add_argument('--infile')
+    parser.add_argument('--nomick', action='store_true')
     
     args = parser.parse_args(args)
 
     if args.record:
         curio.run(record(open(args.outfile, 'wb')))
+        
     else:
-    
-        curio.run(run(), with_monitor=True)
+        farm = pigfarm.PigFarm()
+
+        farm.add(sonogram.SonoGram)
+
+        farm.add_mick(Wave(mode='square'))
+        farm.add_mick(Wave())
+
+        if args.infile:
+            farm.add_mick(Connect(mick=open(args.infile, 'rb')))
+        
+        if not args.nomick:
+            farm.add_mick(Connect())
+
+            
+        pigfarm.run(farm)
 
 
             
