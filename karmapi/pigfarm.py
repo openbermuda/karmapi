@@ -418,6 +418,19 @@ class MagicCarpet(Space):
         self.table = False
         self.add_event_map('t', self.table_toggle)
 
+        self.add_event_map(' ', self.next_group)
+
+
+    async def next_group(self):
+        """ Next group """
+        self.group += 1
+
+        if self.group == len(self.groups):
+            self.group = 0
+
+        await self.event.put(self.group)
+
+        
     def frame_to_stats(self, frame):
 
         stats = frame.describe()
@@ -522,8 +535,8 @@ class MagicCarpet(Space):
         acell = tab._cells[0, 0]
         print('fontsize', acell.get_fontsize())
 
-        title = title or f'table location {loc}'
-        self.axes.set_title(title)
+        if title:
+            self.axes.set_title(title)
         self.axes.set_axis_off()
 
     def draw_plot(self):
@@ -533,7 +546,8 @@ class MagicCarpet(Space):
 
         axes = self.subplots[0]
         axes.clear()
-
+        axes.set_title(group)
+        
         # sort columns on mean
         mean = frame.mean()
         mean.sort_values(inplace=True)
@@ -557,12 +571,12 @@ class MagicCarpet(Space):
         self.axes.clear()
         self.draw_table(
             frame, loc='center',
-            title=group, col_colours=col_colours)
+            col_colours=col_colours)
         self.draw()
         
     async def run(self):
 
-        await pigfarm.spawn(self.load_data())
+        await spawn(self.load_data())
 
         while True:
             self.draw_plot()
