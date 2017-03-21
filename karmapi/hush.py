@@ -23,6 +23,8 @@ import math
 
 import curio
 
+import argparse
+
 from matplotlib import pyplot
 import struct
 
@@ -126,7 +128,7 @@ class Connect:
 
         return self.mick._frames_per_buffer
 
-    async def start(self):
+    async def start(self, decode=True):
         """ Keep reading frames, add them to the queue """
 
         rate = 0
@@ -142,7 +144,10 @@ class Connect:
 
             data = self.mick.read(CHUNK)
             rate += 1
-            await self.queue.put((self.decode(data), timestamp))
+            if decode:
+                data = self.decode(data)
+                
+            await self.queue.put((data, timestamp))
 
 
     async def read(self, chunk):
@@ -212,36 +217,6 @@ class Wave:
         return data
 
 
-async def run():
-    """ Run this thing under curio  """
-
-    connect = Connect()
-
-    # set the connection to start collecting frames
-    frames = await curio.spawn(connect.frames())
-
-    while True:
-
-        data = await connect.get()
-
-
-def open_wave(name):
-
-    wf = wave.open(name, 'rb')
-
-    # monkey patch
-    wf.read = wf.readframes
-
-    return wf
-
-
-def main():
-
-
-
-    curio.run(run(), with_monitor=True)
-
-
 class FreqGen:
 
     def __init__(self):
@@ -272,3 +247,70 @@ class FreqGen:
             hertz = (xx / frames) * rate * 0.5
 
             print('{} {}'.format(timestamp, hertz))
+
+
+def open_wave(name):
+
+    wf = wave.open(name, 'rb')
+
+    # monkey patch
+    wf.read = wf.readframes
+
+    return wf
+
+
+async def write(connect, outfile):
+    
+    while True:
+        
+        data, timestamp = await connect.get()
+        print('got data', timestamp)
+
+        # FIXME -- use aiofiles?
+        outfile.write(data)
+
+        
+async def record(outfile):
+
+    connect = Connect()
+
+    # set the connection to start collecting frames
+    frames = await curio.spawn(connect.start(decode=False))
+
+    writer = await curio.spawn(write(connect, outfile))
+
+    await writer.join()
+    
+
+async def run():
+    """ Run this thing under curio  
+
+    FIXME -- make it do something useful
+    """
+
+    connect = Connect()
+
+    # set the connection to start collecting frames
+    frames = await curio.spawn(connect.frames())
+
+    while True:
+
+        data = await connect.get()
+
+
+def main(args=None):
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--outfile', default='out.hush')
+    parser.add_argument('--record', action='store_true')
+    
+    args = parser.parse_args(args)
+
+    if args.record:
+        curio.run(record(open(args.outfile, 'wb')))
+    else:
+    
+        curio.run(run(), with_monitor=True)
+
+
+            
