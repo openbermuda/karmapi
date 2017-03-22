@@ -26,7 +26,7 @@ class SonoGram(pigfarm.MagicCarpet):
 
     def __init__(self, parent):
 
-        super().__init__(parent)
+        super().__init__(parent, axes=[211, 212])
 
         self.plottype = 'wave'
 
@@ -58,6 +58,8 @@ class SonoGram(pigfarm.MagicCarpet):
         self.pca = None
         self.add_event_map('M',  self.do_principal_components)
 
+        self.minfrac = 0.1
+
     async def toggle_plottype(self):
         """ Toggle between wave and sonogram """
 
@@ -78,14 +80,18 @@ class SonoGram(pigfarm.MagicCarpet):
         self.end -= 1
 
     async def slim(self):
-        """ Shrink frequency window """
-
-        self.end -= 5
+        """ Shrink window """
+        if self.pca:
+            self.minfrac = max(0.0, self.minfrac - 0.1)
+        else:
+            self.end -= 5
 
     async def wide(self):
-        """ Widen frequency window """
-
-        self.end += 5
+        """ Widen window """
+        if self.pca:
+            self.minfrac = min(0.8, self.minfrac + 0.1)
+        else:
+            self.end += 5
 
     async def toggle_channel(self):
         """ Toggle channel """
@@ -141,16 +147,17 @@ class SonoGram(pigfarm.MagicCarpet):
     async def do_principal_components(self):
         """ Do the PCA """
         if self.pca:
-            print('PCA OFF')
+            print('PCA OFF', self.minfrac)
             self.pca = None
             return
 
         # want to reduce dimensions of sono
 
         sono = pandas.np.array([x[0] for x in self.sonos])
+        sono = sono[:, self.offset:self.end]
         rows, cols = sono.shape
 
-        print('calculating PCA', rows, cols)
+        print('calculating PCA', rows, cols, self.minfrac)
 
         if rows < 100:
             # FIXME: tell them to come back later
@@ -161,13 +168,18 @@ class SonoGram(pigfarm.MagicCarpet):
             return
         
 
-        sono = sono[:, self.offset:self.end]
-
-
         try:
             self.pca = PCA(sono)
-        except:
-            print('pca oops')
+
+            total = 0
+            for ix, xx in self.pca.fracs:
+                total += xx
+                print(ix, xx, total)
+                
+            print(self.pca.fracs)
+            self.pca.fracs = 1.0 - np.cumsum(self.pca.fracs)
+        except Exception as e:
+            print('pca oops', e)
 
     async def draw_sono(self, timestamp=None):
         """ Dras sonograph """
@@ -179,9 +191,9 @@ class SonoGram(pigfarm.MagicCarpet):
         sono = sono[:, self.offset:self.end]
 
         if self.pca:
-            print('PCA', sono.shape)
-            sono = self.pca.project(sono, minfrac=0.8)
-            print(sono.shape)
+            #print('PCA', sono.shape, self.minfrac)
+            sono = self.pca.project(sono, minfrac=self.minfrac)
+            #print(sono.shape)
 
         power = abs(sono)
 
@@ -245,6 +257,7 @@ class SonoGram(pigfarm.MagicCarpet):
 
         while True:
 
+            
             if self.clear:
                 self.clear_axes()
 
@@ -252,22 +265,26 @@ class SonoGram(pigfarm.MagicCarpet):
                 await curio.sleep(0.01)
                 continue
 
+            self.axes = self.subplots[1]
+
             data, timestamp = await self.mick.get()
 
             self.sonos.append((self.sono_calc(data), timestamp))
 
-            if self.plottype != 'sono':
-                samples = int(len(data) / 2)
-                start = self.channel * samples
-                end = start + samples
 
-                self.axes.plot(data[start:end])
-                self.axes.set_ylim(ymin=-30000, ymax=30000)
+            samples = int(len(data) / 2)
+            start = self.channel * samples
+            end = start + samples
 
-                self.axes.set_title('{}'.format(str(datetime.now() - timestamp)))
+            self.axes.plot(data[start:end])
+            self.axes.set_ylim(ymin=-30000, ymax=30000)
 
-            else:
-                await self.draw_sono(timestamp)
+            self.axes.set_title('{}'.format(str(datetime.now() - timestamp)))
+
+
+            self.axes = self.subplots[0]
+            await self.draw_sono(timestamp)
+
             self.draw()
 
             while len(self.sonos) > 100:

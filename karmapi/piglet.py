@@ -492,6 +492,7 @@ class XKCD(PlotImage):
 
             self.axes.set_xlabel('time')
             self.axes.set_ylabel('my overall health')
+            self.draw()
 
 
 class Image(PlotImage):
