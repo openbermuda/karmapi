@@ -23,8 +23,6 @@ import math
 
 import curio
 
-import argparse
-
 from matplotlib import pyplot
 import struct
 
@@ -32,7 +30,7 @@ import pyaudio
 import wave
 import numpy as np
 
-from karmapi import base, pigfarm, sonogram
+from karmapi import base
 
 CHUNK = 1024 * 4
 FORMAT = pyaudio.paInt16
@@ -308,6 +306,8 @@ async def run():
 
 def main(args=None):
 
+    import argparse
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--outfile', default='out.hush')
     parser.add_argument('--record', action='store_true')
@@ -318,23 +318,7 @@ def main(args=None):
 
     if args.record:
         curio.run(record(open(args.outfile, 'wb')))
-        
-    else:
-        farm = pigfarm.PigFarm()
-
-        farm.add(sonogram.SonoGram)
-
-        farm.add_mick(Wave(mode='square'))
-        farm.add_mick(Wave())
-
-        if args.infile:
-            farm.add_mick(Connect(mick=open(args.infile, 'rb')))
-        
-        if not args.nomick:
-            farm.add_mick(Connect())
-
-            
-        pigfarm.run(farm)
+        return
 
 
             

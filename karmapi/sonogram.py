@@ -4,8 +4,9 @@ import PIL
 
 from collections import deque
 
-from karmapi import pigfarm, base
-
+from karmapi import pigfarm
+from karmapi import base
+from karmapi import hush
 import curio
 
 import pandas
@@ -234,3 +235,34 @@ class SonoGram(pigfarm.MagicCarpet):
 
             while len(self.sonos) > 100:
                 self.sonos.popleft()
+
+def main(args=None):
+
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--infile')
+    parser.add_argument('--nomick', action='store_true')
+    
+    args = parser.parse_args(args)
+
+
+    farm = pigfarm.PigFarm()
+
+    farm.add(SonoGram)
+
+    farm.add_mick(hush.Wave(mode='square'))
+    farm.add_mick(hush.Wave())
+
+    if args.infile:
+        farm.add_mick(Connect(mick=open(args.infile, 'rb')))
+
+    if not args.nomick:
+        farm.add_mick(hush.Connect())
+
+
+    pigfarm.run(farm)
+                
+
+if __name__ == '__main__':
+
+    main()
