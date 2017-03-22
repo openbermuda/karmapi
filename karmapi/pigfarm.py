@@ -489,6 +489,9 @@ class MagicCarpet(Space):
 
     async def next_group(self):
         """ Next group """
+        if self.group is None:
+            return
+        
         self.group += 1
 
         if self.group == len(self.groups):

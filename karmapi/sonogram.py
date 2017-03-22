@@ -13,6 +13,7 @@ import pandas
 np = pandas.np
 
 from matplotlib import ticker
+from matplotlib.mlab import PCA
 
 from numpy import random
 
@@ -34,6 +35,7 @@ class SonoGram(pigfarm.MagicCarpet):
         self.create_event_map()
         self.samples = 1
         self.channel = 0
+        #self.sleep = 0.1
 
         # power spectrum so log may work better
         self.log = True
@@ -48,7 +50,7 @@ class SonoGram(pigfarm.MagicCarpet):
         self.add_event_map('d', self.down)
         self.add_event_map('u', self.up)
         self.add_event_map('w', self.wide)
-        self.add_event_map('s', self.slim)
+        self.add_event_map('i', self.slim)
         self.add_event_map('t', self.toggle_plottype)
         self.add_event_map('c', self.toggle_channel)
         self.add_event_map('m', self.next_mick)
@@ -137,20 +139,34 @@ class SonoGram(pigfarm.MagicCarpet):
         self.mick = await self.get_source()
 
     async def do_principal_components(self):
-        """ Do principa component analysis of sonos """
+        """ Do principal component analysis of sonos """
         if self.pca:
+            print('PCA OFF')
             self.pca = None
             return
 
         # want to reduce dimensions of sono
-        pass
-
-    async def draw_sono(self):
-        """ Dras sonograph """
         #sono = base.sono(self.data[-1][::2])
         sono = pandas.np.array([x[0] for x in self.sonos])
 
         sono = sono[:, self.offset:self.end]
+
+        print('calculating PCA', sono.shape)
+        self.pca = PCA(sono)
+
+    async def draw_sono(self, timestamp=None):
+        """ Dras sonograph """
+
+        timestamp = timestamp or hush.utcnow()
+        #sono = base.sono(self.data[-1][::2])
+        sono = pandas.np.array([x[0] for x in self.sonos])
+
+        sono = sono[:, self.offset:self.end]
+
+        if self.pca:
+            print('PCA', sono.shape)
+            sono = self.pca.project(sono, minfrac=0.8)
+            print(sono.shape)
 
         power = abs(sono)
 
@@ -188,6 +204,9 @@ class SonoGram(pigfarm.MagicCarpet):
 
         self.axes.yaxis.set_major_formatter(ticker.FuncFormatter(freq_format))
 
+        title = title
+        if self.pca:
+            title += " PCA"
         self.axes.set_title(title)
 
 
@@ -230,7 +249,7 @@ class SonoGram(pigfarm.MagicCarpet):
                 self.axes.set_title('{}'.format(str(datetime.now() - timestamp)))
 
             else:
-                self.draw_sono()
+                await self.draw_sono(timestamp)
             self.draw()
 
             while len(self.sonos) > 100:
@@ -245,10 +264,11 @@ def main(args=None):
     
     args = parser.parse_args(args)
 
-
+    from karmapi import mclock2
     farm = pigfarm.PigFarm()
 
     farm.add(SonoGram)
+    farm.add(mclock2.GuidoClock)
 
     farm.add_mick(hush.Wave(mode='square'))
     farm.add_mick(hush.Wave())

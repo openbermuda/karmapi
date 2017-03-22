@@ -215,7 +215,6 @@ class Wave:
             timestamp = datetime.now()
             await self.queue.put((self.data, timestamp))
 
-
     async def get(self):
 
         data = await self.queue.get()
@@ -319,6 +318,13 @@ def main(args=None):
     if args.record:
         curio.run(record(open(args.outfile, 'wb')))
         return
+    
+    from karmapi import sonogram
+    from karmapi import pigfarm
 
+
+if __name__ == '__main__':
+
+    main()
 
             
