@@ -170,6 +170,7 @@ class Wave:
         """ Fixme: configure stream according to **kwargs """
 
         self.queue = curio.UniversalQueue(maxsize=2)
+        self.sleep = 0.01
 
         n = 2 * CHUNK
 
@@ -201,11 +202,11 @@ class Wave:
 
 
     def rate(self):
-
+        """ FIXME """
         return 44100
 
     def frame_size(self):
-
+        """ FIXME -- make this work with CHUNK """
         return 1024
 
     async def start(self):
@@ -214,6 +215,7 @@ class Wave:
         while True:
             timestamp = datetime.now()
             await self.queue.put((self.data, timestamp))
+            await curio.sleep(self.sleep)
 
     async def get(self):
 

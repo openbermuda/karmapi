@@ -147,11 +147,17 @@ class SonoGram(pigfarm.MagicCarpet):
 
         # want to reduce dimensions of sono
         #sono = base.sono(self.data[-1][::2])
+        width, height self.sono.shape
+        if width < height:
+            # FIXME: tell them to come back latet
+            return
+        
         sono = pandas.np.array([x[0] for x in self.sonos])
 
         sono = sono[:, self.offset:self.end]
 
         print('calculating PCA', sono.shape)
+
         self.pca = PCA(sono)
 
     async def draw_sono(self, timestamp=None):
@@ -173,7 +179,7 @@ class SonoGram(pigfarm.MagicCarpet):
         if self.log:
             power = np.log(power)
 
-        vmin =0
+        vmin = 0
         if self.vmax is None:
             vmax = power[-1].max()
             vmax = max([max(x) for x in power])
@@ -185,6 +191,9 @@ class SonoGram(pigfarm.MagicCarpet):
             vmax = self.vmax
         else:
             self.vmax = self.vmin = None
+
+        # sometimes vmax is negative
+        vmin = min(vmin, vmax)
 
         self.axes.imshow(power.T.real, aspect='auto', vmax=vmax, vmin=vmin)
         title = 'offset: {} end: {} channel: {} delay: {} {}'.format(
