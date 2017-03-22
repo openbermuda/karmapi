@@ -139,26 +139,35 @@ class SonoGram(pigfarm.MagicCarpet):
         self.mick = await self.get_source()
 
     async def do_principal_components(self):
-        """ Do principal component analysis of sonos """
+        """ Do the PCA """
         if self.pca:
             print('PCA OFF')
             self.pca = None
             return
 
         # want to reduce dimensions of sono
-        #sono = base.sono(self.data[-1][::2])
-        width, height self.sono.shape
-        if width < height:
-            # FIXME: tell them to come back latet
+
+        sono = pandas.np.array([x[0] for x in self.sonos])
+        rows, cols = sono.shape
+
+        print('calculating PCA', rows, cols)
+
+        if rows < 100:
+            # FIXME: tell them to come back later
+            print('come back later')
+            
+            # better still use what is there 
+            self.pca = None
             return
         
-        sono = pandas.np.array([x[0] for x in self.sonos])
 
         sono = sono[:, self.offset:self.end]
 
-        print('calculating PCA', sono.shape)
 
-        self.pca = PCA(sono)
+        try:
+            self.pca = PCA(sono)
+        except:
+            print('pca oops')
 
     async def draw_sono(self, timestamp=None):
         """ Dras sonograph """
