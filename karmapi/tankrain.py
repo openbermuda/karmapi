@@ -5,8 +5,7 @@ import argparse
 import datetime
 utcnow = datetime.datetime.utcnow
 
-from urllib.error import HTTPError
-
+import requests
 from pathlib import Path
 
 from collections import defaultdict
@@ -15,7 +14,8 @@ import curio
 
 from karmapi import show, base
 
-from karmapi import pig
+from karmapi import pigfarm, checksum
+
 
 # Paths to data
 url = 'http://weather.bm/images/'
@@ -28,24 +28,8 @@ local_chart = 'surfaceAnalysis/Latest/Local.gif'
 
 target = 'tankrain/{date:%Y}/{date:%m}/{date:%d}/{name}_{date:%H%M}{suffix}'
 
-def meta():
-    """ Generate pig gui description for tankrain """
-    info = dict(
-        title = "PIGS",
-        info = dict(foo=27, bar='open'),
-        parms = [{'label': 'path'}],
-        tabs = [
-            {'name': 'parish',
-             'widgets': [[TankRain]]},
-            {'name': 'local',
-             'widgets': [[TankRain]]},
-            {'name': 'wide',
-             'widgets': [[TankRain]]},
-            {'name': 'yosser'}]) 
-    return info
-    
 
-class TankRain(pig.Video):
+class TankRain(pigfarm.MagicCarpet):
     """ Widget to show tankrain images """
 
     def __init__(self, parent, *args):
@@ -55,17 +39,12 @@ class TankRain(pig.Video):
 
         super().__init__(parent)
 
-        self.add_event_map('w', self.wide)
-        self.add_event_map('l', self.local)
-        self.add_event_map('b', self.parish)
-        self.add_event_map('s', self.slower)
-        self.add_event_map('f', self.faster)
         self.add_event_map('r', self.reverse)
-
+        self.add_event_map(' ', self.next_view)
 
     def load_images(self):
         
-        self.paths = [x for x in self.images()]
+        self.paths = [x for x in self.get_images()]
         self.ix = 0
         self.inc = 1
 
@@ -93,129 +72,123 @@ class TankRain(pig.Video):
                             
         self.data = im 
 
-    def images(self):
+    def get_images(self):
 
         # FIXME -- create key bindings to select time
-        path = Path('~/karmapi/tankrain/2016/10/13').expanduser()
+        date = utcnow()
+        path = Path(f'~/karmapi/tankrain/{date:%Y}/{date:%m}/{date:%d}').expanduser()
 
-        version = 'local'
         for image in sorted(path.glob('{}*.png'.format(self.version))):
             yield image
 
 
-    async def local(self):
+    async def next_view(self):
 
-        self.version = 'local'
+        switch = dict(
+            wide='local',
+            local='parish',
+            parish='wide')
+        
+        self.version = switch[self.version]
+        
         self.load_images()
-
-    async def wide(self):
-
-        self.version = 'wide'
-        self.load_images()
-
-    async def parish(self):
-
-        self.version = 'parish'
-        self.load_images()
-
-
-    async def slower(self):
-
-        self.interval *= 2
-
-    async def faster(self):
-
-        self.interval /= 2
 
     async def reverse(self):
 
         self.inc *= -1
 
+    async def start(self):
+        """ FIXME: get yoser to run fetch """
+        #farm.yosser.run(fetch, minutes=20, sleep=300)
+        pass
+
     async def run(self):
 
-        
-        
+        self.dark()
         while True:
 
-            tt = base.Timer()
-            
-            tt.time('start')
             self.compute_data()
-            tt.time('compute')
-
-            self.plot()
-            tt.time('plot')
+            self.axes.clear()
+            self.axes.imshow(self.data)
 
 
             self.draw()
-            tt.time('draw')
 
-            sleep = 0.01
-            await curio.sleep(self.interval)
-            tt.time('sleep')
-
-            #print(tt.stats())
+            await curio.sleep(self.sleep)
 
 
 
+async def fetch_part(name, data, minutes=30, timewarp=None, bad=None):
 
-class ParishImage(TankRain):
+    timewarp = datetime.timedelta()
 
-    def compute_data(self):
-
-        # for now, no idea
-        super().compute_data()
-
-        # pick a time?
-
-        # base.load(path)
-
-        # increment time
-
-class LocalImage(ParishImage):
-    pass
-
-class WideImage(LocalImage):
-    pass
-
-
-def get_parser():
-
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('--pig', action='store_true')
-    parser.add_argument('--minutes', type=int, default=30)
-
-    return parser
-
-def run_pig():
-
-    app = pig.build(meta())
-
-    pig.run(app)
-
-def main(args=None):
-    """ Retrieve images currently available 
-
-    There are usually six images available from the last half hour.
-    """
-
-    parser = get_parser()
-    args = parser.parse_args()
-
-    if args.pig:
-        run_pig()
-                  
-    minutes = args.minutes
-
-    size = 250
-
-    images = defaultdict(list)
-
-    aminute = datetime.timedelta(minutes=1)
-
+    #FIXME adjust for timewarp
+    bad = bad or set()
+    
     timestamp = utcnow()
 
+    timestamp += timewarp
+    
+    aminute = datetime.timedelta(minutes=1)
+    
+    # make timestamp an even minute
+    # if timestamp.minute % 2:
+    #     timestamp -= aminute
+
+    end = timestamp - (minutes * aminute)
+    checks = set()
+
+    while timestamp > end:
+        timestamp -= aminute
+
+        path = Path(target.format(
+            date=timestamp,
+            suffix='.png',
+            name=name))
+
+        path = Path('~/karmapi').expanduser() / path
+
+        if path.exists():
+            print('already got', timestamp, name)
+            continue
+
+        if str(path) in bad:
+            print('skipping bad', timestamp, name)
+            continue
+
+        # FIXME get a timewarp from the target.  Parish is on GMT
+        #if parish:
+        #    timewarp += parish_timewarp 
+
+        print('looking for', timestamp, name)
+        # need to fetch it
+        iurl = data['url'].format(
+            date=timestamp,
+            size=data['size'])
+
+            
+        # fixme -- await an async http call
+        image = requests.get(iurl)
+
+        if image.status_code == requests.codes.ALL_OK:
+            # Save the imabe
+            # checksum the data
+            check = hash(image.content)
+            if check in checks:
+                print('dupe', timestamp, name)
+            else:
+                print('GOT', timestamp, name)
+                path.parent.mkdir(exist_ok=True, parents=True)
+                path.open('wb').write(image.content)
+        else:
+            bad.add(str(path))
+            print('bad', path, len(bad))
+
+            
+        print()
+        
+async def fetch(minutes=30, sleep=300):
+    """ Download images """
     iurls = dict(
         local  = dict(url=url + radar_template,
                       size=100),
@@ -225,49 +198,42 @@ def main(args=None):
                       size=0),
     )
 
-    # make timestamp an even minute
-    if timestamp.minute % 2:
-        timestamp -= aminute
 
-    end = timestamp - (minutes * aminute)
-    while timestamp > end:
+    while True:
+        bad = set()
+        for name, data in iurls.items():
+            
+            await fetch_part(name, data, minutes, bad)
 
-        try:
-            for name, data in iurls.items():
-                iurl = data['url'].format(date=timestamp,
-                                         size=data['size'])
-                image = show.load(iurl)
-                piurl = Path(iurl)
-                print(iurl)
-                images[name].append(dict(image=image,
-                                         time=timestamp,
-                                         suffix=piurl.suffix))
-        except HTTPError as e:
-            #print('missing:', timestamp)
-            pass
+            # FIXME -- shrink bad from time to time
+            
+        await curio.sleep(300)
+                
 
-        except Exception as e:
-            raise e
-        
-        timestamp -= (2 * aminute)
+def main(args=None):
+    """ Retrieve images currently available 
 
-    
-    for name, items in images.items():
-        for item in items:
-            date = item['time']
-            image = item['image']
-            suffix = item['suffix']
+    There are usually six images available from the last half hour.
+    """
 
-            path = Path(target.format(
-                date=date,
-                suffix=suffix,
-                name=name))
+    parser = argparse.ArgumentParser()
 
-            print('Creating', path)
-            path.parent.mkdir(exist_ok=True, parents=True)
+    parser.add_argument('--pig', action='store_true')
+    parser.add_argument('--minutes', type=int, default=30)
 
-            show.save(str(path), image)
+    args = parser.parse_args()
 
+    if args.pig:
+        farm = pigfarm.PigFarm()
+        farm.add(TankRain)
+
+        from karmapi.mclock2 import GuidoClock
+        farm.add(GuidoClock)
+
+        pigfarm.run(farm)
+        sys.exit()
+    else:
+        curio.run(fetch(args.minutes))
 
 if __name__ == '__main__':
     # Radar

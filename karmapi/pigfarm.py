@@ -5,16 +5,18 @@ A collection of pigs and piglets.
 Pigs are windows, piglets are things running in the pig farm.
 
 """
-
+import pandas   # piglets and pandas together
 from collections import deque
 import curio
+from curio import spawn, sleep
+
 from pathlib import Path
 import inspect
 
 from PIL import Image
 
 from karmapi import hush
-from karmapi import pig
+from karmapi import piglet
 
 from tkinter import Toplevel
 
@@ -32,6 +34,10 @@ class PigFarm:
 
         self.builds = curio.UniversalQueue()
 
+        self.data = curio.UniversalQueue()
+
+        self.micks = curio.UniversalQueue()
+
         self.widgets = deque()
         self.current = None
         self.eric = None
@@ -46,7 +52,6 @@ class PigFarm:
 
         self.piglets.put(self.eloop.run())
 
-        self.micks = curio.UniversalQueue()
 
     def add_event_map(self, event, coro):
 
@@ -60,6 +65,7 @@ class PigFarm:
         self.add_event_map('h', self.help)
         self.add_event_map('c', self.show_monitor)
         self.add_event_map('e', self.show_eric)
+        self.add_event_map('q', self.quit)
 
 
     def status(self):
@@ -72,7 +78,6 @@ class PigFarm:
     def add(self, pig, kwargs=None):
 
         kwargs = kwargs or {}
-        print('pigfarm adding', pig, kwargs)
 
         self.builds.put((pig, kwargs))
 
@@ -93,10 +98,7 @@ class PigFarm:
             meta, kwargs = await self.builds.get()
             print('building piglet:', meta)
 
-            #piglet = pig.build(meta)
-
             piglet = meta(self.toplevel(), **kwargs)
-            piglet.bind('<Key>', self.keypress)
 
             self.widgets.append(piglet)
 
@@ -104,12 +106,12 @@ class PigFarm:
             piglet.farm = self
             print('built', meta, piglet)
 
-            await self.piglets.put(piglet.start())
+            await piglet.start()
 
     async def start_piglet(self):
 
         self.current.pack(fill='both', expand=1)
-        self.current_task = await curio.spawn(self.current.run())
+        self.current_task = await spawn(self.current.run())
 
     async def stop_piglet(self):
 
@@ -119,11 +121,11 @@ class PigFarm:
     async def help(self):
         """ Show help """
         print('Help')
-        print(self.event_map)
 
         keys = {}
         if self.current:
             keys = self.current.event_map.copy()
+            print('current keys:', keys)
 
         keys.update(self.event_map)
         msg = ''
@@ -134,9 +136,14 @@ class PigFarm:
 
         piglet.Help(msg)
 
+    async def quit(self):
+        """ quit the farm """
+
+        await self.quit_event.set()
 
     async def next(self):
         """ Show next widget """
+        if not len(self.widgets): return
         print('current', self.current)
         if self.current:
             self.widgets.append(self.current)
@@ -149,6 +156,7 @@ class PigFarm:
 
     async def previous(self):
         """ Show previous widget """
+        if not len(self.widgets): return
         print('going to previous', self.current)
         if self.current:
 
@@ -159,14 +167,8 @@ class PigFarm:
         self.current = self.widgets.pop()
         await self.start_piglet()
 
-    def keypress(self, event):
 
-        print('currie event', event)
-        # Fixme -- turn these into events that we can push onto piglet queues
-
-        self.events.put(event)
-
-    async def run(self):
+    async def tend(self):
         """ Make the pigs run """
 
         # spawn a task for each piglet
@@ -176,7 +178,7 @@ class PigFarm:
         # spawn a task to deal with mouse events
 
         # ... spawn tasks to deal with any events
-
+        print(self.quit_event)
         builder = await curio.spawn(self.build())
 
         while True:
@@ -186,7 +188,7 @@ class PigFarm:
 
                 print('spawning', piglet)
 
-                await curio.spawn(piglet)
+                await spawn(piglet)
 
             # wait for an event
             #event = await self.event.get()
@@ -206,6 +208,20 @@ class PigFarm:
             print('eq', self.event.qsize())
 
 
+    async def run(self):
+
+        self.quit_event = curio.Event()
+        
+        runner = await spawn(self.tend())
+
+        await self.quit_event.wait()
+
+        print('over and out')
+
+        await runner.cancel()
+
+        print('runner gone')
+
 
     async def process_event(self, event):
         """ Dispatch events when they come in """
@@ -224,17 +240,17 @@ class PigFarm:
     async def show_monitor(self):
         """ Show curio monitor """
         
-        from karmapi import widgets
+        from karmapi import milk
         farm = PigFarm()
-        farm.add(widgets.Curio)
-        await curio.spawn(farm.run())
+        farm.add(milk.Curio)
+        await spawn(farm.run())
 
     async def mon_update(self, mon):
 
         while True:
             #await mon.update()
             await mon.next()
-            await curio.sleep(1)
+            await sleep(1)
 
     async def show_eric(self):
         """ Show eric idle """
@@ -250,7 +266,7 @@ class PigFarm:
             filename = inspect.getsourcefile(self.current.__class__)
         farm.add(Eric, dict(filename=filename))
 
-        await curio.spawn(farm.run())
+        await spawn(farm.run())
 
         farm.toplevel().withdraw()
         
@@ -276,17 +292,18 @@ class Pig:
     pass
 
 
-class Yard(pig.Canvas):
-    """ A place to draw piglets """
-    def __init__(self, parent, *args, **kwargs):
+class Space:
 
-        super().__init__(parent)
+    def __init__(self):
 
         self.scale = 400
         self.fade = 30
         self.sleep = 0.05
         self.naptime = self.sleep
         self.images = {}
+        self.artist = None
+        self.event_map = {}
+        self.event = curio.UniversalQueue()
 
 
         self.add_event_map('s', self.sleepy)
@@ -297,6 +314,16 @@ class Yard(pig.Canvas):
 
         self.add_event_map('l', self.larger)
         self.add_event_map('k', self.smaller)
+
+    def add_event_map(self, event, coro):
+
+        self.event_map[event] = coro
+        
+
+    def __getattr__(self, attr):
+        """ Delegate to artist """
+        
+        return getattr(self.artist, attr)
         
 
     async def larger(self):
@@ -356,8 +383,209 @@ class Yard(pig.Canvas):
 
         return image
 
-class MagicCarpet(pig.Video):
+    async def load_data(self, data):
+
+        await self.data.put(data)
+
+
+
+class Yard(Space):
+    """ A place to draw piglets """
+    def __init__(self, parent, *args, **kwargs):
+
+        super().__init__()
+
+        self.artist = piglet.Canvas(parent)
+        
+
+class MagicCarpet(Space):
+
+    def __init__(self, parent=None, axes=None):
+        
+        super().__init__()
+
+        self.artist = piglet.PlotImage(parent, axes=axes)
+
+        self.log = False
+        self.add_event_map('l', self.log_toggle)
+
+        self.clear = True
+        self.add_event_map('a', self.clear_toggle)
+
+        self.plot = False
+        self.add_event_map('g', self.plot_toggle)
+
+        self.table = False
+        self.add_event_map('t', self.table_toggle)
+
+        self.add_event_map(' ', self.next_group)
+
+
+    async def next_group(self):
+        """ Next group """
+        self.group += 1
+
+        if self.group == len(self.groups):
+            self.group = 0
+
+        await self.event.put(self.group)
+
+        
+    def frame_to_stats(self, frame):
+
+        stats = frame.describe()
+
+        stat_rows = str(stats).split('\n')
+        cells = [x[1:] for x in self.parse_describe(stat_rows)]
+
+        cols = stats.columns.values
+        rows = stats.index.values
+
+        return stats, cells, rows, cols
+
+    def parse_describe(self, rows):
+
+        for row in rows[1:]:
+            yield row.split()
+
+    async def load_data(self):
+
+        while True:
+            self.data = await self.farm.data.get()
+
+            self.process_data()
+            
+            
+    def process_data(self):
+
+        data = self.data
+        frames = {}
+        groups = []
+        for group, frame in data.items():
+            frame = pandas.DataFrame(frame)
+
+            frames[group] = frame
+            groups.append(group)
+
+        self.frames = frames
+        self.group = 0
+        self.groups = groups
+        
+    async def log_toggle(self):
+        """ toggle log scale """
+        self.log = not self.log
+
+    async def clear_toggle(self):
+        """ toggle axes clear """
+        self.clear = not self.clear
+
+    async def plot_toggle(self):
+        """ toggle plot image """
+        self.plot = not self.plot
+
+    async def table_toggle(self):
+        """ toggle show table """
+        self.table = not self.table
+
+    def clear_axes(self):
+
+        for axis in self.subplots:
+            axis.clear()
+
+    def clear_figure(self):
+        self.fig.clear()
+
+
+    def draw_table(
+            self,
+            data=None,
+            title=None,
+            loc='top',
+            bbox=None,
+            row_colours=None,
+            col_colours=None):
+        """ Draw a table on the axes """
+
+        from matplotlib import colors, cm, table
+        norm = colors.Normalize()
+
+        stats, cells, rows, cols = self.frame_to_stats(data)
+
+        if self.log:
+            print('taking log of colour data')
+            import numpy as np
+            stats = np.log(stats)
+            
+        colours = cm.get_cmap()(norm(stats.values))
+        alpha = 0.2
+        colours[:, :, 3] = alpha
+
+        bbox = (0.0, 0.0, 1.0, 1.0)
+        tab = self.axes.table(
+            rowLabels=rows,
+            rowColours=row_colours,
+            colLabels=cols,
+            colColours=col_colours,
+            cellText=cells,
+            cellColours=colours,
+            cellEdgeColours=colours,
+            bbox=bbox,
+            loc=loc)
+
+        acell = tab._cells[0, 0]
+        print('fontsize', acell.get_fontsize())
+
+        if title:
+            self.axes.set_title(title)
+        self.axes.set_axis_off()
+
+    def draw_plot(self):
+
+        group = self.groups[self.group]
+        frame = self.frames[group]
+
+        axes = self.subplots[0]
+        axes.clear()
+        axes.set_title(group)
+        
+        # sort columns on mean
+        mean = frame.mean()
+        mean.sort_values(inplace=True)
+        frame = frame.ix[:, mean.index]
+        
+        col_colours = []
+        for label in frame.columns:
+            data = frame[label].copy()
+            data.sort_values(inplace=True)
+            if self.log:
+                patch = axes.semilogy(data.values, label=label)
+            else:
+                patch = axes.plot(data.values, label=label)
+
+            col_colours.append(patch[0].get_color())
+
+        from matplotlib import colors
+        col_colours = [colors.to_rgba(x, 0.2) for x in col_colours]
+
+        self.axes = self.subplots[1]
+        self.axes.clear()
+        self.draw_table(
+            frame, loc='center',
+            col_colours=col_colours)
+        self.draw()
+        
+    async def run(self):
+
+        await spawn(self.load_data())
+
+        while True:
+            self.draw_plot()
+            self.group = await self.event.get()
+
+
+class Docs(piglet.Docs):
     pass
+    
     
 class Piglet:
     """ A base piglet class 
@@ -367,3 +595,9 @@ class Piglet:
     Run tasks.
     """
     pass
+
+
+def run(farm):
+    """  Run a farm """
+    curio.run(farm.run(), with_monitor=True)
+

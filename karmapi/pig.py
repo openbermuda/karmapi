@@ -29,64 +29,11 @@ from karmapi.piglet import (
     Pigs, Text, Docs, Grid, ParmGrid, GridBase, Canvas,
     LabelGrid, Image, PlotImage, KPlot, XKCD, Video,
     Table, EventLoop, Application, Piglet, TabWidget,
-    GridLayout, VBoxLayout, HBoxLayout,
-
-    # functions
-    bind, printf)
+    GridLayout, VBoxLayout, HBoxLayout)
 
 APP = None
 
 BIGLY_FONT = 'helvetica 20 bold'
-
-def meta():
-    """ Return description of a pig """
-    info = dict(
-        title = "PIGS",
-        info = dict(foo=27, bar='open'),
-        parms = [{'label': 'path'}],
-        tabs = [
-            {'name': 'grid',
-             'widgets': [
-                 [{'widget': "MagicCarpet", 'name': 'magic'}]]},
-
-            {'name': 'curio',
-             'widgets': [
-                 ["karmapi.widgets.Curio"]]},
-                 
-            {'name': 'example',
-             'widgets': [
-                 ["PlotImage", "Video"],
-                 ["karmapi.widgets.Circle"],
-                 ["Docs", "KPlot"],
-                 [{'name': 'Run'}]]},
-                 
-            {'name': 'perspective',
-             'widgets': [["XKCD"]]},
-             
-            {'name': 'interest',
-             'widgets': [
-                 ["karmapi.widgets.InfinitySlalom",
-                  "karmapi.widgets.InfinitySlalom"]]},
-                 
-            {'name': 'goals'},
-            {'name': 'score'},
-            {'name': 'table'},
-            {'name': 'yosser'}]) 
-    return info
-
-def bindings():
-    """ Return the bindings between widgets and callbacks """
-    return {
-        'Run': 'runit'}
-
-def get_parser():
-
-    parser = argparse.ArgumentParser()
-
-    # parser.add_argument()
-
-    return parser
-
 
 
 def win_curio_fix():
@@ -151,24 +98,6 @@ def build(recipe, pig=None):
 
     return app
     
-
-if __name__ == '__main__':
-
-    # Let curio bring this to life
-    print('build pig')
-    
-    APP = build(meta())
-
-    # apply bindings
-    bind(APP.pig, bindings())
-
-    magic = APP.pig['magic']
-
-    data = random.randint(0, 100, size=(10, 5))
-    magic.load(pandas.DataFrame(data))
-        
-    print('make pig run')
-    run(APP)
 
 
     

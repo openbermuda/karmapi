@@ -74,7 +74,7 @@ class Pigs(Pig):
         for tab in self.meta.get('tabs', []):
 
             name = tab['name']
-            printf(name)
+            print(name)
 
             widgets = tab.get('widgets')
 
@@ -132,11 +132,11 @@ class Pigs(Pig):
         """
         from datetime import datetime
         sleep = random.randint(1, 20)
-        printf("running doit doit doit {} {}".format(sleep, datetime.now()))
+        print("running doit doit doit {} {}".format(sleep, datetime.now()))
         start = time.time()
         await curio.sleep(sleep)
         end = time.time()
-        printf('actual sleep {} {} {}'.format(
+        print('actual sleep {} {} {}'.format(
             sleep, end-start, datetime.now()))
         return sleep
 
@@ -284,7 +284,7 @@ class GridBase:
         layout.setColumnStretch(len(data.columns) + 1, 1)
         
         size = self.inner.minimumSize()
-        printf(size.width(), size.height())
+        print(size.width(), size.height())
         
         return
 
@@ -308,9 +308,9 @@ class LabelGrid(GridBase, Pig):
 
     def keyPressEvent(self, event):
 
-        printf(self.start_row, len(self.data))
+        print(self.start_row, len(self.data))
         key = event.key()
-        printf(key)
+        print(key)
         if key == qtcore.Qt.Key_Down:
             # scroll down one row
             self.start_row += 1
@@ -405,7 +405,7 @@ class EventLoop(AppEventLoop):
 
     def magic(self, event, *args, **kwargs):
         """ Gets called when magic is needed """
-        printf('magic', flush=True)
+        print('magic', flush=True)
         self.put(event)
 
 
@@ -428,51 +428,6 @@ class EventLoop(AppEventLoop):
 class Piglet(Pig):
     pass
         
-class MagicCarpet(PlotImage):
-    """ Magic data display 
-
-    image, table, plots and more
-    """
-
-    def __init__(self, parent, *args):
-
-        super().__init__(parent)
-
-        print('MagicCarpet', *args)
-
-        self.mode = 'plot'
-
-        self.add_event_map('t', self.table)
-
-    async def image(self):
-        """ Toggle image state """
-        pass
-
-    def compute_data(self):
-
-        self.data = [[random.randint(x, 10 * x) for x in range(1, 6)] for y in range(3)] 
-
-    async def table(self):
-        """ Toggle image state """
-
-        nextmode = dict(
-            plot='table',
-            table='both',
-            both='plot')
-
-        self.axes.clear()
-        self.mode = nextmode.get(self.mode, 'table')
-
-        if self.mode != 'table':
-            self.plot()
-
-
-        if self.mode != 'plot':
-            self.draw_table()
-        
-        self.draw()
-
-        
         
     def draw_table(self):
 
@@ -485,14 +440,21 @@ class MagicCarpet(PlotImage):
         locs = list(table.Table.codes.keys())
         loc = locs[random.randint(1, 17)]
 
-        colours[:, :, 3] = 0.5
+        alpha = 0.2
+        colours[:, :, 3] = alpha
         self.axes.table(
-            cellText=self.data, cellColours=colours,
+            cellText=self.data,
+            cellColours=colours,
+            cellEdgeColours=colours,
             loc=loc)
             #loc='upper_center')
         self.axes.set_title(f'table location {loc}')
         self.axes.set_axis_off()
 
+
+    def plot(self):
+
+        self.axes.plot(self.data)
 
     async def run(self):
 

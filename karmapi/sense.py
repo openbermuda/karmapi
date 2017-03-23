@@ -9,7 +9,7 @@ import sense_hat
 import pandas
 import datetime
 
-from karmapi import pig
+from karmapi import pigfarm
 
 def piggy():
 
@@ -86,7 +86,7 @@ def show_all_stats(hat, show=None):
         for key, value in stats.items():
             show("%s: %04.1f\n" % (key, value))
 
-class WeatherHat(pig.Widget):
+class WeatherHat(pigfarm.Piglet):
     """  Sense Hat widget """
     fields = ['humidity', 'temperature_guess', 'pressure']
 
@@ -142,7 +142,7 @@ class OrientHat(WeatherHat):
 
     fields = ['compass', 'pitch', 'roll', 'yaw']
     
-class Monitor(pig.Video):
+class Monitor(pigfarm.MagicCarpet):
 
     def show(self, df):
         """ Plot field from df """

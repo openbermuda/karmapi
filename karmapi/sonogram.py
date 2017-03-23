@@ -4,7 +4,7 @@ import PIL
 
 from collections import deque
 
-from karmapi import pig, base
+from karmapi import pigfarm, base
 
 import curio
 
@@ -20,7 +20,7 @@ import math
 PI = math.pi
 
 
-class SonoGram(pig.Video):
+class SonoGram(pigfarm.MagicCarpet):
 
     def __init__(self, parent):
 
@@ -33,6 +33,9 @@ class SonoGram(pig.Video):
         self.create_event_map()
         self.samples = 1
         self.channel = 0
+
+        # power spectrum so log may work better
+        self.log = True
 
 
     def create_event_map(self):
@@ -87,7 +90,6 @@ class SonoGram(pig.Video):
         pass
 
     async def get_source(self):
-
         return await self.farm.micks.get()
 
     def sono_calc(self, data):
@@ -123,6 +125,7 @@ class SonoGram(pig.Video):
 
     async def start(self):
 
+        self.farm.status()
         self.mick = await self.get_source()
 
 
@@ -142,6 +145,9 @@ class SonoGram(pig.Video):
         await curio.spawn(self.read())
 
         while True:
+
+            if self.clear:
+                self.clear_axes()
 
             if not self.data:
                 await curio.sleep(0.01)
@@ -169,9 +175,14 @@ class SonoGram(pig.Video):
 
                 power = abs(sono)
 
+                if self.log:
+                    power = np.log(power)
+                    
                 vmax = power[-1].max()
+                vmax = max([max(x) for x in power])
                 vmin = 0
                 #print(max(power))
+                
 
                 self.axes.imshow(power.T.real, aspect='auto', vmax=vmax, vmin=vmin)
                 title = 'offset: {} end: {} channel: {} delay: {} {}'.format(

@@ -58,11 +58,6 @@ class Prime(Video):
 
         self.axes.plot(y)
 
-        print(x)
-        print(y)
-
-        #self.axes.plot(range(10))
-
 
 
 PRIMES = [2, 3]
