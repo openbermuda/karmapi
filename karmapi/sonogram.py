@@ -48,8 +48,6 @@ class SonoGram(pigfarm.MagicCarpet):
 
         self.plottype = 'wave'
 
-        self.data = deque()
-
         self.create_event_map()
         self.samples = 1
         self.channel = 0
@@ -150,20 +148,6 @@ class SonoGram(pigfarm.MagicCarpet):
         self.mick = await self.get_source()
 
 
-    async def read(self):
-
-
-        # need to fire up the frames co-routine?
-        while True:
-
-            data = await self.mick.get()
-
-            self.data.append(data)
-
-            while len(self.data) > 100:
-                self.data.popleft()
-
-
     async def start(self):
 
         self.farm.status()
@@ -231,7 +215,7 @@ class SonoGram(pigfarm.MagicCarpet):
         """ Dras sonograph """
 
         timestamp = timestamp or hush.utcnow()
-        #sono = base.sono(self.data[-1][::2])
+
         sono = pandas.np.array([x[0] for x in self.sonos])
 
         sono = sono[:, self.offset:self.end]
@@ -299,23 +283,17 @@ class SonoGram(pigfarm.MagicCarpet):
         self.end = 100
         self.sonos = deque()
 
-        await curio.spawn(self.read())
-
         while True:
 
             
             if self.clear:
                 self.clear_axes()
 
-            if not self.data:
-                await curio.sleep(0.01)
-                continue
-
             self.axes = self.subplots[1]
 
             #data, timestamp = await self.mick.get()
 
-            data, timestamp = self.data.popleft()
+            data, timestamp = self.mick.read()
             sono = self.sono_calc(data)
             self.sonos.append((sono, timestamp))
 
@@ -354,8 +332,8 @@ def main(args=None):
     farm.add(SonoGram)
     farm.add(mclock2.GuidoClock)
 
-    farm.add_mick(hush.Wave(mode='square'))
-    farm.add_mick(hush.Wave())
+    #farm.add_mick(hush.Wave(mode='square'))
+    #farm.add_mick(hush.Wave())
 
     if args.infile:
         farm.add_mick(Connect(mick=open(args.infile, 'rb')))

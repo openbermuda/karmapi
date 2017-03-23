@@ -17,6 +17,10 @@ https://github.com/lemonzi/VoCoMi/nuance.py
 
 For now, goal is sonograms: pictures of the sound as it goes by.
 
+This uses hmm and does feature extraction and more:
+
+https://github.com/tyiannak/pyAudioAnalysis
+
 """
 from datetime import datetime
 import math
@@ -38,7 +42,8 @@ import numpy as np
 
 from karmapi import base
 
-CHUNK = 1024 * 1
+CHUNK = 1024 * 4
+#CHUNK = 256 * 1
 FORMAT = pyaudio.paInt16
 CHANNELS = 2
 RATE = 44100
@@ -134,14 +139,16 @@ class Connect:
 
         return self.mick._frames_per_buffer
 
-    async def start(self, decode=True):
+    async def start(self):
         """ Keep reading frames, add them to the queue """
 
         rate = 0
         start = datetime.now()
         while True:
             self.tt.time()
-            timestamp = datetime.now()
+
+            self.tt.time('read')
+            data, timestamp = self.mick.read()
 
             if (timestamp - start).seconds > 0:
                 print('framerate', rate)
@@ -150,20 +157,20 @@ class Connect:
 
             rate += 1
             
-            data = self.mick.read(CHUNK)
-            self.tt.time('read')
-
-            if decode:
-                data = self.decode(data)
 
             self.tt.time('decode')
             await self.queue.put((data, timestamp))
             self.tt.time('put')
 
 
-    def read(self, chunk):
+    def read(self, chunk=CHUNK, decode=True):
 
-        return self.mick.read(chunk)
+        timestamp = datetime.now()
+        data = self.mick.read(chunk)
+        if decode:
+            data = self.decode(data)
+
+        return data, timestamp
 
     async def get(self):
 
@@ -293,7 +300,7 @@ async def write(connect, outfile):
         outfile.write(data)
 
         
-async def record(outfile):
+async def arecord(outfile):
 
     connect = Connect()
 
@@ -334,7 +341,7 @@ def main(args=None):
     args = parser.parse_args(args)
 
     if args.record:
-        curio.run(record(open(args.outfile, 'wb')))
+        curio.run(arecord(open(args.outfile, 'wb')))
         return
     
     from karmapi import sonogram

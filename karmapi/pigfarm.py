@@ -85,7 +85,7 @@ class PigFarm:
     def add_mick(self, mick):
 
         self.micks.put(mick)
-        self.piglets.put(mick.start())
+        #self.piglets.put(mick.start())
 
     def toplevel(self):
         """ Return toplevel piglet """
