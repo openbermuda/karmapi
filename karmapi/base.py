@@ -498,6 +498,6 @@ class Timer:
         
         get_value = itemgetter(1)
         for tag, ttime in sorted(self.tt.items(), key=get_value):
-            print(tag, ttime)
+            print(f'{ttime:8.3f} {tag}')
 
 

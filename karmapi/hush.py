@@ -38,7 +38,7 @@ import numpy as np
 
 from karmapi import base
 
-CHUNK = 1024 * 4
+CHUNK = 1024 * 1
 FORMAT = pyaudio.paInt16
 CHANNELS = 2
 RATE = 44100
@@ -161,7 +161,7 @@ class Connect:
             self.tt.time('put')
 
 
-    async def read(self, chunk):
+    def read(self, chunk):
 
         return self.mick.read(chunk)
 

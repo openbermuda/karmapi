@@ -220,8 +220,6 @@ class SonoGram(pigfarm.MagicCarpet):
             
             # print out compontents we'll use
             princ = self.pca.fracs >= self.minfrac
-            print(princ)
-            print(self.pca.minfrac)
             print('fracs: ', self.pca.fracs[princ])
                 
             
@@ -315,8 +313,9 @@ class SonoGram(pigfarm.MagicCarpet):
 
             self.axes = self.subplots[1]
 
-            data, timestamp = await self.mick.get()
+            #data, timestamp = await self.mick.get()
 
+            data, timestamp = self.data.popleft()
             sono = self.sono_calc(data)
             self.sonos.append((sono, timestamp))
 
@@ -337,6 +336,8 @@ class SonoGram(pigfarm.MagicCarpet):
 
             while len(self.sonos) > 100:
                 self.sonos.popleft()
+
+            await curio.sleep(0.01)
 
 def main(args=None):
 
