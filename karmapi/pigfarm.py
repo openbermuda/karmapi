@@ -572,3 +572,9 @@ def run(farm):
     """  Run a farm """
     curio.run(farm.run(), with_monitor=True)
 
+async def aside(coro):
+
+    print('FIXME coro and args need pickling see curio code')
+    return
+
+    curio.aside.main(['pigfarm', filename, coro])

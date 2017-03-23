@@ -105,7 +105,7 @@ class TankRain(pigfarm.MagicCarpet):
     async def run(self):
 
         # use yosser?
-        #await pigfarm.curio.run_in_process(runfetch)
+        await pigfarm.aside(runfetch)
 
         self.dark()
         while True:
@@ -190,10 +190,10 @@ async def fetch_part(name, data, minutes=30, timewarp=None, bad=None):
             
         print()
 
-def runfetch(minutes=30, sleep=300):
+async def runfetch():
 
-    fetcher = fetch()
-    return fetcher.send(None)
+    await fetch()
+
     
 async def fetch(minutes=30, sleep=300):
     """ Download images """
