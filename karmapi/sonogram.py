@@ -21,6 +21,24 @@ import math
 
 PI = math.pi
 
+class Principals(PCA):
+
+
+    def topn(self, n):
+        """ Set minfrac to keep top n """
+
+        return self.fracs[n-1]
+        
+
+    def show_fracs(self, thresh=0.0):
+
+        total = 0
+        for ix, xx in enumerate(self.fracs):
+            total += xx
+            print(ix, xx, total)
+
+            if xx < thresh:
+                break
 
 class SonoGram(pigfarm.MagicCarpet):
 
@@ -58,7 +76,7 @@ class SonoGram(pigfarm.MagicCarpet):
         self.pca = None
         self.add_event_map('M',  self.do_principal_components)
 
-        self.minfrac = 0.1
+        self.minfrac = 0.6
 
     async def toggle_plottype(self):
         """ Toggle between wave and sonogram """
@@ -154,12 +172,14 @@ class SonoGram(pigfarm.MagicCarpet):
         # want to reduce dimensions of sono
 
         sono = pandas.np.array([x[0] for x in self.sonos])
+        print(sono.shape)
         sono = sono[:, self.offset:self.end]
+        print(sono.shape)
         rows, cols = sono.shape
 
         print('calculating PCA', rows, cols, self.minfrac)
 
-        if rows < 100:
+        if rows < self.end - self.offset:
             # FIXME: tell them to come back later
             print('come back later')
             
@@ -169,17 +189,38 @@ class SonoGram(pigfarm.MagicCarpet):
         
 
         try:
-            self.pca = PCA(sono)
+            # standardize: subract mean (done anywaY) and divide by standard deviation.
+            self.pca = Principals(sono, standardize=True)
 
-            total = 0
-            for ix, xx in self.pca.fracs:
-                total += xx
-                print(ix, xx, total)
+            fracs = self.pca.fracs
+            
+            self.pca.show_fracs(0.1)
+
+            print('frac sum', sum(self.pca.fracs))
+            
+            #self.pca.fracs = np.cumsum(self.pca.fracs)
+
+            #self.pca.show_fracs(0.1)
+
+            #self.pca.fracs = 1.0 - self.pca.fracs
+
+            self.minfrac = self.pca.topn(10)
+            self.pca.fracs[10:] = 0
+
+
+            #print('NOBBLED')
+            #self.pca.show_fracs(0.001)
+            
+            # print out compontents we'll use
+            princ = self.pca.fracs >= self.minfrac
+            print(princ)
+            print(self.pca.minfrac)
+            print('fracs: ', self.pca.fracs[princ])
                 
-            print(self.pca.fracs)
-            self.pca.fracs = 1.0 - np.cumsum(self.pca.fracs)
+            
         except Exception as e:
             print('pca oops', e)
+            raise e
 
     async def draw_sono(self, timestamp=None):
         """ Dras sonograph """
@@ -269,8 +310,8 @@ class SonoGram(pigfarm.MagicCarpet):
 
             data, timestamp = await self.mick.get()
 
-            self.sonos.append((self.sono_calc(data), timestamp))
-
+            sono = self.sono_calc(data)
+            self.sonos.append((sono, timestamp))
 
             samples = int(len(data) / 2)
             start = self.channel * samples
