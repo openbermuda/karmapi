@@ -14,6 +14,8 @@ import datetime
 from pathlib import Path
 from contextlib import contextmanager
 import time
+from collections import defaultdict
+from operator import itemgetter
 
 import pandas
 fft = pandas.np.fft
@@ -469,29 +471,33 @@ class Timer:
 
     def __init__(self):
 
-        self.tt = []
-        self.tags = []
+        self.tt = defaultdict(float)
+        self.stamp = None
 
     def time(self, tag=None):
         """ Take a time snap shot """
-        self.tt.append(time.time())
-        self.tags.append(tag)
+        if self.stamp is None:
+            self.stamp = time.time()
+            self.tag = tag
+            return
+
+        now = time.time()
+        self.tt[(self.tag, tag)] += now - self.stamp
+
+        self.stamp = now
+        self.tag = tag
+        
 
     def stats(self):
         """ Generate timing stats """
 
-        stats = {}
+        return self.tt
 
-        now = None
-        for ix, (stamp, tag) in enumerate(zip(self.tt, self.tags)):
-            if now is not None:
-                if tag is None:
-                    tag = 't{}'.format(ix)
-                    
-                stats[tag] = stamp - now
-                
-            now = stamp
 
-        stats['total'] = self.tt[-1] - self.tt[0]
+    def show(self):
+        
+        get_value = itemgetter(1)
+        for tag, ttime in sorted(self.tt.items(), key=get_value):
+            print(tag, ttime)
 
-        return stats
+

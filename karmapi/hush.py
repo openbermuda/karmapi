@@ -23,8 +23,14 @@ import math
 
 import curio
 
-from matplotlib import pyplot
 import struct
+
+from collections import defaultdict
+
+import time
+
+from matplotlib import pyplot
+
 
 import pyaudio
 import wave
@@ -118,6 +124,8 @@ class Connect:
 
         self.queue = curio.UniversalQueue(maxsize=2)
 
+        self.tt = base.Timer()
+
     def rate(self):
 
         return self.mick._rate
@@ -132,20 +140,25 @@ class Connect:
         rate = 0
         start = datetime.now()
         while True:
+            self.tt.time()
             timestamp = datetime.now()
 
             if (timestamp - start).seconds > 0:
+                print('framerate', rate)
                 rate = 0
                 start = timestamp
 
             rate += 1
-
+            
             data = self.mick.read(CHUNK)
-            rate += 1
+            self.tt.time('read')
+
             if decode:
                 data = self.decode(data)
-                
+
+            self.tt.time('decode')
             await self.queue.put((data, timestamp))
+            self.tt.time('put')
 
 
     async def read(self, chunk):
@@ -154,8 +167,11 @@ class Connect:
 
     async def get(self):
 
-        return await self.queue.get()
+        self.tt.time('junk2')
+        result = await self.queue.get()
+        self.tt.time('get')
 
+        return result
 
     def decode(self, data):
 

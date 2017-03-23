@@ -69,7 +69,7 @@ class SonoGram(pigfarm.MagicCarpet):
         self.add_event_map('u', self.up)
         self.add_event_map('w', self.wide)
         self.add_event_map('i', self.slim)
-        self.add_event_map('t', self.toggle_plottype)
+        self.add_event_map('t', self.show_timing)
         self.add_event_map('c', self.toggle_channel)
         self.add_event_map('m', self.next_mick)
 
@@ -77,6 +77,13 @@ class SonoGram(pigfarm.MagicCarpet):
         self.add_event_map('M',  self.do_principal_components)
 
         self.minfrac = 0.6
+
+    async def show_timing(self):
+
+        if not hasattr(self.mick, 'tt'):
+            return
+
+        self.mick.tt.show()
 
     async def toggle_plottype(self):
         """ Toggle between wave and sonogram """
