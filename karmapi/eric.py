@@ -75,6 +75,9 @@ class Eric(piglet.Pig):
         self.console = pyshell.PyShellEditorWindow(
             flist, filename, None,  parent)
 
+        # idle seems to want an _W
+        self._w = None
+
     async def run(self):
 
         pass

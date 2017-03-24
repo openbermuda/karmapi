@@ -1,4 +1,6 @@
-# Karma Pi
+==========
+ Karma Pi
+==========
 
 Karma pi is a place to come to find tools to help turn data into information.
 
@@ -6,7 +8,8 @@ Tools to help visualise and explore that data.  Tools that come with *python* ba
 
 Tools to help people of all ages to explore our world.
 
-## Get out what you put in
+Get out what you put in
+=======================
 
 Cooperative and collaborative multi tasking are a core idea.  If we
 know all processes running on the network are good actors, then we can
@@ -14,7 +17,8 @@ make very much better use of the available compute resources.
 
 Further, this will also ease the flow of information across processes.
 
-## Keep it small
+Keep it small
+=============
 
 Karma pi tries to turn problems into things that others have already
 solved.  *pandas*, *matplotlib*, *jupyuter*, *scipy* and *numpy*
@@ -25,7 +29,8 @@ cooperative multi-tasking code very much easier.  *curio* simplifies
 the use further, making it very easy to write high performance
 dynamic applications.
 
-## Pigs and Currie
+Pig Farm and Currie
+===================
 
 Pig, piglet and joy are attempts at providing a simple graphical user
 interface to plots from matplotlib.  It also supports the tkinter
@@ -41,16 +46,27 @@ piglet.
 
 Press 'h' for help on which keyboard presses do what.
 
+Pig Farm started life as part of currie, but now has a life of its
+own.
 
-## Hush
+It has a PigFarm where you can run piglets.  Piglets are just windows
+displaying something.
+
+There are also *micks*.  These are time stamped streams of data, that
+piglets can display, using artists.
+
+
+Hush
+====
 
 *hush* turns signal into noise.
 
 For now, it uses *pyaudio* to read data from any microphones connected to the device.
 
-## How it got its name
+How Karma Pi  got its name
+==========================
 
-The project start as a place to store and serve csv data (also in JSON
+The project started as a place to store and serve csv data (also in JSON
 format) for physical readings.
 
 These readings might come from anything from a raspberry pi sense hat,
@@ -69,7 +85,8 @@ Karma Phy - Looks better spelt with a K
 
 Karma Pi - Phy for physics, pi for math.
 
-# Install
+Install
+=======
 
 Using pip::
 
@@ -86,12 +103,17 @@ To install in development mode,   Navigate to the karmapi folder, then run::
 
 The *-e* flag just says *install in editable mode*.
 
-## pip
+python and pip
+==============
+
+The current (0.6x) release requires python3.6.
 
 You may need to run *pip3.6*  to get the *pip* that goes with your python3.6.
 
-## Ubuntu on Pi
+Ubuntu on Pi
+============
 
+So far have not got this working.  Sticking with raspbian for now.
 
 http://releases.ubuntu.com/ubuntu-core/16/ubuntu-core-16-pi3.img.xz
 
@@ -101,7 +123,8 @@ xzcat ~/Downloads/ubuntu-core-16-pi3.img.xz | sudo dd of=/dev/sdX bs=32M
 sync
 
 
-## Learning python
+Learning python
+===============
 
 The python 3 tutorial is a great place to start:
 
@@ -111,33 +134,57 @@ Pick a section that interests you.
 
 
 
-## curio
+curio
+=====
+
+Asynchronous magic library.
 
 
-## jupyter
+jupyter
+=======
+
+Inspiration, matplotlib, numpy, pandas, scipy and more.
 
 
-## matplotlib
+matplotlib
+==========
+
+Plotting wonder.
+
+pandas
+======
+
+Data frames, time series, statistics.
 
 
-## pandas
+tkinter
+=======
 
+Simple, fast widgets
 
-## tkinter
+CKAN
+====
 
-## CKAN
+Open data repositories.
 
-### FIXME
+FIXME
+=====
 
-Need to do a release with a sane set of requirements,
+Need to do a release with a sane set of requirements,   GETTING THERE
 
-Want something that installs on a pi reasonably quickly,
+Want something that installs on a pi reasonably quickly,   GETTING THERE
 
 [Assume pi already has python3.6]
 
-## Documentation
+Documentation
+=============
 
 This README is the most current at the moment.
+
+Most code modules have some commentary at the top.
+
+The git commit log is a good place to browse.  Commit messages are
+brief, follow one that interests you.
 
 There are *rst* files in the *docs* folder and a *conf.py* for *sphinx*::
 
@@ -155,9 +202,17 @@ These can be served with python3::
 
     python -m http.server
 
-This is not a secure server, but great for testing and on a trusted network.
+This is not a secure server, but great for testing and on a trusted
+network.
 
-### Readthedocs
+sphinx-autodoc
+--------------
+
+It would be good to get this working to see what the docs extracted
+from the code look like.
+
+Readthedocs
+-----------
 
 This might already be working.  FIXME check,
 

@@ -17,14 +17,24 @@ https://github.com/lemonzi/VoCoMi/nuance.py
 
 For now, goal is sonograms: pictures of the sound as it goes by.
 
+This uses hmm and does feature extraction and more:
+
+https://github.com/tyiannak/pyAudioAnalysis
+
 """
 from datetime import datetime
 import math
 
 import curio
 
-from matplotlib import pyplot
 import struct
+
+from collections import defaultdict
+
+import time
+
+from matplotlib import pyplot
+
 
 import pyaudio
 import wave
@@ -33,6 +43,7 @@ import numpy as np
 from karmapi import base
 
 CHUNK = 1024 * 4
+#CHUNK = 256 * 1
 FORMAT = pyaudio.paInt16
 CHANNELS = 2
 RATE = 44100
@@ -118,6 +129,8 @@ class Connect:
 
         self.queue = curio.UniversalQueue(maxsize=2)
 
+        self.tt = base.Timer()
+
     def rate(self):
 
         return self.mick._rate
@@ -132,27 +145,40 @@ class Connect:
         rate = 0
         start = datetime.now()
         while True:
-            timestamp = datetime.now()
+            self.tt.time()
+
+            self.tt.time('read')
+            data, timestamp = self.mick.read()
 
             if (timestamp - start).seconds > 0:
+                print('framerate', rate)
                 rate = 0
                 start = timestamp
 
             rate += 1
+            
 
-            data = self.mick.read(CHUNK)
-            rate += 1
-            await self.queue.put((self.decode(data), timestamp))
+            self.tt.time('decode')
+            await self.queue.put((data, timestamp))
+            self.tt.time('put')
 
 
-    async def read(self, chunk):
+    def read(self, chunk=CHUNK, decode=True):
 
-        return self.mick.read(chunk)
+        timestamp = datetime.now()
+        data = self.mick.read(chunk)
+        if decode:
+            data = self.decode(data)
+
+        return data, timestamp
 
     async def get(self):
 
-        return await self.queue.get()
+        self.tt.time('junk2')
+        result = await self.queue.get()
+        self.tt.time('get')
 
+        return result
 
     def decode(self, data):
 
@@ -167,29 +193,43 @@ class Wave:
         """ Fixme: configure stream according to **kwargs """
 
         self.queue = curio.UniversalQueue(maxsize=2)
+        self.sleep = 0.01
 
         n = 2 * CHUNK
 
+        data = self.sine_wave(n)
+
         if mode == 'square':
-            frames = int(n / 32)
-            plus = [3000] * 16
-            minus = [-3000] * 16
-            data = (plus + minus) * frames
-        else:
-            data = np.arange(n)
-            data = np.sin(data * math.pi / 50.0) * (2**15 - 1)
-
-        print('xxxxxxxxxxxxxxxxx', mode, len(data))
-
+            data = self.sine_to_square(data)
+            
         self.data = data
+
+    def sine_to_square(self, data):
+        maxval = (2 ** 15) - 1
+
+        square = []
+        for x in data:
+            if x > 0:
+                square.append(maxval)
+            else:
+                square.append(-maxval)
+        return square
+
+    
+    def sine_wave(self, n):
+
+        data = np.arange(n)
+        data = np.sin(data * math.pi / 50.0) * (2**15 - 1)
+
+        return data
 
 
     def rate(self):
-
+        """ FIXME """
         return 44100
 
     def frame_size(self):
-
+        """ FIXME -- make this work with CHUNK """
         return 1024
 
     async def start(self):
@@ -198,43 +238,13 @@ class Wave:
         while True:
             timestamp = datetime.now()
             await self.queue.put((self.data, timestamp))
-
+            await curio.sleep(self.sleep)
 
     async def get(self):
 
         data = await self.queue.get()
 
         return data
-
-
-async def run():
-    """ Run this thing under curio  """
-
-    connect = Connect()
-
-    # set the connection to start collecting frames
-    frames = await curio.spawn(connect.frames())
-
-    while True:
-
-        data = await connect.get()
-
-
-def open_wave(name):
-
-    wf = wave.open(name, 'rb')
-
-    # monkey patch
-    wf.read = wf.readframes
-
-    return wf
-
-
-def main():
-
-
-
-    curio.run(run(), with_monitor=True)
 
 
 class FreqGen:
@@ -267,3 +277,79 @@ class FreqGen:
             hertz = (xx / frames) * rate * 0.5
 
             print('{} {}'.format(timestamp, hertz))
+
+
+def open_wave(name):
+
+    wf = wave.open(name, 'rb')
+
+    # monkey patch
+    wf.read = wf.readframes
+
+    return wf
+
+
+async def write(connect, outfile):
+    
+    while True:
+        
+        data, timestamp = await connect.get()
+        print('got data', timestamp)
+
+        # FIXME -- use aiofiles?
+        outfile.write(data)
+
+        
+async def arecord(outfile):
+
+    connect = Connect()
+
+    # set the connection to start collecting frames
+    frames = await curio.spawn(connect.start(decode=False))
+
+    writer = await curio.spawn(write(connect, outfile))
+
+    await writer.join()
+    
+
+async def run():
+    """ Run this thing under curio  
+
+    FIXME -- make it do something useful
+    """
+
+    connect = Connect()
+
+    # set the connection to start collecting frames
+    frames = await curio.spawn(connect.frames())
+
+    while True:
+
+        data = await connect.get()
+
+
+def main(args=None):
+
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--outfile', default='out.hush')
+    parser.add_argument('--record', action='store_true')
+    parser.add_argument('--infile')
+    parser.add_argument('--nomick', action='store_true')
+    
+    args = parser.parse_args(args)
+
+    if args.record:
+        curio.run(arecord(open(args.outfile, 'wb')))
+        return
+    
+    from karmapi import sonogram
+    from karmapi import pigfarm
+
+
+if __name__ == '__main__':
+
+    main()
+
+            
