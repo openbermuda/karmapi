@@ -17,6 +17,7 @@ from PIL import Image
 
 from karmapi import hush
 from karmapi import piglet
+from karmapi import toy
 
 from tkinter import Toplevel
 
@@ -407,10 +408,11 @@ class Yard(Space):
 
 class MagicCarpet(Space):
 
-    def __init__(self, parent=None, axes=None):
+    def __init__(self, parent=None, axes=None, data=None):
         
         super().__init__()
 
+        axes = axes or [211, 212]
         self.artist = piglet.PlotImage(parent, axes=axes)
 
         self.log = False
@@ -430,6 +432,22 @@ class MagicCarpet(Space):
         self.add_event_map(' ', self.next_group)
 
 
+        # set intitial data
+
+        # hmm.. not sure where this belongs
+        pandas.set_eng_float_format(1, True)
+
+        data = data or toy.distros(
+            trials=1000,
+            groups=['abc', 'cde', 'xyz'])
+
+        self.data = data
+        self.tests = 0
+
+        if data:
+            self.process_data()
+
+            
     def frame_to_stats(self, frame):
 
         stats = frame.describe()
@@ -490,6 +508,7 @@ class MagicCarpet(Space):
     async def next_group(self):
         """ Next group """
         if self.group is None:
+            self.process_groups()
             return
         
         self.group += 1
@@ -553,6 +572,50 @@ class MagicCarpet(Space):
         self.axes.set_axis_off()
 
 
+    def draw_plot(self):
+
+        if self.group is None:
+            return
+        
+        group = self.groups[self.group]
+        frame = self.frames[group]
+
+        axes = self.subplots[0]
+        axes.clear()
+
+        # sort columns on mean
+        mean = frame.mean()
+        mean.sort_values(inplace=True)
+        frame = frame.ix[:, mean.index]
+        
+        col_colours = []
+        for label in frame.columns:
+            data = frame[label].copy()
+            data.sort_values(inplace=True)
+            if self.log:
+                patch = axes.semilogy(data.values, label=label)
+            else:
+                patch = axes.plot(data.values, label=label)
+
+            col_colours.append(patch[0].get_color())
+
+        from matplotlib import colors
+        col_colours = [colors.to_rgba(x, 0.2) for x in col_colours]
+
+        self.axes = self.subplots[1]
+        self.axes.clear()
+        self.draw_table(frame, loc='center', title=group, col_colours=col_colours)
+        self.draw()
+        
+    async def run(self):
+
+        await spawn(self.load_data())
+
+        while True:
+            self.draw_plot()
+            self.group = await self.event.get()
+
+        
 
 class Docs(piglet.Docs):
     pass
