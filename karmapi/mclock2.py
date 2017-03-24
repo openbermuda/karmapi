@@ -30,6 +30,9 @@ class GuidoClock(pig.Canvas):
             self.credits += "\n(right button toggles full screen mode)"
         self.recalc(radius*2, radius*2)
 
+        self.timewarp = None
+        self.add_event_map('M', self.midnight)
+
     def on_configure(self, event):
         self.recalc(event.width, event.height)
 
@@ -100,6 +103,30 @@ class GuidoClock(pig.Canvas):
             hh, mm = divmod(hh*60 + mm, 60)
             hh %= 24
 
+    async def midnight(self, mtm=-2.5):
+
+        if self.timewarp:
+            self.timewarp = None
+            return
+
+        from datetime import timedelta, datetime
+
+        deltam = timedelta(seconds=int(mtm * 60))
+        
+        now = datetime.now()
+
+        to_midnight = timedelta(
+            hours = 24 - now.hour,
+            minutes = 60 - now.minute)
+        
+
+        print(now)
+        print(deltam)
+
+        warp_to = (now + to_midnight + deltam)
+        
+        self.timewarp =  (warp_to - now).seconds - 3600
+
     async def run(self):
 
         while True:
@@ -109,6 +136,9 @@ class GuidoClock(pig.Canvas):
             
     def redraw(self):
         t = time.time()
+        if self.timewarp:
+            t += self.timewarp
+            
         hh, mm, ss = time.localtime(t)[3:6]
         self.draw(hh, mm, ss)
 
