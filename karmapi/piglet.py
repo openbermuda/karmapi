@@ -12,6 +12,11 @@ if joy.BACKEND == 'qt':
 
     from .backends.qtpig import *
 
+
+elif joy.BACKEND == 'hat':
+
+    from backends.hatpig import *
+
 else:
 
     from .backends.tkpig import *
