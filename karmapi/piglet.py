@@ -15,7 +15,7 @@ if joy.BACKEND == 'qt':
 
 elif joy.BACKEND == 'hat':
 
-    from backends.hatpig import *
+    from .backends.hatpig import *
 
 else:
 
