@@ -2,6 +2,8 @@
 Pi Gui on a Sense Hat
 """
 
+import random
+
 import curio
 
 import sense_hat
@@ -44,33 +46,11 @@ class Canvas(tkpig.Pig):
         Need to downsample from width x height to 8 x 8
 
         """
-        pixels = self.pick_pixels()
+        pixels = pick_pixels(self,image)
 
         self.hat.set_pixels(pixels)
         
     
-    def pick_pixels(self):
-        """ Pick a random pixel for each on the hat """
-        width = self.width / 8
-        height = self.height / 8
-        
-        pickx = random.randint(0, width-1)
-        picky = random.randint(0, height-1)
-
-        pixels = []
-        for x in range(8):
-            for y in range(8):
-                
-                xpos = self.width * x
-                ypos = self.height * y
-                
-
-                pix = self.image.getpixel((xpos + pickx, ypos + picky))
-                pixels.append(pix)
-
-        return pixels
-
-
 class PlotImage(tkpig.PlotImage):
 
     def __init__(self, parent, **kwargs):
@@ -92,31 +72,60 @@ class PlotImage(tkpig.PlotImage):
         Need to downsample from width x height to 8 x 8
 
         """
-        pixels = self.pick_pixels()
+        dpi = self.fig.get_dpi()
+        width = self.fig.get_figwidth()
+        height = self.fig.get_figheight()
+        image = self.image.tostring_rgb()
+
+        print(width, height, len(image))
+
+        iwidth = int(dpi * width)
+        iheight = int(dpi * height)
+
+        image = rgb_string_to_image(image, iwidth, iheight)
+
+        pixels = pick_pixels(image)
 
         self.hat.set_pixels(pixels)
         
     
-    def pick_pixels(self):
-        """ Pick a random pixel for each on the hat """
-        width = self.width / 8
-        height = self.height / 8
-        
-        pickx = random.randint(0, width-1)
-        picky = random.randint(0, height-1)
+def pick_pixels(image, size=8):
+    """ Pick a random pixel for each on the hat """
 
-        image = self.image.print_to_buffer()
+    width, height = len(image), len(image[0])
 
-        pixels = []
-        for x in range(8):
-            for y in range(8):
+    pwidth = int(width / size)
+    pheight = int(width / size)
+
+    pickx = random.randint(0, pwidth-1)
+    picky = random.randint(0, pheight-1)
+
+    pixels = []
+    for x in range(size):
+        for y in range(size):
                 
-                xpos = self.width * x
-                ypos = self.height * y
+                xpos = pwidth * x
+                ypos = pheight * y
                 
-
-                pix = image[xpos + pickx, ypos + picky]
+                pix = image[int(xpos + pickx)][int(ypos + picky)]
                 pixels.append(pix)
 
-        return pixels
+    return pixels
+    
+
+def rgb_string_to_image(rgb, width, height):
+
+    image = []
+    pos = 0
+    for y in range(height):
+        row = []
+        image.append(row)
+        for x in range(width):
+            
+            pixel = [int(pix) for pix in rgb[pos:pos+3]]
+            
+            row.append(pixel)
+            pos += 3
+
+    return image
     
