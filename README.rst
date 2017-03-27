@@ -218,32 +218,35 @@ This might already be working.  FIXME check,
 
 Docs need a fair bit of work, but better docstrings in the code turn into pretty good docs.
 
-## Release
+Release
+=======
 
 A release is overdue.  The next one will require python3.6.
 
 For now, probably best to install from source code,
 
-### Making a new release
+Making a new release
+--------------------
 
-Install some stuff needed to help with building releases:
+Install some stuff needed to help with building releases::
 
    pip3.6 install twine wheel
 
-Build a source releas (this just creates a tarball in the dists/ subfolder):
+Build a source releas (this just creates a tarball in the dists/ subfolder)::
 
    python setup.py sdist
 
-Build a binary release as a wheel (:
+Build a binary release::
 
-   python setup.py bdist_wheel
+   python setup.py bdist
 
 Upload to PyPi with twine (you will need a username and password that
-has access to the project you are trying to update):
+has access to the project you are trying to update)::
 
    twine upload dist/*
 
-## Develop
+Develop
+=======
 
 git clone https://github.com/openbermuda/karmapi
 
@@ -251,19 +254,22 @@ cd karmapi
 
 pip3.6 -e ,
 
-## Python3.6 on Ubuntu 16.04
+Python3.6 on Ubuntu 16.04 and raspbian
+======================================
 
     git clone https://github.com/python/cpython
 
-checkout 3.6 branch, then:
+checkout v3.6.1 tag, then:
 
     ./configure
     make
     make install
 
-Note: python3.6 can be installed (from universe) with apt on Ubuntu >= 16.10.
+Note: python3.6 can be installed (from universe) with apt on Ubuntu >=
+16.10.
 
-### Things to do first
+Things to do first
+------------------
 
 Some dev libraries need installing into Ubuntu for certain features to be built into the python.
 
@@ -277,17 +283,23 @@ The good news is that after the intitial build it all runs pretty fast.
 
 * libssl-dev -- for ssl support required for pip3.6 to work.
 
-## TODO
+TODO
+====  
 
-### Piglets
+Eric IDLE.  Take a closer look at event handling.  Unify with pigfarm
+event handling.
 
-Console -- take a look at IDLE
+Be smarter about opening files with eric.  Add --file option to
+command line tools?
 
-MagicCarpet
+MagicCarpet v Canvas: are they the same thing?
 
-### Hush
+Sense Hat:  record and display data.   
 
-Eigen-vectors
+Hush: use rate to figure out time when reading.  Adjust rate so we can
+keep up?
+
+Eigen-vectors: more on principal components.
 
 Sync movement of sonogram with beat
 

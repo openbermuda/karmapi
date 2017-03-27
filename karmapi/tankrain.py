@@ -37,7 +37,7 @@ class TankRain(pigfarm.MagicCarpet):
         self.version = 'local'
         self.load_images()
 
-        super().__init__(parent)
+        super().__init__(parent, axes=[111])
 
         self.add_event_map('r', self.reverse)
         self.add_event_map(' ', self.next_view)
