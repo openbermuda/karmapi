@@ -1,12 +1,13 @@
 """
 Pi Gui on a Sense Hat
 """
-
 import random
 
 import curio
 
 import sense_hat
+
+import numpy as np
 
 from . import tkpig, core
 
@@ -72,9 +73,12 @@ class PlotImage(tkpig.PlotImage):
         Need to downsample from width x height to 8 x 8
 
         """
+        # FIXME - something here is slow
         dpi = self.fig.get_dpi()
         width = self.fig.get_figwidth()
         height = self.fig.get_figheight()
+
+        print('getting string for image')
         image = self.image.tostring_rgb()
 
         print(width, height, len(image))
@@ -82,11 +86,21 @@ class PlotImage(tkpig.PlotImage):
         iwidth = int(dpi * width)
         iheight = int(dpi * height)
 
+        print('converting to lists FIXME use np')
         image = rgb_string_to_image(image, iwidth, iheight)
         print('got image')
 
+
+        # normalise image
+        from matplotlib.colors import Normalize
+        norm = Normalize()
+
+        image = norm(image) * 255
+
         pixels = pick_pixels(image)
 
+        pixels = np.array(pixels).astype(int)
+        
         for f in max, min:
             print(f(x[0] for x in pixels))
             print(f(x[1] for x in pixels))
@@ -96,9 +110,8 @@ class PlotImage(tkpig.PlotImage):
             for col in range(8):
                 print(pixels[(8*row) +col], end=' ')
             print()
-                        
-            
-        self.hat.set_pixels(pixels)
+
+        self.hat.set_pixels(pixels.astype(int))
         
     
 def pick_pixels(image, size=8):
