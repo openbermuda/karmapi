@@ -8,7 +8,7 @@ import sense_hat
 
 from . import tkpig, core
 
-from .tkpig import Pig, AppEventLoop
+from .tkpig import Pig, AppEventLoop, Docs, cpu_count
 
 from . import tkpig
 
@@ -25,7 +25,7 @@ class Canvas(tkpig.Pig):
 
     def __init__(self, parent, **kwargs):
 
-        super(),__init__(parent, **kwargs)
+        super().__init__(parent, **kwargs)
 
         self.hat = sense_hat.SenseHat()
 
@@ -75,14 +75,14 @@ class PlotImage(tkpig.PlotImage):
 
     def __init__(self, parent, **kwargs):
 
-        super(),__init__(parent, **kwargs)
+        super().__init__(parent, **kwargs)
 
         self.hat = sense_hat.SenseHat()
 
     
     def draw(self):
 
-        super().draw()
+        self.image.draw()
 
         self.blit()
 
@@ -105,7 +105,7 @@ class PlotImage(tkpig.PlotImage):
         pickx = random.randint(0, width-1)
         picky = random.randint(0, height-1)
 
-        image = self.print_to_buffer()
+        image = self.image.print_to_buffer()
 
         pixels = []
         for x in range(8):

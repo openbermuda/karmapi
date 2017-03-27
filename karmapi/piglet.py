@@ -1,7 +1,7 @@
 """
 Pig widgets
 """
-
+import sys
 import PIL
 import curio
 from concurrent.futures import ProcessPoolExecutor
