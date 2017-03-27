@@ -83,9 +83,21 @@ class PlotImage(tkpig.PlotImage):
         iheight = int(dpi * height)
 
         image = rgb_string_to_image(image, iwidth, iheight)
+        print('got image')
 
         pixels = pick_pixels(image)
 
+        for f in max, min:
+            print(f(x[0] for x in pixels))
+            print(f(x[1] for x in pixels))
+            print(f(x[2] for x in pixels))
+
+        for row in range(8):
+            for col in range(8):
+                print(pixels[(8*row) +col], end=' ')
+            print()
+                        
+            
         self.hat.set_pixels(pixels)
         
     
