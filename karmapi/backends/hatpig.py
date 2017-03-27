@@ -95,7 +95,7 @@ def pick_pixels(image, size=8):
     width, height = len(image), len(image[0])
 
     pwidth = int(width / size)
-    pheight = int(width / size)
+    pheight = int(height / size)
 
     pickx = random.randint(0, pwidth-1)
     picky = random.randint(0, pheight-1)
