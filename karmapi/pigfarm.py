@@ -21,6 +21,7 @@ from karmapi import toy
 
 from tkinter import Toplevel
 
+BIGLY_FONT = 'helvetica 20 bold'
 
 class PigFarm:
     """ A pig farm event loop """
@@ -412,7 +413,7 @@ class MagicCarpet(Space):
         
         super().__init__()
 
-        axes = axes or [211, 212]
+        axes = axes or [111]
         self.artist = piglet.PlotImage(parent, axes=axes)
 
         self.log = False

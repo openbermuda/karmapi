@@ -21,7 +21,6 @@ from PIL import Image, ImageTk
 
 import curio
 
-from karmapi import pig, piglet
 from karmapi.prime import isprime
 from karmapi import pigfarm
 
@@ -159,7 +158,7 @@ class BeanStalk:
 
         
         canvas.create_text(
-            xx, yy + 50, fill=colour, font=pig.BIGLY_FONT,
+            xx, yy + 50, fill=colour, font=pigfarm.BIGLY_FONT,
             text=f'{self.x}')
 
         if self.image:

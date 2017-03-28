@@ -1,10 +1,10 @@
-from karmapi import pig
+from karmapi import pigfarm
 
 import curio
 import random
 import math
 
-class StingingBats(pig.Canvas):
+class StingingBats(pigfarm.Yard):
 
     def __init__(self, parent):
 

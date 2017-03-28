@@ -482,9 +482,10 @@ class XKCD(PlotImage):
 
     def plot(self):
         """ Display plot xkcd style """
+        from matplotlib import pyplot as plt
+        import numpy as np
+        
         with plt.xkcd():
-
-            np = pandas.np
 
             data = np.ones(100)
             data[70:] -= np.arange(30)
