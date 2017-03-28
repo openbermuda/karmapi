@@ -413,7 +413,7 @@ class MagicCarpet(Space):
         
         super().__init__()
 
-        axes = axes or [111]
+        axes = axes or [211, 212]
         self.artist = piglet.PlotImage(parent, axes=axes)
 
         self.log = False

@@ -109,7 +109,8 @@ class InfinitySlalom(pigfarm.MagicCarpet):
         A little help sleeping from curio
         """
         
-        self.axes.hold(True)
+        self.fig.clear()
+        self.axes = self.fig.add_subplot(111)
 
         while True:
 
