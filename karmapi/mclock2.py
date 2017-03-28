@@ -2,12 +2,13 @@
 
 """M CLOCK 2.0."""
 import sys
-from karmapi import pig
+from karmapi import pigfarm
+
 import math
 import time
 import curio
 
-class GuidoClock(pig.Canvas):
+class GuidoClock(pigfarm.Yard):
 
     def __init__(self, parent):
 
