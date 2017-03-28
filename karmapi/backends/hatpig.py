@@ -86,19 +86,20 @@ class PlotImage(tkpig.PlotImage):
         iwidth = int(dpi * width)
         iheight = int(dpi * height)
 
+        print('selecting pixels to pick')
+        selection = pixel_selector(iwidth, iheight)
+
         print('converting to lists FIXME use np')
-        image = rgb_string_to_image(image, iwidth, iheight)
+        #image = rgb_string_to_image(image, iwidth, iheight)
         print('got image')
 
+        pixels = []
+        for choice in selection:
+            
+            pixel = string_to_rgb(image[3*choice])
 
-        # normalise image
-        from matplotlib.colors import Normalize
-        norm = Normalize()
-
-        image = norm(image) * 255
-
-        pixels = pick_pixels(image)
-
+            pixels.append(pixel)
+        
         pixels = np.array(pixels).astype(int)
         
         for f in max, min:
@@ -114,6 +115,27 @@ class PlotImage(tkpig.PlotImage):
         self.hat.set_pixels(pixels.astype(int))
         
     
+def pixel_selector(width, height, size=8):
+    """  """
+
+    pwidth = int(width / size)
+    pheight = int(height / size)
+
+    pickx = random.randint(0, pwidth-1)
+    picky = random.randint(0, pheight-1)
+
+    pixels = []
+    for x in range(size):
+        for y in range(size):
+                
+                xpos = pwidth * x
+                ypos = pheight * y
+
+                pixels.append((xpos * pwidth) + ypos)
+                
+
+    return pixels
+
 def pick_pixels(image, size=8):
     """ Pick a random pixel for each on the hat """
 
@@ -154,3 +176,7 @@ def rgb_string_to_image(rgb, width, height):
 
     return image
     
+def string_to_rgb(pixel):
+
+    return [int(pix) for pix in pixel[:3]]
+
