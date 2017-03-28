@@ -24,7 +24,7 @@ class Help:
         print(msg)
         #messagebox.showinfo(message=msg)
 
-class Canvas(tkpig.Pig):
+class Canvas(tkpig.Canvas):
 
     def __init__(self, parent, **kwargs):
 
@@ -47,7 +47,7 @@ class Canvas(tkpig.Pig):
         Need to downsample from width x height to 8 x 8
 
         """
-        pixels = pick_pixels(self,image)
+        pixels = pick_pixels(self.image)
 
         self.hat.set_pixels(pixels)
         
