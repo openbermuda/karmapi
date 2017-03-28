@@ -7,7 +7,7 @@ import PIL
 
 from collections import deque
 
-from karmapi import pig, base
+from karmapi import pigfarm, base
 
 import curio
 
@@ -22,7 +22,7 @@ import math
 
 PI = math.pi
 
-class Circle(pig.PlotImage):
+class Circle(pigfarm.MagicCarpet):
 
 
     def compute_data(self):
@@ -43,7 +43,7 @@ class Circle(pig.PlotImage):
         self.axes.plot(self.x, [-1 * y for y in self.y])
 
 
-class Friday(pig.Video):
+class Friday(pigfarm.MagicCarpet):
 
 
     def compute_data(self):
@@ -55,7 +55,7 @@ class Friday(pig.Video):
 
         self.axes.plot(self.data)
 
-class MapPoints(pig.PlotImage):
+class MapPoints(pigfarm.MagicCarpet):
 
     def compute_data(self):
 
@@ -69,7 +69,7 @@ class MapPoints(pig.PlotImage):
         self.axes.plot(self.data)
 
         
-class InfinitySlalom(pig.Video):
+class InfinitySlalom(pigfarm.MagicCarpet):
 
     def compute_data(self):
 
@@ -117,7 +117,7 @@ class InfinitySlalom(pig.Video):
             #data = await mick.get()
             #print('infinite data:', len(data))
             
-            await curio.sleep(self.interval)
+            await curio.sleep(self.sleep)
 
             if random.random() < 0.25:
                 print('clearing axes', flush=True)

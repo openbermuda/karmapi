@@ -72,6 +72,16 @@ class PlotImage(tkpig.PlotImage):
 
         Need to downsample from width x height to 8 x 8
 
+        FIXME - separate the grabbing of the image from
+                the bliting to the hat.
+
+                Move the pixel selecting and write to the
+                hat to the event loop.
+
+                Have that monitor current for an image to
+                show.
+
+                Control blit speed with HatStick.
         """
         # FIXME - something here is slow
         dpi = self.fig.get_dpi()
@@ -89,8 +99,6 @@ class PlotImage(tkpig.PlotImage):
         print('selecting pixels to pick')
         selection = pixel_selector(iwidth, iheight)
 
-        print('converting to lists FIXME use np')
-        #image = rgb_string_to_image(image, iwidth, iheight)
         print('got image')
 
         pixels = []
@@ -116,7 +124,7 @@ class PlotImage(tkpig.PlotImage):
         
     
 def pixel_selector(width, height, size=8):
-    """  """
+    """ Generate list of pixel positions to select """
 
     pwidth = int(width / size)
     pheight = int(height / size)
@@ -131,7 +139,9 @@ def pixel_selector(width, height, size=8):
                 xpos = pwidth * x
                 ypos = pheight * y
 
-                pixels.append((xpos * pwidth) + ypos)
+                # FIXME 50-50 chance this is transposing the image
+                # in some way
+                pixels.append(((xpos + pickx) * width) + (ypos + picky))
                 
 
     return pixels
