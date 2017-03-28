@@ -96,7 +96,7 @@ class PlotImage(tkpig.PlotImage):
         pixels = []
         for choice in selection:
             
-            pixel = string_to_rgb(image[3*choice])
+            pixel = string_to_rgb(image[3*choice:3*(choice+1)])
 
             pixels.append(pixel)
         
