@@ -129,7 +129,11 @@ class SonoGram(pigfarm.MagicCarpet):
         pass
 
     async def get_source(self):
-        return await self.farm.micks.get()
+        mick = await self.farm.micks.get()
+
+        await pigfarm.spawn(mick.start())
+        
+        return mick
 
     def sono_calc(self, data):
 
@@ -152,6 +156,7 @@ class SonoGram(pigfarm.MagicCarpet):
 
         self.farm.status()
         self.mick = await self.get_source()
+        print('sonogram got mick')
 
     async def do_principal_components(self):
         """ Do the PCA """
