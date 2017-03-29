@@ -31,8 +31,6 @@ class StingingBats(pigfarm.Yard):
 
         super().__init__(parent)
 
-        self.width = self.height = 200
-
         if words:
             self.words = load_words(words)
         else:
@@ -52,8 +50,7 @@ class StingingBats(pigfarm.Yard):
         self.themes.append(Theme(colours=['green', 'yellow', 'red']))
         self.theme = self.themes[0]
 
-        self.canvas.configure(bg=self.theme.background,
-            width=self.width, height=self.height)
+        self.canvas.configure(bg=self.theme.background)
 
         self.create_beanstalks()
         self.create_event_map()

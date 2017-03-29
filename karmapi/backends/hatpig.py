@@ -15,14 +15,16 @@ from .tkpig import Pig, AppEventLoop, Docs, cpu_count
 
 from . import tkpig
 
-class Help:
+class Help(tkpig.Help):
 
     def __init__(self, msg):
 
         msg = msg or "Help Me!"
 
+        super().__init__(msg)
+
         print(msg)
-        #messagebox.showinfo(message=msg)
+        
 
 class Canvas(tkpig.Canvas):
 

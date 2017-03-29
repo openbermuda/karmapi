@@ -291,9 +291,8 @@ class SonoGram(pigfarm.MagicCarpet):
 
             self.axes = self.subplots[1]
 
-            #data, timestamp = await self.mick.get()
+            data, timestamp = await self.mick.get()
 
-            data, timestamp = self.mick.read()
             sono = self.sono_calc(data)
             self.sonos.append((sono, timestamp))
 
