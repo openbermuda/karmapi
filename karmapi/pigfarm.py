@@ -431,7 +431,7 @@ class MagicCarpet(Space):
         self.groups = []
         self.group = None
         self.add_event_map(' ', self.next_group)
-        self.add_event_map(';', self.previous_group
+        self.add_event_map(';', self.previous_group)
 
 
         # set intitial data
