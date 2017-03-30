@@ -375,6 +375,18 @@ def load(path):
 
     return df
 
+def load_folder(path):
+    """ Return data in folder as a dictionary of dataframes """
+
+    path = Path(path)
+    data = {}
+    for item in path.glob('*'):
+        df = load(item)
+        data[item.name] = df
+
+    return data
+    
+
 def save(path, df, exist_ok=True, mkdirs=True):
     """ Save dataframe df at path.
 
