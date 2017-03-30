@@ -431,6 +431,7 @@ class MagicCarpet(Space):
         self.groups = []
         self.group = None
         self.add_event_map(' ', self.next_group)
+        self.add_event_map(';', self.previous_group
 
 
         # set intitial data
@@ -441,6 +442,7 @@ class MagicCarpet(Space):
         data = data or toy.distros(
             trials=1000,
             groups=['abc', 'cde', 'xyz'])
+
 
         self.data = data
         self.tests = 0
@@ -519,7 +521,17 @@ class MagicCarpet(Space):
 
         await self.event.put(self.group)
 
+    async def previous_group(self):
 
+        if self.group is None:
+            return await self.next_group()
+
+        self.group -= 1
+        if self.group < 0:
+            self.group = len(self.groups) - 1
+
+        await self.event.put(self.group)
+        
     def clear_axes(self):
 
         for axis in self.subplots:
