@@ -381,6 +381,8 @@ def load_folder(path):
     path = Path(path)
     data = {}
     for item in path.glob('*'):
+        if item.is_dir():
+            continue
         df = load(item)
         data[item.name] = df
 
