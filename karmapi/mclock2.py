@@ -2,8 +2,12 @@
 
 """M CLOCK 2.0."""
 import sys
+
+from datetime import timedelta, datetime
+
 from karmapi import pigfarm
 
+import random
 import math
 import time
 import curio
@@ -33,6 +37,7 @@ class GuidoClock(pigfarm.Yard):
 
         self.timewarp = None
         self.add_event_map('M', self.midnight)
+        self.add_event_map('R', self.random_hour)
 
     def on_configure(self, event):
         self.recalc(event.width, event.height)
@@ -110,23 +115,34 @@ class GuidoClock(pigfarm.Yard):
             self.timewarp = None
             return
 
-        from datetime import timedelta, datetime
-
         deltam = timedelta(seconds=int(mtm * 60))
+
+        to_midnight = self.to_hour(hour=0)
+       
+        warp_to = to_midnight + deltam
         
-        now = datetime.now()
+        self.timewarp =  warp_to.seconds - 3600
+
+    def to_hour(self, now=None, hour=0):
+
+        now = now or datetime.now()
 
         to_midnight = timedelta(
             hours = 24 - now.hour,
             minutes = 60 - now.minute)
-        
 
-        print(now)
-        print(deltam)
+        return to_midnight + timedelta(hours=hour)
 
-        warp_to = (now + to_midnight + deltam)
+    async def random_hour(self, mtm=-2.5):
+        """ Warp to just before a random hour """
         
-        self.timewarp =  (warp_to - now).seconds - 3600
+        deltam = timedelta(seconds=int(mtm * 60))
+
+        hour = self.to_hour(hour=random.randint(0, 23))
+
+        warp_to = hour + deltam
+
+        self.timewarp = warp_to.seconds - 3600
 
     async def run(self):
 
