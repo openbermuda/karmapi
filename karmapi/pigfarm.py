@@ -407,6 +407,16 @@ class Yard(Space):
         self.artist = piglet.Canvas(parent)
         
 
+class PillBox(Space):
+    """ A place to draw piglets """
+    def __init__(self, parent, *args, **kwargs):
+
+        super().__init__()
+
+        self.artist = piglet.PillBox(parent)
+        
+
+        
 class MagicCarpet(Space):
 
     def __init__(self, parent=None, axes=None, data=None):

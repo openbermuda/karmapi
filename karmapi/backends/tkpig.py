@@ -26,8 +26,13 @@ from matplotlib.backends.backend_tkagg import FigureCanvas, FigureManager
 from matplotlib.backends.backend_tkagg import (
     NavigationToolbar2TkAgg)
 
+from matplotlib.backends import tkagg
+
 from matplotlib.figure import Figure
 from matplotlib import pyplot as plt
+import numpy as np
+
+from PIL import Image, ImageDraw, ImageTk
 
 from pandas.formats.format import EngFormatter
 
@@ -190,14 +195,95 @@ class Canvas(Pig):
         return imagefind.interpret(dict(galleries=self.gallery, image=name))
 
 
+class PillBox(Pig):
+    """ Draw to a PIL image 
+    
+    Display on a tk canvas and a 
+    """
 
     
+    def __init__(self, parent, gallery=None, **kwargs):
+
+        super().__init__(parent)
+
+        self.width = 400
+        self.height = 600
+
+
+        self.tkcanvas = tkinter.Canvas(
+            self, width=self.width, height=self.height)
+        
+        self.init_image()
+
+        self.gallery = gallery or ['.', '../gallery']
+
+
+        VBoxLayout().addWidget(self.tkcanvas)
+
+
+        self.tkcanvas.bind("<Configure>", self.on_configure)
+
+    def __getattr__(self, attr):
+
+        return getattr(self.image_draw, attr)
+
+    def set_background(self, colour='black'):
+
+        self.tkcanvas.configure(bg=colour)
+    
+    def on_configure(self, event):
+
+        print('new bad size:', event.width, event.height)
+        self.recalc(event.width, event.height)
+
+        self.init_image()
+
+
+    def init_image(self):
+
+        w = self.width
+        h = self.height
+        self.image = Image.new('RGBA', (self.width, self.height))
+
+        self.image_draw = ImageDraw.Draw(self.image)
+
+
+    def recalc(self, width, height):
+
+        self.width = width
+        self.height = height
+
+        self.tkcanvas.configure(scrollregion=(0, 0, width, height))
+
+
+    def find_image(self, name):
+            
+        return imagefind.interpret(dict(galleries=self.gallery, image=name))
+
+    def blit(self):
+
+        self.tkcanvas.delete('all')
+        self.set_background()
+
+        image = self.image
+        self.phim = ImageTk.PhotoImage(image)
+
+        print('blitting image to canvas')
+
+        xx = self.width / 2
+        yy = self.height / 2
+        print(xx, yy)
+        
+        self.tkcanvas.create_image(xx, yy, image=self.phim)
+
+
+
 class PlotImage(Pig):
     """ An image widget
 
     This is just a wrapper around matplotlib FigureCanvas.
     """
-    def __init__(self, parent, axes=None, dpi=100, **kwargs):
+    def __init__(self, parent, axes=[111], dpi=100, **kwargs):
 
         super().__init__(parent)
 
@@ -209,7 +295,7 @@ class PlotImage(Pig):
         #self.toolbar.update()
         #self.toolbar.pack(expand=0)
         if axes is None:
-            axes = [111]
+            axes = []
 
         self.subplots = []
         for axis in axes:
@@ -243,7 +329,6 @@ class PlotImage(Pig):
         
         self.compute_data()
         self.plot()
-
 
 
 class KPlot(PlotImage):
