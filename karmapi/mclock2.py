@@ -23,16 +23,12 @@ class GuidoClock(pigfarm.PillBox):
         
         self.segments = segments
 
-        #self.canvas.configure(bg='black', width=2*radius, height=2*radius)
-
-        
-        #self.canvas.bind("<Configure>", self.on_configure)
-        #self.canvas.bind("<ButtonPress-1>", self.on_press)
-        #self.canvas.bind("<B1-Motion>", self.on_motion)
-        #self.canvas.bind("<ButtonRelease-1>", self.on_release)
-        #if sys.platform == "win32":
-        #    self.canvas.bind("<3>", self.on_zoom)
-        #    self.credits += "\n(right button toggles full screen mode)"
+        self.tkcanvas.bind("<ButtonPress-1>", self.on_press)
+        self.tkcanvas.bind("<B1-Motion>", self.on_motion)
+        self.tkcanvas.bind("<ButtonRelease-1>", self.on_release)
+        if sys.platform == "win32":
+            self.tkcanvas.bind("<3>", self.on_zoom)
+            self.credits += "\n(right button toggles full screen mode)"
         self.recalc(radius*2, radius*2)
 
         self.timewarp = None
@@ -143,9 +139,8 @@ class GuidoClock(pigfarm.PillBox):
 
         while True:
             self.redraw()
-            print(type(super))
-            self.blit()
-            await curio.sleep(10)
+
+            await curio.sleep(1)
 
             
     def redraw(self):
@@ -156,13 +151,18 @@ class GuidoClock(pigfarm.PillBox):
         hh, mm, ss = time.localtime(t)[3:6]
         self.draw(hh, mm, ss)
 
+        # blit the image to the canvas
+        self.blit()
+
     def draw(self, hh, mm, ss, colors=(0, 1, 2)):
 
         self.set_radius()
         radius = self.radius
         bigsize = self.bigsize
         litsize = self.litsize
-        # Delete old items
+
+        xx = int(self.width / 2)
+        yy = int(self.height / 2)
 
         # Set bigd, litd to angles in degrees for big, little hands
         # 12 => 90, 3 => 0, etc.
@@ -175,15 +175,15 @@ class GuidoClock(pigfarm.PillBox):
         self.drawbg(bigd, litd, colors)
         # Draw the hands
         b = self.line([
-            radius, radius,
-            radius + int(bigsize*math.cos(bigr)),
-            radius - int(bigsize*math.sin(bigr))],
+            xx, yy,
+            xx + int(bigsize*math.cos(bigr)),
+            yy - int(bigsize*math.sin(bigr))],
             width=int(radius/50), fill='black')
         
         l = self.line([
-            radius, radius,
-            radius + int(litsize*math.cos(litr)),
-            radius - int(litsize*math.sin(litr))],
+            xx, yy,
+            xx + int(litsize*math.cos(litr)),
+            yy - int(litsize*math.sin(litr))],
             width=int(radius/33), fill='black')
         
         # Draw the text
@@ -222,6 +222,9 @@ class GuidoClock(pigfarm.PillBox):
         table.sort()
         table.append((360, None))
         radius = self.radius
+        xx = int(self.width / 2)
+        yy = int(self.height / 2)
+        
         fill = [0, 0, 0]
         for i, (angle, color, colorindex) in enumerate(table[:-1]):
             fill[colorindex] = color
@@ -232,7 +235,7 @@ class GuidoClock(pigfarm.PillBox):
                     extent = 1.
 
                 self.pieslice(
-                    [0, 0,  2 * radius, 2 * radius],
+                    [xx - radius, yy - radius,  xx + radius, yy + radius],
                     int(angle), int(extent + angle),
                     fill="#%02x%02x%02x" % tuple(fill))
 
