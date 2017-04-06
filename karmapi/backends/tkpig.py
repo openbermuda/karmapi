@@ -471,6 +471,7 @@ class AppEventLoop:
         if app is None:
             self.app = Tk()
 
+        self.outputs = []
         self.events = curio.UniversalQueue()
         self.app.bind('<Key>', self.keypress)
 

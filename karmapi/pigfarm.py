@@ -51,8 +51,11 @@ class PigFarm:
         # this probably needs to be a co-routine?
         self.eloop = piglet.EventLoop()
         self.eloop.set_event_queue(self.event)
+        self.eloop.farm = self
 
         self.piglets.put(self.eloop.run())
+        for output in self.eloop.displays:
+            self.piglets.put(output)
 
 
     def add_event_map(self, event, coro):
@@ -414,7 +417,6 @@ class PillBox(Space):
         super().__init__()
 
         self.artist = piglet.PillBox(parent)
-        
 
         
 class MagicCarpet(Space):

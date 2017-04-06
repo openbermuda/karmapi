@@ -11,7 +11,7 @@ import numpy as np
 
 from . import tkpig, core
 
-from .tkpig import Pig, AppEventLoop, Docs, cpu_count
+from .tkpig import Pig, Docs, cpu_count
 
 from . import tkpig
 
@@ -39,20 +39,30 @@ class Canvas(tkpig.Canvas):
 
         super().draw()
 
-        # FIXME: set self.image to image data
 
-        self.blit()
+class PillBox(tkpig.PillBox):
 
-    def blit(self):
-        """ Update the image on the sense hat
+    def get_pixels(self, size=8):
 
-        Need to downsample from width x height to 8 x 8
+        width = self.width
+        height = self.height
 
-        """
-        pixels = pick_pixels(self.image)
+        selection = pixel_selector(width, height, size=size)
 
-        self.hat.set_pixels(pixels)
+        image = self.image.getdata()
         
+        pixels = []
+        for choice in selection:
+            
+            pixel = image[choice]
+
+            print(choice, pixel)
+
+            pixels.append(pixel[:3])
+        
+        pixels = np.array(pixels).astype(int)
+
+        return pixels
     
 class PlotImage(tkpig.PlotImage):
 
@@ -60,16 +70,12 @@ class PlotImage(tkpig.PlotImage):
 
         super().__init__(parent, **kwargs)
 
-        self.hat = sense_hat.SenseHat()
-
     
     def draw(self):
 
         self.image.draw()
 
-        self.blit()
-
-    def blit(self):
+    def get_pixels(self, size=8):
         """ Update the image on the sense hat
 
         Need to downsample from width x height to 8 x 8
@@ -99,7 +105,7 @@ class PlotImage(tkpig.PlotImage):
         iheight = int(dpi * height)
 
         print('selecting pixels to pick')
-        selection = pixel_selector(iwidth, iheight)
+        selection = pixel_selector(iwidth, iheight, size=8)
 
         print('got image')
 
@@ -111,19 +117,10 @@ class PlotImage(tkpig.PlotImage):
             pixels.append(pixel)
         
         pixels = np.array(pixels).astype(int)
-        
-        for f in max, min:
-            print(f(x[0] for x in pixels))
-            print(f(x[1] for x in pixels))
-            print(f(x[2] for x in pixels))
 
-        for row in range(8):
-            for col in range(8):
-                print(pixels[(8*row) +col], end=' ')
-            print()
-
-        self.hat.set_pixels(pixels.astype(int))
+        return pixels
         
+ 
     
 def pixel_selector(width, height, size=8):
     """ Generate list of pixel positions to select """
@@ -192,3 +189,35 @@ def string_to_rgb(pixel):
 
     return [int(pix) for pix in pixel[:3]]
 
+
+class AppEventLoop(tkpig.AppEventLoop):
+
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+
+        self.hat = sense_hat.SenseHat()
+
+        self.displays = [self.hatblit()]
+    
+ 
+    async def hatblit(self):
+        """ blit current widget to hat if possible """
+        while True:
+            current = self.farm.current
+
+            if current:
+                get_pixels = getattr(current, 'get_pixels', None)
+
+                if get_pixels:
+
+                    try:
+                        pixels = get_pixels()
+
+                        self.hat.set_pixels(pixels)
+                    except:
+                        pass
+
+            await curio.sleep(0.01)
+                
+        
