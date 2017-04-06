@@ -56,8 +56,6 @@ class PillBox(tkpig.PillBox):
             
             pixel = image[choice]
 
-            print(choice, pixel)
-
             pixels.append(pixel[:3])
         
         pixels = np.array(pixels).astype(int)
