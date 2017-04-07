@@ -25,6 +25,7 @@ import subprocess
 import datetime
 import csv
 import time
+from pathlib import Path
 
 import curio
 import pandas
@@ -87,17 +88,17 @@ def get_weather(hat):
 def get_gyro(hat):
 
     while True:
-        data = hat,gyro
+        data = hat.gyro
 
         data['timestamp'] = time.time()
 
-        return data
+        yield data
 
 
 def get_acceleration(hat):
 
     while True:
-        data = hat,accelwriter
+        data = hat.accel
     
         data['timestamp'] = time.time()
 
@@ -229,6 +230,7 @@ def get_outfile(path, name):
 
 def get_writer(path, name, data, sleep):
 
+    # FIXME? maybe should read existing (if it exists) to get header line
     header = next(data).keys()
 
     # open outfile
@@ -239,7 +241,7 @@ def get_writer(path, name, data, sleep):
     if need_header:
         writer.writeheader()
     
-    curio.run(recorder(reader, writer, sleep))
+    return writer
 
 async def recorder(path, name, data, sleep=1):
     """ Record from a sensor 
@@ -252,7 +254,7 @@ async def recorder(path, name, data, sleep=1):
     writer = get_writer(path, name, data, sleep)
 
     while True:
-        writer.writerow(reader())
+        writer.writerow(next(data))
         await curio.sleep(sleep)
 
 
@@ -274,7 +276,7 @@ async def record(path='.', sleep=1):
         
         for task, name in zip(tasks, names):
 
-            await workers.spawn(path, name, task, sleep)
+            await workers.spawn(recorder(path, name, task, sleep))
 
 def main():
 
