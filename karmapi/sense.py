@@ -1,6 +1,24 @@
 """
 Sense Hat tools
 
+Work in progress...
+
+FIXME:  
+
+  Save hat data in year/month/day folders.
+
+      weather:  csv file of weather related readings
+      compass:  compass readings
+      gyro:     gyro readings
+      acceleration:  data from accelerometer
+
+  Add timestamp to each record. 
+
+  make the hat a mike?
+
+  have some sort of record executable that can be run (eg at boot) to start recording data
+
+  Once we have the data recording in place can just use MagicCarpet to view it.
 
 """
 import subprocess
@@ -10,25 +28,6 @@ import pandas
 import datetime
 
 from karmapi import pigfarm
-
-def piggy():
-
-    info = dict(
-        title = "SENSE HAT",
-        tabs = [
-            {'name': 'weather',
-             'widgets': [
-                 ["karmapi.sense.WeatherHat"],
-             ]},
-            {'name': 'Orient',
-             'widgets': [
-                 ["karmapi.sense.OrientHat"],
-             ]},
-            {'name': 'curio',
-             'widgets': [
-                 ['karmapi.widgets.Curio']]}])
-
-    return info
 
 
 def stats(hat):
@@ -41,7 +40,17 @@ def stats(hat):
         yield "P: %4.0f" % hat.pressure
 
 def get_stats(hat):
+    """ Return weather, compass and gyro data"""
+    data = get_weather(hat)
 
+    data.update(get_compass(hat))
+
+    data.update(get_gyro(hat))
+
+    return data
+
+def get_weather(hat):
+    
     data = dict(
         temp = hat.temp,
         humidity = hat.humidity,
@@ -50,9 +59,6 @@ def get_stats(hat):
         temperature_from_humidity = hat.get_temperature_from_humidity(),
         cpu_temperature = get_cpu_temperature(),
         )
-    data.update(hat.gyro)
-    data['compass'] = hat.compass
-
     guess = data['temperature_from_pressure'] + data['temperature_from_humidity']
     guess = guess / 2.0
 
@@ -65,6 +71,20 @@ def get_stats(hat):
     data['timestamp'] = datetime.datetime.now()
 
     return data
+
+
+def get_gyro(hat):
+
+    return hat,gyro
+
+def get_acceleration(hat):
+
+    return hat,accel
+
+def get_compass(hat):
+
+    return dict(compass=hat.compass)
+    
 
 def get_cpu_temperature():
 
@@ -86,7 +106,7 @@ def show_all_stats(hat, show=None):
         for key, value in stats.items():
             show("%s: %04.1f\n" % (key, value))
 
-class WeatherHat(pigfarm.Piglet):
+class WeatherHat(pigfarm.MagicCarpet):
     """  Sense Hat widget """
     fields = ['humidity', 'temperature_guess', 'pressure']
 
@@ -162,9 +182,14 @@ class Monitor(pigfarm.MagicCarpet):
     
 if __name__ == '__main__':
 
-    app = pig.build(piggy())
+    farm = pigfarm.PigFarm()
 
-    pig.run(app)
+    hat = sense_hat.SenseHat()
+    
+    farm.add(WeatherHat)
+    farm.add(OrientHat)
+
+    pigfarm.run(farm)
     
         
     
