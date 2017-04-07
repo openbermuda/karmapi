@@ -610,6 +610,7 @@ class MagicCarpet(Space):
         
         group = self.groups[self.group]
         frame = self.frames[group]
+        print(frame.describe())
 
         axes = self.subplots[0]
         axes.clear()
