@@ -54,7 +54,8 @@ class PigFarm:
         self.eloop.farm = self
 
         self.piglets.put(self.eloop.run())
-        for output in self.eloop.displays:
+        displays = getattr(self.eloop, 'displays', [])
+        for output in displays:
             self.piglets.put(output)
 
 
@@ -494,6 +495,11 @@ class MagicCarpet(Space):
         frames = {}
         groups = []
         for group, frame in data.items():
+
+            frame = pandas.DataFrame(frame)
+            print(group)
+            print(frame.columns)
+            print()
             frame = pandas.DataFrame(frame)
 
             frames[group] = frame
