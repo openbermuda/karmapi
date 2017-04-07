@@ -241,7 +241,7 @@ def get_writer(path, name, data, sleep):
     if need_header:
         writer.writeheader()
     
-    return writer
+    return writer, outfile
 
 async def recorder(path, name, data, sleep=1):
     """ Record from a sensor 
@@ -251,10 +251,12 @@ async def recorder(path, name, data, sleep=1):
     data: an iterator over dictionaries
     """
 
-    writer = get_writer(path, name, data, sleep)
+    writer, outfile = get_writer(path, name, data, sleep)
 
     while True:
+        print('writing', name)
         writer.writerow(next(data))
+        outfile.flush()
         await curio.sleep(sleep)
 
 
