@@ -6,6 +6,8 @@ Pigs are windows, piglets are things running in the pig farm.
 
 """
 import pandas   # piglets and pandas together
+np = pandas.np
+
 from collections import deque
 import curio
 from curio import spawn, sleep
@@ -448,10 +450,6 @@ class MagicCarpet(Space):
 
 
         # set intitial data
-
-        # hmm.. not sure where this belongs
-        pandas.set_eng_float_format(1, True)
-
         data = data or toy.distros(
             trials=1000,
             groups=['abc', 'cde', 'xyz'])
@@ -468,18 +466,20 @@ class MagicCarpet(Space):
 
         stats = frame.describe()
 
-        stat_rows = str(stats).split('\n')
-        cells = [x[1:] for x in self.parse_describe(stat_rows)]
+        ef = pandas.formats.format.EngFormatter(1, True)
+
+        cells = []
+
+        for name, col in stats.items():
+            cells.append([ef(x) for x in col.values])
+
+        cells = np.array(cells).T
 
         cols = stats.columns.values
         rows = stats.index.values
 
         return stats, cells, rows, cols
 
-    def parse_describe(self, rows):
-
-        for row in rows[1:]:
-            yield row.split()
 
     async def load_data(self):
 
