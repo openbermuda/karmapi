@@ -55,7 +55,7 @@ def main():
     joy.set_backend(args.pig)
 
 
-    from karmapi import pig, piglet
+    from karmapi import piglet
     from karmapi import widgets
     from karmapi import sonogram
 

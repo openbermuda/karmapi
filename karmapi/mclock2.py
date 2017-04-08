@@ -2,12 +2,17 @@
 
 """M CLOCK 2.0."""
 import sys
-from karmapi import pig
+
+from datetime import timedelta, datetime
+
+from karmapi import pigfarm
+
+import random
 import math
 import time
 import curio
 
-class GuidoClock(pig.Canvas):
+class GuidoClock(pigfarm.PillBox):
 
     def __init__(self, parent):
 
@@ -18,23 +23,17 @@ class GuidoClock(pig.Canvas):
         
         self.segments = segments
 
-        self.canvas.configure(bg='black', width=2*radius, height=2*radius)
-
-        
-        self.canvas.bind("<Configure>", self.on_configure)
-        self.canvas.bind("<ButtonPress-1>", self.on_press)
-        self.canvas.bind("<B1-Motion>", self.on_motion)
-        self.canvas.bind("<ButtonRelease-1>", self.on_release)
+        self.tkcanvas.bind("<ButtonPress-1>", self.on_press)
+        self.tkcanvas.bind("<B1-Motion>", self.on_motion)
+        self.tkcanvas.bind("<ButtonRelease-1>", self.on_release)
         if sys.platform == "win32":
-            self.canvas.bind("<3>", self.on_zoom)
+            self.tkcanvas.bind("<3>", self.on_zoom)
             self.credits += "\n(right button toggles full screen mode)"
         self.recalc(radius*2, radius*2)
 
         self.timewarp = None
         self.add_event_map('M', self.midnight)
-
-    def on_configure(self, event):
-        self.recalc(event.width, event.height)
+        self.add_event_map('R', self.random_hour)
 
     credits = ("M Clock 2.0\n"
                "by Guido van Rossum\n"
@@ -74,15 +73,13 @@ class GuidoClock(pig.Canvas):
             self.root.wm_overrideredirect(True)
             self.root.wm_state("zoomed")
 
-    def recalc(self, width, height):
-        radius = min(width, height) // 2
-        self.width = width
-        self.height = height
+    def set_radius(self):
+
+        radius = min(self.width, self.height) // 2
         self.radius = radius
         self.bigsize = radius * .975
         self.litsize = radius * .67
-        self.canvas.configure(scrollregion=(-width//2, -height//2,
-                                            width//2, height//2))
+
 
     def demo(self, speed=1, colors=(0, 1, 2), segments=None):
         if segments is not None:
@@ -109,29 +106,41 @@ class GuidoClock(pig.Canvas):
             self.timewarp = None
             return
 
-        from datetime import timedelta, datetime
-
         deltam = timedelta(seconds=int(mtm * 60))
+
+        to_midnight = self.to_hour(hour=0)
+       
+        warp_to = to_midnight + deltam
         
-        now = datetime.now()
+        self.timewarp =  warp_to.seconds - 3600
+
+    def to_hour(self, now=None, hour=0):
+
+        now = now or datetime.now()
 
         to_midnight = timedelta(
             hours = 24 - now.hour,
             minutes = 60 - now.minute)
-        
 
-        print(now)
-        print(deltam)
+        return to_midnight + timedelta(hours=hour)
 
-        warp_to = (now + to_midnight + deltam)
+    async def random_hour(self, mtm=-2.5):
+        """ Warp to just before a random hour """
         
-        self.timewarp =  (warp_to - now).seconds - 3600
+        deltam = timedelta(seconds=int(mtm * 60))
+
+        hour = self.to_hour(hour=random.randint(0, 23))
+
+        warp_to = hour + deltam
+
+        self.timewarp = warp_to.seconds - 3600
 
     async def run(self):
 
         while True:
             self.redraw()
-            await curio.sleep(10)
+
+            await curio.sleep(1)
 
             
     def redraw(self):
@@ -142,16 +151,19 @@ class GuidoClock(pig.Canvas):
         hh, mm, ss = time.localtime(t)[3:6]
         self.draw(hh, mm, ss)
 
-    ids = ()
+        # blit the image to the canvas
+        self.blit()
 
     def draw(self, hh, mm, ss, colors=(0, 1, 2)):
+
+        self.set_radius()
         radius = self.radius
         bigsize = self.bigsize
         litsize = self.litsize
-        # Delete old items
-        if self.ids:
-            self.canvas.delete(*self.ids)
-        self.ids = []
+
+        xx = int(self.width / 2)
+        yy = int(self.height / 2)
+
         # Set bigd, litd to angles in degrees for big, little hands
         # 12 => 90, 3 => 0, etc.
         bigd = (90 - (mm*60 + ss) / 10) % 360
@@ -162,16 +174,18 @@ class GuidoClock(pig.Canvas):
         # Draw the background colored arcs
         self.drawbg(bigd, litd, colors)
         # Draw the hands
-        b = self.canvas.create_line(0, 0,
-                                    bigsize*math.cos(bigr),
-                                    -bigsize*math.sin(bigr),
-                                    width=radius/50, capstyle="round")
-        l = self.canvas.create_line(0, 0,
-                                    litsize*math.cos(litr),
-                                    -litsize*math.sin(litr),
-                                    width=radius/33, capstyle="round")
-        self.ids.append(b)
-        self.ids.append(l)
+        b = self.line([
+            xx, yy,
+            xx + int(bigsize*math.cos(bigr)),
+            yy - int(bigsize*math.sin(bigr))],
+            width=int(radius/50), fill='black')
+        
+        l = self.line([
+            xx, yy,
+            xx + int(litsize*math.cos(litr)),
+            yy - int(litsize*math.sin(litr))],
+            width=int(radius/33), fill='black')
+        
         # Draw the text
         if self.showtext:
             t = self.canvas.create_text(-bigsize, bigsize,
@@ -208,6 +222,9 @@ class GuidoClock(pig.Canvas):
         table.sort()
         table.append((360, None))
         radius = self.radius
+        xx = int(self.width / 2)
+        yy = int(self.height / 2)
+        
         fill = [0, 0, 0]
         for i, (angle, color, colorindex) in enumerate(table[:-1]):
             fill[colorindex] = color
@@ -216,10 +233,10 @@ class GuidoClock(pig.Canvas):
                 if extent < 1.:
                     # XXX Work around a bug in Tk for very small angles
                     extent = 1.
-                id = self.canvas.create_arc(-radius, -radius, radius, radius,
-                                           fill="#%02x%02x%02x" % tuple(fill),
-                                           outline="",
-                                           start=angle,
-                                           extent=extent)
-                self.ids.append(id)
+
+                self.pieslice(
+                    [xx - radius, yy - radius,  xx + radius, yy + radius],
+                    int(angle), int(extent + angle),
+                    fill="#%02x%02x%02x" % tuple(fill))
+
 

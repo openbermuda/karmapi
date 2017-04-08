@@ -148,7 +148,7 @@ class Connect:
             self.tt.time()
 
             self.tt.time('read')
-            data, timestamp = self.mick.read()
+            data, timestamp = self.read()
 
             if (timestamp - start).seconds > 0:
                 print('framerate', rate)

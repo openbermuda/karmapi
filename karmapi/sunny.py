@@ -1,11 +1,11 @@
-from karmapi import pig
+from karmapi import pigfarm
 
 import curio
 import random
 
 from pathlib import Path
 
-class Sunspot(pig.Video):
+class Sunspot(pigfarm.MagicCarpet):
 
 
     def compute_data(self):

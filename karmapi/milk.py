@@ -79,10 +79,41 @@ class Curio(pigfarm.Docs):
 
         text, tasks = self.get_tasks()
 
-        max_id = max(tasks)
+        min_id = min(tasks)
 
         while True:
             self.task_id -= 1
+            
+            if self.task_id < min_id:
+                self.task_id = max(tasks)
+                
+            if self.task_id in tasks:
+                text += "\nWhere {}:\n\n".format(self.task_id)
+                text += self.mon.where(self.task_id)
+
+                break
+
+        self.set_text(text)
+
+    async def next(self):
+
+        text, tasks = self.get_tasks()
+
+        max_id = max(tasks)
+
+        while True:
+            self.task_id += 1
+            if self.task_id > max_id:
+                self.task_id = 0
+            if self.task_id in tasks:
+                text += "\nWhere {}:\n\n".format(self.task_id)
+                text += self.mon.where(self.task_id)
+
+                break
+
+        self.set_text(text)
+
+
     def task_info(self):
 
         text = self.mon.ps()
@@ -121,25 +152,6 @@ class Curio(pigfarm.Docs):
         self.set_text(text)
         
             
-    async def next(self):
-
-        text, tasks = self.get_tasks()
-
-        max_id = max(tasks)
-
-        while True:
-            self.task_id += 1
-            if self.task_id > max_id:
-                self.task_id = 0
-            if self.task_id in tasks:
-                text += "\nWhere {}:\n\n".format(self.task_id)
-                text += self.mon.where(self.task_id)
-
-                break
-
-        self.set_text(text)
-
-
     def get_tasks(self):
 
         tasks = set()

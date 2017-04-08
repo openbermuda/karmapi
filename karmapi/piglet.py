@@ -1,7 +1,7 @@
 """
 Pig widgets
 """
-
+import sys
 import PIL
 import curio
 from concurrent.futures import ProcessPoolExecutor
@@ -11,6 +11,11 @@ from karmapi import joy
 if joy.BACKEND == 'qt':
 
     from .backends.qtpig import *
+
+
+elif joy.BACKEND == 'hat':
+
+    from .backends.hatpig import *
 
 else:
 
@@ -477,9 +482,10 @@ class XKCD(PlotImage):
 
     def plot(self):
         """ Display plot xkcd style """
+        from matplotlib import pyplot as plt
+        import numpy as np
+        
         with plt.xkcd():
-
-            np = pandas.np
 
             data = np.ones(100)
             data[70:] -= np.arange(30)

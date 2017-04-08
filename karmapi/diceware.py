@@ -14,7 +14,7 @@ http://world.std.com/%7Ereinhold/diceware.wordlist.asc
 
 """
 
-from karmapi import pig
+from karmapi import pigfarm
 from karmapi.bats import Theme, Swarm
 from karmapi.beanstalk import BeanStalk
 
@@ -23,15 +23,13 @@ import random
 import math
 import time
 
-BIGLY = pig.BIGLY_FONT
+BIGLY = pigfarm.BIGLY_FONT
 
-class StingingBats(pig.Canvas):
+class StingingBats(pigfarm.Yard):
 
     def __init__(self, parent, words=None):
 
         super().__init__(parent)
-
-        self.width = self.height = 200
 
         if words:
             self.words = load_words(words)
@@ -52,8 +50,7 @@ class StingingBats(pig.Canvas):
         self.themes.append(Theme(colours=['green', 'yellow', 'red']))
         self.theme = self.themes[0]
 
-        self.canvas.configure(bg=self.theme.background,
-            width=self.width, height=self.height)
+        self.canvas.configure(bg=self.theme.background)
 
         self.create_beanstalks()
         self.create_event_map()

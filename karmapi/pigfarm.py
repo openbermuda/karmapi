@@ -21,6 +21,7 @@ from karmapi import toy
 
 from tkinter import Toplevel
 
+BIGLY_FONT = 'helvetica 20 bold'
 
 class PigFarm:
     """ A pig farm event loop """
@@ -50,8 +51,12 @@ class PigFarm:
         # this probably needs to be a co-routine?
         self.eloop = piglet.EventLoop()
         self.eloop.set_event_queue(self.event)
+        self.eloop.farm = self
 
         self.piglets.put(self.eloop.run())
+        displays = getattr(self.eloop, 'displays', [])
+        for output in displays:
+            self.piglets.put(output)
 
 
     def add_event_map(self, event, coro):
@@ -406,6 +411,15 @@ class Yard(Space):
         self.artist = piglet.Canvas(parent)
         
 
+class PillBox(Space):
+    """ A place to draw piglets """
+    def __init__(self, parent, *args, **kwargs):
+
+        super().__init__()
+
+        self.artist = piglet.PillBox(parent)
+
+        
 class MagicCarpet(Space):
 
     def __init__(self, parent=None, axes=None, data=None):
@@ -430,6 +444,7 @@ class MagicCarpet(Space):
         self.groups = []
         self.group = None
         self.add_event_map(' ', self.next_group)
+        self.add_event_map(';', self.previous_group)
 
 
         # set intitial data
@@ -440,6 +455,7 @@ class MagicCarpet(Space):
         data = data or toy.distros(
             trials=1000,
             groups=['abc', 'cde', 'xyz'])
+
 
         self.data = data
         self.tests = 0
@@ -479,9 +495,21 @@ class MagicCarpet(Space):
         frames = {}
         groups = []
         for group, frame in data.items():
+
+            frame = pandas.DataFrame(frame)
+            print(group)
+            print('XXXX', frame.columns.values)
+            print()
             frame = pandas.DataFrame(frame)
 
-            frames[group] = frame
+            sortflag = True
+            if 'timestamp' in frame.columns.values:
+                print('got timestamp column')
+                frame = make_timestamp_index(frame)
+                print(frame.info())
+                sortflag = False
+                      
+            frames[group] = dict(frame=frame, sort=sortflag)
             groups.append(group)
 
         self.frames = frames
@@ -518,7 +546,17 @@ class MagicCarpet(Space):
 
         await self.event.put(self.group)
 
+    async def previous_group(self):
 
+        if self.group is None:
+            return await self.next_group()
+
+        self.group -= 1
+        if self.group < 0:
+            self.group = len(self.groups) - 1
+
+        await self.event.put(self.group)
+        
     def clear_axes(self):
 
         for axis in self.subplots:
@@ -552,6 +590,11 @@ class MagicCarpet(Space):
         alpha = 0.2
         colours[:, :, 3] = alpha
 
+        print(rows)
+        print(cols)
+        print(len(cells), len(cells[0]))
+        
+
         bbox = (0.0, 0.0, 1.0, 1.0)
         tab = self.axes.table(
             rowLabels=rows,
@@ -578,8 +621,13 @@ class MagicCarpet(Space):
             return
         
         group = self.groups[self.group]
-        frame = self.frames[group]
+        fdata = self.frames[group]
+        frame = fdata['frame']
+        sortflag = fdata['sort']
+        print(frame.describe())
 
+        xx = frame.index
+        
         axes = self.subplots[0]
         axes.clear()
 
@@ -591,11 +639,14 @@ class MagicCarpet(Space):
         col_colours = []
         for label in frame.columns:
             data = frame[label].copy()
-            data.sort_values(inplace=True)
+
+            print(type(xx[0]))
+            if sortflag:
+                data.sort_values(inplace=True)
             if self.log:
-                patch = axes.semilogy(data.values, label=label)
+                patch = axes.semilogy(xx, data.values, label=label)
             else:
-                patch = axes.plot(data.values, label=label)
+                patch = axes.plot(xx, data.values, label=label)
 
             col_colours.append(patch[0].get_color())
 
@@ -629,6 +680,16 @@ class Piglet:
     Run tasks.
     """
     pass
+
+def make_timestamp_index(frame):
+    """ Take a frame with a timestamp column and make it the index """
+
+        
+    frame.index = pandas.to_datetime(frame.timestamp * 10**6)
+
+    del frame['timestamp']
+
+    return frame
 
 
 def run(farm):
