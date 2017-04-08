@@ -109,7 +109,7 @@ def get_compass(hat):
     while True:
         data = hat.compass_raw
         data['compass'] = hat.compass
-        data['timestamp'] = time.time())
+        data['timestamp'] = time.time()
         yield data
 
 def get_cpu_temperature():
