@@ -268,11 +268,8 @@ class PillBox(Pig):
         image = self.image
         self.phim = ImageTk.PhotoImage(image)
 
-        print('blitting image to canvas')
-
         xx = self.width / 2
         yy = self.height / 2
-        print(xx, yy)
         
         self.tkcanvas.create_image(xx, yy, image=self.phim)
 
