@@ -502,12 +502,14 @@ class MagicCarpet(Space):
             print()
             frame = pandas.DataFrame(frame)
 
+            sortflag = True
             if 'timestamp' in frame.columns.values:
                 print('got timestamp column')
                 frame = make_timestamp_index(frame)
                 print(frame.info())
+                sortflag = False
                       
-            frames[group] = frame
+            frames[group] = dict(frame=frame, sort=sortflag)
             groups.append(group)
 
         self.frames = frames
@@ -619,7 +621,9 @@ class MagicCarpet(Space):
             return
         
         group = self.groups[self.group]
-        frame = self.frames[group]
+        fdata = self.frames[group]
+        frame = fdata['frame']
+        sortflag = fdata['sort']
         print(frame.describe())
 
         xx = frame.index
@@ -635,7 +639,10 @@ class MagicCarpet(Space):
         col_colours = []
         for label in frame.columns:
             data = frame[label].copy()
-            data.sort_values(inplace=True)
+
+            print(type(xx[0]))
+            if sortflag:
+                data.sort_values(inplace=True)
             if self.log:
                 patch = axes.semilogy(xx, data.values, label=label)
             else:
