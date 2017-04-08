@@ -107,8 +107,10 @@ def get_acceleration(hat):
 def get_compass(hat):
 
     while True:
-       yield dict(compass=hat.compass, timestamp=time.time())
-    
+        data = hat.compass_raw
+        data['compass'] = hat.compass
+        data['timestamp'] = time.time())
+        yield data
 
 def get_cpu_temperature():
 

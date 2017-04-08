@@ -498,10 +498,15 @@ class MagicCarpet(Space):
 
             frame = pandas.DataFrame(frame)
             print(group)
-            print(frame.columns)
+            print('XXXX', frame.columns.values)
             print()
             frame = pandas.DataFrame(frame)
 
+            if 'timestamp' in frame.columns.values:
+                print('got timestamp column')
+                frame = make_timestamp_index(frame)
+                print(frame.info())
+                      
             frames[group] = frame
             groups.append(group)
 
@@ -583,6 +588,11 @@ class MagicCarpet(Space):
         alpha = 0.2
         colours[:, :, 3] = alpha
 
+        print(rows)
+        print(cols)
+        print(len(cells), len(cells[0]))
+        
+
         bbox = (0.0, 0.0, 1.0, 1.0)
         tab = self.axes.table(
             rowLabels=rows,
@@ -612,6 +622,8 @@ class MagicCarpet(Space):
         frame = self.frames[group]
         print(frame.describe())
 
+        xx = frame.index
+        
         axes = self.subplots[0]
         axes.clear()
 
@@ -625,9 +637,9 @@ class MagicCarpet(Space):
             data = frame[label].copy()
             data.sort_values(inplace=True)
             if self.log:
-                patch = axes.semilogy(data.values, label=label)
+                patch = axes.semilogy(xx, data.values, label=label)
             else:
-                patch = axes.plot(data.values, label=label)
+                patch = axes.plot(xx, data.values, label=label)
 
             col_colours.append(patch[0].get_color())
 
@@ -661,6 +673,16 @@ class Piglet:
     Run tasks.
     """
     pass
+
+def make_timestamp_index(frame):
+    """ Take a frame with a timestamp column and make it the index """
+
+        
+    frame.index = pandas.to_datetime(frame.timestamp * 10**6)
+
+    del frame['timestamp']
+
+    return frame
 
 
 def run(farm):
