@@ -659,17 +659,25 @@ class MagicCarpet(Space):
             plot_frame = frame
         
         col_colours = []
+        delta_y = 0
         for label in frame.columns:
+        
             data = plot_frame[label].copy()
 
+            if delta_y:
+                delta_y += data.std() * 2
+                
             if sortflag:
                 data.sort_values(inplace=True)
             if self.log:
-                patch = axes.semilogy(xx, data.values, label=label)
+                patch = axes.semilogy(xx, delta_y + data.values, label=label)
             else:
-                patch = axes.plot(xx, data.values, label=label)
+                patch = axes.plot(xx, delta_y + data.values, label=label)
 
             col_colours.append(patch[0].get_color())
+
+            if self.subtract_means:
+                delta_y += data.std() * 2
 
         from matplotlib import colors
         col_colours = [colors.to_rgba(x, 0.2) for x in col_colours]
