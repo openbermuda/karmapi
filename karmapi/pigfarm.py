@@ -88,7 +88,7 @@ class PigFarm:
     def add(self, pig, kwargs=None):
 
         kwargs = kwargs or {}
-        print('pigfarm adding', pig, kwargs)
+        print('pigfarm adding', pig, kwargs.keys())
 
         self.builds.put((pig, kwargs))
 
