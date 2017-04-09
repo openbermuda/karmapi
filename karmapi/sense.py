@@ -64,25 +64,28 @@ def get_weather(hat):
 
     while True:
         data = dict(
-            temp = hat.temp,
             humidity = hat.humidity,
             pressure = hat.pressure,
             temperature_from_pressure = hat.get_temperature_from_pressure(),
             temperature_from_humidity = hat.get_temperature_from_humidity(),
-            cpu_temperature = get_cpu_temperature(),
-            )
-        guess = data['temperature_from_pressure'] + data['temperature_from_humidity']
-        guess = guess / 2.0
+            cpu_temperature = get_cpu_temperature())
 
-        cputemp = data['cpu_temperature']
-
-        guess = guess - ((cputemp - guess) / 2)
-
-        data['temperature_guess'] = guess
 
         data['timestamp'] = time.time()
 
         yield data
+
+
+def temperature_guess(data):
+
+    guess = data['temperature_from_pressure'] + data['temperature_from_humidity']
+    guess = guess / 2.0
+
+    cputemp = data['cpu_temperature']
+
+    guess = guess - ((cputemp - guess) / 2)
+
+    return guess
 
 
 def get_gyro(hat):
