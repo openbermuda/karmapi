@@ -23,6 +23,8 @@ FIXME:
 """
 import subprocess
 import datetime
+from datetime import timedelta
+
 import csv
 import time
 from pathlib import Path
@@ -270,20 +272,35 @@ async def record(path='.', sleep=1):
     """ Record everything from the hat """
     hat = sense_hat.SenseHat()
 
-    weather = get_weather(hat)
-    compass = get_compass(hat)
-    gyro = get_gyro(hat)
-    accel = get_acceleration(hat)
+    weather = get_weather
+    compass = get_compass
+    gyro = get_gyro
+    accel = get_acceleration
 
     tasks = [weather, compass, gyro, accel]
     names = ['weather', 'compass', 'gyro', 'accel']
 
     # magic from curio
-    async with curio.TaskGroup(wait='any') as workers:
-        
-        for task, name in zip(tasks, names):
+    while True:
 
-            await workers.spawn(recorder(path, name, task, sleep))
+        now = datetime.datetime.now()
+        midnight = timedelta(hours = 23 - now.hour,
+                             minutes = 59 - now.minute,
+                             seconds = 59 - now.second)
+
+        print(now)
+        print(now + midnight)
+        # seconds to midnight + 1
+        midnight = midnight.seconds + 1
+        
+        async with curio.timeout_after(midnight):
+            async with curio.TaskGroup(wait='any') as workers:
+
+                for task, name in zip(tasks, names):
+
+                    await workers.spawn(recorder(path, name, task(hat), sleep))
+
+            
 
 def main():
 
