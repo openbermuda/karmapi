@@ -45,31 +45,21 @@ class GuidoClock(pigfarm.PillBox):
                "by Guido van Rossum\n"
                "after a design by Rob Juda")
 
-    creditid = None
+    creditxy = None
     showtext = False
 
     def on_press(self, event):
-        self.creditid = self.text(
-            (event.x, event.y),
-            text=self.credits)
+        self.creditxy = event.x, event.y
         
-            # FIXME:  PIL fonts? font="Helvetica 16 bold")
-
         self.showtext = not self.showtext
 
     def on_motion(self, event):
-        creditid = self.creditid
-        if creditid:
-            oldx, oldy = self.canvas.coords(creditid)
-            self.canvas.move(creditid,
-                             self.canvas.canvasx(event.x) - oldx,
-                             self.canvas.canvasy(event.y) - oldy)
+        
+        if self.creditxy:
+            self.creditxy = event.x, event.y
 
     def on_release(self, event):
-        creditid = self.creditid
-        if creditid:
-            self.creditid = None
-            self.canvas.delete(creditid)
+        self.creditxy = None
 
     def on_zoom(self, event):
         if self.root.wm_overrideredirect():
@@ -202,8 +192,8 @@ class GuidoClock(pigfarm.PillBox):
 
                 # FIXME: PIL fonts, font="helvetica 16 bold")
             
-        #if self.creditid:
-        #    self.canvas.tag_raise(self.creditid)
+        if self.creditxy:
+            self.text(self.creditxy, self.credits)
 
     def drawbg(self, bigd, litd, colors=(0, 1, 2)):
         # This is tricky.  We have to simulate a white background with
