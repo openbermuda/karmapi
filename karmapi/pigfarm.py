@@ -15,6 +15,8 @@ from curio import spawn, sleep
 from pathlib import Path
 import inspect
 
+from datetime import datetime
+
 from PIL import Image
 
 from karmapi import hush
@@ -703,8 +705,11 @@ class Piglet:
 def make_timestamp_index(frame):
     """ Take a frame with a timestamp column and make it the index """
 
+    def stampit(x):
+
+        return datetime.fromtimestamp(x.timestamp)
         
-    frame.index = pandas.to_datetime(frame.timestamp * 10**6)
+    frame.index = frame.apply(stampit, axis=1)
 
     del frame['timestamp']
 
