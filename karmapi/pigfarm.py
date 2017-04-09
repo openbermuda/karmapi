@@ -439,10 +439,10 @@ class MagicCarpet(Space):
         self.clear = True
         self.add_event_map('a', self.clear_toggle)
 
-        self.plot = False
+        self.plot = True
         self.add_event_map('g', self.plot_toggle)
 
-        self.table = False
+        self.table = True
         self.add_event_map('t', self.table_toggle)
 
         self.subtract_means = False
