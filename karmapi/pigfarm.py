@@ -443,6 +443,9 @@ class MagicCarpet(Space):
         self.table = False
         self.add_event_map('t', self.table_toggle)
 
+        self.subtract_means = False
+        self.add_event_map('m', self.subtract_means_toggle)
+
         self.groups = []
         self.group = None
         self.add_event_map(' ', self.next_group)
@@ -520,6 +523,7 @@ class MagicCarpet(Space):
     async def log_toggle(self):
         """ toggle log scale """
         self.log = not self.log
+        await self.redraw_group()
 
     async def clear_toggle(self):
         """ toggle axes clear """
@@ -528,10 +532,17 @@ class MagicCarpet(Space):
     async def plot_toggle(self):
         """ toggle plot image """
         self.plot = not self.plot
+        await self.redraw_group()
 
     async def table_toggle(self):
         """ toggle show table """
         self.table = not self.table
+        await self.redraw_group()
+
+    async def subtract_means_toggle(self):
+        """ Toggle mean shifting """
+        self.subtract_means = not self.subtract_means
+        await self.redraw_group()
 
     async def next_group(self):
         """ Next group """
@@ -544,6 +555,10 @@ class MagicCarpet(Space):
         if self.group == len(self.groups):
             self.group = 0
 
+        await self.redraw_group()
+
+    async def redraw_group(self):
+        """ Trigger a redraw of current group """
         await self.event.put(self.group)
 
     async def previous_group(self):
@@ -555,7 +570,7 @@ class MagicCarpet(Space):
         if self.group < 0:
             self.group = len(self.groups) - 1
 
-        await self.event.put(self.group)
+        await self.redraw_group()
         
     def clear_axes(self):
 
@@ -624,7 +639,6 @@ class MagicCarpet(Space):
         fdata = self.frames[group]
         frame = fdata['frame']
         sortflag = fdata['sort']
-        print(frame.describe())
 
         xx = frame.index
         
@@ -635,12 +649,17 @@ class MagicCarpet(Space):
         mean = frame.mean()
         mean.sort_values(inplace=True)
         frame = frame.ix[:, mean.index]
+
+        # subtract the mean
+        if self.subtract_means:
+            plot_frame = frame - mean
+        else:
+            plot_frame = frame
         
         col_colours = []
         for label in frame.columns:
-            data = frame[label].copy()
+            data = plot_frame[label].copy()
 
-            print(type(xx[0]))
             if sortflag:
                 data.sort_values(inplace=True)
             if self.log:
