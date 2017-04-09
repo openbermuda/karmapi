@@ -677,7 +677,32 @@ class MagicCarpet(Space):
         self.axes = self.subplots[1]
         self.axes.clear()
         self.draw_table(frame, loc='center', title=group, col_colours=col_colours)
+
+        self.select_subplots()
+
         self.draw()
+
+    def select_subplots(self):
+        """ Select what to show """
+        plot = self.subplots[0]
+        table = self.subplots[1]
+
+        if self.plot and self.table:
+            plot.set_visible(True)
+            table.set_visible(True)
+
+            plot.change_geometry(2, 1, 1)
+            table.change_geometry(2, 1, 2)
+            
+
+        if not self.plot:
+            plot.set_visible(False)
+            table.change_geometry(1, 1, 1)
+
+        if not self.table:
+            table.set_visible(False)
+            plot.change_geometry(1, 1, 1)
+
         
     async def run(self):
 
