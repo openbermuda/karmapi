@@ -214,7 +214,7 @@ class PigFarm:
 
             await self.process_event(event)
 
-            print(event, type(event))
+            #print(event, type(event))
 
             print('eq', self.event.qsize())
 
@@ -503,15 +503,13 @@ class MagicCarpet(Space):
 
             frame = pandas.DataFrame(frame)
             print(group)
-            print('XXXX', frame.columns.values)
-            print()
             frame = pandas.DataFrame(frame)
 
             sortflag = True
             if 'timestamp' in frame.columns.values:
                 print('got timestamp column')
                 frame = make_timestamp_index(frame)
-                print(frame.info())
+                #print(frame.info())
                 sortflag = False
                       
             frames[group] = dict(frame=frame, sort=sortflag)
