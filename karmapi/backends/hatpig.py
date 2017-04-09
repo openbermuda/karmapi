@@ -94,18 +94,12 @@ class PlotImage(tkpig.PlotImage):
         width = self.fig.get_figwidth()
         height = self.fig.get_figheight()
 
-        print('getting string for image')
         image = self.image.tostring_rgb()
-
-        print(width, height, len(image))
 
         iwidth = int(dpi * width)
         iheight = int(dpi * height)
 
-        print('selecting pixels to pick')
         selection = pixel_selector(iwidth, iheight, size=8)
-
-        print('got image')
 
         pixels = []
         for choice in selection:
