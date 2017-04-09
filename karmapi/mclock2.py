@@ -1,6 +1,10 @@
-#!/usr/bin/env python
+""" M CLOCK 2.0.
 
-"""M CLOCK 2.0."""
+by Guido van Rossum
+
+after a design by Rob Juda
+
+"""
 import sys
 
 from datetime import timedelta, datetime
@@ -11,6 +15,8 @@ import random
 import math
 import time
 import curio
+
+MINUTES_TO_MIDNIGHT = -2.5
 
 class GuidoClock(pigfarm.PillBox):
 
@@ -43,11 +49,12 @@ class GuidoClock(pigfarm.PillBox):
     showtext = False
 
     def on_press(self, event):
-        self.creditid = self.canvas.create_text(
-            self.canvas.canvasx(event.x),
-            self.canvas.canvasy(event.y),
-            anchor="s", text=self.credits,
-            font="Helvetica 16 bold", justify="center")
+        self.creditid = self.text(
+            (event.x, event.y),
+            text=self.credits)
+        
+            # FIXME:  PIL fonts? font="Helvetica 16 bold")
+
         self.showtext = not self.showtext
 
     def on_motion(self, event):
@@ -100,7 +107,7 @@ class GuidoClock(pigfarm.PillBox):
             hh, mm = divmod(hh*60 + mm, 60)
             hh %= 24
 
-    async def midnight(self, mtm=-2.5):
+    async def midnight(self, mtm=MINUTES_TO_MIDNIGHT):
 
         if self.timewarp:
             self.timewarp = None
@@ -124,7 +131,7 @@ class GuidoClock(pigfarm.PillBox):
 
         return to_midnight + timedelta(hours=hour)
 
-    async def random_hour(self, mtm=-2.5):
+    async def random_hour(self, mtm=MINUTES_TO_MIDNIGHT):
         """ Warp to just before a random hour """
         
         deltam = timedelta(seconds=int(mtm * 60))
@@ -188,13 +195,15 @@ class GuidoClock(pigfarm.PillBox):
         
         # Draw the text
         if self.showtext:
-            t = self.canvas.create_text(-bigsize, bigsize,
-                                        text="%02d:%02d:%02d" % (hh, mm, ss),
-                                        fill="white", anchor="sw",
-                                        font="helvetica 16 bold")
-            self.ids.append(t)
-        if self.creditid:
-            self.canvas.tag_raise(self.creditid)
+            t = self.text(
+                (xx - bigsize, yy + bigsize),
+                text="%02d:%02d:%02d" % (hh, mm, ss),
+                fill="white")
+
+                # FIXME: PIL fonts, font="helvetica 16 bold")
+            
+        #if self.creditid:
+        #    self.canvas.tag_raise(self.creditid)
 
     def drawbg(self, bigd, litd, colors=(0, 1, 2)):
         # This is tricky.  We have to simulate a white background with
