@@ -565,7 +565,7 @@ class MagicCarpet(Space):
         await self.event.put(self.group)
 
     async def previous_group(self):
-
+        """ Previous group """
         if self.group is None:
             return await self.next_group()
 
@@ -742,11 +742,7 @@ def make_timestamp_index(frame):
     if not hasattr(frame, 'timestamp'):
         return frame
 
-    def stampit(x):
-
-        return datetime.fromtimestamp(x.timestamp)
-        
-    frame.index = frame.apply(stampit, axis=1)
+    frame.index = pandas.to_datetime(frame.timestamp, unit='s')
 
     del frame['timestamp']
 
