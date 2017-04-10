@@ -510,8 +510,11 @@ class MagicCarpet(Space):
                 print('got timestamp column')
                 frame = make_timestamp_index(frame)
                 #print(frame.info())
+                print(type(frame.index))
+                
+            if isinstance(frame.index, pandas.tseries.index.DatetimeIndex):
                 sortflag = False
-                      
+
             frames[group] = dict(frame=frame, sort=sortflag)
             groups.append(group)
 
@@ -735,6 +738,9 @@ class Piglet:
 
 def make_timestamp_index(frame):
     """ Take a frame with a timestamp column and make it the index """
+
+    if not hasattr(frame, 'timestamp'):
+        return frame
 
     def stampit(x):
 
