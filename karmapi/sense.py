@@ -260,12 +260,14 @@ async def recorder(path, name, data, sleep=1):
 
     writer, outfile = get_writer(path, name, data, sleep)
 
-    while True:
-        print('writing', name)
-        writer.writerow(next(data))
-        outfile.flush()
-        await curio.sleep(sleep)
-
+    try:
+        while True:
+            print('writing', name)
+            writer.writerow(next(data))
+            outfile.flush()
+            await curio.sleep(sleep)
+    except curio.CancelledError:
+        outfile.close()
 
 
 async def record(path='.', sleep=1):
