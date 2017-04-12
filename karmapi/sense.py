@@ -68,8 +68,11 @@ def get_weather(hat):
         data = dict(
             humidity = hat.humidity,
             pressure = hat.pressure,
-            temperature_from_pressure = hat.get_temperature_from_pressure(),
-            temperature_from_humidity = hat.get_temperature_from_humidity(),
+            
+            temperature = (
+                hat.get_temperature_from_pressure() +
+                hat.get_temperature_from_humidity()) / 2.0,
+
             cpu_temperature = get_cpu_temperature())
 
 
