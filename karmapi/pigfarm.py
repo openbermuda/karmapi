@@ -426,7 +426,7 @@ class PillBox(Space):
         
 class MagicCarpet(Space):
 
-    def __init__(self, parent=None, axes=None, data=None):
+    def __init__(self, parent=None, axes=None, data=None, begin=None, end=None):
         
         super().__init__()
 
@@ -455,6 +455,8 @@ class MagicCarpet(Space):
 
 
         # set intitial data
+        self.begin = begin
+        self.end = end
         data = data or toy.distros(
             trials=1000,
             groups=['abc', 'cde', 'xyz'])
@@ -511,6 +513,8 @@ class MagicCarpet(Space):
                 frame = make_timestamp_index(frame)
                 #print(frame.info())
                 print(type(frame.index))
+                if self.begin or self.end:
+                    frame = filter_frame(frame, self.begin, self.end)
                 
             if isinstance(frame.index, pandas.tseries.index.DatetimeIndex):
                 sortflag = False
@@ -736,17 +740,37 @@ class Piglet:
     """
     pass
 
+def make_timestamps(data):
+
+    result = {}
+    for key, frame in data.items():
+        result[key] = make_timestamp_index(frame)
+
+    return result
+
+
 def make_timestamp_index(frame):
     """ Take a frame with a timestamp column and make it the index """
 
+    print('adding index or not to', frame.columns)
     if not hasattr(frame, 'timestamp'):
         return frame
 
+    print(type(frame.index))
     frame.index = pandas.to_datetime(frame.timestamp, unit='s')
-
+    print(type(frame.index))
     del frame['timestamp']
 
     return frame
+
+def filter_frame(frame, start, end):
+
+    d = start
+    start = f'{d.year}-{d.month:02}-{d.day:02} {d.hour:02}:{d.minute:02}:{d.second:02}'
+    d = end
+    end = f'{d.year}-{d.month:02}-{d.day:02} {d.hour:02}:{d.minute:02}:{d.second:02}'
+
+    return frame[start:end]    
 
 
 def run(farm):
