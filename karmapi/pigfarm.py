@@ -426,7 +426,8 @@ class PillBox(Space):
         
 class MagicCarpet(Space):
 
-    def __init__(self, parent=None, axes=None, data=None, begin=None, end=None):
+    def __init__(self, parent=None, axes=None, data=None,
+                 begin=None, end=None, title=None):
         
         super().__init__()
 
@@ -455,6 +456,7 @@ class MagicCarpet(Space):
 
 
         # set intitial data
+        self.title = title
         self.begin = begin
         self.end = end
         data = data or toy.distros(
@@ -651,6 +653,9 @@ class MagicCarpet(Space):
         
         axes = self.subplots[0]
         axes.clear()
+
+        if self.title:
+            axes.set_title(self.title)
 
         # sort columns on mean
         mean = frame.mean()
