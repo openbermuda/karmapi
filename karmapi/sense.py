@@ -93,6 +93,18 @@ def temperature_guess(data):
     return guess
 
 
+def pressure_to_altitude(pressure, sealevel=1013.250):
+    """ Converts pressure to height above sea level
+
+    sealevel: optional actual pressure at sea level
+    """
+    pressure = 100.0 * pressure
+    sealevel = 100.0 * sealevel
+    
+    altitude = 44330.0 * (1.0 - pow(pressure / sealevel, (1.0/5.255)))
+
+    return altitude
+
 def get_gyro(hat):
 
     while True:
