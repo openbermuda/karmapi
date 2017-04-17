@@ -32,7 +32,7 @@ from pathlib import Path
 import curio
 import pandas
 
-from karmapi import pigfarm
+from karmapi import pigfarm, base
 
 try:
     import sense_hat
@@ -317,8 +317,82 @@ async def record(path='.', sleep=1):
 
                     await workers.spawn(recorder(path, name, task(hat), sleep))
 
-            
 
+def drop_bad_rows(infile):
+    """ Take an input file and filter out bad data 
+
+    Also change pressure to altitude.
+    """
+    fields = [x.strip() for x in next(infile).split(',')]
+
+    result = []
+    
+    print(fields)
+    nn = len(fields)
+    
+    for ix, row in enumerate(infile):
+        values = row.split(',')
+
+        if len(values) != nn:
+            print(ix, len(fields), len(values))
+            continue
+
+        result.append(dict(zip(fields, values)))
+
+    return result
+
+def timewarp_timestamps(data):
+    """ Don't let data go backwards in time """
+
+    lasttime = None
+    timewarp = 0.0
+    for ix, row in enumerate(data):
+        timestamp = float(row['timestamp']) + timewarp
+
+        if lasttime and (timestamp + timewarp) < lasttime:
+            timewarp = lasttime - timestamp
+
+            print(ix, timewarp)
+
+        row['timestamp'] = str(timestamp + timewarp)
+
+        lasttime = timestamp
+
+    return data
+
+def clean(path):
+    """ Clean files at path
+    
+    put clean files in clean subfolder.
+    """
+    (path / 'clean').mkdir(exist_ok=True, parents=True)
+    
+    for name in path.glob('*'):
+
+        if name.is_dir(): continue
+        
+        with name.open() as dirty:
+            data = drop_bad_rows(dirty)
+            data = timewarp_timestamps(data)
+
+        fields = data[0].keys()
+        clean_name = path / 'clean' / name.name
+        with clean_name.open('w') as cleaner:
+            writer = csv.DictWriter(cleaner, fieldnames=fields)
+            writer.writeheader()
+            writer.writerows(data)
+
+        df = base.load(clean_name)
+
+        # change pressure to altitude if it exists
+        if hasattr(df, 'pressure'):
+            df['altitude'] = df.pressure.map(pressure_to_altitude)
+
+            df = df.drop('pressure', axis=1)
+
+            base.save(clean_name, df)
+
+    
 def main():
 
     import argparse
@@ -326,10 +400,21 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--pig', action='store_true')
+
     parser.add_argument('--path', default='.')
+    parser.add_argument('name', nargs='?', default='sensehat')
+
     parser.add_argument('--sleep', type=float, default=1)
 
+    parser.add_argument('--clean', action='store_true')
+
     args = parser.parse_args()
+
+    if args.clean:
+        # clean the data at path / name
+        path = Path(args.path) / args.name
+        clean(path)
+        return
     
     if not args.pig:
         curio.run(record(args.path, args.sleep))
