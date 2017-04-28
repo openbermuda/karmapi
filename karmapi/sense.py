@@ -341,18 +341,54 @@ def drop_bad_rows(infile):
 
     return result
 
-def timewarp_timestamps(data):
+def xtimewarp_timestamps(data):
     """ Don't let data go backwards in time """
 
     lasttime = None
     timewarp = 0.0
+    mintime = 0
     for ix, row in enumerate(data):
-        timestamp = float(row['timestamp']) + timewarp
-
-        if lasttime and (timestamp + timewarp) < lasttime:
+        timestamp = float(row['timestamp'])
+        
+        if lasttime and timestamp < lasttime:
             timewarp = lasttime - timestamp
-
             print(ix, timewarp)
+
+        row['timestamp'] = str(timestamp + timewarp)
+
+        lasttime = timestamp
+
+    return data
+
+def timewarp_timestamps(data):
+    """ Don't let data go backwards in time """
+
+    from collections import Counter
+    lasttime = None
+    timewarp = 0.0
+    mintime = 0
+
+    deltas = Counter()
+    for ix, row in enumerate(data):
+        timestamp = float(row['timestamp'])        
+
+        deltas = Counter()
+
+        if lasttime:
+            delta = round(timestamp - lasttime)
+            deltas[delta] += 1
+
+            # print(deltas.most_common())
+        
+        if lasttime and timestamp < lasttime:
+            timewarp = lasttime - timestamp
+            print(ix, timewarp)
+
+        elif timewarp:
+            mc = deltas.most_common(1)[0][0]
+            if delta > mc:
+                timewarp -= delta - mc
+                print(f'warping warp by {delta - mc}')
 
         row['timestamp'] = str(timestamp + timewarp)
 
