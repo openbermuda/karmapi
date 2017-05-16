@@ -9,6 +9,17 @@ u de my ace?
 
 Wonderous rabbit holes and magic teleporting tunnels.
 
+For now this is just a copy of David Beazeley's curio/examles/chat.py
+
+It is all about help and trust.
+
+For the trust part, if you are on the local network, you can probably
+see everything anyway.
+
+For bridges, ssh should work nicely.
+
+For trust, blockchains offer lots of promise.
+
 """
 
 import signal
