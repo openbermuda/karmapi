@@ -55,6 +55,71 @@ piece it can take.
 
 (ie the closer the two things are the higher the score.)
 
+Pawn Promotion
+--------------
 
+Up to two pawns of each colour can be promoted to Riders
+
+Up to two pawns of each colour can be promoted to Wizards
+
+Up to two pawns of each colour can be promoted to Magic Castles
+
+Pawns cannot be promoted to queens.
+
+**Note these rules mean two chess sets are more than enough to play a game.**
+
+Variations
+..........
+
+Up to two pawns can also become queens.
+
+Alternate names
+---------------
+
+queen
+
+rook, tent, magic castle 
+
+bishop, wizard
+
+knight, farmer, architect, rider
+
+pawn, guide, nurse, helper, builder, messenger
+
+Story
+-----
+
+One challenge is making sure you do not put your partner in check
+mate.  If that happens it is game over, with a zero value game.
+
+Players also have to be careful not to avoid giving each other no
+choice but one has to put the other in check.
+
+A stalemate arises when the same move, same position, has been
+repeated three times.  Game over, tally up how well you did together.
+
+If you play nicely, it might be possible to turn 12 pawns into 12 new
+pieces, at a sacrifice of just four pawns, two for each side.
+
+
+Six guides, pairs from the kingdoms
+All dream of becoming a wizards
+Four can have their dreams
+Two may perish in the quest
+
+Six messengers, pairs from the kingdoms
+All dream of riding through the lands
+Four can have their dreams
+Two may perish in the quest.
+
+Six builders, pairs in tents.
+All dream of magic castles in the air
+Four can have their dreams
+Two must perish in the quest.
+
+Together they can build a magic world
+Eight castles in the sky
+Eight riders of the land
+Eight wizards shaping good
 
 """
