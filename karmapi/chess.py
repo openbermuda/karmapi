@@ -86,6 +86,20 @@ knight, farmer, architect, rider
 
 pawn, guide, nurse, helper, builder, messenger
 
+River Dell
+----------
+
+Play with two boards, one rotated 180 degrees.  So each player is
+playing both boards in effect.
+
+Goal is to maximise *karma* over time. 
+
+When a pawn is lost, three other pawns become passed.  They are on a
+course to becoming wiards, riders or magic castles.
+
+Off the board is River Dell.  It's where heros retire to tell their
+tales and dream of lands far away.
+
 Story
 -----
 
