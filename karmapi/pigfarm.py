@@ -423,6 +423,26 @@ class PillBox(Space):
 
         self.artist = piglet.PillBox(parent)
 
+
+    def grid(self, data):
+        """ Display data as a grid 
+        
+        really what matplotlib.imshow does, but on a PIL
+        """
+        width = self.width
+        height = self.height
+
+        rows = len(data)
+        cols = len(data[0])
+
+        xx = width / rows
+        yy = height / cols
+
+        for row in data:
+            for col in row:
+                # draw a rectangle
+                pass
+
         
 class MagicCarpet(Space):
 
