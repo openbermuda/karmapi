@@ -189,6 +189,20 @@ class King(Pawn):
     def __init__(self):
 
         self.value = 0 + 1j
+
+class Land:
+    def __init__(self):
+
+        self.value = sin(pi/2)
+
+def value(world):
+
+    value = 0
+    for pawn in world:
+        value += pawn.value
+
+    return value
+
     
 def main():
 
