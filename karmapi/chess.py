@@ -190,7 +190,7 @@ class King(Pawn):
 
         self.value = 0 + 1j
 
-class Land:
+class Plot:
     def __init__(self):
 
         self.value = sin(pi/2)
@@ -202,6 +202,41 @@ def value(world):
         value += pawn.value
 
     return value
+
+class Land:
+    """ A magic land where it all happens """
+
+    def __init__(self):
+
+        self.grid = {}
+        for x in range(8):
+            for y in range(8):
+                land = Land()
+
+                land.shade = (x + y) % 2
+                self.grid[(x, y)] = land 
+
+
+    def values(self):
+
+        data = []
+        for x in range(8):
+            row = []
+            data.append(row)
+            for y in range(8):
+                plot = self.grid[(x, y)]
+
+                value = 0
+                for item in plot:
+                    value += item.value
+                    
+                row.append(value])
+                
+        return data
+
+    def score(self):
+
+        pass
 
     
 def main():
