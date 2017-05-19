@@ -137,3 +137,34 @@ Eight riders of the land
 Eight wizards shaping good
 
 """
+
+
+from karmapi import pigfarm
+
+from karmapi.mclock2 import GuidoClock
+
+class RiverDell(pigfarm.PillBox):
+
+
+    async def start(self):
+
+        pass
+
+    async def run(self):
+
+        pass
+
+def main():
+
+    farm = pigfarm.PigFarm()
+
+    farm.add(GuidoClock)
+    
+    farm.add(RiverDell)
+
+    pigfarm.run(farm)
+
+
+if __name__ == '__main__':
+
+    main()
