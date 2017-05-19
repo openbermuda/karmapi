@@ -137,7 +137,7 @@ Eight riders of the land
 Eight wizards shaping good
 
 """
-
+from math import pi, e, sin, cos
 
 from karmapi import pigfarm
 
@@ -154,6 +154,42 @@ class RiverDell(pigfarm.PillBox):
 
         pass
 
+class Pawn:
+
+    def __init__(self):
+
+        self.value = sin(pi/2)
+
+class Rider(Pawn):
+
+    def __init__(self):
+
+        self.value = e
+
+class Wizard(Pawn):
+
+    def __init__(self):
+
+        self.value = pi
+
+class MagicCastle(Pawn):
+
+    def __init__(self):
+
+        self.value = sin(pi/4) * pi * e
+
+class Queen(Pawn):
+
+    def __init__(self):
+
+        self.value = pi * e
+
+class King(Pawn):
+
+    def __init__(self):
+
+        self.value = 0 + 1j
+    
 def main():
 
     farm = pigfarm.PigFarm()
@@ -165,6 +201,7 @@ def main():
     pigfarm.run(farm)
 
 
+    
 if __name__ == '__main__':
 
     main()
