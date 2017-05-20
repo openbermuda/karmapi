@@ -145,10 +145,16 @@ from karmapi.mclock2 import GuidoClock
 
 class RiverDell(pigfarm.PillBox):
 
+    def __init__(self, parent):
+
+        self.super().__init__(parent)
+
+        self.lands = [Land()]
+
 
     async def start(self):
 
-        pass
+        self.land.plot()
 
     async def run(self):
 
@@ -194,6 +200,7 @@ class Plot:
     def __init__(self):
 
         self.value = sin(pi/2)
+        self.pawn = None
 
 def value(world):
 
@@ -211,11 +218,14 @@ class Land:
         self.grid = {}
         for x in range(8):
             for y in range(8):
-                land = Land()
+                plot = Plot()
 
-                land.shade = (x + y) % 2
-                self.grid[(x, y)] = land 
+                plot.shade = (x + y) % 2
+                self.grid[(x, y)] = plot 
 
+
+    def shades(self):
+        pass
 
     def values(self):
 
@@ -226,9 +236,10 @@ class Land:
             for y in range(8):
                 plot = self.grid[(x, y)]
 
-                value = 0
-                for item in plot:
-                    value += item.value
+                value = plot.value
+
+                if plot.pawn is not None:
+                    value += plot.pawn.value
                     
                 row.append(value])
                 
