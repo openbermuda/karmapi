@@ -336,7 +336,7 @@ class Space:
 
     def __getattr__(self, attr):
         """ Delegate to artist """
-        
+        print('space getattr', attr)
         return getattr(self.artist, attr)
         
     async def fix_something(self):
@@ -424,7 +424,7 @@ class PillBox(Space):
         self.artist = piglet.PillBox(parent)
 
 
-    def grid(self, data):
+    def grid(self, data, alpha=1.0):
         """ Display data as a grid 
         
         really what matplotlib.imshow does, but on a PIL
@@ -440,8 +440,7 @@ class PillBox(Space):
 
         for row in data:
             for col in row:
-                # draw a rectangle
-                pass
+                self.rectangle()
 
         
 class MagicCarpet(Space):

@@ -147,20 +147,39 @@ class RiverDell(pigfarm.PillBox):
 
     def __init__(self, parent):
 
-        self.super().__init__(parent)
+        super().__init__(parent)
 
         self.lands = [Land()]
 
 
     async def start(self):
 
-        self.land.plot()
+        for land in self.lands:
+            land.plot(self)
 
     async def run(self):
 
         pass
 
-class Pawn:
+
+class Nothing:
+
+    def __init__(self):
+
+        self.value = 0
+
+    def colour(self, scale=pi*pi*e*e, flip=False):
+
+        value = self.value
+        rgb = 255, 0, 0
+
+        if flip:
+            rgb = rgb[::-1]
+
+        return (int(c * value / scale) for c in rgb)
+        
+
+class Pawn(Nothing):
 
     def __init__(self):
 
@@ -200,8 +219,16 @@ class Plot:
     def __init__(self):
 
         self.value = sin(pi/2)
-        self.pawn = None
+        self.pawn = Nothing()
 
+    def colour(self, scale=pi*pi*e*e):
+
+        value = self.value
+        
+        rgb = 0, 255, 0
+
+        return (int(c * value / scale) for c in rgb)
+    
 def value(world):
 
     value = 0
@@ -221,9 +248,45 @@ class Land:
                 plot = Plot()
 
                 plot.shade = (x + y) % 2
-                self.grid[(x, y)] = plot 
+                self.grid[(x, y)] = plot
+
+    def walk(self):
+        """ Walk through the plots """
+        for x in range(8):
+            for y in range(8):
+                plot = self.grid[(x, y)]
+                yield x, y, plot
 
 
+    def plot(self, image):
+        """ Draw an image of the land 
+        
+        Use the plots as a background, the pawns in the foreground.
+
+        With alpha blending the two.
+
+        """
+
+        land = []
+        pawns = []
+        for x, y, plot in self.walk():
+
+            colour = plot.colour()
+            land.append(colour)
+
+            colour = plot.pawn.colour()
+            pawns.append(colour)
+
+        # draw the grids
+        image.grid(land, alpha=0.5)
+        image.grid(pawns, alpha=0.5)
+
+    def piece_colour(self, value, scale=pi*pi*e*e):
+
+        rgb = 255, 0, 0
+
+        return (int(c * value / scale) for c in rgb)
+    
     def shades(self):
         pass
 
@@ -241,7 +304,7 @@ class Land:
                 if plot.pawn is not None:
                     value += plot.pawn.value
                     
-                row.append(value])
+                row.append(value)
                 
         return data
 
