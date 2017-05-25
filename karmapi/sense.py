@@ -285,7 +285,7 @@ async def recorder(path, name, data, sleep=1):
         outfile.close()
 
 
-async def record(path='.', sleep=1):
+async def record(path='.', sleep=1, tasks=None, names=None):
     """ Record everything from the hat """
     hat = sense_hat.SenseHat()
 
@@ -294,8 +294,11 @@ async def record(path='.', sleep=1):
     gyro = get_gyro
     accel = get_acceleration
 
-    tasks = [weather, compass, gyro, accel]
-    names = ['weather', 'compass', 'gyro', 'accel']
+    if tasks is None:
+        tasks = [weather, compass, gyro, accel]
+
+    if names is None:
+        names = ['weather', 'compass', 'gyro', 'accel']
 
     # magic from curio
     while True:
