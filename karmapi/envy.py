@@ -1,7 +1,8 @@
 """
 Talk to a pi enviro hat
 """
-
+import sys
+import time
 import envirophat
 
 from envirophat import light, weather, motion, analog
