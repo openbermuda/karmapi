@@ -328,14 +328,22 @@ def drop_bad_rows(infile):
 
     Also change pressure to altitude.
     """
-    fields = [x.strip() for x in next(infile).split(',')]
+    line = next(infile)
+    fields = [x.strip() for x in line.split(',')]
 
+    null = chr(0)
+    
     result = []
     
     print(fields)
     nn = len(fields)
     
     for ix, row in enumerate(infile):
+
+        # sometimes get nulls in data eg when pi not shutdown cleanly
+        if null in row:
+            continue
+        
         values = row.split(',')
 
         if len(values) != nn:
