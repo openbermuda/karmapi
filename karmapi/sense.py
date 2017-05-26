@@ -285,9 +285,11 @@ async def recorder(path, name, data, sleep=1):
         outfile.close()
 
 
-async def record(path='.', sleep=1, tasks=None, names=None):
+async def record(path='.', sleep=1, tasks=None, names=None, hat=None):
     """ Record everything from the hat """
-    hat = sense_hat.SenseHat()
+
+    if hat is None:
+        hat = sense_hat.SenseHat()
 
     weather = get_weather
     compass = get_compass
