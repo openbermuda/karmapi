@@ -1,4 +1,4 @@
-@reboot pi /usr/local/bin/python3.6 -m karmapi.envy --path /home/pi/karmapi/envy
+@reboot pi /usr/local/bin/python3.6 -m karmapi.envy --path /home/pi/karmapi/envy --record
 
 # crashes at 1 second past midnight, so start a new day
-0 0 * * * pi /usr/local/bin/python3.6 -m karmapi.envy --path /home/pi/karmapi/envy
+0 0 * * * pi /usr/local/bin/python3.6 -m karmapi.envy --path /home/pi/karmapi/envy --record
