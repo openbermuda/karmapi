@@ -3,9 +3,13 @@ Talk to a pi enviro hat
 """
 import sys
 import time
+import argparse
+
 import envirophat
 
 from envirophat import light, weather, motion, analog
+
+import curio
 
 from karmapi.sense import record
 
@@ -72,6 +76,24 @@ Analog: 0: {a0}, 1: {a1}, 2: {a2}, 3: {a3}
 """
 
 def main():
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--record', action='store_true')
+    parser.add_argument('--path', default='.')
+    parser.add_argument('--sleep', type=float, default=1)
+
+    args = parser.parse_args()
+
+    if args.record:
+        names = ['motion', 'light', 'weather']
+        tasks = [get_motion, get_light, get_weather]
+
+        curio.run(
+            record(args.path, args.sleep,
+                   tasks=tasks, names=names, hat=envirophat))
+        return
+    
     write("--- Enviro pHAT Monitoring ---")
 
     
