@@ -19,7 +19,7 @@ def get_weather(hat):
         yield dict(
             timestamp=time.time(),
             temperature=hat.weather.temperature(),
-            pressure=hat.weather.pressure())
+            pressure=hat.weather.pressure() / 100.0)
 
 def get_light(hat):
 
@@ -27,7 +27,7 @@ def get_light(hat):
         
         data = dict(
             timestamp = time.time(),
-            light = hat.light.light())
+            light = hat.light.light() / 100.0)
         
         rgb = light.rgb()
         
