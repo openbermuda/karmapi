@@ -18,8 +18,8 @@ def get_weather(hat):
     while True:
         yield dict(
             timestamp=time.time(),
-            temperature=hat.weather.temperature,
-            pressure=hat.weather.pressure)
+            temperature=hat.weather.temperature(),
+            pressure=hat.weather.pressure())
 
 def get_light(hat):
 
