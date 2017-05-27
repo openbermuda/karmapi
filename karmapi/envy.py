@@ -75,11 +75,11 @@ Accelerometer: {ax}g {ay}g {az}g
 Analog: 0: {a0}, 1: {a1}, 2: {a2}, 3: {a3}
 """
 
-def light(on=True):
+def lettherebelight(on=True):
 
     if on:
         envirophat.leds.on()
-    ekse:
+    else:
         envirophat.leds.off()
 
 def main():
@@ -91,9 +91,9 @@ def main():
     parser.add_argument('--sleep', type=float, default=1)
     parser.add_argument('--light', action='store_true')
 
-    args = parser.parse_args(\)
+    args = parser.parse_args()
 
-    light(args.light)
+    lettherebelight(args.light)
 
     if args.record:
         names = ['motion', 'light', 'weather']
