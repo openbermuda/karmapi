@@ -75,6 +75,13 @@ Accelerometer: {ax}g {ay}g {az}g
 Analog: 0: {a0}, 1: {a1}, 2: {a2}, 3: {a3}
 """
 
+def light(on=True):
+
+    if on:
+        envirophat.leds.on()
+    ekse:
+        envirophat.leds.off()
+
 def main():
 
     parser = argparse.ArgumentParser()
@@ -82,8 +89,11 @@ def main():
     parser.add_argument('--record', action='store_true')
     parser.add_argument('--path', default='.')
     parser.add_argument('--sleep', type=float, default=1)
+    parser.add_argument('--light', action='store_true')
 
-    args = parser.parse_args()
+    args = parser.parse_args(\)
+
+    light(args.light)
 
     if args.record:
         names = ['motion', 'light', 'weather']
@@ -128,6 +138,7 @@ def main():
         write("\033[{}A".format(lines - 1))
 
         time.sleep(1)
+
         
 
 if __name__ == '__main__':
