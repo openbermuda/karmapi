@@ -30,7 +30,7 @@ async def long_exposure(path,
     camera.iso = 800
     # Give the camera a good long time to set gains and
     # measure AWB (you may wish to use fixed AWB instead)
-    curio.sleep(sleep)
+    await curio.sleep(sleep)
 
     camera.exposure_mode = 'off'
     # Finally, capture an image with a 6s exposure. Due
