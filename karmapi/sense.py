@@ -441,6 +441,10 @@ def clean(path):
 
             base.save(clean_name, df)
 
+class HatShow:
+    """ Show things on a Sense Hat """
+
+    pass
     
 def main():
 
