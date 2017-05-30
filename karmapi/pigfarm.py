@@ -336,7 +336,6 @@ class Space:
 
     def __getattr__(self, attr):
         """ Delegate to artist """
-        print('space getattr', attr)
         return getattr(self.artist, attr)
         
     async def fix_something(self):

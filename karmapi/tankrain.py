@@ -26,7 +26,7 @@ parish_template = 'Radar/RadarParish/{date:%Y-%m-%d-%H%M}_ParishRadar.png'
 atlantic_chart = 'surfaceAnalysis/Latest/Atlantic.gif'
 local_chart = 'surfaceAnalysis/Latest/Local.gif'
 
-target = 'tankrain/{date:%Y}/{date:%m}/{date:%d}/{name}_{date:%H%M}{suffix}'
+target = 'tankrain/{date.year}/{date.month}/{date.day}/{name}_{date:%H%M}{suffix}'
 
 
 class TankRain(pigfarm.MagicCarpet):
@@ -77,10 +77,13 @@ class TankRain(pigfarm.MagicCarpet):
 
         # FIXME -- create key bindings to select time
         date = utcnow()
-        path = Path(f'{self.path}/{date:%Y}/{date:%m}/{date:%d}').expanduser()
+        path = Path(f'{self.path}/{date.year}/{date.month}/{date.day}/').expanduser()
 
-        print('loading images for path:', path, self.version)
+        print(f'loading images for path: {path} v{self.version}v')
+        
         for image in sorted(path.glob('{}*.[jp][np]g'.format(self.version))):
+
+            print(image)
             yield image
 
 
