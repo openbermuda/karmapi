@@ -32,9 +32,10 @@ target = 'tankrain/{date:%Y}/{date:%m}/{date:%d}/{name}_{date:%H%M}{suffix}'
 class TankRain(pigfarm.MagicCarpet):
     """ Widget to show tankrain images """
 
-    def __init__(self, parent, *args):
+    def __init__(self, parent, path=None, version='local', *args):
         
-        self.version = 'local'
+        self.version = version
+        self.path = path
         self.load_images()
 
         super().__init__(parent, axes=[111])
@@ -76,9 +77,10 @@ class TankRain(pigfarm.MagicCarpet):
 
         # FIXME -- create key bindings to select time
         date = utcnow()
-        path = Path(f'~/karmapi/tankrain/{date:%Y}/{date:%m}/{date:%d}').expanduser()
+        path = Path(f'{self.path}/{date:%Y}/{date:%m}/{date:%d}').expanduser()
 
-        for image in sorted(path.glob('{}*.png'.format(self.version))):
+        print('loading images for path:', path, self.version)
+        for image in sorted(path.glob('{}*.[jp][np]g'.format(self.version))):
             yield image
 
 
@@ -88,6 +90,9 @@ class TankRain(pigfarm.MagicCarpet):
             wide='local',
             local='parish',
             parish='wide')
+
+        # no versions, don't switch
+        switch[''] = ''
         
         self.version = switch[self.version]
         
@@ -228,12 +233,14 @@ def main(args=None):
 
     parser.add_argument('--pig', action='store_true')
     parser.add_argument('--minutes', type=int, default=30)
-
+    parser.add_argument('path', nargs='?', default='~/karmapi/tankrain')
+    parser.add_argument('--version', default='local')
+                            
     args = parser.parse_args()
 
     if args.pig:
         farm = pigfarm.PigFarm()
-        farm.add(TankRain)
+        farm.add(TankRain, dict(path=args.path, version=args.version))
 
         from karmapi.mclock2 import GuidoClock
         farm.add(GuidoClock)
