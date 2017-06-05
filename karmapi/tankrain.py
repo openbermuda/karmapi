@@ -36,12 +36,15 @@ class TankRain(pigfarm.MagicCarpet):
         
         self.version = version
         self.path = path
+        self.timewarp = 0
         self.load_images()
 
         super().__init__(parent, axes=[111])
 
         self.add_event_map('r', self.reverse)
         self.add_event_map(' ', self.next_view)
+
+        self.add_event_map('b', self.previous_day)
 
     def load_images(self):
         
@@ -76,7 +79,7 @@ class TankRain(pigfarm.MagicCarpet):
     def get_images(self):
 
         # FIXME -- create key bindings to select time
-        date = utcnow()
+        date = utcnow() + datetime.timedelta(seconds=self.timewarp)
         path = Path(f'{self.path}/{date.year}/{date.month}/{date.day}/').expanduser()
 
         print(f'loading images for path: {path} v{self.version}v')
@@ -99,6 +102,12 @@ class TankRain(pigfarm.MagicCarpet):
         
         self.version = switch[self.version]
         
+        self.load_images()
+
+    async def previous_day(self):
+
+        self.timewarp -= 24 * 3600
+
         self.load_images()
 
     async def reverse(self):
