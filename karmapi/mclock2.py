@@ -103,7 +103,7 @@ class GuidoClock(pigfarm.PillBox):
             self.timewarp = None
             return
 
-        deltam = timedelta(seconds=int(mtm * 60))
+        deltam = timedelta(seconds=int(mtm * 60 * 2))
 
         to_midnight = self.to_hour(hour=0)
        
