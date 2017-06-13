@@ -18,7 +18,7 @@ import curio
 from pathlib import Path
 import inspect
 
-from karmapi import hush
+from karmapi import hush, base
 
 from tkinter import Toplevel
 
@@ -47,6 +47,8 @@ def main():
     parser.add_argument('--nomick', action='store_true')
     parser.add_argument('--sense', action='store_true',
                         help="if you have a sense hat")
+
+    parser.add_argument('--path')
 
     args = parser.parse_args()
 
@@ -108,7 +110,14 @@ def main():
     else:
         words = None
 
-    farm.add(noddy.Magic)
+    data = None
+    if args.path:
+        path = Path(args.path)
+        if path.exists():
+            data = base.load_folder(path)
+        
+        
+    farm.add(noddy.Magic, dict(data=data))
     farm.add(talk.Talk)
     farm.add(dice.StingingBats, dict(words=words))
     farm.add(StingingBats)
