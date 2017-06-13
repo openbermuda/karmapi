@@ -35,7 +35,7 @@ class TankRain(pigfarm.MagicCarpet):
     def __init__(self, parent, path=None, version='local', *args):
         
         self.version = version
-        self.path = path
+        self.path = path or '~/karmapi/tankrain'
         self.timewarp = 0
         self.load_images()
 
