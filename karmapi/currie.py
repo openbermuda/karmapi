@@ -69,7 +69,6 @@ def main():
     print('building farm')
     farm.status()
     from karmapi.mclock2 import GuidoClock
-    from karmapi.bats import StingingBats
     from karmapi.tankrain import TankRain
     from karmapi import diceware as dice
     from karmapi import talk
@@ -118,9 +117,8 @@ def main():
         
         
     farm.add(noddy.Magic, dict(data=data))
-    farm.add(talk.Talk)
+    #farm.add(talk.Talk)
     farm.add(dice.StingingBats, dict(words=words))
-    farm.add(StingingBats)
 
     farm.add(TankRain)
     #farm.add(sunny.Sunspot)
