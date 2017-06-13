@@ -127,11 +127,12 @@ def main():
     farm.add(sonogram.SonoGram)
     farm.add(piglet.XKCD)
     farm.add(widgets.InfinitySlalom)
-    farm.add(GuidoClock)
 
     from karmapi import prime
     farm.add(prime.Prime)
 
+    farm.add(GuidoClock)
+    
     if args.sense:
         from karmapi import sense
         farm.add(sense.WeatherHat)
