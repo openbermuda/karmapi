@@ -85,7 +85,9 @@ class TankRain(pigfarm.MagicCarpet):
         print(f'loading images for path: {path} v{self.version}v')
         
         for image in sorted(path.glob('{}*.[jp][np]g'.format(self.version))):
-
+    
+            if image.stat.st_size == 0:
+                continue
             print(image)
             yield image
 
