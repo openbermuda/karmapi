@@ -16,7 +16,7 @@ def long_exposure(length=6,
                   framerate=6,
                   resolution=(1280, 720),
                   iso=800):
-    """ Take a long exposure shot
+    """ Return camera configured for a long exposure shot
 
     length: exposure length in seconds
     framerate: number of frames per second
@@ -30,10 +30,9 @@ def long_exposure(length=6,
     camera.iso = 800
 
     camera.exposure_mode = 'off'
-    # Finally, capture an image with a 6s exposure. Due
-    # to mode switching on the still port, this will take
-    # longer than 6 seconds
-    camera.capture(path)
+
+    # return a camera object
+    return camera
 
 
 async def capture(args):

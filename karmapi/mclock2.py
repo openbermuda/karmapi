@@ -98,7 +98,7 @@ class GuidoClock(pigfarm.PillBox):
             hh %= 24
 
     async def midnight(self, mtm=MINUTES_TO_MIDNIGHT):
-
+        """ Bulleting of atomic scientists """
         if self.timewarp:
             self.timewarp = None
             return
