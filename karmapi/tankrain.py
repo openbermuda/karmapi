@@ -45,6 +45,7 @@ class TankRain(pigfarm.MagicCarpet):
         self.add_event_map(' ', self.next_view)
 
         self.add_event_map('b', self.previous_day)
+        self.add_event_map('v', self.next_day)
 
     def load_images(self):
         
@@ -110,6 +111,11 @@ class TankRain(pigfarm.MagicCarpet):
 
         self.timewarp -= 24 * 3600
 
+        self.load_images()
+
+    async def next_day(self):
+
+        self.timewarp += 24 * 3600
         self.load_images()
 
     async def reverse(self):
