@@ -1,0 +1,1 @@
+@reboot pi /usr/local/bin/python3.6 -m karmapi.veyes /home/pi/karmapi/camera
