@@ -221,11 +221,22 @@ class AppEventLoop(tkpig.AppEventLoop):
 
         while True:
             for event in stick.get_events():
-                self.process_stick(event)
+                await self.process_stick(event)
 
             # FIXME make stick.wait_for_events a co-routine?
             await curio.sleep(0.05)
 
-    def process_stick(self, event):
+    async def process_stick(self, event):
         """ Process a stick event """
         print(event)
+        events = dict(
+            left='p',
+            right='n',
+            down=' ',)
+        
+        action = event.action
+        direction = event.direction
+        print(action, direction)
+        if action == 'released':
+            await self.farm.process_event(events.get(direction))
+        
