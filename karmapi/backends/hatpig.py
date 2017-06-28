@@ -190,7 +190,8 @@ class AppEventLoop(tkpig.AppEventLoop):
 
         self.hat = sense_hat.SenseHat()
 
-        self.displays = [self.hatblit()]
+        # stick technically not a display.. peripheral?
+        self.displays = [self.hatblit(), self.stick()]
     
  
     async def hatblit(self):
@@ -213,3 +214,18 @@ class AppEventLoop(tkpig.AppEventLoop):
             await curio.sleep(0.01)
                 
         
+    async def stick(self):
+        """ Turn SenseStick events into keyboard events """
+
+        stick = sense_hat.stick.SenseStick()
+
+        while True:
+            for event in stick.get_events():
+                self.process_stick(event)
+
+            # FIXME make stick.wait_for_events a co-routine?
+            await curio.sleep(0.05)
+
+    def process_stick(self, event):
+        """ Process a stick event """
+        print(event)

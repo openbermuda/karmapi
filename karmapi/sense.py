@@ -154,77 +154,21 @@ def show_all_stats(hat, show=None):
 
             
 
-class WeatherHat(pigfarm.MagicCarpet):
-    """  Sense Hat widget """
-    fields = ['humidity', 'temperature_guess', 'pressure']
-
-    def __init__(self, parent=None, *args, **kwargs):
-        """ Set up the widget """
-        super().__init__(*args, **kwargs)
-
-        layout = pig.qtw.QHBoxLayout(parent)
-
-        meta = [["karmapi.sense.Monitor"] for x in self.fields]
-
-        self.interval = 1
-        
-        # build a Grid and add to self
-        monitor = pig.Grid(self, meta)
-        self.monitor = monitor
-        layout.addWidget(monitor)
-
-        for widget, field in zip(monitor.grid.values(), self.fields):
-            setattr(widget, 'field', field)
-
-
-    async def run(self):
-
-        self.hat = sense_hat.SenseHat()
-        self.data = []
-
-        
-        while True:
-            #self.data.append(get_stats(self.hat))
-            for x in range(10):
-                self.data.append(get_stats(self.hat))
-                await curio.sleep(0.1)
-
-            print(len(self.data))
-
-            self.update_plots()
-            
-    def update_plots(self):
-
-        if len(self.data) == 0:
-            print('no data')
-            return
-        
-        df = pandas.DataFrame(self.data)
-
-        # FIXME: allow control over time period to plot
-        print(df.info())
-        for widget in self.monitor.grid.values():
-            widget.show(df)
-    
-class OrientHat(WeatherHat):
-
-    fields = ['compass', 'pitch', 'roll', 'yaw']
     
 class Monitor(pigfarm.MagicCarpet):
 
-    def show(self, df):
-        """ Plot field from df """
-        self.toolbar.hide()
-        self.axes.hold(True)
+    async def load_data(self):
+        """ Reload data 
 
-        self.axes.clear()
-        self.axes.plot(df.timestamp, df[self.field], label=self.field)
+        This should periodically reload data.
 
-        self.axes.set_ylabel(self.field)
-        self.draw()
+        Create a dictionary keys being group, values df
+        """
+        while True:
+            # do some magic here
 
-    def plot(self):
-        pass
+            self.process_data()
+        
 
 def get_outfile(path, name):
     """ Open output file """
