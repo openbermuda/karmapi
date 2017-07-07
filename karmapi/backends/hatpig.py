@@ -232,7 +232,9 @@ class AppEventLoop(tkpig.AppEventLoop):
         events = dict(
             left='p',
             right='n',
-            down=' ',)
+            middle='M',
+            down='b',
+            up='v')
         
         action = event.action
         direction = event.direction
