@@ -232,7 +232,7 @@ class AppEventLoop(tkpig.AppEventLoop):
         events = dict(
             left='p',
             right='n',
-            middle='M',
+            middle='R',
             down='b',
             up='v')
         
