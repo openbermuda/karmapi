@@ -63,12 +63,17 @@ async def capture(args):
         camera.capture(str(path))        
         await curio.sleep(args.sleep)
 
+        if args.random:
+            camera = random_picture()
+            camera.start_preview()
+
 def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--sleep', type=float, default=60)
     parser.add_argument('path', nargs='?', default='.')
     parser.add_argument('--long', action='store_true')
+    parser.add_argument('--random', action='store_true')
 
     args = parser.parse_args()
 
