@@ -4,6 +4,7 @@ Eyes for pies.
 import argparse
 import datetime
 from pathlib import Path
+import random
 
 from picamera import PiCamera
 import time
@@ -34,6 +35,14 @@ def long_exposure(length=6,
     # return a camera object
     return camera
 
+def random_picture():
+
+    length = random.random() * 6
+    
+    return long_exposure(
+        length=length,
+        framerate=6,
+        iso=random.random() * 800)
 
 async def capture(args):
 
