@@ -16,7 +16,7 @@ import math
 import time
 import curio
 
-MINUTES_TO_MIDNIGHT = 5.0
+MINUTES_TO_MIDNIGHT = -5.0
 
 class GuidoClock(pigfarm.PillBox):
 
