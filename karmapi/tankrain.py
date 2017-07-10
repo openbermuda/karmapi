@@ -138,6 +138,8 @@ class TankRain(pigfarm.MagicCarpet):
             self.compute_data()
             self.axes.clear()
             try:
+                print('TITLE', self.path)
+                self.axes.set_title(self.path)
                 self.axes.imshow(self.data)
             except OSError:
                 print('dodgy image:', self.paths[self.ix])
@@ -254,10 +256,10 @@ def main(args=None):
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--pig', action='store_true')
+    parser.add_argument('--pig', action='store_false', default=True)
     parser.add_argument('--minutes', type=int, default=30)
     parser.add_argument('path', nargs='?', default='~/karmapi/tankrain')
-    parser.add_argument('--version', default='local')
+    parser.add_argument('--version', default='')
                             
     args = parser.parse_args()
 
