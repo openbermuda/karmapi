@@ -139,7 +139,7 @@ class TankRain(pigfarm.MagicCarpet):
             self.axes.clear()
             try:
                 print('TITLE', self.path)
-                self.axes.set_title(self.path)
+                self.axes.set_title(self.path, color='w')
                 self.axes.imshow(self.data)
             except OSError:
                 print('dodgy image:', self.paths[self.ix])
