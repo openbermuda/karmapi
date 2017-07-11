@@ -308,8 +308,8 @@ class PlotImage(Pig):
 
     def dark(self):
 
-        #self.fig.set_facecolor('black')
-        #self.fig.set_edgecolor('white')
+        self.fig.set_facecolor('black')
+        self.fig.set_edgecolor('white')
         pass
 
     def load_data(self, data):
