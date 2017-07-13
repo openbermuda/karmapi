@@ -289,6 +289,7 @@ def drop_bad_rows(infile):
             continue
         
         values = row.split(',')
+        values = [x.strip() for x in values]
 
         if len(values) != nn:
             print(ix, len(fields), len(values))
