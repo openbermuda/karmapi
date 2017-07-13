@@ -35,14 +35,18 @@ def long_exposure(length=6,
     # return a camera object
     return camera
 
-def random_picture():
+def random_picture(cam):
 
     length = random.random() * 6
+
+    cam.framerate = 1.0 / length
+    cam.shutter_speed = int(length * 1000000)
+    cam.iso - random.random() * 800
+
+    cam.exposure_mode = 'off'
+
+    return cam
     
-    return long_exposure(
-        length=length,
-        framerate=6,
-        iso=random.random() * 800)
 
 async def capture(args):
 
@@ -64,8 +68,8 @@ async def capture(args):
         await curio.sleep(args.sleep)
 
         if args.random:
-            camera = random_picture()
-            camera.start_preview()
+            camera = random_picture(camera)
+
 
 def main():
 
