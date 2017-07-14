@@ -135,11 +135,17 @@ class TankRain(pigfarm.MagicCarpet):
         self.dark()
         while True:
 
+            #title = self.paths[self.ix]
+            if self.paths:
+                title = self.paths[self.ix]
+            else:
+                title = f'{self.ix} : {len(self.paths)} {self.path}'
+            
             self.compute_data()
             self.axes.clear()
+            print('TITLE:', title)
             try:
-                print('TITLE', self.path)
-                self.axes.set_title(self.path)
+                self.axes.set_title(title, color='w')
                 self.axes.imshow(self.data)
             except OSError:
                 print('dodgy image:', self.paths[self.ix])
