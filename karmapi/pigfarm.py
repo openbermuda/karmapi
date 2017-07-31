@@ -310,6 +310,7 @@ class Space:
         self.scale = 400
         self.fade = 30
         self.sleep = 0.05
+        self.napcount = 0
         self.naptime = self.sleep
         self.images = {}
         self.artist = None
@@ -319,6 +320,7 @@ class Space:
 
         self.add_event_map('s', self.sleepy)
         self.add_event_map('w', self.wakey)
+        self.add_event_map(' ', self.waity)
         
         self.add_event_map('d', self.slow_fade)
         self.add_event_map('f', self.fast_fade)
@@ -364,13 +366,23 @@ class Space:
 
     async def sleepy(self):
         """ sleep more """
-        self.sleep += self.naptime
+        self.napcount += 1
+        self.sleep += self.naptime * self.napcount
 
     async def wakey(self):
         """ more awake """
-        if self.sleep > self.naptime:
-            self.sleep -= self.naptime
+        self.napcount = max(0, self.napcount + 1)
         
+        if self.sleep > self.naptime:
+            self.sleep -= self.naptime * self.napcount
+        
+
+    async def waity(self):
+
+        if self.napcount:
+            self.napcount = -1
+        else:
+            self.napcount = 0
 
     def load_image(self, name):
 
