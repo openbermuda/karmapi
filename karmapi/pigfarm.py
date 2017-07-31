@@ -373,9 +373,9 @@ class Space:
         
     async def wakey(self):
         """ more awake """
-        self.napcount -= 1
-
         self.sleep -= self.naptime * self.napcount
+
+        self.napcount -=1
 
         print(self.sleep, self.naptime, self.napcount)    
         self.sleep = max(self.sleep, 0)
