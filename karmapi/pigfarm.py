@@ -375,7 +375,8 @@ class Space:
         """ more awake """
         self.sleep -= self.naptime * self.napcount
 
-        self.napcount -=1
+        if self.napcount:
+            self.napcount -=1
 
         print(self.sleep, self.naptime, self.napcount)    
         self.sleep = max(self.sleep, 0)
