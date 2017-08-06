@@ -94,18 +94,12 @@ class PlotImage(tkpig.PlotImage):
         width = self.fig.get_figwidth()
         height = self.fig.get_figheight()
 
-        print('getting string for image')
         image = self.image.tostring_rgb()
-
-        print(width, height, len(image))
 
         iwidth = int(dpi * width)
         iheight = int(dpi * height)
 
-        print('selecting pixels to pick')
         selection = pixel_selector(iwidth, iheight, size=8)
-
-        print('got image')
 
         pixels = []
         for choice in selection:
@@ -196,7 +190,8 @@ class AppEventLoop(tkpig.AppEventLoop):
 
         self.hat = sense_hat.SenseHat()
 
-        self.displays = [self.hatblit()]
+        # stick technically not a display.. peripheral?
+        self.displays = [self.hatblit(), self.stick()]
     
  
     async def hatblit(self):
@@ -218,4 +213,32 @@ class AppEventLoop(tkpig.AppEventLoop):
 
             await curio.sleep(0.01)
                 
+        
+    async def stick(self):
+        """ Turn SenseStick events into keyboard events """
+
+        stick = sense_hat.stick.SenseStick()
+
+        while True:
+            for event in stick.get_events():
+                await self.process_stick(event)
+
+            # FIXME make stick.wait_for_events a co-routine?
+            await curio.sleep(0.05)
+
+    async def process_stick(self, event):
+        """ Process a stick event """
+        print(event)
+        events = dict(
+            left='p',
+            right='n',
+            middle='R',
+            down='b',
+            up='v')
+        
+        action = event.action
+        direction = event.direction
+        print(action, direction)
+        if action == 'released':
+            await self.farm.process_event(events.get(direction))
         

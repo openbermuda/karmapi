@@ -23,6 +23,8 @@ FIXME:
 """
 import subprocess
 import datetime
+from datetime import timedelta
+
 import csv
 import time
 from pathlib import Path
@@ -30,7 +32,7 @@ from pathlib import Path
 import curio
 import pandas
 
-from karmapi import pigfarm
+from karmapi import pigfarm, base
 
 try:
     import sense_hat
@@ -64,26 +66,44 @@ def get_weather(hat):
 
     while True:
         data = dict(
-            temp = hat.temp,
             humidity = hat.humidity,
             pressure = hat.pressure,
-            temperature_from_pressure = hat.get_temperature_from_pressure(),
-            temperature_from_humidity = hat.get_temperature_from_humidity(),
-            cpu_temperature = get_cpu_temperature(),
-            )
-        guess = data['temperature_from_pressure'] + data['temperature_from_humidity']
-        guess = guess / 2.0
+            
+            temperature = (
+                hat.get_temperature_from_pressure() +
+                hat.get_temperature_from_humidity()) / 2.0,
 
-        cputemp = data['cpu_temperature']
+            cpu_temperature = get_cpu_temperature())
 
-        guess = guess - ((cputemp - guess) / 2)
-
-        data['temperature_guess'] = guess
 
         data['timestamp'] = time.time()
 
         yield data
 
+
+def temperature_guess(data):
+
+    guess = data['temperature_from_pressure'] + data['temperature_from_humidity']
+    guess = guess / 2.0
+
+    cputemp = data['cpu_temperature']
+
+    guess = guess - ((cputemp - guess) / 2)
+
+    return guess
+
+
+def pressure_to_altitude(pressure, sealevel=1013.250):
+    """ Converts pressure to height above sea level
+
+    sealevel: optional actual pressure at sea level
+    """
+    pressure = 100.0 * pressure
+    sealevel = 100.0 * sealevel
+    
+    altitude = 44330.0 * (1.0 - pow(pressure / sealevel, (1.0/5.255)))
+
+    return altitude
 
 def get_gyro(hat):
 
@@ -134,77 +154,21 @@ def show_all_stats(hat, show=None):
 
             
 
-class WeatherHat(pigfarm.MagicCarpet):
-    """  Sense Hat widget """
-    fields = ['humidity', 'temperature_guess', 'pressure']
-
-    def __init__(self, parent=None, *args, **kwargs):
-        """ Set up the widget """
-        super().__init__(*args, **kwargs)
-
-        layout = pig.qtw.QHBoxLayout(parent)
-
-        meta = [["karmapi.sense.Monitor"] for x in self.fields]
-
-        self.interval = 1
-        
-        # build a Grid and add to self
-        monitor = pig.Grid(self, meta)
-        self.monitor = monitor
-        layout.addWidget(monitor)
-
-        for widget, field in zip(monitor.grid.values(), self.fields):
-            setattr(widget, 'field', field)
-
-
-    async def run(self):
-
-        self.hat = sense_hat.SenseHat()
-        self.data = []
-
-        
-        while True:
-            #self.data.append(get_stats(self.hat))
-            for x in range(10):
-                self.data.append(get_stats(self.hat))
-                await curio.sleep(0.1)
-
-            print(len(self.data))
-
-            self.update_plots()
-            
-    def update_plots(self):
-
-        if len(self.data) == 0:
-            print('no data')
-            return
-        
-        df = pandas.DataFrame(self.data)
-
-        # FIXME: allow control over time period to plot
-        print(df.info())
-        for widget in self.monitor.grid.values():
-            widget.show(df)
-    
-class OrientHat(WeatherHat):
-
-    fields = ['compass', 'pitch', 'roll', 'yaw']
     
 class Monitor(pigfarm.MagicCarpet):
 
-    def show(self, df):
-        """ Plot field from df """
-        self.toolbar.hide()
-        self.axes.hold(True)
+    async def load_data(self):
+        """ Reload data 
 
-        self.axes.clear()
-        self.axes.plot(df.timestamp, df[self.field], label=self.field)
+        This should periodically reload data.
 
-        self.axes.set_ylabel(self.field)
-        self.draw()
+        Create a dictionary keys being group, values df
+        """
+        while True:
+            # do some magic here
 
-    def plot(self):
-        pass
+            self.process_data()
+        
 
 def get_outfile(path, name):
     """ Open output file """
@@ -255,33 +219,178 @@ async def recorder(path, name, data, sleep=1):
 
     writer, outfile = get_writer(path, name, data, sleep)
 
-    while True:
-        print('writing', name)
-        writer.writerow(next(data))
-        outfile.flush()
-        await curio.sleep(sleep)
+    try:
+        while True:
+            print('writing', name)
+            writer.writerow(next(data))
+            outfile.flush()
+            await curio.sleep(sleep)
+    except curio.CancelledError:
+        outfile.close()
 
 
-
-async def record(path='.', sleep=1):
+async def record(path='.', sleep=1, tasks=None, names=None, hat=None):
     """ Record everything from the hat """
-    hat = sense_hat.SenseHat()
 
-    weather = get_weather(hat)
-    compass = get_compass(hat)
-    gyro = get_gyro(hat)
-    accel = get_acceleration(hat)
+    if hat is None:
+        hat = sense_hat.SenseHat()
 
-    tasks = [weather, compass, gyro, accel]
-    names = ['weather', 'compass', 'gyro', 'accel']
+    weather = get_weather
+    compass = get_compass
+    gyro = get_gyro
+    accel = get_acceleration
+
+    if tasks is None:
+        tasks = [weather, compass, gyro, accel]
+
+    if names is None:
+        names = ['weather', 'compass', 'gyro', 'accel']
 
     # magic from curio
-    async with curio.TaskGroup(wait='any') as workers:
+    while True:
+
+        now = datetime.datetime.now()
+        midnight = timedelta(hours = 23 - now.hour,
+                             minutes = 59 - now.minute,
+                             seconds = 59 - now.second)
+
+        print(now)
+        print(now + midnight)
+        # seconds to midnight + 1
+        midnight = midnight.seconds + 1
         
-        for task, name in zip(tasks, names):
+        async with curio.timeout_after(midnight):
+            async with curio.TaskGroup(wait='any') as workers:
 
-            await workers.spawn(recorder(path, name, task, sleep))
+                for task, name in zip(tasks, names):
 
+                    await workers.spawn(recorder(path, name, task(hat), sleep))
+
+
+def drop_bad_rows(infile):
+    """ Take an input file and filter out bad data 
+
+    Also change pressure to altitude.
+    """
+    line = next(infile)
+    fields = [x.strip() for x in line.split(',')]
+
+    null = chr(0)
+    
+    result = []
+    
+    print(fields)
+    nn = len(fields)
+    
+    for ix, row in enumerate(infile):
+
+        # sometimes get nulls in data eg when pi not shutdown cleanly
+        if null in row:
+            continue
+        
+        values = row.split(',')
+        values = [x.strip() for x in values]
+
+        if len(values) != nn:
+            print(ix, len(fields), len(values))
+            continue
+
+        result.append(dict(zip(fields, values)))
+
+    return result
+
+def xtimewarp_timestamps(data):
+    """ Don't let data go backwards in time """
+
+    lasttime = None
+    timewarp = 0.0
+    mintime = 0
+    for ix, row in enumerate(data):
+        timestamp = float(row['timestamp'])
+        
+        if lasttime and timestamp < lasttime:
+            timewarp = lasttime - timestamp
+            print(ix, timewarp)
+
+        row['timestamp'] = str(timestamp + timewarp)
+
+        lasttime = timestamp
+
+    return data
+
+def timewarp_timestamps(data):
+    """ Don't let data go backwards in time """
+
+    from collections import Counter
+    lasttime = None
+    timewarp = 0.0
+    mintime = 0
+
+    deltas = Counter()
+    for ix, row in enumerate(data):
+        timestamp = float(row['timestamp'])        
+
+        deltas = Counter()
+
+        if lasttime:
+            delta = round(timestamp - lasttime)
+            deltas[delta] += 1
+
+            # print(deltas.most_common())
+        
+        if lasttime and timestamp < lasttime:
+            timewarp = lasttime - timestamp
+            print(ix, timewarp)
+
+        elif timewarp:
+            mc = deltas.most_common(1)[0][0]
+            if delta > mc:
+                timewarp -= delta - mc
+                print(f'warping warp by {delta - mc}')
+
+        row['timestamp'] = str(timestamp + timewarp)
+
+        lasttime = timestamp
+
+    return data
+
+def clean(path):
+    """ Clean files at path
+    
+    put clean files in clean subfolder.
+    """
+    (path / 'clean').mkdir(exist_ok=True, parents=True)
+    
+    for name in path.glob('*'):
+
+        if name.is_dir(): continue
+        
+        with name.open() as dirty:
+            data = drop_bad_rows(dirty)
+            data = timewarp_timestamps(data)
+
+        fields = data[0].keys()
+        clean_name = path / 'clean' / name.name
+        with clean_name.open('w') as cleaner:
+            writer = csv.DictWriter(cleaner, fieldnames=fields)
+            writer.writeheader()
+            writer.writerows(data)
+
+        df = base.load(clean_name)
+
+        # change pressure to altitude if it exists
+        if hasattr(df, 'pressure'):
+            df['altitude'] = df.pressure.map(pressure_to_altitude)
+
+            df = df.drop('pressure', axis=1)
+
+            base.save(clean_name, df)
+
+class HatShow:
+    """ Show things on a Sense Hat """
+
+    pass
+    
 def main():
 
     import argparse
@@ -289,10 +398,21 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--pig', action='store_true')
+
     parser.add_argument('--path', default='.')
+    parser.add_argument('name', nargs='?', default='sensehat')
+
     parser.add_argument('--sleep', type=float, default=1)
 
+    parser.add_argument('--clean', action='store_true')
+
     args = parser.parse_args()
+
+    if args.clean:
+        # clean the data at path / name
+        path = Path(args.path) / args.name
+        clean(path)
+        return
     
     if not args.pig:
         curio.run(record(args.path, args.sleep))

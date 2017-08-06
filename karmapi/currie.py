@@ -18,7 +18,7 @@ import curio
 from pathlib import Path
 import inspect
 
-from karmapi import hush
+from karmapi import hush, base
 
 from tkinter import Toplevel
 
@@ -48,6 +48,8 @@ def main():
     parser.add_argument('--sense', action='store_true',
                         help="if you have a sense hat")
 
+    parser.add_argument('--path')
+
     args = parser.parse_args()
 
     # import from pig stuff here, after talking to joy
@@ -67,7 +69,6 @@ def main():
     print('building farm')
     farm.status()
     from karmapi.mclock2 import GuidoClock
-    from karmapi.bats import StingingBats
     from karmapi.tankrain import TankRain
     from karmapi import diceware as dice
     from karmapi import talk
@@ -108,21 +109,28 @@ def main():
     else:
         words = None
 
-    farm.add(noddy.Magic)
-    farm.add(talk.Talk)
+    data = None
+    if args.path:
+        path = Path(args.path)
+        if path.exists():
+            data = base.load_folder(path)
+        
+        
+    farm.add(noddy.Magic, dict(data=data))
+    #farm.add(talk.Talk)
     farm.add(dice.StingingBats, dict(words=words))
-    farm.add(StingingBats)
 
     farm.add(TankRain)
     #farm.add(sunny.Sunspot)
     farm.add(sonogram.SonoGram)
     farm.add(piglet.XKCD)
     farm.add(widgets.InfinitySlalom)
-    farm.add(GuidoClock)
 
     from karmapi import prime
     farm.add(prime.Prime)
 
+    farm.add(GuidoClock)
+    
     if args.sense:
         from karmapi import sense
         farm.add(sense.WeatherHat)

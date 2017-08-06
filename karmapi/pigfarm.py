@@ -6,12 +6,16 @@ Pigs are windows, piglets are things running in the pig farm.
 
 """
 import pandas   # piglets and pandas together
+np = pandas.np
+
 from collections import deque
 import curio
 from curio import spawn, sleep
 
 from pathlib import Path
 import inspect
+
+from datetime import datetime
 
 from PIL import Image
 
@@ -84,7 +88,7 @@ class PigFarm:
     def add(self, pig, kwargs=None):
 
         kwargs = kwargs or {}
-        print('pigfarm adding', pig, kwargs)
+        print('pigfarm adding', pig, kwargs.keys())
 
         self.builds.put((pig, kwargs))
 
@@ -210,7 +214,7 @@ class PigFarm:
 
             await self.process_event(event)
 
-            print(event, type(event))
+            #print(event, type(event))
 
             print('eq', self.event.qsize())
 
@@ -306,6 +310,7 @@ class Space:
         self.scale = 400
         self.fade = 30
         self.sleep = 0.05
+        self.napcount = 0
         self.naptime = self.sleep
         self.images = {}
         self.artist = None
@@ -315,6 +320,7 @@ class Space:
 
         self.add_event_map('s', self.sleepy)
         self.add_event_map('w', self.wakey)
+        self.add_event_map(' ', self.waity)
         
         self.add_event_map('d', self.slow_fade)
         self.add_event_map('f', self.fast_fade)
@@ -332,7 +338,6 @@ class Space:
 
     def __getattr__(self, attr):
         """ Delegate to artist """
-        
         return getattr(self.artist, attr)
         
     async def fix_something(self):
@@ -361,13 +366,25 @@ class Space:
 
     async def sleepy(self):
         """ sleep more """
-        self.sleep += self.naptime
-
+        self.napcount += 1
+        
+        self.sleep += self.naptime * self.napcount
+        print(self.sleep, self.naptime, self.napcount)
+        
     async def wakey(self):
         """ more awake """
-        if self.sleep > self.naptime:
-            self.sleep -= self.naptime
+        self.sleep -= self.naptime * self.napcount
+
+        if self.napcount:
+            self.napcount -=1
+
+        print(self.sleep, self.naptime, self.napcount)    
+        self.sleep = max(self.sleep, 0)
         
+
+    async def waity(self):
+        """ pause """
+        self.napcount += 20 * 60
 
     def load_image(self, name):
 
@@ -419,10 +436,30 @@ class PillBox(Space):
 
         self.artist = piglet.PillBox(parent)
 
+
+    def grid(self, data, alpha=1.0):
+        """ Display data as a grid 
+        
+        really what matplotlib.imshow does, but on a PIL
+        """
+        width = self.width
+        height = self.height
+
+        rows = len(data)
+        cols = len(data[0])
+
+        xx = width / rows
+        yy = height / cols
+
+        for row in data:
+            for col in row:
+                self.rectangle()
+
         
 class MagicCarpet(Space):
 
-    def __init__(self, parent=None, axes=None, data=None):
+    def __init__(self, parent=None, axes=None, data=None,
+                 begin=None, end=None, title=None):
         
         super().__init__()
 
@@ -435,11 +472,14 @@ class MagicCarpet(Space):
         self.clear = True
         self.add_event_map('a', self.clear_toggle)
 
-        self.plot = False
+        self.plot = True
         self.add_event_map('g', self.plot_toggle)
 
-        self.table = False
+        self.table = True
         self.add_event_map('t', self.table_toggle)
+
+        self.subtract_means = False
+        self.add_event_map('m', self.subtract_means_toggle)
 
         self.groups = []
         self.group = None
@@ -448,10 +488,9 @@ class MagicCarpet(Space):
 
 
         # set intitial data
-
-        # hmm.. not sure where this belongs
-        pandas.set_eng_float_format(1, True)
-
+        self.title = title
+        self.begin = begin
+        self.end = end
         data = data or toy.distros(
             trials=1000,
             groups=['abc', 'cde', 'xyz'])
@@ -468,18 +507,20 @@ class MagicCarpet(Space):
 
         stats = frame.describe()
 
-        stat_rows = str(stats).split('\n')
-        cells = [x[1:] for x in self.parse_describe(stat_rows)]
+        ef = pandas.formats.format.EngFormatter(1, True)
+
+        cells = []
+
+        for name, col in stats.items():
+            cells.append([ef(x) for x in col.values])
+
+        cells = np.array(cells).T
 
         cols = stats.columns.values
         rows = stats.index.values
 
         return stats, cells, rows, cols
 
-    def parse_describe(self, rows):
-
-        for row in rows[1:]:
-            yield row.split()
 
     async def load_data(self):
 
@@ -498,17 +539,20 @@ class MagicCarpet(Space):
 
             frame = pandas.DataFrame(frame)
             print(group)
-            print('XXXX', frame.columns.values)
-            print()
             frame = pandas.DataFrame(frame)
 
             sortflag = True
             if 'timestamp' in frame.columns.values:
                 print('got timestamp column')
                 frame = make_timestamp_index(frame)
-                print(frame.info())
+                #print(frame.info())
+                print(type(frame.index))
+                if self.begin or self.end:
+                    frame = filter_frame(frame, self.begin, self.end)
+                
+            if isinstance(frame.index, pandas.tseries.index.DatetimeIndex):
                 sortflag = False
-                      
+
             frames[group] = dict(frame=frame, sort=sortflag)
             groups.append(group)
 
@@ -520,6 +564,7 @@ class MagicCarpet(Space):
     async def log_toggle(self):
         """ toggle log scale """
         self.log = not self.log
+        await self.redraw_group()
 
     async def clear_toggle(self):
         """ toggle axes clear """
@@ -528,10 +573,17 @@ class MagicCarpet(Space):
     async def plot_toggle(self):
         """ toggle plot image """
         self.plot = not self.plot
+        await self.redraw_group()
 
     async def table_toggle(self):
         """ toggle show table """
         self.table = not self.table
+        await self.redraw_group()
+
+    async def subtract_means_toggle(self):
+        """ Toggle mean shifting """
+        self.subtract_means = not self.subtract_means
+        await self.redraw_group()
 
     async def next_group(self):
         """ Next group """
@@ -544,10 +596,14 @@ class MagicCarpet(Space):
         if self.group == len(self.groups):
             self.group = 0
 
+        await self.redraw_group()
+
+    async def redraw_group(self):
+        """ Trigger a redraw of current group """
         await self.event.put(self.group)
 
     async def previous_group(self):
-
+        """ Previous group """
         if self.group is None:
             return await self.next_group()
 
@@ -555,7 +611,7 @@ class MagicCarpet(Space):
         if self.group < 0:
             self.group = len(self.groups) - 1
 
-        await self.event.put(self.group)
+        await self.redraw_group()
         
     def clear_axes(self):
 
@@ -624,31 +680,47 @@ class MagicCarpet(Space):
         fdata = self.frames[group]
         frame = fdata['frame']
         sortflag = fdata['sort']
-        print(frame.describe())
 
         xx = frame.index
         
         axes = self.subplots[0]
         axes.clear()
 
+        if self.title:
+            axes.set_title(self.title)
+
         # sort columns on mean
         mean = frame.mean()
         mean.sort_values(inplace=True)
         frame = frame.ix[:, mean.index]
+
+        # subtract the mean
+        if self.subtract_means:
+            plot_frame = frame - mean
+            plot_frame /= frame.std()
+        else:
+            plot_frame = frame
         
         col_colours = []
+        delta_y = 0
         for label in frame.columns:
-            data = frame[label].copy()
+        
+            data = plot_frame[label].copy()
 
-            print(type(xx[0]))
+            if delta_y:
+                delta_y += data.std() * 2
+                
             if sortflag:
                 data.sort_values(inplace=True)
             if self.log:
-                patch = axes.semilogy(xx, data.values, label=label)
+                patch = axes.semilogy(xx, delta_y + data.values, label=label)
             else:
-                patch = axes.plot(xx, data.values, label=label)
+                patch = axes.plot(xx, delta_y + data.values, label=label)
 
             col_colours.append(patch[0].get_color())
+
+            if self.subtract_means:
+                delta_y += data.std() * 2
 
         from matplotlib import colors
         col_colours = [colors.to_rgba(x, 0.2) for x in col_colours]
@@ -656,7 +728,32 @@ class MagicCarpet(Space):
         self.axes = self.subplots[1]
         self.axes.clear()
         self.draw_table(frame, loc='center', title=group, col_colours=col_colours)
+
+        self.select_subplots()
+
         self.draw()
+
+    def select_subplots(self):
+        """ Select what to show """
+        plot = self.subplots[0]
+        table = self.subplots[1]
+
+        if self.plot and self.table:
+            plot.set_visible(True)
+            table.set_visible(True)
+
+            plot.change_geometry(2, 1, 1)
+            table.change_geometry(2, 1, 2)
+            
+
+        if not self.plot:
+            plot.set_visible(False)
+            table.change_geometry(1, 1, 1)
+
+        if not self.table:
+            table.set_visible(False)
+            plot.change_geometry(1, 1, 1)
+
         
     async def run(self):
 
@@ -681,15 +778,37 @@ class Piglet:
     """
     pass
 
+def make_timestamps(data):
+
+    result = {}
+    for key, frame in data.items():
+        result[key] = make_timestamp_index(frame)
+
+    return result
+
+
 def make_timestamp_index(frame):
     """ Take a frame with a timestamp column and make it the index """
 
-        
-    frame.index = pandas.to_datetime(frame.timestamp * 10**6)
+    print('adding index or not to', frame.columns)
+    if not hasattr(frame, 'timestamp'):
+        return frame
 
+    print(type(frame.index))
+    frame.index = pandas.to_datetime(frame.timestamp, unit='s')
+    print(type(frame.index))
     del frame['timestamp']
 
     return frame
+
+def filter_frame(frame, start, end):
+
+    d = start
+    start = f'{d.year}-{d.month:02}-{d.day:02} {d.hour:02}:{d.minute:02}:{d.second:02}'
+    d = end
+    end = f'{d.year}-{d.month:02}-{d.day:02} {d.hour:02}:{d.minute:02}:{d.second:02}'
+
+    return frame[start:end]    
 
 
 def run(farm):

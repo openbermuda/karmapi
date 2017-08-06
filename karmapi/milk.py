@@ -207,6 +207,7 @@ class MilkOnMagicCarpet(pigfarm.MagicCarpet):
         self.fields = ['cycles', 'timeout', 'state']
 
         self.state_map = {}
+        self.plot = False
         
     def state_code(self, state):
 

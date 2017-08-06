@@ -26,21 +26,26 @@ parish_template = 'Radar/RadarParish/{date:%Y-%m-%d-%H%M}_ParishRadar.png'
 atlantic_chart = 'surfaceAnalysis/Latest/Atlantic.gif'
 local_chart = 'surfaceAnalysis/Latest/Local.gif'
 
-target = 'tankrain/{date:%Y}/{date:%m}/{date:%d}/{name}_{date:%H%M}{suffix}'
+target = 'tankrain/{date.year}/{date.month}/{date.day}/{name}_{date:%H%M}{suffix}'
 
 
 class TankRain(pigfarm.MagicCarpet):
     """ Widget to show tankrain images """
 
-    def __init__(self, parent, *args):
+    def __init__(self, parent, path=None, version='local', *args):
         
-        self.version = 'local'
+        self.version = version
+        self.path = path or '~/karmapi/tankrain'
+        self.timewarp = 0
         self.load_images()
 
         super().__init__(parent, axes=[111])
 
         self.add_event_map('r', self.reverse)
         self.add_event_map(' ', self.next_view)
+
+        self.add_event_map('b', self.previous_day)
+        self.add_event_map('v', self.next_day)
 
     def load_images(self):
         
@@ -75,10 +80,16 @@ class TankRain(pigfarm.MagicCarpet):
     def get_images(self):
 
         # FIXME -- create key bindings to select time
-        date = utcnow()
-        path = Path(f'~/karmapi/tankrain/{date:%Y}/{date:%m}/{date:%d}').expanduser()
+        date = utcnow() + datetime.timedelta(seconds=self.timewarp)
+        path = Path(f'{self.path}/{date.year}/{date.month}/{date.day}/').expanduser()
 
-        for image in sorted(path.glob('{}*.png'.format(self.version))):
+        print(f'loading images for path: {path} v{self.version}v')
+        
+        for image in sorted(path.glob('{}*.[jp][np]g'.format(self.version))):
+    
+            if image.stat().st_size == 0:
+                continue
+            print(image)
             yield image
 
 
@@ -88,9 +99,23 @@ class TankRain(pigfarm.MagicCarpet):
             wide='local',
             local='parish',
             parish='wide')
+
+        # no versions, don't switch
+        switch[''] = ''
         
         self.version = switch[self.version]
         
+        self.load_images()
+
+    async def previous_day(self):
+
+        self.timewarp -= 24 * 3600
+
+        self.load_images()
+
+    async def next_day(self):
+
+        self.timewarp += 24 * 3600
         self.load_images()
 
     async def reverse(self):
@@ -110,9 +135,20 @@ class TankRain(pigfarm.MagicCarpet):
         self.dark()
         while True:
 
+            #title = self.paths[self.ix]
+            if self.paths:
+                title = self.paths[self.ix]
+            else:
+                title = f'{self.ix} : {len(self.paths)} {self.path}'
+            
             self.compute_data()
             self.axes.clear()
-            self.axes.imshow(self.data)
+            print('TITLE:', title)
+            try:
+                self.axes.set_title(title)
+                self.axes.imshow(self.data)
+            except OSError:
+                print('dodgy image:', self.paths[self.ix])
 
 
             self.draw()
@@ -226,14 +262,16 @@ def main(args=None):
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--pig', action='store_true')
+    parser.add_argument('--pig', action='store_false', default=True)
     parser.add_argument('--minutes', type=int, default=30)
-
+    parser.add_argument('path', nargs='?', default='~/karmapi/tankrain')
+    parser.add_argument('--version', default='')
+                            
     args = parser.parse_args()
 
     if args.pig:
         farm = pigfarm.PigFarm()
-        farm.add(TankRain)
+        farm.add(TankRain, dict(path=args.path, version=args.version))
 
         from karmapi.mclock2 import GuidoClock
         farm.add(GuidoClock)
