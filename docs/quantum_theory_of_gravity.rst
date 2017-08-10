@@ -4,7 +4,11 @@
 
 It's all waves, gravitational waves.
 
+A field that propogates through itself.
 
+Local resonance and structure.
+
+Celestial harmony.
 
 Water
 =====
@@ -85,3 +89,22 @@ Time
 ====
 
 ??
+
+Dark Matter
+===========
+
+Local areas of structure within the field, below the noise.
+
+But you will get in sync if you pass by.
+
+
+Quantum crypto
+==============
+
+Agreeing a local field structure below the noise.
+
+Quantum computer
+================
+
+Look for structure in hidden field.
+
