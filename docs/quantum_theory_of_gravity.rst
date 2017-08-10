@@ -75,3 +75,13 @@ Electrons and protons
 
 Resonance
 =========
+
+Background
+==========
+
+Mean gravitational field, varies in time.
+
+Time
+====
+
+??
