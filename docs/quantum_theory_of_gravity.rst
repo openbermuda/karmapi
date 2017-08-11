@@ -77,8 +77,30 @@ Electrons and protons
 =====================
 
 
-Resonance
-=========
+Resonance and Harmony
+=====================
+
+Imagine being inside a recently formed black hole.  A chaotic  
+implosion of matter.
+
+Matter which is moving and hence generating gravitational waves.
+
+A random distribution of white noise.
+
+Locally, there may be vibrations at the same frequency.
+
+Harmonics will emerge.
+
+Perhaps the resulting distribution of energy will follow a harmonic
+distribution.
+
+The total amount of energy in a given frequency being proportional to
+that frequency itself.
+
+This distribution of energy in the universe's gravitational field
+would give rise naturally to the quantum phenomena and in particular
+give rise to the Planck-Einstein relation, *E = hf*.
+
 
 Background
 ==========
