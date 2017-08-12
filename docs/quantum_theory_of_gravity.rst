@@ -1,6 +1,6 @@
-=============================
- A Quantum Theory of Gravity
-=============================
+===========================
+ A Theory of Waves in Time
+===========================
 
 It's all waves, gravitational waves.
 
@@ -10,8 +10,35 @@ Local resonance and structure.
 
 Celestial harmony.
 
+Setting
+=======
+
+Imagine a void.   A cube of None marching through time.
+
+The cube cut into 8 smaller cubes, in turn each 8 smaller.
+
+And so on all the way down.
+
+Make the edges of the cubes vibrate, with the frequency inversely
+proportional to the length of the cube side.
+
+Have the energy for each frequency be some magic constant multiple of
+the frequency.
+
+The strings are perfectly elastic, so the vibrations pass through the
+void at the speed of light.
+
+When a wave passes, a cube offers resistance, inertia, that has to be
+overcome to move it.
+
+Below a certain threshold, the cube is pulled back by the fabric of
+time.
+
+
 Water
 =====
+
+Add a drop of water to the void.
 
 Two protons dancing round 8 friends.
 
@@ -26,7 +53,6 @@ An observation is when energy is turned into momentum or vice-versa.
 So when is the observation made in this experiment?
 
 A photon enters the box, passes through the half mirror...
-
 
 What's momentum
 ===============
@@ -53,6 +79,8 @@ Bouncing along the waves, creating waves.
 
 What is mass?
 =============
+
+Mass is a standing wave of energy in the fabric of space time.
 
 Einstein
 ========
@@ -130,3 +158,21 @@ Quantum computer
 
 Look for structure in hidden field.
 
+
+Karma
+=====
+
+Waves that a body creates bounce back as they harmonise with the
+universe around.
+
+
+Godel, Escher, Bach
+===================
+
+Self reference.
+
+
+Incompleteness of mathematics
+=============================
+
+Mathematics of self referential fields.
