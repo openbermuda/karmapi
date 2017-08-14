@@ -1,0 +1,5 @@
+# rainbow images
+
+@reboot pi /usr/local/bin/python3.6 -m karmapi.rainbow /home/pi/karmapi/rainbow
+
+
