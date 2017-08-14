@@ -42,6 +42,8 @@ Add a drop of water to the void.
 
 Two protons dancing round 8 friends.
 
+H20, 47b, its everywhere here.
+
 
 Schrodinger's Cat
 =================
@@ -67,27 +69,37 @@ What is energy?
 
 A gravitational wave.
 
+A change in energy, changes the waves.
+
+momentum times ache gives the energy.
+
+and frequency is proportional to momentum too.
+
+
 Gravitational field
 ===================
 
 Matter, which is itself just gravitational waves.
 
+Waves running in circles and eights and more, gyroscopes in the sky.
+
 Gyroscopes
 ==========
 
-Bouncing along the waves, creating waves.
+Bouncing along the waves, creating waves as they pass.
 
 What is mass?
 =============
 
 Mass is a standing wave of energy in the fabric of space time.
 
+A gyroscope that pulls as you pull.
+
 Einstein
 ========
 
 Einstein guessed gravitational waves may be a thing.  Two years ago,
 they were detected, they are a thing.
-
 
 
 Planck
@@ -101,8 +113,12 @@ photon is linearly proportional to the momentum.
 It is also linearly proportional to the ??
 
 
-Electrons and protons
-=====================
+Neutrons
+========
+
+There are lot of these about round here.   Or things that can be
+rearranged into neutrons, and yield energy.
+
 
 
 Resonance and Harmony
@@ -176,3 +192,35 @@ Incompleteness of mathematics
 =============================
 
 Mathematics of self referential fields.
+
+
+Predictions
+===========
+
+Dark matter
+-----------
+
+Black holes which have evaporated.
+
+Areas of wonderful hidden structure we can only see if we pass
+through?
+
+Lenses that focus gravitational waves.
+
+Water
+-----
+
+under the electron microscope.
+
+Homeopathy?   DIY homeopathy?
+
+Diagnose the planet with sea samples under electron microscope?
+
+Moon and planets
+----------------
+
+
+Does God play dice?
+-------------------
+
+If so how does the game go?
