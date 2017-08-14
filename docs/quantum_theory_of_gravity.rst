@@ -224,3 +224,24 @@ Does God play dice?
 -------------------
 
 If so how does the game go?
+
+
+Gravitational decay rate
+------------------------
+
+When two black holes spiral into each other how near can you be to
+watch?
+
+Number of wavelengths away before you barely notice?
+
+
+Probably OK so long as you don't get sucked in, you are already along
+for the ride and have been for some time...
+
+
+Therefore, field would seem to be extremely homogeneous, as noted,
+time seems to be similar for lots of places in our universe.
+
+There can be big local explosions and nobody notices.
+
+It will follow a harmonic distribution.
