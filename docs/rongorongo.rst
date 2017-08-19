@@ -159,6 +159,16 @@ place on earth where this could happen.
 So the Moai were there when the humans arrived and the humans just
 decorated them?  And then learnt how to build new ones.
 
+Or maybe when humans got there they found columns of basalt, lying on
+the ground all over the place.
+
+Like *eratic* boulders in glaciated areas.
+
+They stood a couple of the columns up, and they walked down the hill
+together.
+
+Which came first?  The Moai or the humans?
+
 
 Reference
 =========
