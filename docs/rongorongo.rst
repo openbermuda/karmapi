@@ -112,6 +112,53 @@ The slight asymetry in the Moai, due to the carving of heads has the
 wonderful property that Moai are statistically much more likely to
 come to rest facing inland than facing out to sea.
 
+My father studied geography, he always used to say, "geography is why
+are things where they are?.   History is why did things happen when
+they did.".
+
+The answer to both is physics, the laws of nature.
+
+There is one law.  Nature strives to achieve local and global harmony.
+
+It is all in the mathematics, all in the pie.
+
+The Moai are where they are because Rapa Nui is bang slap in the
+middle of the pacific.   It is one of the hubs around which the world
+revolves.
+
+As such, it does not feel the shocks that hit other parts of the
+world.
+
+Bermuda is a similar point, around which storms revolve.   It is all
+in the physics.
+
+So it may well be that outside of Rapa Nui the world is rarely stable
+enough to get a Moai launched.
+
+Once launched, like a quantum of energy they go on their way until
+some force or momentum or (ahu) stops them.
+
+Or until they achieve a place where they are in perfect harmony with
+the universe itself.
+
+The first Moai?
+===============
+
+Giant's Cauesway in Northern Ireland has beautiful hexagonal pillars
+of basalt.
+
+As the volcano was eroded by rain and wind, maybe Rapa Nui had pillars
+that just walked down to the sea.
+
+Maybe the giant's causeway in Ireland is actually marching into the
+sea?
+
+The magnetic field in Rapa Nui will be very stable, it may be the only
+place on earth where this could happen.
+
+So the Moai were there when the humans arrived and the humans just
+decorated them?  And then learnt how to build new ones.
+
 
 Reference
 =========
