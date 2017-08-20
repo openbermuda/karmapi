@@ -6,7 +6,9 @@ I am sure you are inundated with messages from people that think they
 have new insights on the universe.
 
 I am afraid this is just one more such message, but I believe with a
-significant probability of actually being of value.
+significant probability of actually being of value.  At the very
+least, it provides a new way of looking at the problem that should
+provide significant new insights.
 
 I have attached a CV so you can learn a little of my background.  I
 grew up in the UK, attended Warwick University in the early 1980's
@@ -87,6 +89,20 @@ spreads through the universe some information is lost, or rather stays
 outside the Schwartzchild radius, but my guess is that the same
 imbalances that existed inside the black holes before the collision
 will re-emerge after that collision.
+
+There may be a theorem that proves this.  My suspicion is that there
+will be a connection with the Riemann hypothesis.
+
+I think it is helpful to view a black hole as a 3-dimensional Poincare
+disk.  Energy emerging from a tiny, but not infinitesimal point at
+the centre of the disk.   At infinity, or the edge of the disk energy
+evaporates with hawking radiation.
+
+This is also the event horizon where new matter enters the black hole
+and is turned into energy.  Conceptually, the surface of the black
+hole is identified with the dot at the centre, so the universe can be
+thought of as a three dimensional Klein bottle embedded in the
+4-space: 3 dimensions of space and one of time.
 
 As you can imagine, this interpretation has profound implications
 around the question of whether God plays dice and many, many other
