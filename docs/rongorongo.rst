@@ -169,6 +169,79 @@ together.
 
 Which came first?  The Moai or the humans?
 
+Too many Moai?
+==============
+
+As the Moai go off on their walks and find their place of resting on
+the island, the magnetic field around the island will strive to be in
+harmony with the magnetic fields of the Moai.
+
+The whole island will resonate with magnetic and gravitational fields
+marching to the beat of the Moai.
+
+As more and more Moai are created the strength of this field will
+increase.
+
+Launching a new Moai will become increasingly difficult.
+
+Since each Moai is a giant magnet it will naturally want to oscillate
+in time with the field created by the other Moai.
+
+At some point this resonance will have sufficient energy to topple any 
+new Moai.
+
+To launch a Moai the amplitude of its oscillations need to be large
+enough to cause it to wobble and waddle like a penguin, but not so
+large that it topples over.
+
+As it wobbles, the island's magnetic and gravitational fields act like
+the forcer of a pendulum, giving just enough new energy for each
+oscillation to replace energy dissipated as heat, due to things such
+as friction.
+
+If these are out of balance, the Moai will either stop rocking or
+topple.
+
+There is a tiny sweet spot at which they will just march down the
+hill.
+
+This sweet spot gets smaller as more Moai are added, since the
+resonance in the magnetic and gravitational fields also get stronger.
+
+The location of Rapa Nui itself helps increase the size of the sweet
+spot, being a Lagrangian point about which the earth's fields revolve.
+
+In fact, this is why there was a volcano at this spot in the first
+place.  And the presence of the volcano was what provided rocks with a
+strong magnetic field.
+
+Now the Rapa Nui people no doubt developed a lot of myth and
+superstition around the Moai, developing complex rituals for the
+launching of a new Moai.
+
+If something was done differently and the Moai toppled that practice
+might stop, if the Moai walked then the new change would likely be
+added to the ritual.
+
+Since the walking of the Moai was associated with a mystical power or
+*mana*, it is not difficult to imagine how the Moai would become of
+such fundamental importance to the people.
+
+A giant electric motor
+======================
+
+It seems most of the Moai were carved out of the rock in a horizontal
+position.
+
+Hence when turned through 90 degrees and stood upright, any magnetic
+field that the rock had will now be 90 degrees out of phase with the
+surrounding field.
+
+This is the ideal orientation.
+
+Hence the standing Moai can be thought of as the coils of a giant
+electric motor, driven by the island's magnetic field.
+
 
 Reference
 =========
