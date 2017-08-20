@@ -57,10 +57,13 @@ Very approximately equal amounts of energy are emitted each
 revolution, but waves of higher and higher frequencies will emerge.
 
 In fact, the initial energy should be roughly equal for each integer
-frequency.
+frequency.  I believe this may explain why Planck found a constant and
+not a variable.   There is also an intriguing possibility that it
+might only be locally constant.
 
-The small imbalances in energy between revolutions are what allows
-certain frequencies to dominate.
+The small imbalances in energy between revolutions may be what allows
+certain frequencies to dominate.   Or it may be that the whole thing
+is just driven by harmony and the zeros of Riemann.
 
 A band with just a little more energy will start to dominate and
 absorb energy from the higher frequencies in harmony with that band.
@@ -77,7 +80,8 @@ waves emanating from those bodies will strive to get in harmony with each
 other.   In the absence of stronger forces they will succeed and begin
 to circle each other.
 
-There are many more fascinating aspects to the theory, I am collecting my thoughts here:
+There are many more fascinating aspects to the theory, I am collecting
+my thoughts here:
 
 https://github.com/swfiua/karmapi/blob/master/docs/quantum_theory_of_gravity.rst
 
