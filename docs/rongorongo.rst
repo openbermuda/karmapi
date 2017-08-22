@@ -242,6 +242,35 @@ This is the ideal orientation.
 Hence the standing Moai can be thought of as the coils of a giant
 electric motor, driven by the island's magnetic field.
 
+Sea level changes
+=================
+
+At times in the past much of Rapa Nui has been underwater.
+Certainly, sea level has been much higher than it currently is.
+
+Undersea columns of harder rock may have been eroded by the sea.
+
+It is much, much easier to *launch* a Moai undersea, due to the
+greater density of water to air.
+
+Perhaps this is how the first Moai were launched.
+
+The *Yonaguni* structure off the island of Taiwan in fract has two
+natural columns that rise to just 2.5m below the sea surface.
+
+Note that *Yonaguni* is 100 miles off the coast of Taiwan.  It appears
+to be in a location that, like Rapa Nui, is one of the Lagrangian
+points around which the earth's fields rotate.
+
+This shows that such natural structures can indeed be formed.
+
+Hence, one intriguing theory is that the Moai first walked under the
+sea.
+
+Once an upright Moai is in a stable oscillation it could easily stay
+upright as the sea level lowered, especially if there are multiple
+such columns in resonance with each other.
+
 
 Reference
 =========
