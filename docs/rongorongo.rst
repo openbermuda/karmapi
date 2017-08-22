@@ -271,6 +271,19 @@ Once an upright Moai is in a stable oscillation it could easily stay
 upright as the sea level lowered, especially if there are multiple
 such columns in resonance with each other.
 
+Standing waves in the ocean
+===========================
+
+If you place two columns under the ocean, a standing wave will emerge.
+
+The waves will be in harmony around the columns and help keep them
+stable.
+
+If the columns are large enough and the forces applied to them are
+small enough, they will be stable and in fact can withstand quite
+strong forces, so long as the energy per oscillation of the column is
+less than half the energy required for one oscillation.
+
 
 Reference
 =========
