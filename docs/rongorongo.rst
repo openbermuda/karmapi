@@ -284,6 +284,38 @@ small enough, they will be stable and in fact can withstand quite
 strong forces, so long as the energy per oscillation of the column is
 less than half the energy required for one oscillation.
 
+Deforestation
+=============
+
+By the time Europeans arrived in 1772 there were no trees more than 3m
+tall.
+
+It has been suggested that the deforestation was caused by excessive
+harvesting of trees to use as rollers to move the Moai.
+
+However, if they *walked* on their own this cannot be the explanation
+of the deforestation
+
+If the Maoi *walked* by themselves, then the spacings will be
+such that a standing magnetic wave forms around them.
+
+The Moai are large enough to affect winds as they pass across the
+island.
+
+It is likely that the Moai, given their positioning, will cause
+standing waves to be created within any wind storm.  
+
+The Moai would act like a lens focussing winds passing across the
+island.
+
+This may have made it difficult for trees to grow larger than a
+certain height, since the standing waves would simply blow them down.
+
+
+Hence, rather than the deforestation being due to trees being
+harvested to help move Moai, it may be the Moai themselves that caused
+the deforestation.
+
 
 Reference
 =========
