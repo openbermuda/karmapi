@@ -17,13 +17,11 @@ def images(path, folder):
 
 def generate_data(stamps, values):
 
-    stamps = df.variables['time']
-
-    epoch = datetime.date(1900, 1, 1)
+    epoch = datetime.datetime(1900, 1, 1)
     
     for ix, stamp in enumerate(stamps):
 
-        date = epoch + datetime.timedelta(hours=stamp)
+        date = epoch + datetime.timedelta(hours=int(stamp))
 
         yield values[ix], date
     
