@@ -316,10 +316,113 @@ Hence, rather than the deforestation being due to trees being
 harvested to help move Moai, it may be the Moai themselves that caused
 the deforestation.
 
+The Dance of the RongoRongo
+===========================
+
+There is an undeciphered text from Rapa Nui called *rongorongo*.
+
+Only a few samples survive.   The writings were on pieces of wood.
+One was on an old oar blade.
+
+Both sides of the oar are used.
+
+52 characters account for over 99% of the characters.
+
+That is a pack of cards, four sets of 13, ace through 10, jack, queen,
+king.
+
+Four suits.  Spades, hearts, diamonds, clubs.
+
+The Rapa Nui have a 13 month calendar.   Most years have 12 full
+moons, some have a bonus month.
+
+With four suits, each year pick one based on which quarter the moon is
+in at the winter solstice.
+
+Now we have a symbol for the months.
+
+Now guess how *rongo rongo* is read?   Round and round, like
+everything in Rapa Nui.
+
+You start at the bottom, read right to left.  At the end of the row,
+mark with the thumb of your right hand, and twirl through 180 degrees.
+
+At the end of that row, twirl again, 180 degrees, but maybe reverse
+the direction for fun.
+
+Now what could the tablets mean?   What could be worthy of these
+precious writing tools?   And the scribes that could write.
+
+And what of the readers?  What happened to them?  They were the wise
+ones the leaders of lands.
+
+When warriors arrived, they killed all the wise.
+
+Later they found the mysterious signs.
+
+They asked of the people can you help us to read.
+
+The ones that could read are watching from heaven.
+
+Well the Moai of course as they dance to the coast.
+
+Powered by *mana* from heaven above.
+
+And powered by earth as it drags to its centre.
+
+So the Moai did dance, in pairs, two by two.
+
+As the swayed and they rocked,
+
+As they hopped and they skipped,
+
+As they danced down the mountain to rest by the sea.
+
+As they came to their station
+
+Ahu by the sea.
+
+They turned to the mountain.
+
+To chants of delight.
+
+Each day the fine scribe, would draw the two dancers.
+
+The queen at the top the king down below
+
+Then dos-y-dos and off they do go.
+
+To meet at the centre, embrace and uncurl.
+
+A rongo rongo dance
+
+Of mystical beauty.
+
+Chant of the Moai
+-----------------
+
+Eight lines on a tablet
+
+Each row twenty eight
+
+Four months of a dance a Moai did take.
+
+The king and the queen, in quantum delight
+
+Forever entangled to rock by the night.
+
+
+Pismo s otoka Te Pito O Te Henua
+--------------------------------
+
+.. image:: rongo.jpg
+
+(Public Domain, screenshot from wikipedia.org)
+
 
 Reference
 =========
 
 https://www.youtube.com/watch?v=J5YR0uqPAI8
 
-http://www.robertschoch.com/articles/schochbaddeleyeasterislandproposal.pdf
+http://www.robertschoch.com/articles/schochbaddeleyeasterislandproposal.pdf 
