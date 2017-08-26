@@ -35,15 +35,17 @@ def images(path, stamps, values):
 
     for data, date in generate_data(stamps, values):
 
+        print(date)
         pyplot.imshow(data)
 
-        path = Path(f'{path}/{date.year}/1/1/').expanduser()
+        item  = Path(f'{path}/{date.year}/1/1/').expanduser()
 
-        path.mkdir(exist_ok=True, parents=True)
+        item.mkdir(exist_ok=True, parents=True)
 
-        path = path / f'{date.hour:02}{date.minute:02}{date.second:02}.jpg'
-        
-        pyplot.savefig(path, bbox_inches='tight', pad_inches=0)
+        item = item / f'{date.hour:02}{date.minute:02}{date.second:02}.jpg'
+
+        print(path)
+        pyplot.savefig(str(path), bbox_inches='tight', pad_inches=0)
 
 
 

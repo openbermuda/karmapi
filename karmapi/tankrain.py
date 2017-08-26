@@ -1,5 +1,6 @@
 """ Bermuda weather
 """
+import itertools
 import argparse
 
 import datetime
@@ -15,7 +16,6 @@ import curio
 from karmapi import show, base
 
 from karmapi import pigfarm, checksum
-
 
 # Paths to data
 url = 'http://weather.bm/images/'
@@ -88,8 +88,11 @@ class TankRain(pigfarm.MagicCarpet):
         path = Path(f'{self.path}/{date.year}/{date.month}/{date.day}/').expanduser()
 
         print(f'loading images for path: {path} v{self.version}v')
+
+        jpegs = path.glob('{}*.[jp][np]g'.format(self.version))
+        gifs = path.glob('{}*.gif'.format(self.version))
         
-        for image in sorted(path.glob('{}*.[jp][np]g'.format(self.version))):
+        for image in itertools.chain(jpegs, gifs):
     
             if image.stat().st_size == 0:
                 continue
