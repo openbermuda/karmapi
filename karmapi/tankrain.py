@@ -260,22 +260,6 @@ async def fetch(minutes=30, sleep=300):
             
         await curio.sleep(300)
 
-def parse_date(date):
-    """ Parse a date """
-    if date is None:
-        return date
-
-    fields = [int(x.strip()) for x in date.split('/')]
-                  
-
-    while len(fields) < 3:
-        fields.append(1)
-    
-    year, month, day = fields
-
-    return datetime.date(year, month, day)
-
-    
 
 def main(args=None):
     """ Retrieve images currently available 
@@ -293,7 +277,7 @@ def main(args=None):
                             
     args = parser.parse_args()
 
-    args.date = parse_date(args.date)
+    args.date = base.parse_date(args.date)
 
     if args.pig:
         farm = pigfarm.PigFarm()

@@ -514,4 +514,20 @@ class Timer:
         for tag, ttime in sorted(self.tt.items(), key=get_value):
             print(f'{ttime:8.3f} {tag}')
 
+def parse_date(date):
+    """ Parse a date """
+    if date is None:
+        return date
+
+    fields = [int(x.strip()) for x in date.split('/')]
+                  
+
+    while len(fields) < 3:
+        fields.append(1)
+    
+    year, month, day = fields
+
+    return datetime.date(year, month, day)
+
+    
 

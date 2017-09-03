@@ -9,6 +9,7 @@ from pathlib import Path
 import netCDF4
 
 from matplotlib import pyplot
+from karmapi import base
 
 def load(path):
 
@@ -83,12 +84,9 @@ if __name__ == '__main__':
 
     df = load(path / args.raw)
 
-    epoch = current_epoch(args.date)
-
     stamps = df.variables['time']
 
-
-    args.date = parse_date(args.date)
+    args.date = base.parse_date(args.date)
 
     if args.date:
         stamps = stamp_filter(stamps, args.date, epoch)
