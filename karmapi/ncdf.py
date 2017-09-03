@@ -19,9 +19,24 @@ def images(path, folder):
 
     df = load(path)
 
-def generate_data(stamps, values):
+def current_epoch():
 
-    epoch = datetime.datetime(1900, 1, 1)
+    return datetime.datetime(1900, 1, 1)
+
+def stamp_filter(stamps, start, epoch=None):
+
+    epoch = epoch or current_epoch()
+
+    for stamp in stamps:
+        date = epoch + datetime.timedelta(hours=int(stamp))
+
+        if date >= start:
+            yield stamp
+    
+
+def generate_data(stamps, values, epoch=None):
+
+    epoch = epoch or current_epoch()
     
     for ix, stamp in enumerate(stamps):
 
@@ -42,10 +57,13 @@ def images(path, stamps, values):
 
         item.mkdir(exist_ok=True, parents=True)
 
-        item = item / f'{date.hour:02}{date.minute:02}{date.second:02}.jpg'
+        filename = f'{date.month:02}{date.day:02}_'
+        filename += f'{date.hour:02}{date.minute:02}{date.second:02}.jpg'
 
-        print(path)
-        pyplot.savefig(str(path), bbox_inches='tight', pad_inches=0)
+        print(filename)
+        item = item / filename
+
+        pyplot.savefig(str(item), bbox_inches='tight', pad_inches=0)
 
 
 
@@ -57,6 +75,7 @@ if __name__ == '__main__':
     parser.add_argument('--path', default='karmapi/ecmwf')
     parser.add_argument('--value', default='t2m')
     parser.add_argument('--raw', default='temperature.nc')
+    parser.add_argument('--date')
 
     args = parser.parse_args()
 
@@ -64,13 +83,21 @@ if __name__ == '__main__':
 
     df = load(path / args.raw)
 
+    epoch = current_epoch(args.date)
+
     stamps = df.variables['time']
+
+
+    args.date = parse_date(args.date)
+
+    if args.date:
+        stamps = stamp_filter(stamps, args.date, epoch)
 
     values = df.variables[args.value]
 
     path = path / args.value
 
-    images(path, stamps, values[:10])
+    images(path, stamps, values)
     
 
     
