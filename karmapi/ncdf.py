@@ -31,7 +31,7 @@ def stamp_filter(stamps, start, epoch=None):
     for stamp in stamps:
         date = epoch + datetime.timedelta(hours=int(stamp))
 
-        if date >= start:
+        if date >= datetime.datetime(start.year, start.month, start.day):
             yield stamp
     
 
@@ -89,7 +89,7 @@ if __name__ == '__main__':
     args.date = base.parse_date(args.date)
 
     if args.date:
-        stamps = stamp_filter(stamps, args.date, epoch)
+        stamps = stamp_filter(stamps, args.date)
 
     values = df.variables[args.value]
 
