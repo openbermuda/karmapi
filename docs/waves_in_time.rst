@@ -131,6 +131,21 @@ Energy is conserved, so harmony is rewarded.
 Skip to the neutron
 ===================
 
+In our part of the universe, neutrons are pretty much the thing.
+There are a lot of them about.
+
+From the outside of a neutron, you can view it as a standing wave in
+the fabric of space time, running in circles, emitting a steady wave.
+
+Inside, there is all sorts going on, it is turtles all the way down.
+
+So the waves go by at the speed of light and rebound when they meet
+with a similar beat.
+
+And they go with the flow, as that is all that they know.
+
+And harmony would emerge, but that energy rules.
+
 
 self reference
 ==============
