@@ -12,7 +12,7 @@ import numpy
 from matplotlib import pyplot
 from matplotlib.pyplot import show, imshow, title, colorbar
 
-from karmapi import base, sonogram
+from karmapi import base, sonogram, tpot
 
 def load(path):
 
@@ -57,6 +57,7 @@ def generate_data(stamps, values, epoch=None):
         
 def images(path, stamps, values):
 
+    lastdate = None
     for data, date in generate_data(stamps, values):
 
         print(date)
@@ -92,7 +93,7 @@ def pcs(stamps, values, n=None):
 
     if n:
         stamps = stamps[:n]
-        
+
     records = []
     for lon in range(1):
         for data, date in generate_data(stamps, values):
@@ -109,6 +110,25 @@ def pcs(stamps, values, n=None):
     
     return pca
 
+
+def downsample(stamps, values, k=15):
+
+    
+    for data, date in generate_data(stamps, values):
+    
+    xx = values[0]
+    width, height = xx.shape
+
+    nn = len(stamps)
+
+
+
+def model(stamps, values):
+    """ Build a model """
+    stamps = list(stamps)
+    xx = values[stamps[0]]
+
+    print(xx.shape)
 
 def delta(stamps, values):
 
@@ -178,6 +198,15 @@ def saveimage(path, date):
 
     pyplot.savefig(str(item), bbox_inches='tight', pad_inches=0)
 
+
+def model(stamps, values):
+    """ fit a model """
+
+    dt = list(stamps_to_datetime(stamps))
+
+    data = pcs(stamps, values)
+    
+
 if __name__ == '__main__':
 
 
@@ -192,6 +221,7 @@ if __name__ == '__main__':
         help='do principal components')
 
     parser.add_argument('--delta', action='store_true')
+    parser.add_argument('--model', action='store_true')
     parser.add_argument('--offset', type=int, default=0)
 
     args = parser.parse_args()
@@ -221,6 +251,10 @@ if __name__ == '__main__':
 
     elif args.delta:
         delta(stamps, values)
+
+    elif args.model:
+
+        model(stamps, values)
         
     else:
         images(path, stamps, values)
