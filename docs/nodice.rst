@@ -2,6 +2,44 @@
  NO DICE?
 ==========
 
+A REPL for the universal interpreter.
+
+Without python and its community of magic little of what follows.
+
+It is a personal interpretation of how our universe may work.
+
+If you like, an interpreter, for the universe.
+
+Now as we shall see, this interpretation is self referential, or at
+least the universe it describes is.
+
+There are beginnings and ends, but each beginning is also an end.
+
+So where to start?
+
+February 2015
+=============
+
+PyCaribbean in Santo Domingo.  The first ever python in the Caribbean.
+
+During a keynote we learned it was python's 25th birthday.
+
+We also learned that python was used at every step of the data
+analysis of the signals from the LIGO experiment.
+
+An experiment which had just detected two black holes, each more than
+30 times the mass of our sun, which had collided with each other.
+
+The collision was 1000 light years away and it created a ripple in
+space time that LIGO detected.
+
+This confirmed that gravitational waves really do exist, as Einstein
+had proposed almost exactly 100 years ago.
+
+So, let us start with the guess that all matter sends out a
+gravitational wave as it moves.
+
+
 Relativity
 ==========
 
@@ -15,6 +53,10 @@ As the viewer moves, so the view changes.
 
 Waves will be waves.
 
+Michelson-Morley
+----------------
+
+Describe LIGO.
 
 Time
 ====
@@ -26,6 +68,16 @@ Different viewpoints,
 Different beat.
 
 Same harmony.
+
+But what exactly is time?
+
+It seems that we can only go in one direction, we cannot go backwards
+in time.
+
+It also seems relentless, you cannot halt time.  Or maybe you can.
+
+Einstein's special relativity showed that time and space are
+intimately related, perhaps different aspects of the same thing?
 
 Matter
 ======
@@ -41,7 +93,7 @@ E = m c^2
 
 c = 1
 
-E = m
+y E = m
 
 Waves
 =====
@@ -81,6 +133,9 @@ Irrational
 
 Transcendental
 
+Heisenberg
+==========
+
 Poincare
 ========
 
@@ -108,6 +163,32 @@ Twisted double helix.
 
 A black hole or two?
 ====================
+
+Our universe is likely littered with black holes colliding with each
+other.
+
+And this is now late in the day, just a billion years ago.
+
+So, let's begin and guess that our universe may have been born when
+two masses, each roughly half the mass of our universe, merged into a
+giant black hole.
+
+The two, ying and yang perhaps, merged throwing a ripple through the
+time of space as the energy swirled inside, a new infinite harmony.
+
+Waves of almost equal amplitude, in every integer frequency of a
+driving beat of time.
+
+The waves of energy would swirl like swirls of raspberry juice in a
+bowl of custard.
+
+Vortices will form, as waves pass by and swirl in harmony.
+
+A tiny gyroscop of mass, resonating with anything sharing the
+channel.
+
+Energy is conserved, so harmony is rewarded.
+
  
 Whirling vortices
 =================
@@ -119,6 +200,9 @@ The edge of the disc
 
 A Dark Matter
 =============
+
+Dark Energy
+===========
 
 Dice?
 =====
