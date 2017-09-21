@@ -11,12 +11,15 @@ Stable Continental Regions:
 
 http://earthquake.usgs.gov/data/scr_catalog.txt
 """
+import math
 import datetime
 import requests
 
 URL = 'http://earthquake.usgs.gov/data/centennial/centennial_Y2K.CAT'
 
 import pandas
+
+EPOCH = datetime.datetime(1900, 1, 1)
 
 def parse(record):
     """ Parse a record 
@@ -60,12 +63,67 @@ def get():
 
     return load(data.split('\n')[:-1])
 
-def observations(df):
+def rows(df):
     """ generate observations """
 
-    for row in df:
+    for row in df.itertuples():
         yield row
 
+def moontime(dates, epoch=EPOCH):
+    """ Convert dates to moontime 
+    
+    FIXME; calulate number of full moons since some epoch
+    """
+    return dates
+
+def observation(row, xday=24, xyear=52):
+    """Turn a row into an observation 
+
+    That is just a list of integers.
+
+    Shorter vectors with the same information content a bonus.
+
+    Or maybe a lack of variability giving a false confidence in the true information?
+
+    For now, aim that each variable should have p states.  Primes might
+    be good choices for number of states.
+
+    """
+    obs = []
+    pi = math.pi
+
+    # throw the year in, so we can sort of track time
+    obs.append(row.year)
+
+    # now month, would be good to use new moon count + current phase?
+    ix = row.Index
+
+    # fixme give angle of dangle in pi?
+    day = ix.dayofyear 
+    obs.append(day // xyear)
+
+    # Conjure up time of day stamp
+    otime = row.hour + ((row.minute) / 60)
+
+    otime *= row.second / (60 * 60)
+
+    otime = (otime // xday)
+
+    obs.append(otime)
+
+    # ok now where?
+    obs.append(row.lat)
+    obs.append(row.lon)
+
+    # how much?
+    severity = row.severity
+    
+    #for x in dir(row.Index): print(x)
+    #print(row.Index.toordinal())
+    #obs.append(row.month)
+
+    
+    return obs
 
 def main():
 
@@ -102,9 +160,17 @@ def main():
     
     print(df.info())
 
-    for obs in observations(df):
+    print()
+
+    observations = [observation(x) for x in rows(df)]
+
+    print(len(observations))
+    print(type(observations))
+    
+    for row in rows(df):
+        obs = observation(row)
         print(obs)
-        break
+
 
     exit()
 
