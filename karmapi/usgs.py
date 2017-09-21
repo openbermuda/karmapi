@@ -44,16 +44,7 @@ def timestamp(x):
     return datetime.datetime(int(x.year), int(x.month), int(x.day),
                              int(x.hour), int(x.minute), int(x.second))
 
-def load(infile):
-
-    data = []
-    for line in infile:
-        data.append(parse(line))
-
-    columns = ['year', 'month', 'day', 'hour', 'minute', 'second',
-               'lat', 'lon', 'foo', 'bar', 'foobar', 'severity']
-
-    df = pandas.DataFrame(data, columns=columns)
+def timewarp(df):
 
     # at least one date has 0 for the day :(
     df.day = df.day.clip_lower(1)
@@ -68,4 +59,57 @@ def get():
     data = requests.get(URL).content.decode()
 
     return load(data.split('\n')[:-1])
+
+def observations(df):
+    """ generate observations """
+
+    for row in df:
+        yield row
+
+
+def main():
+
+    import argparse
+    from karmapi import tpot, base, sonogram
+
+    Path = base.Path
     
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--path', default='karmapi/data/quake/')
+    parser.add_argument('--value', default='t2m')
+    parser.add_argument('--raw', default='centennial')
+    parser.add_argument('--date')
+    parser.add_argument(
+        '--pc', action='store_true',
+        help='do principal components')
+
+    parser.add_argument('--delta', action='store_true')
+    parser.add_argument('--model', action='store_true')
+    parser.add_argument('--offset', type=int, default=0)
+
+    args = parser.parse_args()
+
+    path = Path(args.path)
+
+    df = base.load(path / args.raw)
+
+    print(df.describe())
+
+    df = timewarp(df)
+
+    df.describe()
+    
+    print(df.info())
+
+    for obs in observations(df):
+        print(obs)
+        break
+
+    exit()
+
+
+if __name__ == '__main__':
+
+
+    main()
