@@ -19,6 +19,8 @@ URL = 'http://earthquake.usgs.gov/data/centennial/centennial_Y2K.CAT'
 
 import pandas
 
+from karmapi import base
+
 EPOCH = datetime.datetime(1900, 1, 1)
 
 def parse(record):
@@ -76,7 +78,13 @@ def moontime(dates, epoch=EPOCH):
     """
     return dates
 
-def observation(row, xday=24, xyear=52):
+def load(path):
+
+    df = base.load(path)
+
+    return timewarp(df)
+
+def observation(row):
     """Turn a row into an observation 
 
     That is just a list of integers.
@@ -93,30 +101,36 @@ def observation(row, xday=24, xyear=52):
     pi = math.pi
 
     # throw the year in, so we can sort of track time
-    obs.append(row.year)
+    #obs.append(row.year)
 
     # now month, would be good to use new moon count + current phase?
     ix = row.Index
 
     # fixme give angle of dangle in pi?
     day = ix.dayofyear 
-    obs.append(day // xyear)
+    obs.append(int(day / 7))
 
     # Conjure up time of day stamp
     otime = row.hour + ((row.minute) / 60)
 
-    otime *= row.second / (60 * 60)
+    otime += row.second / (60 * 60)
 
-    otime = (otime // xday)
+    otime = int(otime)
 
     obs.append(otime)
 
     # ok now where?
-    obs.append(row.lat)
-    obs.append(row.lon)
+    lat = row.lat
+    lat = (lat + 90) / 15
+    obs.append(int(lat))
+
+    lon = row.lon
+    lon = (lon + 180) / 15
+    obs.append(int(lon))
 
     # how much?
-    severity = row.severity
+    severity = int(row.severity)
+    obs.append(severity)
     
     #for x in dir(row.Index): print(x)
     #print(row.Index.toordinal())
@@ -128,7 +142,7 @@ def observation(row, xday=24, xyear=52):
 def main():
 
     import argparse
-    from karmapi import tpot, base, sonogram
+    from karmapi import tpot, sonogram
 
     Path = base.Path
     
@@ -150,28 +164,33 @@ def main():
 
     path = Path(args.path)
 
-    df = base.load(path / args.raw)
+    df = load(path / args.raw)
 
     print(df.describe())
-
-    df = timewarp(df)
-
-    df.describe()
-    
     print(df.info())
-
     print()
 
     observations = [observation(x) for x in rows(df)]
 
     print(len(observations))
     print(type(observations))
-    
+
+    data = []
     for row in rows(df):
         obs = observation(row)
         print(obs)
+        data.append(tuple(obs))
 
+    items = set()
+    for item in data:
+        items.add(item)
 
+    print('number of items', len(items))
+
+    # Build A, B, P0 and fill the tpot
+    
+
+        
     exit()
 
 
