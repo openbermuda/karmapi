@@ -50,3 +50,24 @@ forever.
 
 A little random perturbation in the fabric of time.
 
+Paper
+=====
+
+When I was sick, she showed me to fold paper, all the way from Japan
+origami.
+
+Frogs, always frogs, but sometimes a bird.
+
+Cross Words
+===========
+
+Never and always crosswords.
+
+At the table with a clue, some letters and a guess.
+
+To a question an answer, but often a question.
+
+Radio silence
+=============
+
+Talk on the radio, music too, bbc.
