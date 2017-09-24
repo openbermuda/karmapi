@@ -53,6 +53,8 @@ As the viewer moves, so the view changes.
 
 Waves will be waves.
 
+
+
 Michelson-Morley
 ----------------
 
@@ -97,6 +99,13 @@ y E = m
 
 Waves
 =====
+
+Wherever you are in the universe, you are surrounded by gravity
+waves.  Indeed, you yourself are just part of the waves.
+
+Imagine a lattice of diamonds, each one wavelength of the frequency at
+hand.
+
 
 Light Magnets
 =============
@@ -202,6 +211,28 @@ A Dark Matter
 =============
 
 Dark Energy
+===========
+
+DNA
+===
+
+There is a lot of DNA on earth.  Each double helix strand has its own
+rhythm.
+
+What if DNA is everywhere it can be in the universe?
+
+Why do cells grow differently from the same DNA?
+
+As cells replicate in the womb new rhythms emerge.  As a body takes
+shape the local vibrations will differ, activating different parts of
+the DNA chain?
+
+Brain
+=====
+
+20 watts of electrical energy.  Beating to the rhythm of thought.
+
+Information
 ===========
 
 Dice?
