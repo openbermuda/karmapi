@@ -71,3 +71,16 @@ Radio silence
 =============
 
 Talk on the radio, music too, bbc.
+
+And crystal set with long wire aerial.
+
+Electronics and adding machines.
+
+Wheels
+======
+
+Wheels of granite, wheels of wood, powered by water forging the steel.
+
+Red and white and white and blue.
+
+And legends of a purple hugh.
