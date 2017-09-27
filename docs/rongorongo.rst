@@ -237,10 +237,25 @@ Hence when turned through 90 degrees and stood upright, any magnetic
 field that the rock had will now be 90 degrees out of phase with the
 surrounding field.
 
-This is the ideal orientation.
+This may be the ideal orientation.
 
 Hence the standing Moai can be thought of as the coils of a giant
 electric motor, driven by the island's magnetic field.
+
+As the Moai pass other Moai standing on ahu's this will cause electric
+current to flow in those Moai, since a moving Moai creates a varying
+magnetic field.
+
+Depending on the strength of this field, and noting that the Moai
+should act like Tesla's Wardenclyffe towers and create standing waves
+around the island, it is possible enough current would be generated to
+create arcing between parts of the Moai.
+
+It has been stated by the Rapa Nui that Mana, or energy flowed when
+eyes were added to the Moai eye sockets.
+
+If these are made of materials with the right properties they could
+well act as giant capacitors that create just such a light show.
 
 Sea level changes
 =================
