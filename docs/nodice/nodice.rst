@@ -58,9 +58,42 @@ Waves will be waves.
 Michelson-Morley
 ----------------
 
-Describe LIGO.
+Michelson and Morley took a beam of light and split it into two
+beams that they arranged to be travelling at right angles to each
+other.
 
-Time
+The beams were aimed at mirrors and then they attempted to see which
+beam came back first.
+
+The idea was that if everything is moving relative to some fixed
+background *ether* we ought to be able to see how we are moving
+relative to that *ether* by measuring which beam comes back first.
+
+However, they found that no matter how they orientated their
+experiment the two beams always returned at exactly the same time.
+
+This suggested that everything revolved around the point in space
+where they were doing the experiment, making the earth a very special
+place in the universe.
+
+Einstein and other scientists felt this was unlikely.
+
+Einstein suggested that perhaps time runs slower for a moving frame of
+reference, just enough to ensure that the two beams arrive back at the
+same time.
+
+Einstein also suggested that moving matter may create gravitational
+waves that propogate through the universe at the speed of light.
+
+If it were possible to build a Michelson-Morley experiment sensitive
+enough to detect these waves then we ought to see a time difference
+for light waves travelling parallel and perpendicular to a
+gravitational wave.
+
+The LIGO experiment is just such an experiment.   Two vaccuum tubes,
+arranged in an L-shape, each tube 4km long.
+
+time
 ====
 
 It is just the beat of time, the beat that must go on.
