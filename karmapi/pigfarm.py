@@ -550,7 +550,7 @@ class MagicCarpet(Space):
                 if self.begin or self.end:
                     frame = filter_frame(frame, self.begin, self.end)
                 
-            if isinstance(frame.index, pandas.tseries.index.DatetimeIndex):
+            if isinstance(frame.index, pandas.core.indexes.datetimes.DatetimeIndex):
                 sortflag = False
 
             frames[group] = dict(frame=frame, sort=sortflag)

@@ -34,7 +34,10 @@ import numpy as np
 
 from PIL import Image, ImageDraw, ImageTk
 
-from pandas.formats.format import EngFormatter
+try:
+    from pandas.formats.format import EngFormatter
+except:
+    from pandas.io.formats.format import EngFormatter
 
 from ripl import imagefind
 
