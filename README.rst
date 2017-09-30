@@ -190,7 +190,7 @@ There are *rst* files in the *docs* folder and a *conf.py* for *sphinx*::
 
   pip install sphinx
 
-(pip3,6 if you have multiple pythons).
+(pip3.6 if you have multiple pythons).
 
 After that just run:
 
@@ -252,7 +252,7 @@ git clone https://github.com/openbermuda/karmapi
 
 cd karmapi
 
-pip3.6 -e ,
+pip3.6 -e .
 
 Python3.6 on Ubuntu 16.04 and raspbian
 ======================================
