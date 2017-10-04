@@ -18,6 +18,7 @@ import requests
 URL = 'http://earthquake.usgs.gov/data/centennial/centennial_Y2K.CAT'
 
 import pandas
+import ephem
 
 from karmapi import base
 
@@ -84,6 +85,18 @@ def load(path):
 
     return timewarp(df)
 
+
+def moon_phase(when):
+
+    nmoon = ephem.next_full_moon(when).datetime()
+    pmoon = ephem.previous_full_moon(when).datetime()
+    
+    month_seconds = (nmoon - pmoon).total_seconds()
+
+    phase = (when - pmoon).total_seconds() / month_seconds
+
+    return phase
+
 def observation(row):
     """Turn a row into an observation 
 
@@ -105,10 +118,8 @@ def observation(row):
 
     # now month, would be good to use new moon count + current phase?
     ix = row.Index
-
-    # fixme give angle of dangle in pi?
-    day = ix.dayofyear 
-    obs.append(int(day / 7))
+    
+    obs.append(moon_phase(ix))
 
     # Conjure up time of day stamp
     otime = row.hour + ((row.minute) / 60)
@@ -129,7 +140,7 @@ def observation(row):
     obs.append(int(lon))
 
     # how much?
-    severity = int(row.severity)
+    severity = row.severity
     obs.append(severity)
     
     #for x in dir(row.Index): print(x)
@@ -183,7 +194,7 @@ def main():
 
     items = set()
     for item in data:
-        items.add(item)
+        items.add(tuple(item))
 
     print('number of items', len(items))
 

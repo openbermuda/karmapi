@@ -116,11 +116,11 @@ def downsample(stamps, values, k=15):
     
     for data, date in generate_data(stamps, values):
     
-    xx = values[0]
-    width, height = xx.shape
+        xx = values[0]
+        width, height = xx.shape
 
     nn = len(stamps)
-
+    
 
 
 def model(stamps, values):
