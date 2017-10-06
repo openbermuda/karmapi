@@ -73,3 +73,68 @@ temperature gets to zero.
 H: What about units?
 
 T: Oh Planck units are good.
+
+T: so if you create a wave with wavelength of 1, it collapses into a
+black hole.
+
+H: so it disappears?
+
+T: well it is so much energy that it almost immediately evaporates.
+
+H: so all that energy goes out in unit time, with me riding the wave?
+
+T: but don't forget it evaporates too.
+
+H: oh that's ok, just a little surf.
+
+T: well yes and it comes right back at me.
+
+H: you mean I am chasing my tail?
+
+T: you are indeed, and pushing me along as you go.
+
+H: like an infinite bottle of wine, that fills itself as you pour?
+
+T: oh just like that, a magic vase from klein.
+
+H: and Henry?  There must be a Henry there, Henry the hair.
+
+T: Oh, like Tesla the tortoise?
+
+H: Tesla?  no, Henry the hare.
+
+T: There's Henry Poincare, he's just like a hare, with a tortoise
+behind.
+
+H: Have you been drinking the whine from klein?
+
+T: you'd like Poincare, his magic disk.
+
+H: what of this disk, what makes it glow?
+
+T: well that would be the background buzz, the micro waves of fuzz.
+
+H: so did Henri win the race to the end?
+
+T: Well he showed that there are two ends you can have.
+
+H: I get to choose if I win or lose?
+
+T: Well I guess it is like that.
+
+T: So paths which begin may one day rejoin, at the end of the run, at
+the end of time.
+
+H: so sounds like a draw and not a hair win.
+
+T: well not a draw, but round again, with klein and wind, driven by
+wine.
+
+H: you said there was another way it might end.
+
+T: well that does not end either, but you never get closer.  Forever
+apart in the fabric of time.
+
+H: and Tesla the tortoise?
+
+T: Another time, another place.
