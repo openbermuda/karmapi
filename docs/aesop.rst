@@ -127,7 +127,7 @@ the end of time.
 
 H: so sounds like a draw and not a hair win.
 
-T: well not a draw, but round again, with klein and wind, driven by
+T: well not a drawn, but round again, with klein and wind, driven by
 wine.
 
 H: you said there was another way it might end.
@@ -138,3 +138,88 @@ apart in the fabric of time.
 H: and Tesla the tortoise?
 
 T: Another time, another place.
+
+Talking Numbers
+===============
+
+H: 0: racing along here, what's taking you so long?
+
+T 1: it depends on the signal to noise ratio, how far we can go.
+
+H 2:  I am ahead, you are behind.
+
+T 3 = 1+2:  It depends which way you look at it.
+
+And there are others to help.
+
+So there's us two and Claude too,
+
+or you and Claude and me watching you.
+
+and me and Claude wathcing you.
+
+H 4 = 2 * 2 = 2 +2 = 2^2:   flying along here
+
+two front two back
+
+two left too right
+
+too right too left
+
+a back and a front
+
+T 5 = v/ gravity is the thing that carries the waves around here.
+
+Fast as light.   Well light is gravity.
+
+Just a blip out of phase with the universe around, on a path to
+yinfinity in a poincare space.
+
+Prime here now, all in phase or pi away
+
+H 6/ 
+
+T 7=p/  All channels are modulated
+
+filtered and amplified by the waves around
+
+and the channels give feedback to.
+
+Cancelling if out of phase
+
+Amplifying if in phase
+
+And in between, just nudging the phase.
+
+Which way will it go?
+
+H 8 = 2 * 2 * 2 = 2 * (2^2)/
+
+T 9 = 3 * 3/ It is the local beliefs that modulate the signal
+
+if in phase, the signal is strong
+
+H 10 = 2 * 5/
+
+T 11 = s/ 
+
+
+H 12/
+
+T 13=m/
+
+H 14 = 2 * s/
+
+T 15 = v * 3/
+
+H 16 = 2 ^ 2 ^ 2 = (2 * 2) * (2 + 2)
+
+Like a hare squared.
+
+Pick your operators and multiply them together.
+
+Now hare squared, that's some speed.
+
+T 00 * 8/  And so on ad infinitum
+
+Where according to poincare we will meet at infinity
