@@ -1,4 +1,20 @@
+"""
+Moon or moai
 
+Electromagnetic balls of wonder dancing together.
+
+Ahu bus stops
+
+and the number 7 bus.
+
+May Day Parade
+
+Winter Solstice
+
+Spring Tide Mays
+
+And October blaze.
+"""
 
 import datetime
 
@@ -33,4 +49,35 @@ for x in range(100):
     print(current)
 
     current += delta
+
+from collections import Queue
+from math import pi
+
+class queue(Queue):
+
+    def __init__(self):
+
+        super().__init__(self)
+
+        self.value = 0.0
     
+    def value(self):
+
+        return self.value
+
+    def tick(self):
+
+        self.value /= pi
+    
+class stop:
+    """ Or Ahu, a bus depot """
+    self.depot = queue()
+
+    def echo(self, depot=None):
+
+        value = 0.0
+        for item in depot:
+            value += depot.value()
+
+        self.value += value / 2
+        return self.value

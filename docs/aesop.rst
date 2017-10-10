@@ -127,7 +127,7 @@ the end of time.
 
 H: so sounds like a draw and not a hair win.
 
-T: well not a drawn, but round again, with klein and wind, driven by
+T: well not a draw, but round again, with klein and wind, driven by
 wine.
 
 H: you said there was another way it might end.
@@ -148,7 +148,7 @@ T 1: it depends on the signal to noise ratio, how far we can go.
 
 H 2:  I am ahead, you are behind.
 
-T 3 = 1+2:  It depends which way you look at it.
+T 3 = 1+1+1 = 1+2:  It depends which way you look at it.
 
 And there are others to help.
 
@@ -158,7 +158,7 @@ or you and Claude and me watching you.
 
 and me and Claude wathcing you.
 
-H 4 = 2 * 2 = 2 +2 = 2^2:   flying along here
+H 4 = 2 * 2 = 2 + 2 = 2^2:   flying along here
 
 two front two back
 
