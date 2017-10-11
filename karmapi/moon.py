@@ -14,6 +14,13 @@ Winter Solstice
 Spring Tide Mays
 
 And October blaze.
+
+
+So far now, simulate moai.  
+
+And orongo.
+
+
 """
 
 import datetime
@@ -50,10 +57,10 @@ for x in range(100):
 
     current += delta
 
-from collections import Queue
+from collections import deque
 from math import pi
 
-class queue(Queue):
+class queue(deque):
 
     def __init__(self):
 
@@ -69,11 +76,10 @@ class queue(Queue):
 
         self.value /= pi
     
-class stop:
+class stop(queue):
     """ Or Ahu, a bus depot """
-    self.depot = queue()
 
-    def echo(self, depot=None):
+    async def echo(self, depot=None):
 
         value = 0.0
         for item in depot:
@@ -81,3 +87,31 @@ class stop:
 
         self.value += value / 2
         return self.value
+
+    def add(self, moai):
+
+        # fixme push according to direction of travel
+        self.queue.push(moai)
+
+class moai:
+
+    def __init__(self, m=1, x=0, y=0, z=0, t=0):
+
+        self.x = x
+        self.y = y
+        self.z = z
+        self.t = t
+
+    async def tick(self):
+
+        self.t += 1
+
+        # loop to t udating position
+        for d in range(self.t):
+            # magnus magnus son needed
+            pass    
+            
+        
+    
+
+        
