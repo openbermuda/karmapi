@@ -76,8 +76,15 @@ class queue(deque):
 
         self.value /= pi
     
-class stop(queue):
+class stop:
     """ Or Ahu, a bus depot """
+
+    def __init__(self, x=None, y=None):
+
+        self.queue = queue()
+
+        self.x = x
+        self.y = y
 
     async def echo(self, depot=None):
 
@@ -111,7 +118,73 @@ class moai:
             # magnus magnus son needed
             pass    
             
-        
-    
 
+if __name__ == '__main__':
+
+    import argparse
+    from pathlib import Path
+
+    parser = argparse.ArgumentParser()
+
+    AHU = dict(
+        orongo = stop(y=-27.1874, x=-109.4431),
+        ranoraraku = stop(y=-27.1220, x=-109.2889),
+        rrq =        stop(y=-27.1263, x=-109.2885),
+        tongariki =  stop(y=-27.1258, x=-109.2769),
+    )
+
+    ORIGIN=AHU['orongo']
+
+    parser.add_argument('--path', default='karmapi/ecmwf')
+    parser.add_argument('--value', default='t2m')
+    parser.add_argument('--raw', default='temperature.nc')
+    parser.add_argument('--date')
+    parser.add_argument(
+        '--pc', action='store_true',
+        help='do principal components')
+
+    parser.add_argument('--delta', action='store_true')
+    parser.add_argument('--model', action='store_true')
+    parser.add_argument('--offset', type=int, default=0)
+
+    args = parser.parse_args()
+
+    path = Path(args.path)
+
+    for name, ahu in AHU.items():
+        print(name, ahu)
+
+    overandout
+
+    df = load(path / args.raw)
+
+    stamps = df.variables['time']
+
+    args.date = base.parse_date(args.date)
+
+    if args.date:
+        stamps = stamp_filter(stamps, args.date)
+
+    values = df.variables[args.value]
+
+    path = path / args.value
+
+    if args.pc:
+        pca = pcs(stamps, values, 48*35)
+
+        pca.show_fracs(0.1)
+
+        for x in dir(pca):
+            print(x)
+
+    elif args.delta:
+        delta(stamps, values)
+
+    elif args.model:
+
+        model(stamps, values)
+        
+    else:
+        images(path, stamps, values)
+    
         
