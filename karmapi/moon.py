@@ -131,6 +131,15 @@ if __name__ == '__main__':
         ranoraraku = stop(y=-27.1220, x=-109.2889),
         rrq =        stop(y=-27.1263, x=-109.2885),
         tongariki =  stop(y=-27.1258, x=-109.2769),
+        akivii =     stop(y=-27.1150, x=-109.3950),
+        hanavarevare = stop(y=-27.1167, x=-109.4167),
+        tepeu =      stop(y=-27.1024, x=-109.4163),
+
+        xx1 =        stop(y=-27.0950, x=-109.4108),
+        xx2 =        stop(y=-27.1236, x=-109.4215),
+        xx3 =        stop(y=-27.0933, x=-109.4098),
+        xx4 =        stop(y=-27.0887, x=-109.4074),
+        xx5 =        stop(y=-27.0703, x=-109.3987),
     )
 
     ORIGIN=AHU['orongo']
