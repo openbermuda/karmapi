@@ -69,3 +69,12 @@ Lies on the floor and watches snow eat.
 So snowy says piri stays
 
 But neither of them knows of the snow days ahead.
+
+Names
+=====
+
+Harvey, Irma, Jose too.
+
+Maria and now Ophelia.
+
+Mexico quake and California fire.
