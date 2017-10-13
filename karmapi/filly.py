@@ -117,6 +117,30 @@ So I don't have events for 2016, but just lets pretend its 2017 / pi.
 
 Now lets see what 2018 might be.
 
+Correlation, you see
+====================
+
+So modellers for years have debated series.  A string of events but no common thread.
+
+They look at starts, arrivals are negative binomial.
+
+The sd = mean * 1.15
+
+yBut not enough data to surely be sure.
+
+So lets just pretend they don't come in threes.
+
+Yet drivers are 100% correlated: hot sea, low shear, and landfall too.
+
+And two storms out at sea, maybe even 3, feed it each other and share the energy.
+
+So though far away, Maria feeds Irma and Lee feeds Maria.
+
+And the seas that are swelling help Ophelia to form.
+
+Driven by a moon in a total eclipse year.
+
+
 """
 
 from math import pi
