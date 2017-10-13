@@ -238,16 +238,15 @@ if __name__ == '__main__':
     aggloss = defaultdict(float)
     
     for ename, event in Events.items():
-
+        print(ename)
         losses = {}
         for oname, org in Orgs.items():
-            print(oname, org.premium, org.capital)
-
             loss = event.loss * org.premium * MAGIC
+            print(oname, loss)
             aggloss[oname] += loss
 
-    
         elosses[ename] = losses
+        print()
 
     # show agg losses
     print()
