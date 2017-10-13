@@ -88,6 +88,9 @@ Detail:
 
 from math import pi
 from datetime import date
+from collections import defaultdict
+
+import copy
 
 INSURED = 0.8
 
@@ -97,7 +100,11 @@ INSURED_WIND = 0.9
 
 AUTO_FLOOD = 1.0
 
+# share of contracts that are multi year
+MULTI_YEAR = 1.0 / pi
 
+# Drop down deductible
+DDD = 1.0 / pi
 
 class Event:
 
@@ -124,49 +131,78 @@ class Org:
     def __init__(
             self,
             name,
-            premium,
+            premium=None,
             noncat=0.0,
             ceded=0.0,
+            share = None,
+            capital = None,
             skill=None):
         
         self.name = name
-        self.premium = premium
+
+        # market capitalisation: how the stock market values the organisation
+        self.capital = capital
+
+        # annual written premium
+        self.premium = premium or self.capital / 5.0
+
+        # share of premium for noncat lines
+        self.noncat = noncat
+
+        # share of premium that is ceded
+        self.ceded = ceded
+
+        # underwriting skill
+        self.skill = skill
+
+        # estimate of market share
+        self.share = share
 
 
 Orgs = dict(
     renre = Org('renre',
                 premium=1.4,
                 noncat=0.3,
-                ceded=0.3),
+                ceded=0.3,
+                share=0.01 * INSURED,
+                capital=5.6),
+                
     axis = Org('axis',
                premium=1.5,
                noncat=0.3,
-               ceded=0.1),
+               ceded=0.1,
+               capital=4.8),
+               
     tmr = Org('tmr',
               premium=1.4,
               noncat=0.2,
-              ceded=.25),
+              ceded=.25,
+              capital=1.4),
+              
     partner = Org('partner',
               premium=1.4,
               noncat=0.4,
-              ceded=.25),
+              ceded=.25,
+              capital=6.56),
+              
     arch = Org('arch',
-               premium=0,
+               premium=None,
+               capital=12.56,
               ),
     aspen = Org('aspen',
-                premium=0),
+                premium=0,
+                capital=2.5),
     )
 
 
-q3 = [x for x in 
-
 Events = dict(
-        harvey: Event('harvey', 100, 0.2),
-        irma:   Event('irma', 100, 0.2),
-        maria:  Event('ma,ria', 80, 0.5),
-        jose:   Event('jose', 1, 0.5),
-        mexicoq:  Event('mexico', 25, 0.5),
-        calfire:  Event('calfire', 10, 0.8)
+        harvey =  Event('harvey', 100, 0.2),
+        irma =    Event('irma', 100, 0.2),
+        maria =   Event('ma,ria', 80, 0.5),
+        jose =    Event('jose', 1, 0.3),
+        katia =   Event('katia', 1, 0.3),
+        mexicoq = Event('mexico', 25, 0.5),
+        calfire = Event('calfire', 10, 0.8)
         )
 
 q3 = [x for x in Events.values()]
@@ -177,13 +213,15 @@ Reports = [
     Report(Orgs['partner'], q3, date(2017, 10, 6), 0.475),
     Report(Orgs['axis'], q3, date(2017, 10, 12), 0.585)]
 
-
+# factor to apply to premium to get reinsurance loss
+MAGIC = 0.001
 
 if __name__ == '__main__':
 
     events16 = {}
-    for key, event in events.items():
-        eee = event.copy()
+    for key, event in Events.items():
+
+        eee = copy.copy(event)
 
         eee.loss /= pi
     
@@ -192,7 +230,32 @@ if __name__ == '__main__':
 
     years = {
         2016: events16,
-        2017: events,
-        2018: [events, events16]}
-    
+        2017: Events,
+        2018: [Events, events16]}
 
+    # Estimate losses
+    elosses = {}
+    aggloss = defaultdict(float)
+    
+    for ename, event in Events.items():
+
+        losses = {}
+        for oname, org in Orgs.items():
+            print(oname, org.premium, org.capital)
+
+            loss = event.loss * org.premium * MAGIC
+            aggloss[oname] += loss
+
+    
+        elosses[ename] = losses
+
+    # show agg losses
+    print()
+    print('Aggregate Loss')
+    for org, loss in aggloss.items():
+        print(org, loss)
+
+    # Compare to reports
+    for report in Reports:
+        pass
+    
