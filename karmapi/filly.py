@@ -82,7 +82,40 @@ Detail:
 
 * but bragging about a detailed model, that ignores many factors is a negative bonus.
 
+So what of next year, 2018?
+===========================
 
+Triggers have triggered, new deals have been written.
+
+Multi year deals, a multi year roller.
+
+What of events?
+
+So 2017 again?  Or maybe 2016?
+
+Will the ocean still be warm?  A definite yes.
+
+Will there be shear?  It depends on the ENSO and other fine factors.
+
+The moon?  No eclipse, but tides running higher.
+
+Will there be landfalls?   Strong storms seem to favour keeping the eye off land.
+
+But sometimes so strong they cannot resist.
+
+Model adjustments: too soon to be sure, but a tweak here and there.
+
+Take Maria, a giant cat 5.  How many cat 5's hit PR in 10K years of a model?
+
+1? 2? 3?  10, 20, 30?
+
+How many of those are 180 mph?
+
+So a one in 1000, you're having a laugh.
+
+So I don't have events for 2016, but just lets pretend its 2017 / pi.
+
+Now lets see what 2018 might be.
 
 """
 
