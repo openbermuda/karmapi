@@ -88,7 +88,7 @@ Detail:
 
 from math import pi
 from datetime import date
-from collections import defaultdict
+from collections import defaultdict, deque
 
 import copy
 
@@ -158,6 +158,22 @@ class Org:
         # estimate of market share
         self.share = share
 
+        # Track agg loss
+        self.aggloss = 0.0
+
+        self.deductable = 1.0
+
+        self.events = deque()
+
+    def add_event(self, event):
+
+        self.events.put(event)
+
+    def tick(self):
+        """ Crank the clock foward, see how it looks """
+        pass
+        
+
 
 Orgs = dict(
     renre = Org('renre',
@@ -192,6 +208,14 @@ Orgs = dict(
     aspen = Org('aspen',
                 premium=0,
                 capital=2.5),
+
+    xl = Org('xl',
+             premium=0,
+             capital=10.5),
+             
+    everest = Org('everest',
+                  premium=0,
+                  capital=10.5),
     )
 
 
@@ -215,7 +239,11 @@ q3 = [x for x in Events.values()]
 Reports = [
     Report(Orgs['renre'], q3, date(2017, 10, 6), 0.625),
     Report(Orgs['partner'], q3, date(2017, 10, 6), 0.475),
-    Report(Orgs['axis'], q3, date(2017, 10, 12), 0.585)]
+    Report(Orgs['axis'], q3, date(2017, 10, 12), 0.585),
+    Report(Orgs['xl'], q3, date(2017, 10, 12), 1.48),
+    Report(Orgs['everest'], q3, date(2017, 10, 12), 1.2),
+    Report(Orgs['arch'], q3, date(2017, 10, 12), 0.345),
+    ]
 
 # factor to apply to premium to get reinsurance loss
 MAGIC = 0.001
