@@ -202,8 +202,12 @@ Events = dict(
         jose =    Event('jose', 1, 0.3),
         katia =   Event('katia', 1, 0.3),
         mexicoq = Event('mexico', 25, 0.5),
-        calfire = Event('calfire', 10, 0.8)
+        calfire = Event('calfire', 10, 0.8),
         )
+
+MoreEvents = dict(
+    ophelia = Event('ophelia', 10, 0.8),
+)
 
 q3 = [x for x in Events.values()]
 
