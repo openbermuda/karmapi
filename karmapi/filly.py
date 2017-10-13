@@ -82,6 +82,8 @@ Detail:
 
 * but bragging about a detailed model, that ignores many factors is a negative bonus.
 
+
+
 """
 
 from math import pi
@@ -143,13 +145,22 @@ Orgs = dict(
     tmr = Org('tmr',
               premium=1.4,
               noncat=0.2,
-              ceded=.25)
-              )
+              ceded=.25),
+    partner = Org('partner',
+              premium=1.4,
+              noncat=0.4,
+              ceded=.25),
+    arch = Org('arch',
+               premium=0,
+              ),
+    aspen = Org('aspen',
+                premium=0),
+    )
 
-if __name__ == '__main__':
 
+q3 = [x for x in 
 
-    events = dict(
+Events = dict(
         harvey: Event('harvey', 100, 0.2),
         irma:   Event('irma', 100, 0.2),
         maria:  Event('ma,ria', 80, 0.5),
@@ -157,6 +168,18 @@ if __name__ == '__main__':
         mexicoq:  Event('mexico', 25, 0.5),
         calfire:  Event('calfire', 10, 0.8)
         )
+
+q3 = [x for x in Events.values()]
+
+# Reports so far on losses
+Reports = [
+    Report(Orgs['renre'], q3, date(2017, 10, 6), 0.625),
+    Report(Orgs['partner'], q3, date(2017, 10, 6), 0.475),
+    Report(Orgs['axis'], q3, date(2017, 10, 12), 0.585)]
+
+
+
+if __name__ == '__main__':
 
     events16 = {}
     for key, event in events.items():
@@ -173,5 +196,3 @@ if __name__ == '__main__':
         2018: [events, events16]}
     
 
-    reports = [
-        Report('rms', harvey, date(2017, 9, 7), 6)
