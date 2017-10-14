@@ -181,6 +181,21 @@ So suddenly secrets are there in the paper.
 
 Collecting it all, but missing the pearls.
 
+Red white and blue
+==================
+
+It has been a strange journey with a rainbow of colours.
+
+The beginnings they echo the python moves strong.
+
+And easier and easier to do what we dreamed of.
+
+But harder and harder to please.
+
+For fear of computers that we can't control.
+
+And only a form to update.
+
 qotd::
   
    Well, I really want to encourage a kind of fantasy, a kind of
