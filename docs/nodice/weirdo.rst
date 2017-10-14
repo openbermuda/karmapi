@@ -85,12 +85,55 @@ less.
 XL cats Charlie Frances Ivan Jeanne
 ===================================
 
-Snowy2
+SnowyN
 ======
 
 I am told he likes cats, as I do too.
 
 They show me how and what and when to care.
+
+So there have been a few snowies.
+
+Snowy the first, a republican cat.
+
+A cat from Clontarf, on the line to the city.
+
+Out to Kildare with the lilly white air.
+
+Scared of the dogs here, big as horses.
+
+A stroke or two, now I am scared.
+
+And Sooty the stealth cat, no flap training there.
+
+Who knelt to Snowy, only here for the food.
+
+Snowy2
+------
+
+Snowy2, a quantum cat.  White noise and calm.  A steady background
+beat.
+
+Takes his time all is good.
+
+Snowy lived with a giant dog in devonshire, so moved to southampton,
+yby the lighthouse.
+
+Tinkerbell in his field, looking for the ghyll, waiting for the rain.
+
+And the storms, Fay, Gonzalo, Joaquim, Alex, Karl and Nicole.
+
+Both snowy's came with a name.
+
+Ando sooty was always going to be sooty.
+
+There must be snowie every where.
+
+So Snowy4 counts for all n > 3.
+
+Charged on his mid-summer birthday.  2013 june 21.
+
+30 for him just one for me and m.
 
 
 NSA document stash
@@ -100,15 +143,43 @@ I knew some like snowden, a younger flash gordon.
 
 Fixed the code when something ran slow.
 
-Now snowy2, helping humans use software.
+Now snowy4, helping humans use software.
 
 As they scoop up the waves.
 
-The world was changing fast.
+The world changing fast.
 
 Take a beat and look around.
 
 Lots of good here to be found.
+
+
+Remember, remember the 5th of november
+======================================
+
+Alan Rusbridger, a guardian leader.  Sat in the kitchen, reading the
+letters.  Talking to Brenda, queen of the crossword.
+
+Said I would like Cheltenham, fun to be had there.
+
+Puzzles like puzzles you never to see.
+
+People to help.  Ellis and Cocks.  Turing and Toulmin.
+
+Now the numbers were small.  We shared with each other and select
+others.
+
+And always it was felt on the side of the good.
+
+If you can't keep a secret we can't do our job.
+
+So suddenly secrets are there in the paper.
+
+20 years later and look how it has changed.
+
+9/11 the rules forgotten.
+
+Collecting it all, but missing the pearls.
 
 qotd::
   
