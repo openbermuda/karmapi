@@ -95,9 +95,8 @@ between.
 
 Piri was talking of bagging Monroes in some place called Scotland.
 
-And typing away on a laptop:
+And typing away on a laptop::
 
-::
    # divide by zero magic
 
    import antigravity
@@ -128,9 +127,8 @@ Until it just stopped, who could take a look?
 
 Well Sooty said show me the stack.
 
-He scrolled to the end, and found a few lines:
+He scrolled to the end, and found a few lines::
 
-::
    # divide by zero magic
 
    import antigravity
