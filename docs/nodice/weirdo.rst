@@ -110,4 +110,17 @@ Take a beat and look around.
 
 Lots of good here to be found.
 
+qotd::
+  
+   Well, I really want to encourage a kind of fantasy, a kind of
+   magic. I love the term magic realism, whoever invented it – I do
+   actually like it because it says certain things. It's about
+   expanding how you see the world. I think we live in an age where
+   we're just hammered, hammered to think this is what the world
+   is. Television's saying, everything's saying 'That's the world.'
+   And it's not the world. The world is a million possible things
 
+   Terry Gilliam talking to Salman Rushdie
+
+   The Believer,  March 2003 via viki pidia
+   
