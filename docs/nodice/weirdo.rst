@@ -196,6 +196,50 @@ For fear of computers that we can't control.
 
 And only a form to update.
 
+Snowy4
+======
+
+Ed Snowden, citizen 4.
+
+I never saw that one coming.
+
+I read all the articles, watched citizen 4.
+
+Favourite scene?  The blanket mantle of power.
+
+Seeing both sides, from inside and out.
+
+Trying to figure how we got here.
+
+Karma Pi grew out of that.  What belongs in the open and how can it be
+shared?
+
+Networks of trust.
+
+Ubuntu and python, redhat and sunos.  Suse, debian, arch now too.  Pick your own
+name.
+
+Each goes at its pace, but finding its rhythm.
+
+And sharing the work of sharing the trust.
+
+But then there is the data and its everywhere.
+
+Protected by password but in an sec report.
+
+The data?  Safe as houses.
+
+Pick your design, but find one with bridges.
+
+Greenwald talking a block from a home.
+
+This should be interesting.  It was.
+
+Whatever Ed did he got a fair press.  At least from the ones that he
+trusted the most.
+
+
+
 qotd::
   
    Well, I really want to encourage a kind of fantasy, a kind of
