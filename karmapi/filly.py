@@ -144,6 +144,8 @@ Driven by a moon in a total eclipse year.
 """
 
 from math import pi
+import random
+
 from datetime import date
 from collections import defaultdict, deque
 
@@ -209,7 +211,10 @@ class Org:
         # share of premium that is ceded
         self.ceded = ceded
 
-        # underwriting skill
+        # skill this is the denominator.  
+        # How much of what you think you know is true?
+        # For now None or a number 0 < n < 1?
+        # Divide by this to measure the error?
         self.skill = skill
 
         # estimate of market share
@@ -229,7 +234,12 @@ class Org:
     def tick(self):
         """ Crank the clock foward, see how it looks """
         pass
+
+    def score(self):
+        loss = self.loss
+        skill = self.skill or random.random()
         
+        return loss, loss / skill
 
 
 Orgs = dict(
