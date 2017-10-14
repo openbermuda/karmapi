@@ -103,18 +103,30 @@ And four sets of three with one to score.
 1 + 1 + 1 + 1 + 1
 =================
 
-Mars, Venus too, or is it mercury?
+mars venus mercury
 
+earth sun
 
 2 + 2 + 2 = 3 + 3
 =================
 
-Here comes Jupyter?
+Here comes the moon, too soon or not?
 
 ones, twos and threes.
 
 
 1 + 1 + 1 + 1 + 1 + 1 + 1
+=========================
+
+
+Jupyter puts ones together.
+
+in twos and threes
+
+and fours and more or less
+
+
+2 + 2 + 2 + 2 = 4 + 4
 =========================
 
 Seven akivi.

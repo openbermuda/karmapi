@@ -47,4 +47,37 @@ You can greet with a nose, but then you can go.
 I'll watch you play with the interpretter lock.
 
 
+Ubuntu
+======
 
+Snowy has a home the sun and a garden to play.
+
+Cupboards for sleep and boxes too.
+
+And a pool of green bottles with one of blue.
+
+Along comes piri, the tiny cat pi-rate.
+
+Its the best name ever but I cant pronounce it.
+
+So snowy lets piri explore.
+
+Wathing him go, see what he needs.
+
+He's had a long journey, from who knows where.
+
+He's hungry to eat but eager to retreat.
+
+So he hurries the food and hides outside.
+
+The humans are sleeping, the crazy people.
+
+But when they're here and on form and listening to us.
+
+We dance and sleep and cherish the love.
+
+Snowy is happy, he has what he needs.
+
+Pull up a couch, just dont take his space.
+
+But share the ubuntu with everyone here.
