@@ -91,6 +91,8 @@ The tortoise is resting, it is feeling the heat.
  
 Drained by the talk of the hare.
 
+The sun the moon and the earth.
+
 2 o 2
 =====
 
@@ -98,4 +100,23 @@ With three you can get four and all kinds of two.
 
 And four sets of three with one to score.
 
+1 + 1 + 1 + 1 + 1
+=================
 
+Mars, Venus too, or is it mercury?
+
+
+2 + 2 + 2 = 3 + 3
+=================
+
+Here comes Jupyter?
+
+ones, twos and threes.
+
+
+1 + 1 + 1 + 1 + 1 + 1 + 1
+=========================
+
+Seven akivi.
+
+One for each day.
