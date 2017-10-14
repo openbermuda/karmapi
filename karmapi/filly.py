@@ -140,7 +140,24 @@ And the seas that are swelling help Ophelia to form.
 
 Driven by a moon in a total eclipse year.
 
+Curio
+=====
 
+So this is all about events and events are what curio does.
+
+Probably all that will be needed here is curio.run()
+
+So one goal here is to make forecasts, for time periods ahead.
+
+The first guess is no change.
+
+The aim is to do better than that, for some definition of better.
+
+So lets say closer to what happens.  
+
+Bonus marks if errors over time turn out to have been useful estimates.
+
+Start with skill = None and update if evidence warrants.
 """
 
 from math import pi
@@ -150,6 +167,9 @@ from datetime import date
 from collections import defaultdict, deque
 
 import copy
+
+# stinging bats and swooping manta rays
+import curio
 
 INSURED = 0.8
 
@@ -173,6 +193,7 @@ class Event:
 
         self.loss = loss
 
+        
         self.ifactor = ifactor or INSURED
 
 
@@ -195,6 +216,8 @@ class Org:
             ceded=0.0,
             share = None,
             capital = None,
+            aggloss = None,
+            maxloss = None,
             skill=None):
         
         self.name = name
@@ -220,8 +243,11 @@ class Org:
         # estimate of market share
         self.share = share
 
-        # Track agg loss
-        self.aggloss = 0.0
+        # Track agg loss and maxloss and error too, but throw in some salt
+        igul = random.randint(1, 50)
+        rigul = random.random() * self.share * igul
+        self.aggloss = aggloss or rigul
+        self.maxloss = maxloss
 
         self.deductable = 1.0
 
@@ -231,9 +257,21 @@ class Org:
 
         self.events.put(event)
 
-    def tick(self):
+    def tick(self, now=None):
         """ Crank the clock foward, see how it looks """
-        pass
+
+        now = now or date.now()
+        event = self.event.pop()
+
+        # calculate loss
+        loss = event.loss * self.share
+        self.aggloss += loss
+
+        # update error
+        self.error += loss / (self.skill or random.random())
+
+        
+        
 
     def score(self):
         loss = self.loss
@@ -292,6 +330,7 @@ Events = dict(
         maria =   Event('ma,ria', 80, 0.5),
         jose =    Event('jose', 1, 0.3),
         katia =   Event('katia', 1, 0.3),
+        nate =    Event('nate', 1, 0.5),
         mexicoq = Event('mexico', 25, 0.5),
         calfire = Event('calfire', 10, 0.8),
         )
