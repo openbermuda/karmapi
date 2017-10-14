@@ -125,10 +125,16 @@ in twos and threes
 
 and fours and more or less
 
+or the seven akivi
+
 
 2 + 2 + 2 + 2 = 4 + 4
 =========================
 
-Seven akivi.
+Eight lines of rongo rongo, or 16 if you flip.
 
-One for each day.
+Days and weeks
+
+Moons and more.
+
+Saturdays too, a day to play.
