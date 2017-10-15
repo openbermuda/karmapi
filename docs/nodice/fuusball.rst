@@ -103,6 +103,8 @@ Another letter, from a proxy.
 
 I see what you do.
 
+Home from the hospital, do you care?
+
 Well here's a filly, I hope you use it.
 
 For if you don't you'll surely lose it.
