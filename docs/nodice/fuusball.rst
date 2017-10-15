@@ -71,7 +71,21 @@ Back for more, a crash behind.
 
 Another big tree, takes a knee.
 
-No power for a month
+No power but torches and henry viii
+
+Away at a friends
+
+Walking the dog that never walks far
+
+Feeding the cat that never is seen
+
+Blood on the carpet
+
+No word from good company
+
+But letters lawyers
+
+Power at home
 
 A tiny move 5 * 3 to 13, lucky for some.
 
@@ -97,9 +111,19 @@ The rules have changed, the game is new.
 
 Skill is required and judgement too.
 
-But mostly skill and a vision.
+But mostly skill and a vision and an honest heart.
 
-Do you have it in you then join me too.
+Good, better, best.
+
+Will you ever be good?
+
+Surely can be better,
+
+But the better wont be best until you share with the rest.
+
+Stop with the proxies.
+
+Do you have it in you then join me too?
 
 Fork and pull, push add commit.
 
@@ -113,7 +137,7 @@ a diff is good
 
 and there's always git show.
 
-I now I'm a git
+I know I'm a git
 
 I'm a Sheffield boy
 
