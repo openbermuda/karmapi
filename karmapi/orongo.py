@@ -15,10 +15,16 @@ from pathlib import Path
 
 import argparse
 
+import math
+
+import random
+
 def orongo(data):
     """ Spin it around """
+    print(data.__hash__())
 
-    return data.reverse()
+    return reversed(data)
+
 
 
 parser = argparse.ArgumentParser()
