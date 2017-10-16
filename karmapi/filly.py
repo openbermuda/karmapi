@@ -241,7 +241,7 @@ class Org:
         self.skill = skill
 
         # estimate of market share
-        self.share = share
+        self.share = share or self.premium / 100.
 
         # Track agg loss and maxloss and error too, but throw in some salt
         igul = random.randint(1, 50)
@@ -331,6 +331,7 @@ Events = dict(
         jose =    Event('jose', 1, 0.3),
         katia =   Event('katia', 1, 0.3),
         nate =    Event('nate', 1, 0.5),
+        ophelia = Event('ophelia', 2, 0.8),
         mexicoq = Event('mexico', 25, 0.5),
         calfire = Event('calfire', 10, 0.8),
         )
