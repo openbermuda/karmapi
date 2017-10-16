@@ -4,7 +4,7 @@ Sort of.
 
 Four suits.  
 
-Still Rock Wobble Dance s r w d
+Still Rock Wobble Dance s r w d SH DC ?
 
 0-9 a b
 """
@@ -14,6 +14,12 @@ from collections import Counter
 from pathlib import Path
 
 import argparse
+
+def orongo(data):
+    """ Spin it around """
+
+    return data.reverse()
+
 
 parser = argparse.ArgumentParser()
 
@@ -25,6 +31,7 @@ args = parser.parse_args()
 
 
 totals = Counter()
+ototals = Counter()
 
 for path in args.path:
     print(path)
@@ -34,13 +41,19 @@ for path in args.path:
 
         counts = Counter()
 
-        counts.update(name.open().read().split())
+        data = name.open().read()
+        counts.update(data.split())
+        totals.update(counts)
 
+
+        rongo = orongo(data)
+        counts = Counter(rongo)
+
+        print('rongo')
         print(counts.most_common(5))
         print(sum(counts.values()))
         print()
 
-        totals.update(counts)
 
 print('Totals:')
 
