@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 
-__version__ = '0.6.1'
+__version__ = '0.7.6.5.4.3.2.1'
 
 here = path.abspath(path.dirname(__file__))
 
@@ -32,13 +32,9 @@ setup(
     ],
     entry_points = {
         'console_scripts': [
-            'kpi = karmapi.kpi:main',
-            'kpimage = karmapi.tools.image:main',
             'tankrain = karmapi.tankrain:main',
-            'checkmate = karmapi.checksum:main',
-            'joy = karmapi.pigjoy:main',
+            'orongo = karmapi.orongo:main',
             'currie = karmapi.currie:main',
-            'hush = karmapi.hush:main',
             ],
         },
     keywords='data pi karma',

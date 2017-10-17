@@ -73,8 +73,8 @@ def alpha(
             
 
 
-if __name__ == '__main__':
-
+def main():
+    
     parser = argparse.ArgumentParser()
 
     parser.add_argument('path', nargs='+')
@@ -117,3 +117,6 @@ if __name__ == '__main__':
 
     print(sum(totals.values()))
         
+if __name__ == '__main__':
+
+    main()
