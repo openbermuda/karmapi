@@ -19,6 +19,10 @@ from math import pi, e
 
 import random
 
+from PIL import Image
+
+PIE = pi * e
+
 YEAR = 1
 
 MONTH = 4
@@ -27,24 +31,45 @@ WEEK = 52
 
 DAY = 7
 
-EMONTH = (DAY * MONTH) / (pi * e)
+EMONTH = (DAY * MONTH) / PIE
 
 EYEAR = 0.25 / (DAY * WEEK)
 
-def orongo(data):
+
+def orongo(data, alpha=None):
     """ Spin it around """
+
+    if alpha is None:
+        alpha = list(range(52))
+        
     print(data.__hash__())
+
+    print(len(key))
 
     return reversed(data)
 
-def alpha(image):
-    """ Pick symbols from an image """
+def alpha(
+        key=None,
+        xgap=None,
+        ygap=None,
+        gap=None):
+    """ Pick symbols from an image 
+    
+    Mind the gaps.
+    """
+    key = Path(key)
+
+    image = Image.open(str(key))
+    print(image.size)
+
+    width, height = image.size
+    xgap = xgap or (width / PIE)
 
     for season in range(MONTH):
         for week in range(MONTH):
             for day in range(DAY):
                 # pick up a pick up a pixel or many from image
-                yield None
+                yield
             
 
 
@@ -54,11 +79,14 @@ if __name__ == '__main__':
 
     parser.add_argument('path', nargs='+')
 
+    parser.add_argument('--key')
+
     parser.add_argument('--glob', default='**/*.rst')
 
     args = parser.parse_args()
 
-
+    key = list(alpha(args.key or 'rongo.png'))
+    
     totals = Counter()
     ototals = Counter()
 
@@ -74,8 +102,7 @@ if __name__ == '__main__':
             counts.update(data.split())
             totals.update(counts)
 
-
-            rongo = orongo(data)
+            rongo = orongo(data, alpha=key)
             counts = Counter(rongo)
 
             print('rongo')
