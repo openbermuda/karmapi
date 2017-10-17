@@ -32,4 +32,6 @@ So maybe the plank isn't constant?
 
 It shrinks in time as the universe grows.
 
+Conserving the mana and sharing the karma.
+
 If you live 1 degree by pi to the n, then how could you know?
