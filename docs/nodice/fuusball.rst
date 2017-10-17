@@ -83,9 +83,21 @@ Blood on the carpet
 
 No word from good company
 
-But letters lawyers
+But letters from lawyers
+
+Repor a version
+
+Urban Nigel, Urban Legend.
+
+A c^T not a friendly cat
+
+Late to report
+
+Borrowing from the future
 
 Power at home
+
+6 11 off to the hospital
 
 A tiny move 5 * 3 to 13, lucky for some.
 
@@ -118,6 +130,14 @@ But mostly skill and a vision and an honest heart.
 Good, better, best.
 
 Will you ever be good?
+
+Start with a prior
+
+I'm princess cricket
+
+A road of forks
+
+A tree of love
 
 Surely can be better,
 
