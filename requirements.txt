@@ -1,18 +1,21 @@
-ripl
-jupyter
+ripl # for historical reasons
+#jupyter for added goodness
+
 matplotlib  # jupyter should provide this.. maybe it doesn't
 pandas       # this might provide matplotib
 pyaudio      # for sound
 curio        # for async magic
 
+blockchain  # for trust and meta data exchange
+
 Pillow       # pillow for PIL for images
 
 #sense_hat   # if you are on a pi with a sense hat
 #gpio_zero   # if you are on a pi
+#picamera    # for pictures veyes on pis
 
 #tkinter, with luck it comes with python.
 
 pytest       # to run the test(s)
 hypothesis   # needed to make writing tests fun
 
-picamera     # for pictures veyes

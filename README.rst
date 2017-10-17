@@ -2,11 +2,52 @@
  Karma Pi
 ==========
 
-Karma pi is a place to come to find tools to help turn data into information.
+Time for an update, things moving along.
 
-Tools to help visualise and explore that data.  Tools that come with *python* batteries included.
+Bits slowly evolving as time passes by.
 
-Tools to help people of all ages to explore our world.
+Finding the core, 3.6, idle, async await.
+
+Data and plotting and models to fit.
+
+Forecasts to make, but how to share?
+
+This is a place to share my ideas.
+
+Forks are welcome, don't be afraid.
+
+Check the commit log, what catches your eye?
+
+Click on the delta, see what changed?
+
+What was I doing and why might it matter?
+
+A checksum from git, to log a commit.
+
+A seed from a chain to see if it runs.
+
+And a checksum with zeroes to see if its right.
+
+Collect the statistics a map reduce.
+
+And check the statistics with the same zero sum.
+
+Rewarding the miners with information.
+
+Combining the skill of the players.
+
+With their shared observations in time.
+ 
+A commit with a future, when will its time be?
+
+Karma pi -- tools to help people of all ages to explore our world.
+
+Working with python, pi and jupyter.
+
+On earth and beyond, to look to the future.
+
+Out will come what we put in, with feedback learning and value therein.
+
 
 Get out what you put in
 =======================
@@ -190,7 +231,7 @@ There are *rst* files in the *docs* folder and a *conf.py* for *sphinx*::
 
   pip install sphinx
 
-(pip3,6 if you have multiple pythons).
+(pip3.6 if you have multiple pythons).
 
 After that just run:
 
@@ -252,7 +293,7 @@ git clone https://github.com/openbermuda/karmapi
 
 cd karmapi
 
-pip3.6 -e ,
+pip3.6 -e .
 
 Python3.6 on Ubuntu 16.04 and raspbian
 ======================================

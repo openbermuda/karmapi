@@ -1,5 +1,6 @@
 """ Bermuda weather
 """
+import itertools
 import argparse
 
 import datetime
@@ -16,7 +17,6 @@ from karmapi import show, base
 
 from karmapi import pigfarm, checksum
 
-
 # Paths to data
 url = 'http://weather.bm/images/'
 
@@ -32,11 +32,15 @@ target = 'tankrain/{date.year}/{date.month}/{date.day}/{name}_{date:%H%M}{suffix
 class TankRain(pigfarm.MagicCarpet):
     """ Widget to show tankrain images """
 
-    def __init__(self, parent, path=None, version='local', *args):
+    def __init__(self, parent, path=None, version='local', date=None, *args):
         
         self.version = version
         self.path = path or '~/karmapi/tankrain'
         self.timewarp = 0
+        self.date = date
+        if self.date is None:
+            self.date = utcnow()
+
         self.load_images()
 
         super().__init__(parent, axes=[111])
@@ -80,12 +84,15 @@ class TankRain(pigfarm.MagicCarpet):
     def get_images(self):
 
         # FIXME -- create key bindings to select time
-        date = utcnow() + datetime.timedelta(seconds=self.timewarp)
+        date = self.date + datetime.timedelta(seconds=self.timewarp)
         path = Path(f'{self.path}/{date.year}/{date.month}/{date.day}/').expanduser()
 
         print(f'loading images for path: {path} v{self.version}v')
+
+        jpegs = path.glob('{}*.[jp][np]g'.format(self.version))
+        gifs = path.glob('{}*.gif'.format(self.version))
         
-        for image in sorted(path.glob('{}*.[jp][np]g'.format(self.version))):
+        for image in sorted(itertools.chain(jpegs, gifs)):
     
             if image.stat().st_size == 0:
                 continue
@@ -252,7 +259,7 @@ async def fetch(minutes=30, sleep=300):
             # FIXME -- shrink bad from time to time
             
         await curio.sleep(300)
-                
+
 
 def main(args=None):
     """ Retrieve images currently available 
@@ -266,12 +273,17 @@ def main(args=None):
     parser.add_argument('--minutes', type=int, default=30)
     parser.add_argument('path', nargs='?', default='~/karmapi/tankrain')
     parser.add_argument('--version', default='')
+    parser.add_argument('--date')
                             
     args = parser.parse_args()
 
+    args.date = base.parse_date(args.date)
+
     if args.pig:
         farm = pigfarm.PigFarm()
-        farm.add(TankRain, dict(path=args.path, version=args.version))
+        farm.add(
+            TankRain,
+            dict(path=args.path, version=args.version, date=args.date))
 
         from karmapi.mclock2 import GuidoClock
         farm.add(GuidoClock)

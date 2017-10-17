@@ -125,7 +125,7 @@ def plot_points_on_map(lats, lons,
         xlons.append(lon)
         
     x, y = m(xlons, lats)
-    #m.drawcoastlines()
+    m.drawcoastlines()
     m.drawmapboundary()
     m.drawlsmask(alpha=1.)
     
