@@ -38,6 +38,8 @@ No railway platform
 
 A train on the way
 
-With ET and S
+With ET and S R and others
+
+F and U await at tcm.
 
 And the cat in the box at the gate.
