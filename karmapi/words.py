@@ -28,7 +28,7 @@ for path in args.path:
 
         counts.update(name.open().read().split())
 
-        print(counts.most_common(5))
+        print(counts.most_common(7))
         print(sum(counts.values()))
         print()
 
@@ -36,7 +36,7 @@ for path in args.path:
 
 print('Totals:')
 
-print(totals.most_common(20))
+print(totals.most_common(26))
 
 print(sum(totals.values()))
         
