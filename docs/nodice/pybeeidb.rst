@@ -142,6 +142,49 @@ And what of the Bee, the new Py Bee.
 
 Get on your phone no need to beware the IDES of Py.
 
+Ubuntu too, for Snowy the Ubuntu cat.
+
+Upgrade today.
+
+Forgot it was running.
+
+Playing with light dm.
+
+Starting and stopping SD card reading.
+
+Naughty less.
+
+Flashing screen.
+
+No ctrl alt fn
+
+Over to gal1, wish ssh
+
+apt and nmap, htop too.
+
+ok we're running on gal2
+
+stop the light dm
+
+get a gdm and an awesome wm
+
+hmmm.... just apt update and read the message
+
+dpkg with mystic incantation
+
+and apt upgrade, always sudo
+
+reboot or no?
+
+service start lightdm
+
+now usb and pictures too
+
+so ready for the tankrain rongo rongo show
+
+with guido's clock to set the time
+
+and all who are there to set the rhythm.
 
 
 
