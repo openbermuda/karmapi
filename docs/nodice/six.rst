@@ -6,6 +6,10 @@
 
 1 + 1 + 1 + 1 + 1 + 1 = 1 + 2 + 3 = 1 * 2 * 3
 
+A cricket match at aber ga glenny.
+
+Sobers and Nash, six sixes each.
+
 I heard a talk, maybe lightning in the sea.
 
 About taking a text and boiling it down to the essence.
