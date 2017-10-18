@@ -350,6 +350,7 @@ Reports = [
     Report(Orgs['xl'], q3, date(2017, 10, 12), 1.48),
     Report(Orgs['everest'], q3, date(2017, 10, 12), 1.2),
     Report(Orgs['arch'], q3, date(2017, 10, 12), 0.345),
+    Report(Orgs['aspen'], q3, date(2017, 10, 17), 0.360),
     ]
 
 # factor to apply to premium to get reinsurance loss
