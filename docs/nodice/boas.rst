@@ -22,10 +22,14 @@ from the guido clock
 
 Sets the time to 5 to the night
 
-Right now I'm an optimist.
+Right now I'm an optimist, twice the boas.
 
 If the codes as long
 
 orongo we go
 
-and type it wrongly.
+and type it in orange football
+
+hope for a garble or two
+
+covfefe
