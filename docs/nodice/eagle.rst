@@ -37,3 +37,23 @@ another fun one... don't forget the legal disclaimer..
 The tankrain rongo rongo show may really be a thing.
 
 Round and round and side to side, up and down we go.
+
+The license is gpl v 3, or so it says in the root.
+
+Creative Commons for docs and pics is more than good for me.
+
+I try to give credits where due, but never enough.
+
+It's all glued with python, so lots to thank.
+
+And references everywhere to things I love.
+
+So if you're in doubt just ask Larry Lessig.
+
+That's Lessig not Wall of the perl.
+
+And better be Lawrence @lessig
+
+Or Pamela Jones in a fine red dress.
+
+Groking the law for the rest of us.
