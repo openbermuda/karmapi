@@ -60,6 +60,30 @@ Karmic Koala 9 out of 10 two eyes and a nose.
 
 L < M < N and m > n > o > p
 
+Maverick meer cat
+
+How could you miss that one?
+
+mm mc mc++ and e = mcc and hockey too eh?
+
+every letter covered there
+
+the best teacher of them all
+
+and there's been a lot of good teachers
+
+showing examples with code
+
+pw a bit help and others too
+
+fab scotty, best of the best.
+
+and dc s and qed or was it c.
+
+wd and rm c or s.  thank you all.
+
+for keeping it going for the rest of us.
+
 to zesty and back to the artful
 
 Not the dodger, not dodgy
