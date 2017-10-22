@@ -87,3 +87,48 @@ no post or code
 so no say thanks
 
 to a k n to the zee 4 eh?????? <3 <3 <3
+
+back to the mission
+
+and on to the galaxy wheel
+
+back on a boat
+
+with skip
+
+the pirates and all the maps
+
+and knots and fires
+
+bill with the water
+
+wood and ask a question
+
+tents of course
+
+later came back as akela
+
+some chess with lavender
+
+all good then
+
+at 2 * 7 * 5
+
+in a glen with port
+
+and a line of sight
+
+to a cave through a mountain
+
+to a grin with a ford
+
+up a brooks
+
+to the frog
+
+and on to the fort
+
+wait for a while
+
+to re boot
+
