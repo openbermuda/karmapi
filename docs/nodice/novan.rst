@@ -285,3 +285,17 @@ eh eh?
 aa 2 eh * aa - g
 
 with 0 / p for a prime
+
+oh k 1, working on with l 7
+
+around 12 27
+
+27 there's a 10
+
+to await with async nap time
+
+ran dom dot dom ran do pi 2 ^ n
+
+like bonos but better much thanks to the k 1
+
+the original artful aardvark with love.
