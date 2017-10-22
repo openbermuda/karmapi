@@ -199,3 +199,41 @@ gets you there faster
 in the end
 
 the end...
+
+a hitch in the plan its sold but its a house
+
+but not just any house i think
+
+I remember 19, a survey then
+
+a bottle of red and white
+
+on the doorstep
+
+this time its 5 * 11.11111111111 to the e to the pi
+
+ee by gum
+
+add that to 497 and lets see what happens
+
+bmd to yo its me no van
+
+if this is not right
+
+theres a fork to the left and a swerve
+
+and its just as good, just a little
+
+bit different
+
+so we'll see what the survey
+
+says its a future on friday
+
+its all relative
+
+with love from bda
+
+jl here too pi and s.
+
+mmmmmmmm
