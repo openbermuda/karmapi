@@ -237,3 +237,51 @@ with love from bda
 jl here too pi and s.
 
 mmmmmmmm
+
+left a book in a box
+
+with paper
+
+in a room
+
+4 by 7
+
+geb, the infinite slalom
+
+an ace from del
+
+quite the boy
+
+and an ace girl too
+
+oft and qm
+
+some of it stays for now
+
+but books coming back
+
+and pie with hats
+
+sense the n vi row
+
+or the as tor hat
+
+but the books to bda
+
+for an infinite slalom
+
+with a messages added
+
+in the passage of time
+
+round and round and round
+
+and two aces two
+
+for two aces here
+
+eh eh?
+
+aa 2 eh * aa - g
+
+with 0 / p for a prime
