@@ -71,3 +71,13 @@ You'll love what B is.
 A beaver that is bionic of course.
 
 Will she be mine, with Long Term Love and Support?
+
+PS assuming lights are all green?
+
+But watching for orange and red.
+
+small craft warning might be lifting.
+
+But first a blue and white delight to behold.
+
+Water too... now where did I leave the bottles?
