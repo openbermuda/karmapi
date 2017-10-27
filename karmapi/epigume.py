@@ -1,3 +1,5 @@
+""" Recipe for love and life in harmony """
+
 from math import e, pi
 from time import sleep
 from random import randint
