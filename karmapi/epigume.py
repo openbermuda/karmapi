@@ -8,7 +8,7 @@ h = me = 1
 n = 0
 while True:
     n += 1
-    print(h, me, abs(h-me) / n)
+    print(n, h, me, abs(h-me) / n)
 
     h, me = me, h
 
