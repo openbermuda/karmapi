@@ -126,7 +126,7 @@ class TankRain(pigfarm.MagicCarpet):
         self.load_images()
 
     async def reverse(self):
-
+        """ Rongo Rongo change direction """
         self.inc *= -1
 
     async def start(self):
