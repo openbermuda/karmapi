@@ -115,13 +115,13 @@ class TankRain(pigfarm.MagicCarpet):
         self.load_images()
 
     async def previous_day(self):
-
+        """ previous day """
         self.timewarp -= 24 * 3600
 
         self.load_images()
 
     async def next_day(self):
-
+        """ next day """
         self.timewarp += 24 * 3600
         self.load_images()
 
