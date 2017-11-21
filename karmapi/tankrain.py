@@ -51,6 +51,9 @@ class TankRain(pigfarm.MagicCarpet):
         self.add_event_map('b', self.previous_day)
         self.add_event_map('v', self.next_day)
 
+        self.add_event_map('l', self.fewer_images)
+        self.add_event_map('m', self.more_images)
+
     def load_images(self):
         
         self.paths = [x for x in self.get_images()]
@@ -72,7 +75,7 @@ class TankRain(pigfarm.MagicCarpet):
             im = [rainbow] * 100
 
         ix = ix + self.inc
-        if ix == len(self.paths):
+        if ix >= len(self.paths):
             ix = 0
         if ix < 0:
             ix = len(self.paths) - 1
@@ -128,6 +131,15 @@ class TankRain(pigfarm.MagicCarpet):
     async def reverse(self):
         """ Rongo Rongo change direction """
         self.inc *= -1
+
+    async def fewer_images(self):
+        """ Skip some images """
+        self.inc = int(self.inc * 2)
+
+    async def more_images(self):
+        """ Show more images """
+        if abs(self.inc) > 1:
+            self.inc = int(self.inc / 2)
 
     async def start(self):
         """ FIXME: get yoser to run fetch """
