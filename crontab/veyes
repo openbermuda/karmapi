@@ -1,7 +1,5 @@
 #@reboot pi /usr/local/bin/python3.6 -m karmapi.veyes /home/pi/karmapi/camera
 
 # default -- one picture per minute
-@reboot pi /usr/local/bin/python3.6 -m karmapi.veyes /home/pi/karmapi/camera 
+@reboot pi /usr/local/bin/python3.6 -m karmapi.veyes /home/pi/karmapi/camera --sleep 60
 
-# one picture every 10 minutes
-# @reboot pi /usr/local/bin/python3.6 -m karmapi.veyes /home/pi/karmapi/camera --sleep 600
