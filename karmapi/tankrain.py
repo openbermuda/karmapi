@@ -35,6 +35,7 @@ class TankRain(pigfarm.MagicCarpet):
     def __init__(self, parent, path=None, version='local', date=None, *args):
         
         self.version = version
+        self.paused = False
         self.path = path or '~/karmapi/tankrain'
         self.timewarp = 0
         self.date = date
@@ -46,7 +47,7 @@ class TankRain(pigfarm.MagicCarpet):
         super().__init__(parent, axes=[111])
 
         self.add_event_map('r', self.reverse)
-        self.add_event_map(' ', self.next_view)
+        self.add_event_map(' ', self.pause)
 
         self.add_event_map('b', self.previous_day)
         self.add_event_map('v', self.next_day)
@@ -132,6 +133,10 @@ class TankRain(pigfarm.MagicCarpet):
         """ Rongo Rongo change direction """
         self.inc *= -1
 
+    async def pause(self):
+        """ pause the show """
+        self.paused = not self.paused
+
     async def fewer_images(self):
         """ Skip some images """
         self.inc = int(self.inc * 2)
@@ -153,6 +158,9 @@ class TankRain(pigfarm.MagicCarpet):
 
         self.dark()
         while True:
+            if self.paused:
+                await curio.sleep(self.sleep)
+                continue
 
             #title = self.paths[self.ix]
             if self.paths:
