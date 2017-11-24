@@ -105,3 +105,25 @@ Now imagine the surface of the sphere 2 * r from the origin.
 
 At time t, what of the sphere at t * r?
 
+PyCaribbean
+===========
+
+It was in February 2015 in Santo Domingo, during the first PyCaribbean
+that Brandon Rhodes gave a keynote.
+
+It was python's 25th birthday, give or take a day.
+
+Brandon described how python had been intimately involved in the LIGO
+project which had just announced the detection of gravitational waves.
+
+It was an exciting time, full of possibilities.   Talk of climate and
+weather and music and more.
+
+Two years on I will be back in Santo Domingo this February.
+
+I will be giving a talk, showing some of the things I have worked on
+since then.
+
+And sharing ideas that go who knows where?
+
+Raspberry pi, pi, pie and py.
