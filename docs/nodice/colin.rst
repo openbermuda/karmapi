@@ -105,6 +105,106 @@ Now imagine the surface of the sphere 2 * r from the origin.
 
 At time t, what of the sphere at t * r?
 
+Mr Murphy
+=========
+
+Mr Murphy was my physics teacher for four years at King Ecgbert School
+in sunny Sheffield.
+
+"It works a lot better if you plug it in!".
+
+Experimental physics?
+
+::
+   
+   F = m_1 * m _ 2 / r^2
+
+And something about Kepler and equal areas in equal time.
+
+Parabola's, ellipses and hyperbolae?
+
+And special relativity.
+
+::
+   
+     E = m c * c
+
+Equations of Minskoski space.
+
+The constant G, acceleration due to gravity.  And this mysterious
+thing inertia, which shared the same constant down to 10 decimal
+places.
+
+And the Dore four two.   Happy times.
+
+Warwick
+=======
+
+Zeeman
+------
+
+Catastrophe
+-----------
+
+Godel
+-----
+
+Galois
+------
+
+Fermat
+------
+
+Fourier
+-------
+
+Poincare
+--------
+
+Quantum
+-------
+
+Information
+-----------
+
+Mathematics and simulation
+==========================
+
+     
+Ideas
+=====
+
+::
+   
+    This book provides a completely new approach to understanding the
+    universe. The main idea is that the principal objects in the
+    universe form a spectrum unified by the presence of a massive or
+    hypermassive black hole. These objects are variously called
+    quasars, active galaxies and spiral galaxies. The key to
+    understanding their dynamics is angular momentum and the key tool,
+    and main innovative idea of this work, is a proper formulation of
+    “Mach’s principle” using Sciama’s ideas.
+
+The first paragraph in Colin Rourke's, "A new paradigm for the
+universe".
+    
+Now there is an idea, and a good place to start.
+
+Start with gravitational waves.  Add other things when you need, but
+only when needed.
+
+::
+
+   Gravitational waves from centres of mass dance in celestial
+   harmony.
+
+   Nature loves spirals.
+
+   The quantum field is modulated by the beat of the surrounding
+   masses.
+
+   As they spin, so they spin the surrounding field.
+
 PyCaribbean
 ===========
 
