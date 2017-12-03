@@ -25,6 +25,25 @@ there.
 
 All times are UTC and subject to typos and other delights.
 
+The story so far.
+
+It's December 2017.  World Cup finals draw in Russia is out.
+
+Italy and USA are already out.  Sweden eliminated Italy and the USA story is more complex. 
+
+On the Mueller advent calendar Michael Flynn pleaded guilty on the 1st.
+
+Picture wasn't clear on the 2nd.  3-4 maybe more faces?
+
+Back to the world cup.
+
+Group A.
+
+rus sau egy urg
+
+
+
+
 """
 from datetime import datetime, timedelta
 # number of teams
@@ -37,6 +56,10 @@ class Team:
         self.name= name
 
         self.win = win or 1 / n
+
+    def __str__(self):
+
+        return self.name
 
 class Group:
 
@@ -52,6 +75,10 @@ class Group:
     def second(self):
         """ Pick a second """
         return self.winner()
+
+    def __str__(self):
+
+        return str(self.teams, self.games)
 
 
 class Game:
@@ -128,20 +155,115 @@ groups = dict(
                 Game(rus, sau, datetime(2018, 6, 14, 15, 0)),
 
                 Game(egy, urg, datetime(2018, 6, 15, 12, 0)),
+
                 
                 Game(rus, egy, datetime(2018, 6, 19, 18, 0)),
-                Game(urg, sau, datetime(2018, 6, 19, 18, 0)),
+                Game(urg, sau, datetime(2018, 6, 20, 15, 0)),
                 
                 Game(urg, rus, datetime(2018, 6, 19, 14, 0)),
                 Game(sau, egy, datetime(2018, 6, 19, 14, 0)),
                 ]),
-    b=Group(teams = [por, spa, mor, ira]),
-    c=Group(teams = [fra, aus, per, den]),
-    d=Group(teams = [arg, ice, cro, nig]),
-    e=Group(teams = [bra, swi, crc, ser]),
-    f=Group(teams = [ger, swe, mex, sko]),
-    g=Group(teams = [bel, pan, tun, eng]),
-    h=Group(teams = [pol, sen, col, jap]))
+                
+    b=Group(teams = [por, spa, mor, ira],
+            games = [
+                Game(mor, iran, datetime(2018, 6, 15, 15, 0)),
+                Game(por, spa, datetime(2018, 6, 15, 18, 0)),
+
+                
+                Game(por, mor, datetime(2018, 6, 20, 12, 0)),
+                Game(ira, spa, datetime(2018, 6, 20, 18, 0)),
+                
+                Game(ira, por, datetime(2018, 6, 25, 18, 0)),
+                Game(spa, mor, datetime(2018, 6, 25, 18, 0)),
+                ]),
+                
+    c=Group(teams = [fra, aus, per, den],
+
+            games = [
+                Game(fra, aus, datetime(2018, 6, 16, 10, 0)),
+                Game(per, den, datetime(2018, 6, 16, 14, 0)),
+
+                
+                Game(den, aus, datetime(2018, 6, 21, 12, 0)),
+                Game(fra, per, datetime(2018, 6, 21, 15, 0)),
+                
+                Game(den, fra, datetime(2018, 6, 26, 14, 0)),
+                Game(aus, per, datetime(2018, 6, 26, 14, 0)),
+                ]),
+                
+    d=Group(teams = [arg, ice, cro, nig],
+
+            games = [
+                Game(arg, ice, datetime(2018, 6, 16, 13, 0)),
+
+                Game(cro, nig, datetime(2018, 6, 16, 19, 0)),
+
+                
+                Game(arg, cro, datetime(2018, 6, 21, 18, 0)),
+                Game(nig, ice, datetime(2018, 6, 22, 15, 0)),
+                
+                Game(nig, arg, datetime(2018, 6, 26, 18, 0)),
+                Game(ice, cro, datetime(2018, 6, 26, 18, 0)),
+                ]),
+                
+    e=Group(teams = [bra, swi, crc, ser],
+
+            games = [
+                Game(crc, ser, datetime(2018, 6, 17, 12, 0)),
+                Game(bra, swi, datetime(2018, 6, 17, 18, 0)),
+
+                
+                Game(bra, crc, datetime(2018, 6, 22, 12, 0)),
+                Game(ser, swi, datetime(2018, 6, 22, 18, 0)),
+                
+                Game(ser, bra, datetime(2018, 6, 27, 18, 0)),
+                Game(swi, crc, datetime(2018, 6, 27, 18, 0)),
+                ]),
+                
+    f=Group(teams = [ger, swe, mex, sko],
+
+            games = [
+                Game(ger, mex, datetime(2018, 6, 17, 15, 0)),
+                Game(swe, sko, datetime(2018, 6, 18, 12, 0)),
+
+                
+                Game(sko, mex, datetime(2018, 6, 23, 15, 0)),
+                Game(ger, swe, datetime(2018, 6, 23, 18, 0)),
+                
+                Game(sko, ger, datetime(2018, 6, 27, 14, 0)),
+                Game(mex, swe, datetime(2018, 6, 27, 14, 0)),
+                ]),
+                
+    g=Group(teams = [bel, pan, tun, eng],
+
+            games = [
+                Game(, , datetime(2018, 6, 14, 15, 0)),
+
+                Game(, , datetime(2018, 6, 15, 12, 0)),
+
+                
+                Game(, , datetime(2018, 6, 19, 18, 0)),
+                Game(, , datetime(2018, 6, 20, 15, 0)),
+                
+                Game(, , datetime(2018, 6, 19, 14, 0)),
+                Game(, , datetime(2018, 6, 19, 14, 0)),
+                ]),
+                
+    h=Group(teams = [pol, sen, col, jap],
+
+            games = [
+                Game(, , datetime(2018, 6, 14, 15, 0)),
+
+                Game(, , datetime(2018, 6, 15, 12, 0)),
+
+                
+                Game(, , datetime(2018, 6, 19, 18, 0)),
+                Game(, , datetime(2018, 6, 20, 15, 0)),
+                
+                Game(, , datetime(2018, 6, 19, 14, 0)),
+                Game(, , datetime(2018, 6, 19, 14, 0)),
+                ]))
+                
 
 
 
