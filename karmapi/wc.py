@@ -23,25 +23,27 @@ USA and Italy too, sorry you couldn't make the party.
 Seek Irish, Scots or English for advice on how to survive when your team is not
 there.
 
-"""
+All times are UTC and subject to typos and other delights.
 
+"""
+from datetime import datetime, timedelta
 # number of teams
 n = 32
 
 class Team:
 
-    def __init__(self, name=None, prob=None)
+    def __init__(self, name=None, win=None):
         """ Init the team with no name? """
         self.name= name
 
-        self.prob = self.prob or 1 / n
+        self.win = win or 1 / n
 
 class Group:
 
     def __init__(self, teams=None, games=None):
 
         self.teams = teams
-        self.games = games
+        self.games = games or []
 
     def winner(self):
         """ Pick a winner """
@@ -121,13 +123,40 @@ jap = Team('JAP')
 
     
 groups = dict(
-    a=Group('a', teams = [rus, sau, egy, urg]),
-    b=Group('b', teams = [por, spa, mor, ira]),
-    c=Group('c', teams = [fra, aus, per, den]),
-    d=Group('d', teams = [arg, ice, cro, nig]),
-    e=Group('e', teams = [bra, swi, crc, ser]),
-    f=Group('f', teams = [ger, swe, mex, sko]),
-    g=Group('g', teams = [bel, pan, tun, eng]),
-    h=Group('h', teams = [pol, sen, col, jap]))
+    a=Group(teams = [rus, sau, egy, urg],
+            games = [
+                Game(rus, sau, datetime(2018, 6, 14, 15, 0)),
+
+                Game(egy, urg, datetime(2018, 6, 15, 12, 0)),
+                
+                Game(rus, egy, datetime(2018, 6, 19, 18, 0)),
+                Game(urg, sau, datetime(2018, 6, 19, 18, 0)),
+                
+                Game(urg, rus, datetime(2018, 6, 19, 14, 0)),
+                Game(sau, egy, datetime(2018, 6, 19, 14, 0)),
+                ]),
+    b=Group(teams = [por, spa, mor, ira]),
+    c=Group(teams = [fra, aus, per, den]),
+    d=Group(teams = [arg, ice, cro, nig]),
+    e=Group(teams = [bra, swi, crc, ser]),
+    f=Group(teams = [ger, swe, mex, sko]),
+    g=Group(teams = [bel, pan, tun, eng]),
+    h=Group(teams = [pol, sen, col, jap]))
+
+
+
+# notes?
+groups['a'].notes = [
+    ]
+
+# do something ?
+
+# print out the games
+for xx, group  in groups.items():
     
+    print(xx)
     
+    for game in group.games:
+        print(game.a, game.b, game.when)
+        
+    print()
