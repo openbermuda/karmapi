@@ -132,12 +132,12 @@ class JeuxSansFrontieres:
     last 16 grid that looks something like this:
 
     w r
-    w r   w  w    w  w   w  w   W
+    w r   w  w    w  w   w  w   W r
 
     w r   w  w
     w r
 
-    w r   w  w    w  w
+    w r   w  w    w  w   s s    T f
     w r   
 
     w r   w  w
