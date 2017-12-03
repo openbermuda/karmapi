@@ -158,15 +158,17 @@ groups = dict(
 
                 
                 Game(rus, egy, datetime(2018, 6, 19, 18, 0)),
+                
                 Game(urg, sau, datetime(2018, 6, 20, 15, 0)),
                 
+
                 Game(urg, rus, datetime(2018, 6, 19, 14, 0)),
                 Game(sau, egy, datetime(2018, 6, 19, 14, 0)),
                 ]),
                 
     b=Group(teams = [por, spa, mor, ira],
             games = [
-                Game(mor, iran, datetime(2018, 6, 15, 15, 0)),
+                Game(mor, ira, datetime(2018, 6, 15, 15, 0)),
                 Game(por, spa, datetime(2018, 6, 15, 18, 0)),
 
                 
@@ -200,7 +202,9 @@ groups = dict(
 
                 
                 Game(arg, cro, datetime(2018, 6, 21, 18, 0)),
+                
                 Game(nig, ice, datetime(2018, 6, 22, 15, 0)),
+
                 
                 Game(nig, arg, datetime(2018, 6, 26, 18, 0)),
                 Game(ice, cro, datetime(2018, 6, 26, 18, 0)),
@@ -224,6 +228,7 @@ groups = dict(
 
             games = [
                 Game(ger, mex, datetime(2018, 6, 17, 15, 0)),
+
                 Game(swe, sko, datetime(2018, 6, 18, 12, 0)),
 
                 
@@ -237,31 +242,30 @@ groups = dict(
     g=Group(teams = [bel, pan, tun, eng],
 
             games = [
-                Game(, , datetime(2018, 6, 14, 15, 0)),
-
-                Game(, , datetime(2018, 6, 15, 12, 0)),
+                Game(bel, pan, datetime(2018, 6, 18, 15, 0)),
+                Game(tun, eng, datetime(2018, 6, 18, 18, 0)),
 
                 
-                Game(, , datetime(2018, 6, 19, 18, 0)),
-                Game(, , datetime(2018, 6, 20, 15, 0)),
+                Game(bel, tun, datetime(2018, 6, 23, 12, 0)),
                 
-                Game(, , datetime(2018, 6, 19, 14, 0)),
-                Game(, , datetime(2018, 6, 19, 14, 0)),
+                Game(eng, pan, datetime(2018, 6, 24, 12, 0)),
+                
+                Game(eng, bel, datetime(2018, 6, 28, 18, 0)),
+                Game(pan, tun, datetime(2018, 6, 28, 18, 0)),
                 ]),
                 
     h=Group(teams = [pol, sen, col, jap],
 
             games = [
-                Game(, , datetime(2018, 6, 14, 15, 0)),
-
-                Game(, , datetime(2018, 6, 15, 12, 0)),
+                Game(col, jap, datetime(2018, 6, 19, 12, 0)),
+                Game(pol, sen, datetime(2018, 6, 19, 15, 0)),
 
                 
-                Game(, , datetime(2018, 6, 19, 18, 0)),
-                Game(, , datetime(2018, 6, 20, 15, 0)),
+                Game(jap, sen, datetime(2018, 6, 24, 15, 0)),
+                Game(pol, col, datetime(2018, 6, 24, 18, 0)),
                 
-                Game(, , datetime(2018, 6, 19, 14, 0)),
-                Game(, , datetime(2018, 6, 19, 14, 0)),
+                Game(jap, pol, datetime(2018, 6, 28, 14, 0)),
+                Game(sen, col, datetime(2018, 6, 28, 14, 0)),
                 ]))
                 
 
