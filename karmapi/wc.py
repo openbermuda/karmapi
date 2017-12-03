@@ -42,7 +42,27 @@ Group A.
 rus sau egy urg
 
 
+OK.. back from the fixture lists.
 
+Order of games interesting and need to add places.  Fair bit of moving around
+in some groups.  
+
+Some teams get to play after seeing the other game in their group in first two
+rounds of games.
+
+As groups progress teams will be looking at what comes next, if they have a
+couple of wins, or otherwise just how to get out of the group.
+
+Seeding has placed the teams with higher FIFA rankings with potentially less
+travel complications, but then there are the fans back home and time zone
+considerations.
+
+Now it is 2017 so there may be an obligatory block chain connection, but if so
+it well be super low tech.
+
+And simulations.   For now stuck deciding what to simulate.. oh and priors..
+
+I think we may need some events here soon.
 
 """
 from datetime import datetime, timedelta
