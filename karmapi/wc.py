@@ -64,6 +64,31 @@ And simulations.   For now stuck deciding what to simulate.. oh and priors..
 
 I think we may need some events here soon.
 
+Back to the coding.  So rule 0: keep it under 1000 lines, bonus marks under
+500.  World cup rules, so you decide how to count.
+
+Subtracting docstrings there should be a lot less.  And with luck sphinx will
+magically turn the code into ok docs.
+
+rule 1: there is no rule one.  It's the world cup, so breaking all the coding
+rules.  See also counting lines of code, world cup style.
+
+Or rather just writing what seems easiest at the time.
+
+There is a fair bit of going round in circles: check the commit log see git.
+
+Ok.. back to the football.
+
+The world cup mixes up 32 teams from around the world.  The final draw mixes
+everything up and there are some fascinating match ups.
+
+Simon Kuiper, football anthropologist?, wrote a fascinating book about matches
+between countries, places that had been at war in the very recent past.  Many
+of the games covered were at world cups or big football federation finals.
+
+Others were just qualifying games.  
+
+
 """
 from datetime import datetime, timedelta
 # number of teams
@@ -100,6 +125,26 @@ class Group:
 
         return str(self.teams, self.games)
 
+class JeuxSansFrontieres:
+    """  The knockout stage.
+
+    Winners and seconds from group stage come through into a
+    last 16 grid that looks something like this:
+
+    w r
+    w r   w  w    w  w   w  w   W
+
+    w r   w  w
+    w r
+
+    w r   w  w    w  w
+    w r   
+
+    w r   w  w
+    w r
+    
+
+    """
 
 class Game:
 
@@ -118,7 +163,8 @@ class Game:
         bscore = random.randint(0, random.randint(0, 5))
 
         return self.ascore or ascore, self.bscore or bscore
-        
+
+    
 
 # Group A
 rus = Team('RUS')
@@ -287,12 +333,31 @@ groups = dict(
                 Game(jap, pol, datetime(2018, 6, 28, 14, 0)),
                 Game(sen, col, datetime(2018, 6, 28, 14, 0)),
                 ]))
-                
+
+# group winners and seconds
+winners = {}
+seconds = {}
+for group in 'abcdefgh':
+
+    winners[group] = group.winner()
+    seconds[group] = group.second()
 
 
+
+    
 
 # notes?
 groups['a'].notes = [
+j    """ Group A
+
+    Russia
+ 
+    Uruguay
+
+    Egypt
+
+    Saudi Arabia
+    """
     ]
 
 # do something ?
