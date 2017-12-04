@@ -88,9 +88,22 @@ of the games covered were at world cups or big football federation finals.
 
 Others were just qualifying games.  
 
+Sources:  Wikipedia and scriblings on beer mats.
+
+Places coming along.
+
+Rostov-on-Don.  Lots of twin towns, including Toronto.
+
+Some interesting games there too.
+
+545km to the south
 
 """
+
+import random
+
 from datetime import datetime, timedelta
+
 # number of teams
 n = 32
 
@@ -115,7 +128,8 @@ class Group:
 
     def winner(self):
         """ Pick a winner """
-        return self.teams[random.randint(0, n-1)]
+        nteams = len(self.teams)
+        return self.teams[random.randint(0, nteams-1)]
 
     def second(self):
         """ Pick a second """
@@ -172,9 +186,16 @@ class Place:
     pass
 
 class Moscow(Place):
-    """ Capital """
+    """ Final """
 
-    name = 'Moscow'
+    name = 'Moscow Luzhniki'
+    lat = None
+    lon = None 
+
+class Spartak(Place):
+    """ Spartak Moscow  """
+
+    name = 'Moscow Oktkrytiye'
     lat = None
     lon = None 
 
@@ -208,17 +229,67 @@ class Kaliningrad(Place):
 
 class RostovOnDon(Place):
     """ Sheffield in Russia """
-    name "Rostov-on-Don"
+    name = "Rostov-on-Don"
     lat = None
     lon = None
     
-class Moscow(Place):
-    """ Moscow """
+class Kazan(Place):
+    """  """
 
-    name = 'Moscow'
+    name = ''
     lat = None
     lon = None
 
+class Samara(Place):
+    """  """
+
+    name = 'Samara'
+    lat = None
+    lon = None
+
+class Yekaterinburg(Place):
+    """  """
+
+    name = ''
+    lat = None
+    lon = None
+
+class Saransk(Place):
+    """  """
+
+    name = ''
+    lat = None
+    lon = None
+
+class Sochi(Place):
+    """  """
+
+    name = ''
+    lat = None
+    lon = None
+
+    
+
+places = [
+
+    Moscow(),
+    Spartak(),
+    StPetersberg(),
+
+    Kaliningrad(),
+
+    Novgorod(),
+    Yekaterinburg(),
+    Kazan(),
+    Saransk(),
+    Samara(),
+
+    Volgograd(),
+    RostovOnDon(),
+    Sochi(),
+    
+    ]
+    
 
 # Group A
 rus = Team('RUS')
@@ -391,28 +462,15 @@ groups = dict(
 # group winners and seconds
 winners = {}
 seconds = {}
-for group in 'abcdefgh':
+for item in 'abcdefgh':
 
+    group = groups[item]
+    
     winners[group] = group.winner()
     seconds[group] = group.second()
 
 
 
-    
-
-# notes?
-groups['a'].notes = [
-j    """ Group A
-
-    Russia
- 
-    Uruguay
-
-    Egypt
-
-    Saudi Arabia
-    """
-    ]
 
 # do something ?
 
