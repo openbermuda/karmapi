@@ -162,6 +162,48 @@ class JeuxSansFrontieres:
     
 
     """
+    def __init__(self, groups, places=None, dates=None):
+        """ Set up knockout stage """
+        key = sorted(groups.keys())
+
+        key = list(key)
+        print(key)
+
+        key2 = ''
+        for x in range(0, len(key), 2):
+            key2 += key[x+1] + key[x]
+
+        print(key2) 
+
+        games = []
+
+        for gps in key, key2:
+            for x in range(0, len(key), 2):
+            
+                a = key[x]
+                b = key[x+1]
+                teama = groups[a].winner()
+                teamb = groups[b].second()
+
+                games.append([teama, teamb])
+
+        dates = dates or [datetime.today()] * len(games)
+        
+        for game, date in zip(games, dates):
+            game.append(date)
+            
+        places = places or (['???'] * len(games))
+        for game, place in zip(games, places):
+            game.append(place)
+
+        self.games = []
+        for teama, teamb, when, place in games:
+            self.games.append(Game(teama, teamb, when, place))
+        
+        for game in self.games:
+            print(game)
+
+        
 
 class Game:
 
@@ -170,6 +212,7 @@ class Game:
         self.a = a
         self.b = b
         self.when = when
+        self.where = where
 
         self.ascore = ascore or None
         self.bscore = bscore or None
@@ -180,6 +223,10 @@ class Game:
         bscore = random.randint(0, random.randint(0, 5))
 
         return self.ascore or ascore, self.bscore or bscore
+
+    def __str__(self):
+
+        return f'{self.a.name} {self.b.name} {self.when} {self.where}'
 
 
 class Place:
@@ -470,8 +517,6 @@ for item in 'abcdefgh':
     seconds[group] = group.second()
 
 
-
-
 # do something ?
 
 # print out the games
@@ -483,3 +528,8 @@ for xx, group  in groups.items():
         print(game.a, game.b, game.when)
         
     print()
+
+# Simulate a knockout draw + bugs
+jsf = JeuxSansFrontieres(groups)
+
+    
