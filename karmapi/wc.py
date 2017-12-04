@@ -172,38 +172,46 @@ class Place:
     pass
 
 class Moscow(Place):
-    """ Moscow """
+    """ Capital """
 
     name = 'Moscow'
     lat = None
-    lon = None
+    lon = None 
 
-class Moscow(Place):
-    """ Moscow """
+class StPetersberg(Place):
+    """ Place of many names """
 
-    name = 'Moscow'
+    name = 'St Petersberg'
     lat = None
     lon = None
 
-class Moscow(Place):
-    """ Moscow """
+class Volgograd(Place):
+    """ Down south """
 
-    name = 'Moscow'
+    name = 'Volgograd'
     lat = None
     lon = None
 
-class Moscow(Place):
-    """ Moscow """
+class Novgorod(Place):
+    """ Central """
 
-    name = 'Moscow'
+    name = 'Nizhny Novgorod'
     lat = None
     lon = None
-class Moscow(Place):
-    """ Moscow """
+    
+class Kaliningrad(Place):
+    """ North West port """
 
-    name = 'Moscow'
+    name = 'Kaliningrad'
     lat = None
     lon = None
+
+class RostovOnDon(Place):
+    """ Sheffield in Russia """
+    name "Rostov-on-Don"
+    lat = None
+    lon = None
+    
 class Moscow(Place):
     """ Moscow """
 
