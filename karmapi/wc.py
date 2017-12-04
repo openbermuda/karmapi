@@ -131,17 +131,20 @@ class JeuxSansFrontieres:
     Winners and seconds from group stage come through into a
     last 16 grid that looks something like this:
 
-    w r
-    w r   w  w    w  w   w  w   W r
+    wa rb
+    wc rd   w  w    w  w   w  w   W r
 
-    w r   w  w
-    w r
+    we rf   w  w
+    wg rh
 
-    w r   w  w    w  w   s s    T f
-    w r   
+    wb ra   w  w    w  w   s s    T f
+    wd rc   
 
-    w r   w  w
-    w r
+    wf re   w  w
+    wh rg
+
+    with abcdefgh
+     and badcfehg
     
 
     """
@@ -164,7 +167,50 @@ class Game:
 
         return self.ascore or ascore, self.bscore or bscore
 
-    
+
+class Place:
+    pass
+
+class Moscow(Place):
+    """ Moscow """
+
+    name = 'Moscow'
+    lat = None
+    lon = None
+
+class Moscow(Place):
+    """ Moscow """
+
+    name = 'Moscow'
+    lat = None
+    lon = None
+
+class Moscow(Place):
+    """ Moscow """
+
+    name = 'Moscow'
+    lat = None
+    lon = None
+
+class Moscow(Place):
+    """ Moscow """
+
+    name = 'Moscow'
+    lat = None
+    lon = None
+class Moscow(Place):
+    """ Moscow """
+
+    name = 'Moscow'
+    lat = None
+    lon = None
+class Moscow(Place):
+    """ Moscow """
+
+    name = 'Moscow'
+    lat = None
+    lon = None
+
 
 # Group A
 rus = Team('RUS')
