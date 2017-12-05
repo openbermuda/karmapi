@@ -194,8 +194,6 @@ class Group:
 
     def tablesort(self, key):
         """ Order teams """
-        print(type(key))
-        
         return key.points, key.goals - key.against, key.goals
         
             
