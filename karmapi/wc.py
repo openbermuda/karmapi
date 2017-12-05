@@ -101,6 +101,7 @@ Some interesting games there too.
 """
 
 import random
+import argparse
 
 from datetime import datetime, timedelta
 
@@ -112,9 +113,15 @@ class Team:
     def __init__(self, name=None, win=None):
         """ Init the team with no name? """
         self.name= name
+        self.points = 0
+        self.yellow = 0
+        self.red = 0
+        self.goals = 0
+        self.against = 0
 
         self.win = win or 1 / n
 
+        
     def __str__(self):
 
         return self.name
@@ -138,6 +145,61 @@ class Group:
     def __str__(self):
 
         return str(self.teams, self.games)
+
+    def run(self):
+        """ Run the group """
+        for game in self.games:
+
+            print()
+            print (game)
+            print()
+            
+            ascore = game.ascore
+            bscore = game.bscore
+
+            # if either score is None, call score
+            if game.ascore == None or game.bscore == None:
+                ascore, bscore = game.score()
+
+            print(f'{ascore} {bscore}')
+            print()
+
+            a = game.a
+            b = game.b
+            
+            a.goals += ascore
+            b.goals += bscore
+
+            a.against += bscore
+            b.against += ascore
+
+            if ascore > bscore:
+                a.points += 3
+
+            elif bscore > bscore:
+                b.points += bscore
+
+            else:
+                a.points += 1
+                b.points += 1
+
+    def table(self):
+        """ Show the group table """
+        teams = list(self.teams)
+
+        teams = sorted(teams, key=self.tablesort)
+
+        for team in teams:
+            print(team)
+
+    def tablesort(self, key):
+        """ Order teams """
+        print(type(key))
+        
+        return key.points, key.goals - key.against, key.goals
+        
+            
+
 
 class JeuxSansFrontieres:
     """  The knockout stage.
@@ -480,8 +542,8 @@ groups = dict(
     g=Group(teams = [bel, pan, tun, eng],
 
             games = [
-                Game(bel, pan, datetime(2018, 6, 18, 15, 0)),
-                Game(tun, eng, datetime(2018, 6, 18, 18, 0)),
+                Game(bel, pan, datetime(2018, 6, 18, 15, 0), ascore=3, bscore=1),
+                Game(tun, eng, datetime(2018, 6, 18, 18, 0), ascore=0, bscore=0),
 
                 
                 Game(bel, tun, datetime(2018, 6, 23, 12, 0)),
@@ -526,9 +588,15 @@ for xx, group  in groups.items():
     
     for game in group.games:
         print(game.a, game.b, game.when)
-        
+
+    print()
+    group.run()
     print()
 
+    group.table()
+
+
+    
 # Simulate a knockout draw + bugs
 jsf = JeuxSansFrontieres(groups)
 
