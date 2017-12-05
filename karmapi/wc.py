@@ -124,7 +124,10 @@ class Team:
         
     def __str__(self):
 
-        return self.name
+        msg = f'{self.name} {self.points:3}'
+        msg +=f'{self.goals - self.against:4} {self.goals:4} {self.against:4}'
+
+        return msg
 
 class Group:
 
@@ -135,12 +138,11 @@ class Group:
 
     def winner(self):
         """ Pick a winner """
-        nteams = len(self.teams)
-        return self.teams[random.randint(0, nteams-1)]
+        return self.get_table()[0]
 
     def second(self):
         """ Pick a second """
-        return self.winner()
+        return self.get_table()[1]
 
     def __str__(self):
 
@@ -185,12 +187,19 @@ class Group:
 
     def table(self):
         """ Show the group table """
+        teams = self.get_table()
+        
+        for team in teams:
+            print(team)
+
+        
+    def get_table(self):
+        """ Return teams sorted per table """
         teams = list(self.teams)
 
         teams = sorted(teams, key=self.tablesort)
 
-        for team in teams:
-            print(team)
+        return list(reversed(teams))
 
     def tablesort(self, key):
         """ Order teams """
@@ -240,8 +249,9 @@ class JeuxSansFrontieres:
         for gps in key, key2:
             for x in range(0, len(key), 2):
             
-                a = key[x]
-                b = key[x+1]
+                a = gps[x]
+                b = gps[x+1]
+                
                 teama = groups[a].winner()
                 teamb = groups[b].second()
 
@@ -594,6 +604,8 @@ for xx, group  in groups.items():
     group.table()
 
 
+print()
+print("It's a knock out!")
     
 # Simulate a knockout draw + bugs
 jsf = JeuxSansFrontieres(groups)
