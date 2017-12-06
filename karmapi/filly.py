@@ -335,8 +335,11 @@ Events = dict(
         mexicoq = Event('mexico', 25, 0.5),
         calfire = Event('calfire', 10, 0.8),
 
-    # meta events
-    bdaharirm = Event("Bermuda Harvey Irma",  15, 1.0),
+    # meta events 15B to Bermuda reinsurers.  Say it
+    # really looks like 3 * 40B events.
+    # So numbers for orgs should be roughly in line
+    # compare to other losses... note no Maria?
+    bdaharirm = Event("Bermuda Harvey Irma",  120, 1.0),
     )
 
 MoreEvents = dict(
