@@ -495,8 +495,8 @@ groups = dict(
                 
     b=Group(teams = [por, spa, mor, ira],
             games = [
-                Game(mor, ira, datetime(2018, 6, 15, 15, 0)),
-                Game(por, spa, datetime(2018, 6, 15, 18, 0)),
+                Game(mor, ira, datetime(2018, 6, 15, 15, 0), ascore=2, bscore=2),
+                Game(por, spa, datetime(2018, 6, 15, 18, 0), ascore=3, bscore=2),
 
                 
                 Game(por, mor, datetime(2018, 6, 20, 12, 0)),
