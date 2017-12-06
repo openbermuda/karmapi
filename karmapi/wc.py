@@ -98,6 +98,17 @@ Some interesting games there too.
 
 545km to the south
 
+Simulations
+===========
+
+Run the code and you get a draw for the last 16.
+
+I am starting to simulate the first round games with 4 bottles in a pool.  It's
+like Paul the octobpus, but not quite so scientific.  Or maybe it is?
+
+eng tun bel and pan played already.  See Game's for results.
+
+
 """
 
 import random
@@ -159,6 +170,7 @@ class Group:
             ascore = game.ascore
             bscore = game.bscore
 
+            print(ascore, bscore)
             # if either score is None, call score
             if game.ascore == None or game.bscore == None:
                 ascore, bscore = game.score()
@@ -283,9 +295,9 @@ class Game:
         self.b = b
         self.when = when
         self.where = where
-
-        self.ascore = ascore or None
-        self.bscore = bscore or None
+        
+        self.ascore = ascore
+        self.bscore = bscore
 
     def score(self):
         """ Make up a score """
@@ -460,9 +472,9 @@ jap = Team('JAP')
 groups = dict(
     a=Group(teams = [rus, sau, egy, urg],
             games = [
-                Game(rus, sau, datetime(2018, 6, 14, 15, 0)),
+                Game(rus, sau, datetime(2018, 6, 14, 15, 0), ascore=4, bscore=0),
 
-                Game(egy, urg, datetime(2018, 6, 15, 12, 0)),
+                Game(egy, urg, datetime(2018, 6, 15, 12, 0), ascore=1, bscore=2),
 
                 
                 Game(rus, egy, datetime(2018, 6, 19, 18, 0)),

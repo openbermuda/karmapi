@@ -334,11 +334,15 @@ Events = dict(
         ophelia = Event('ophelia', 2, 0.8),
         mexicoq = Event('mexico', 25, 0.5),
         calfire = Event('calfire', 10, 0.8),
-        )
+
+    # meta events
+    bdaharirm = Event("Bermuda Harvey Irma",  15, 1.0),
+    )
 
 MoreEvents = dict(
     ophelia = Event('ophelia', 10, 0.8),
 )
+
 
 q3 = [x for x in Events.values()]
 
