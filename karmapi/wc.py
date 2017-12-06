@@ -363,7 +363,13 @@ class RostovOnDon(Place):
     lon = None
     
 class Kazan(Place):
-    """  """
+    """  
+    
+    https://tools.wmflabs.org/geohack/geohack.php?
+
+    pagename=Kazan_Arena&
+
+    params=55_49_14.3_N_49_9_40.0_E_type:landmark """
 
     name = ''
     lat = None

@@ -13,6 +13,27 @@ Contents:
 
    karmapi
 
+   nodice/eagle.rst
+   
+
+Tankrain
+========
+   
+.. automodule:: karmapi.tankrain
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Jeux sans frontieres
+====================
+   
+.. automodule:: karmapi.wc
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+   
 PyCaribbean
 ===========
 
@@ -55,8 +76,8 @@ Eric
 .. toctree::
 
    eric
-
-
+   
+   
 Indices and tables
 ==================
 
