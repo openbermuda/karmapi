@@ -318,15 +318,16 @@ class Moscow(Place):
     """ Final """
 
     name = 'Moscow Luzhniki'
-    lat = None
-    lon = None 
+    lat = 55 + (45 / 60)
+    lon = 37 + (37 / 60)
 
 class Spartak(Place):
     """ Spartak Moscow  """
 
     name = 'Moscow Oktkrytiye'
-    lat = None
-    lon = None 
+    lat = 55 + (49 / 60)
+    lon = 37 + (26 / 60)
+
 
 class StPetersberg(Place):
     """ Place of many names """
@@ -371,9 +372,9 @@ class Kazan(Place):
 
     params=55_49_14.3_N_49_9_40.0_E_type:landmark """
 
-    name = ''
-    lat = None
-    lon = None
+    name = 'Kazan'
+    lat = 55 + (49 / 60) + (14.3 / 3600)
+    lon = 49 + (9 / 60) + (40.0 / 3600)
 
 class Samara(Place):
     """  """
