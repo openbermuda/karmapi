@@ -550,8 +550,11 @@ groups = dict(
     e=Group(teams = [bra, swi, crc, ser],
 
             games = [
-                Game(crc, ser, datetime(2018, 6, 17, 12, 0)),
-                Game(bra, swi, datetime(2018, 6, 17, 18, 0)),
+                Game(crc, ser, datetime(2018, 6, 17, 12, 0),
+                     ascore=2, bscore=2),
+                     
+                Game(bra, swi, datetime(2018, 6, 17, 18, 0)
+                     ascore=3, bscore=1),
 
                 
                 Game(bra, crc, datetime(2018, 6, 22, 12, 0)),
