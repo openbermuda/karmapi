@@ -479,9 +479,11 @@ jap = Team('JAP')
 groups = dict(
     a=Group(teams = [rus, sau, egy, urg],
             games = [
-                Game(rus, sau, datetime(2018, 6, 14, 15, 0), ascore=4, bscore=0),
+                Game(rus, sau, datetime(2018, 6, 14, 15, 0),
+                     ascore=4, bscore=0),
 
-                Game(egy, urg, datetime(2018, 6, 15, 12, 0), ascore=1, bscore=2),
+                Game(egy, urg, datetime(2018, 6, 15, 12, 0),
+                     ascore=1, bscore=2),
 
                 
                 Game(rus, egy, datetime(2018, 6, 19, 18, 0)),
@@ -495,8 +497,11 @@ groups = dict(
                 
     b=Group(teams = [por, spa, mor, ira],
             games = [
-                Game(mor, ira, datetime(2018, 6, 15, 15, 0), ascore=2, bscore=2),
-                Game(por, spa, datetime(2018, 6, 15, 18, 0), ascore=3, bscore=2),
+                Game(mor, ira, datetime(2018, 6, 15, 15, 0),
+                     ascore=2, bscore=2),
+                     
+                Game(por, spa, datetime(2018, 6, 15, 18, 0),
+                     ascore=3, bscore=2),
 
                 
                 Game(por, mor, datetime(2018, 6, 20, 12, 0)),
@@ -509,8 +514,11 @@ groups = dict(
     c=Group(teams = [fra, aus, per, den],
 
             games = [
-                Game(fra, aus, datetime(2018, 6, 16, 10, 0)),
-                Game(per, den, datetime(2018, 6, 16, 14, 0)),
+                Game(fra, aus, datetime(2018, 6, 16, 10, 0),
+                     ascore=1, bscore=2),
+                     
+                Game(per, den, datetime(2018, 6, 16, 14, 0),
+                     ascore=2, bscore=2),
 
                 
                 Game(den, aus, datetime(2018, 6, 21, 12, 0)),
@@ -523,9 +531,11 @@ groups = dict(
     d=Group(teams = [arg, ice, cro, nig],
 
             games = [
-                Game(arg, ice, datetime(2018, 6, 16, 13, 0)),
+                Game(arg, ice, datetime(2018, 6, 16, 13, 0),
+                     ascore=3, bscore=2),
 
-                Game(cro, nig, datetime(2018, 6, 16, 19, 0)),
+                Game(cro, nig, datetime(2018, 6, 16, 19, 0),
+                     ascore=2, bscore=2),
 
                 
                 Game(arg, cro, datetime(2018, 6, 21, 18, 0)),
