@@ -551,10 +551,10 @@ groups = dict(
 
             games = [
                 Game(crc, ser, datetime(2018, 6, 17, 12, 0),
-                     ascore=2, bscore=2),
+                     ascore=2, bscore=4),
                      
                 Game(bra, swi, datetime(2018, 6, 17, 18, 0)
-                     ascore=3, bscore=1),
+                     ascore=3, bscore=3),
 
                 
                 Game(bra, crc, datetime(2018, 6, 22, 12, 0)),
@@ -567,9 +567,11 @@ groups = dict(
     f=Group(teams = [ger, swe, mex, sko],
 
             games = [
-                Game(ger, mex, datetime(2018, 6, 17, 15, 0)),
+                Game(ger, mex, datetime(2018, 6, 17, 15, 0),
+                     ascore=1, bscore=2),
 
-                Game(swe, sko, datetime(2018, 6, 18, 12, 0)),
+                Game(swe, sko, datetime(2018, 6, 18, 12, 0),
+                     ascore=3, bscore=2),
 
                 
                 Game(sko, mex, datetime(2018, 6, 23, 15, 0)),
@@ -597,8 +599,11 @@ groups = dict(
     h=Group(teams = [pol, sen, col, jap],
 
             games = [
-                Game(col, jap, datetime(2018, 6, 19, 12, 0)),
-                Game(pol, sen, datetime(2018, 6, 19, 15, 0)),
+                Game(col, jap, datetime(2018, 6, 19, 12, 0),
+                     ascore=3, bscore=2),
+                     
+                Game(pol, sen, datetime(2018, 6, 19, 15, 0),
+                     ascore=3, bscore=2),
 
                 
                 Game(jap, sen, datetime(2018, 6, 24, 15, 0)),
