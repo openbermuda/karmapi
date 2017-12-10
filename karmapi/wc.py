@@ -553,7 +553,7 @@ groups = dict(
                 Game(crc, ser, datetime(2018, 6, 17, 12, 0),
                      ascore=2, bscore=4),
                      
-                Game(bra, swi, datetime(2018, 6, 17, 18, 0)
+                Game(bra, swi, datetime(2018, 6, 17, 18, 0),
                      ascore=3, bscore=3),
 
                 
@@ -584,8 +584,11 @@ groups = dict(
     g=Group(teams = [bel, pan, tun, eng],
 
             games = [
-                Game(bel, pan, datetime(2018, 6, 18, 15, 0), ascore=3, bscore=1),
-                Game(tun, eng, datetime(2018, 6, 18, 18, 0), ascore=0, bscore=0),
+                Game(bel, pan, datetime(2018, 6, 18, 15, 0),
+                     ascore=3, bscore=1),
+                     
+                Game(tun, eng, datetime(2018, 6, 18, 18, 0),
+                     ascore=0, bscore=0),
 
                 
                 Game(bel, tun, datetime(2018, 6, 23, 12, 0)),
@@ -600,7 +603,7 @@ groups = dict(
 
             games = [
                 Game(col, jap, datetime(2018, 6, 19, 12, 0),
-                     ascore=3, bscore=2),
+                     ascore=2, bscore=1),
                      
                 Game(pol, sen, datetime(2018, 6, 19, 15, 0),
                      ascore=3, bscore=2),
