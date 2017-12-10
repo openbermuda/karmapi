@@ -340,6 +340,7 @@ Events = dict(
     # So numbers for orgs should be roughly in line
     # compare to other losses... note no Maria?
     bdaharirm = Event("Bermuda Harvey Irma",  120, 1.0),
+    minthegap = Event("igul - cgul", 20, 1.0),
     )
 
 MoreEvents = dict(
