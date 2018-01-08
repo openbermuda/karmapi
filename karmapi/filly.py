@@ -162,6 +162,7 @@ Start with skill = None and update if evidence warrants.
 
 from math import pi
 import random
+import argparse
 
 from datetime import date
 from collections import defaultdict, deque
@@ -364,6 +365,39 @@ Reports = [
 # factor to apply to premium to get reinsurance loss
 MAGIC = 0.001
 
+def race(hash, codehash=None, seed=None):
+    """ filly on a chain race 
+    
+    """
+
+    # do something useful
+
+    # add the time, the seed and the code hash
+
+    # save the results
+
+    # checksum all of this and the incoming hash
+    
+    # are we done aka did I win aka small checksum?
+
+    # declare game over
+
+    # aggregate saved results
+
+    # checksum all of this
+
+    # pass it on
+
+    # do deltas
+
+    # when deltas have enough leading zeroes
+
+    # declare winner
+
+    # rinse and repeat
+    pass
+    
+    
 if __name__ == '__main__':
 
     events16 = {}
@@ -405,4 +439,19 @@ if __name__ == '__main__':
     # Compare to reports
     for report in Reports:
         pass
-    
+
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--seed')
+    parser.add_argument('--hash')
+    parser.add_argument('--codehash')
+
+    args = parser.parse_args()
+
+
+    seed = args.seed
+    hush = args.hash
+    codehush = args.codehash
+
+    race(hush, seed=seed, codehash=codehush)
