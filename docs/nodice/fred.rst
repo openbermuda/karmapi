@@ -40,10 +40,17 @@ I had put Colin Rourke's, A new paradigm on the Universe on my
 Christmas book list.  Actually, I inserted it into my partner's book
 list in the hope someone might accidentally get it her.
 
-So meanwhile, it has been fascinating to wind back a lifetime, to a
+But no luck.  So a copy may now be in the post.
+
+The timing of the find of Fred Hoyle's book could not have been
+better.
+
+It has been fascinating to wind back a lifetime, to a
 book published before I was born.
 
 It is a stunning account of how the nature of the universe.
+
+There are just 5 chapters, around 20 pages each.
 
 Earth and nearby space
 ======================
@@ -51,7 +58,10 @@ Earth and nearby space
 The Sun and the stars
 =====================
 
-and the hydrogen bomb.
+How are star works.
+
+and its relation to the hydrogen bomb.
+
 
 Origin of the stars
 ===================
@@ -62,6 +72,10 @@ Origin of the earth and the planets
 Speed of rotation of the sun.
 
 Key role of magnetism.
+
+Conservation of angular momentum.
+
+Magnetic clock springs.
 
 Expanding Universe?
 ===================
@@ -85,3 +99,5 @@ Balls
 Rotation
 
 Spiral galaxies
+
+Rotating gravitational fields.
