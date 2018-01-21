@@ -40,3 +40,39 @@ which is heated by a fire breathing dragon
 
 which randomly kicks the kiln around like a football or tosses it in
 the air, breathes fire on it then heads it to the ground.
+
+Free Software Pots
+==================
+
+Artisan software.
+
+Someone follows their own ideas.
+
+Finds something interesting.
+
+Offers it to others, who can each take their own path.
+
+Or like a band of artists weave rhythms and themes.
+
+Each with their own dance but creating ripples
+
+And waves to the future
+
+With a commit log story
+
+Of how we got here.
+
+With hints at the paths that might have been taken
+
+An infinite tree of exploration.
+
+Sharing the general.
+
+Generalising until all that differs is data
+
+And any good Turing complete will do.
+
+
+Open data pots
+==============
+
