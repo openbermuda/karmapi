@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 
-__version__ = '0.8.7.6.5.4.3.2.1'
+__version__ = '0.9'
 
 here = path.abspath(path.dirname(__file__))
 
@@ -23,7 +23,7 @@ setup(
     description='Data with karma and pi',
     long_description=long_description,
     url='https://github.com/swfiua/karmapi',
-    download_url='https://github.com/swfiua/karmapi/tarball/' + __version__,
+    #download_url='https://github.com/swfiua/karmapi/tarball/' + __version__,
     license='GPL v 3',
     classifiers = [
       'Development Status :: 3 - Alpha',
