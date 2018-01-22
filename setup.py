@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 
-__version__ = '0.7.6.5.4.3.2.1'
+__version__ = '0.8.7.6.5.4.3.2.1'
 
 here = path.abspath(path.dirname(__file__))
 
@@ -22,13 +22,13 @@ setup(
     version=__version__,
     description='Data with karma and pi',
     long_description=long_description,
-    url='https://github.com/openbermuda/karmapi',
-    download_url='https://github.com/openbermuda/karmapi/tarball/' + __version__,
+    url='https://github.com/swfiua/karmapi',
+    download_url='https://github.com/swfiua/karmapi/tarball/' + __version__,
     license='GPL v 3',
     classifiers = [
       'Development Status :: 3 - Alpha',
-      'Intended Audience :: End Users/Desktop',
-      'Programming Language :: Python :: 3.6.1',
+      'Intended Audience :: Science/Research',
+      'Programming Language :: Python :: 3.6',
     ],
     entry_points = {
         'console_scripts': [
