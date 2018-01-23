@@ -90,14 +90,80 @@ Rather, he sets the scene with clouds of hydrogen soup.
 A Personal view of all the things they say
 ==========================================
 
-Hyrdrogen soup.
+The book ends with Fred giving his personal view at the time.
 
-Magnetic springs.
+On a back page, someone has written "of all the things they say".
 
-Balls
+So here is a personal view of all the things I may have heard.
 
-Rotation
+It is now 2018, 68 years since the first edition.
 
-Spiral galaxies
+We have computers the power of a Cray XMP in our pockets.
 
-Rotating gravitational fields.
+And images of the stars from 13 billion light years away.
+
+And LIGO detectors that show gravitational waves exist.
+
+Black holes colide and out go the waves.
+
+Gravitational waves
+-------------------
+
+
+
+Expansion and big bangs
+-----------------------
+
+red shift.
+
+more than one way to shift red.
+
+At the time of the book, it was difficult to see beyond our own spiral
+galaxy.   Powerful telescopes were a very new thing.
+
+Within that galaxy the red shift of light appears to be a good indicator of
+distance.
+
+This also appears to give a *coherent* view of the universe out to the
+13B light year range currently observable.
+
+As Colin Rourke observes [1] a rapidly spinning black hole at the
+centre of a galaxy can result in a red shift of light from the spiral
+galaxy of stars surrounding that black hole.
+
+I believe that this can be shown to be the case.
+
+
+
+Self and circular reference
+---------------------------
+
+Cosmology, theoretical physics, mathematics and computer codes can all
+very quickly become "self-referencial".
+
+Following a train of thought and going round in circles.
+
+Cosmology is a bit like mathematics.  You have to make some
+assumptions and see where it leads.
+
+If the assumptions make good predictions, then it may be a good
+theory.
+
+But don't forget the assumptions, you may have new observations to
+refine those assumptions.
+
+
+
+Hyrdrogen soup
+--------------
+
+
+Magnetic springs
+----------------
+
+Balls, Rotation, Spiral galaxies
+--------------------------------
+
+*Rotating gravitational fields*
+
+
