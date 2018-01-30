@@ -152,10 +152,22 @@ theory.
 But don't forget the assumptions, you may have new observations to
 refine those assumptions.
 
+Where to begin can be a problem.
+
+How about stars condensing out of hydrogen clouds?
 
 
 Hyrdrogen soup
 --------------
+
+Imagine you are in a part of the universe where virtually all the
+matter is hydrogen.
+
+Sphere of frozen hydrogen.
+
+Rotation?
+
+
 
 
 Magnetic springs
@@ -166,4 +178,10 @@ Balls, Rotation, Spiral galaxies
 
 *Rotating gravitational fields*
 
+
+Rotation
+========
+
+And with that thought it is fast forward to Colin Rourke, A new
+paradigm for the universe.
 
