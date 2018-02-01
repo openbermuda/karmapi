@@ -5,7 +5,9 @@
 Colin Rourke
 October 2017
 
-http://msp.warwick.ac.uk/~pr
+http://msp.warwick.ac.uk/~cpr
+
+https://arxiv.org/abs/astro-ph/0311033
 
 This arrived just as I was finishing Fred Hoyle's book.
 
