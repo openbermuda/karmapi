@@ -66,3 +66,155 @@ Waves
 =====
 
 Energy mass and rotation.
+
+
+Of all the things they say
+==========================
+
+Good to be able to speak to someone who has better insights than I do.
+
+Time and space: all relative
+
+I tend to look at it after factoring out local matter from the
+geometry.
+
+At least some of the time.
+
+Cosmology has always intrigued me.  So easy to get into a circular
+argument and not even know you are there.
+
+Rather you are off on a spiral of promise.
+
+Giant black holes at the centres of galaxies.
+
+I remember being at school, maybe 7 years old.  Probably the same
+class room Fred Hoyle once sat in.
+
+Someone mentioned black holes were a thing.   No this wasn't Star
+Trek.
+
+Well yes.. like on star trek, but real.
+
+So over the years, dark matter has appeared.   Or rather hasn't.
+
+Now since galaxies seem to be rather homogeneously distributed about
+our visible universe it would seem you can place as much matter as you
+like in the centres of those galaxes, at least within a couple of
+orders of magnitude in some units.
+
+(now we are going round in circles).
+
+I am thinking about my talk for Py Caribbean.
+
+I need to get it sorted so I can start practicing.
+
+The title is:
+
+The tankrain karma pi rongo rongo show
+======================================
+
+::
+   
+    A talk about natural cats of all sorts.
+
+    The wonders of the universe
+
+    The world of python and pi
+
+    Gravity and lightness
+
+    Moai and madness
+
+    The rongo rongo way.
+
+Now I understand if you hesitate to be associated with this.
+
+Tankrain
+--------
+
+is a few lines of python code I use to view images.
+
+Its great for photos, presentations and viewing plots from
+simulations.
+
+Or climate data plotted on a grid (note to self use molleweide??)
+
+If you can model the water on earth you really have the climate and
+weather within your model.
+
+This water is in liquid, ice and water vapour form.   Along with other
+gases in the atmosphere.
+
+An inner core, solid earth with rotating inner molten core.
+
+Water and ice on land and in the atmosphere.
+
+Shells as the radius of the sphere increases.
+
+A hurricane is powered by the difference in temperature between the
+hot ocean and the cold upper atmosphere.
+
+A flow of moist warm air heads upwards, cooler air sucked in.
+
+A daily bathing of sunlight overhead.
+
+And tides and waves driving the ocean.
+ 
+Dragged away from the equatorial plane, drag increasing as you move north.
+    
+karma pi
+--------
+
+This is where I experiment with ideas and bits of python code.
+
+Mostly I end up with too much to think about before I do too much
+damage and write actual code.
+
+But there are a lot of pieces that can be used to fit models to data
+and then simulate futures (and pasts, as we know, time and all that).
+
+And provide insights.
+
+The good news is the code is extremely general.
+
+Most modules can be read on their own and only really require ability
+to read python.
+
+As my ideas get more solid, so will the code.
+
+rongo rongo
+-----------
+
+Round and round we go.
+
+
+Python
+------
+
+Happy Birthday!  27?
+
+Gravity
+-------
+
+LIGO:  2-3 years
+
+As soon as it was sensitive enough to do so, this detector found what
+it was designed to find.
+
+Anyne got updates from this and other gravity wave projects?
+
+Note that this observation suggests such events are common place.
+
+This is no doubt consistent with the theory that galaxies can be
+extremely long lived.
+
+Presumably in time the LIGO experiment (and related efforts) will
+confirm the homogeneity (or not) of space time.
+
+I would expect to see interesting correlations with the cosmic
+microwave background.
+
+
+
+
+
