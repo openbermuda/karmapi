@@ -186,7 +186,39 @@ rongo rongo
 -----------
 
 Round and round we go.
+ 
+Rongo Rongo is the name given to an ancient script written by the Rapa
+Nui people who inhabited the island of the same name, now Easter
+Island or Isla de Pascua.
 
+It is famous for the magnificent Moai, giant statues carved out of
+volcanic rocks.
+
+The distribution of Moai about the island is fascinating.
+
+The people said they walked on their own, using the power of mana.
+
+*moon.py* is the beginnings of some code to simulate the gravitational
+and magnetic fields of the island.
+
+How strong would the magnetic field need to be to allow the Moai to
+wobble as pendulums, driven by the moon and the stars?
+
+The code is intended to be entirely general, so could equally be used
+to simulate the forces of gravity and magnetism in a spiral galaxy.
+
+Or rather it could be, once I finish writing it.
+
+And rongo rongo?
+
+Well the text goes round and round.   Two spirals of mystic figures,
+meeting in the centre, or starting there and moving out, in a dance as
+the Moai walk by the ahu by the shore.
+
+By the time the tablets were noticed, all the wise who could read were
+gone, but we are told they were chants, but what do people chant?
+
+And why does everything go round and round in rapa nui?
 
 Python
 ------
@@ -213,8 +245,5 @@ confirm the homogeneity (or not) of space time.
 
 I would expect to see interesting correlations with the cosmic
 microwave background.
-
-
-
 
 
