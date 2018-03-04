@@ -19,3 +19,7 @@ Pillow       # pillow for PIL for images
 pytest       # to run the test(s)
 hypothesis   # needed to make writing tests fun
 
+
+requests  # seems to be miss
+
+

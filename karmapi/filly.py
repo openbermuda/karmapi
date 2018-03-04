@@ -162,6 +162,7 @@ Start with skill = None and update if evidence warrants.
 
 from math import pi
 import random
+import argparse
 
 from datetime import date
 from collections import defaultdict, deque
@@ -327,18 +328,26 @@ Orgs = dict(
 Events = dict(
         harvey =  Event('harvey', 100, 0.2),
         irma =    Event('irma', 100, 0.2),
-        maria =   Event('ma,ria', 80, 0.5),
+        maria =   Event('maria', 80, 0.5),
         jose =    Event('jose', 1, 0.3),
         katia =   Event('katia', 1, 0.3),
         nate =    Event('nate', 1, 0.5),
         ophelia = Event('ophelia', 2, 0.8),
         mexicoq = Event('mexico', 25, 0.5),
         calfire = Event('calfire', 10, 0.8),
-        )
+
+    # meta events 15B to Bermuda reinsurers.  Say it
+    # really looks like 3 * 40B events.
+    # So numbers for orgs should be roughly in line
+    # compare to other losses... note no Maria?
+    bdaharirm = Event("Bermuda Harvey Irma",  120, 1.0),
+    minthegap = Event("igul - cgul", 20, 1.0),
+    )
 
 MoreEvents = dict(
     ophelia = Event('ophelia', 10, 0.8),
 )
+
 
 q3 = [x for x in Events.values()]
 
@@ -356,6 +365,39 @@ Reports = [
 # factor to apply to premium to get reinsurance loss
 MAGIC = 0.001
 
+def race(hash, codehash=None, seed=None):
+    """ filly on a chain race 
+    
+    """
+
+    # do something useful
+
+    # add the time, the seed and the code hash
+
+    # save the results
+
+    # checksum all of this and the incoming hash
+    
+    # are we done aka did I win aka small checksum?
+
+    # declare game over
+
+    # aggregate saved results
+
+    # checksum all of this
+
+    # pass it on
+
+    # do deltas
+
+    # when deltas have enough leading zeroes
+
+    # declare winner
+
+    # rinse and repeat
+    pass
+    
+    
 if __name__ == '__main__':
 
     events16 = {}
@@ -397,4 +439,19 @@ if __name__ == '__main__':
     # Compare to reports
     for report in Reports:
         pass
-    
+
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--seed')
+    parser.add_argument('--hash')
+    parser.add_argument('--codehash')
+
+    args = parser.parse_args()
+
+
+    seed = args.seed
+    hush = args.hash
+    codehush = args.codehash
+
+    race(hush, seed=seed, codehash=codehush)

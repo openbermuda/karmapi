@@ -507,7 +507,7 @@ class MagicCarpet(Space):
 
         stats = frame.describe()
 
-        ef = pandas.formats.format.EngFormatter(1, True)
+        ef = pandas.io.formats.format.EngFormatter(1, True)
 
         cells = []
 

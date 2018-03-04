@@ -1,8 +1,11 @@
-""" Bermuda weather
+""" I + git
+
+tank rain for git browsing
+
 """
+
 import itertools
 import argparse
-import random
 
 import datetime
 utcnow = datetime.datetime.utcnow
@@ -19,15 +22,9 @@ from karmapi import show, base
 from karmapi import pigfarm, checksum
 
 # Paths to data
-url = 'http://weather.bm/images/'
+url = '.'
 
-radar_template = 'Radar/CurrentRadarAnimation_{size}km_sri/{date:%Y-%m-%d-%H%M}_{size}km_sri.png'
-parish_template = 'Radar/RadarParish/{date:%Y-%m-%d-%H%M}_ParishRadar.png'
-
-atlantic_chart = 'surfaceAnalysis/Latest/Atlantic.gif'
-local_chart = 'surfaceAnalysis/Latest/Local.gif'
-
-target = 'tankrain/{date.year}/{date.month}/{date.day}/{name}_{date:%H%M}{suffix}'
+target = None
 
 
 class TankRain(pigfarm.MagicCarpet):
@@ -36,10 +33,8 @@ class TankRain(pigfarm.MagicCarpet):
     def __init__(self, parent, path=None, version='local', date=None, *args):
         
         self.version = version
-        self.paused = False
         self.path = path or '~/karmapi/tankrain'
         self.timewarp = 0
-        self.cut = 0
         self.date = date
         if self.date is None:
             self.date = utcnow()
@@ -49,13 +44,10 @@ class TankRain(pigfarm.MagicCarpet):
         super().__init__(parent, axes=[111])
 
         self.add_event_map('r', self.reverse)
-        self.add_event_map(' ', self.pause)
+        self.add_event_map(' ', self.next_view)
 
         self.add_event_map('b', self.previous_day)
         self.add_event_map('v', self.next_day)
-
-        self.add_event_map('l', self.fewer_images)
-        self.add_event_map('m', self.more_images)
 
     def load_images(self):
         
@@ -77,10 +69,9 @@ class TankRain(pigfarm.MagicCarpet):
             rainbow = [x for x in range(100)]
             im = [rainbow] * 100
 
-        n = len(self.paths)
         ix = ix + self.inc
-        if ix >= n:
-            ix = self.cut
+        if ix == len(self.paths):
+            ix = 0
         if ix < 0:
             ix = len(self.paths) - 1
             
@@ -122,41 +113,19 @@ class TankRain(pigfarm.MagicCarpet):
         self.load_images()
 
     async def previous_day(self):
-        """ previous day """
+
         self.timewarp -= 24 * 3600
-        self.set_for_day()
+
+        self.load_images()
 
     async def next_day(self):
-        """ next day """
-        self.timewarp += 24 * 3600
-        self.set_for_day()
 
-    def set_for_day(self):
-        self.paused = False
-        self.cut = 0
+        self.timewarp += 24 * 3600
         self.load_images()
 
     async def reverse(self):
-        """ Rongo Rongo change direction """
-        self.paused = False
+
         self.inc *= -1
-
-    async def pause(self):
-        """ pause the show """
-        self.paused = not self.paused
-
-    async def fewer_images(self):
-        """ Skip some images """
-        self.inc = int(self.inc * 2)
-        self.cut = self.ix % abs(self.inc)
-
-
-    async def more_images(self):
-        """ Show more images """
-        if abs(self.inc) > 1:
-            self.inc = int(self.inc / 2)
-
-        self.cut = self.ix % abs(self.inc)
 
     async def start(self):
         """ FIXME: get yoser to run fetch """
@@ -170,9 +139,6 @@ class TankRain(pigfarm.MagicCarpet):
 
         self.dark()
         while True:
-            if self.paused:
-                await curio.sleep(self.sleep)
-                continue
 
             #title = self.paths[self.ix]
             if self.paths:
