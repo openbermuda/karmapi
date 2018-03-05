@@ -7,6 +7,11 @@ Pigs are windows, piglets are things running in the pig farm.
 """
 import pandas   # piglets and pandas together
 np = pandas.np
+try:
+
+    from pandas.core.indexes.datetimes import DatetimeIndex
+except:
+    from pandas.tseries.index import DatetimeIndex
 
 from collections import deque
 import curio
@@ -550,7 +555,7 @@ class MagicCarpet(Space):
                 if self.begin or self.end:
                     frame = filter_frame(frame, self.begin, self.end)
                 
-            if isinstance(frame.index, pandas.core.indexes.datetimes.DatetimeIndex):
+            if isinstance(frame.index, DatetimeIndex):
                 sortflag = False
 
             frames[group] = dict(frame=frame, sort=sortflag)
