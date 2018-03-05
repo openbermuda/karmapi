@@ -2,7 +2,7 @@
 
 matplotlib  # jupyter should provide this.. maybe it doesn't
 pandas       # this might provide matplotib
-pyaudio      # for sound
+#pyaudio      # for sound
 curio        # for async magic
 
 blockchain  # for trust and meta data exchange
