@@ -39,7 +39,7 @@ try:
 except:
     from pandas.io.formats.format import EngFormatter
 
-from .finder import ImageFind
+from karmapi.finder import ImageFind
 
 from karmapi import base, yosser
 
