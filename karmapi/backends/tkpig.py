@@ -39,7 +39,7 @@ try:
 except:
     from pandas.io.formats.format import EngFormatter
 
-from ripl import imagefind
+from .finder import ImageFind
 
 from karmapi import base, yosser
 
@@ -195,7 +195,7 @@ class Canvas(Pig):
 
     def find_image(self, name):
             
-        return imagefind.interpret(dict(galleries=self.gallery, image=name))
+        return ImageFind().interpret(dict(galleries=self.gallery, image=name))
 
 
 class PillBox(Pig):

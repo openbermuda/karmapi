@@ -506,7 +506,8 @@ class Image(PlotImage):
 
     def __init__(self, parent, image=None, title=None, galleries=None):
 
-        from ripl import imagefind
+        from .finder import ImageFind
+        imagefind = ImageFind()
         
         self.path = '/home/jng/devel/karmapi/docs/pycaribbean/princess_cricket.jpg'
 

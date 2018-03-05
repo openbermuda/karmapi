@@ -1,4 +1,3 @@
-ripl # for historical reasons
 #jupyter for added goodness
 
 matplotlib  # jupyter should provide this.. maybe it doesn't
