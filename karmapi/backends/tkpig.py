@@ -23,9 +23,6 @@ from tkinter import Tk, ttk, Text, messagebox
 
 from matplotlib.backends.backend_tkagg import FigureCanvas, FigureManager
 
-from matplotlib.backends.backend_tkagg import (
-    NavigationToolbar2TkAgg)
-
 from matplotlib.backends import tkagg
 
 from matplotlib.figure import Figure
@@ -291,7 +288,6 @@ class PlotImage(Pig):
         self.image = FigureCanvas(fig, master=self)
         self.image._tkcanvas.pack(expand=1, fill=tkinter.BOTH)
 
-        #self.toolbar = NavigationToolbar2TkAgg(self.image, self)
         #self.toolbar.update()
         #self.toolbar.pack(expand=0)
         if axes is None:

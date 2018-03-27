@@ -4,7 +4,8 @@
 
 A personal view.
 
-Fred Hoyle, Colin Rourke, Douglas Adams and an army of others with guides to the universe.
+Fred Hoyle, Colin Rourke, Douglas Adams and an army of others with
+guides to the universe.
 
 I am currently engrossed by Colin Rourke's, "A new paradigm for the
 universe" (ANPOTA).
