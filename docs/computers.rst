@@ -278,3 +278,39 @@ Oh and this one is a wonder to behold::
               PLEASE DON'T
               
               REMOVE CARD
+
+
+Stress and using stuff that might explode
+=========================================
+
+Aside::
+
+  import hypothesis
+
+  # great talk, might have been lighning
+
+  def test_does_it_explode(thing):
+      """  Prod it see what happens
+      
+      This is also known as the "pyree protocol" or prp for short.
+
+      Pyree says it is pronounced perp as in walk.  He's pretty
+      advanced speech wise for a one year old.  Particularly when you
+      factor in he's really still a kitten.
+      
+      So protocol not advised in presense of moose.
+
+      See also title of this piece, whatever it is.
+      """
+
+OK.  So this is actually a great test to have.
+
+Just checked karmapi.  Oh, I did write some tests.... over to bash
+
+::
+
+   grep explod tests/test*.py
+
+
+Hmm... no explode test yet.  Maybe we need Eric?
+
