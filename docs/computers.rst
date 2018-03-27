@@ -188,15 +188,93 @@ True love
 
 gnumeric
 
-Matplotlib
+python
+
+Matplotlib, Jupyter <3 00 <3
+
+Eagle and Salmon, guiding each other.
+
+Watching and listening too.  I'm up in the mountains, flying high
+and the water is clearing from my ears.
+
+We have the music, just no CD player.
+
+And that's just cool for now.
+
+Because of four classic books and an infinite love.
 
 Whatever happened to..
 ======================
 
 Matplotlib plots embedded in gnumeric?
 
+And python in gnumeric?
+
+And herein lies a cool thing... I could look and see what's there if
+it were installed in a base Ubuntu system... checks::
+
+  It's not there :(
+
+If I had a web connection.  Which I could, but actually enjoying it
+not there for now, so one for another day.
 
 Did someone say webform?
 ========================
 
 Leaves the room
+
+Tech paranoia
+=============
+
+Much of life writing with software has been life with stuff that does
+not yet do what is desired.
+
+When you find a great tool stick with it, you may not need much more.
+
+Hence:
+
+   * Excel
+     
+   * Word
+     
+   * Powerpoing
+
+   * ripl, tankrain or just PIL + feh or gqview or ....
+
+But, whatabout?
+===============
+
+Yes, there is no shortage of fantastic tools.  And that is good.
+
+So what's the problem?
+======================
+
+Languages.
+
+
+But what about Machine Learning and Block Chain?
+================================================
+
+There's an idea: un block chain, ubc.
+
+An we are back to C.
+
+Which is sort of how it all began.
+
+And pretty much every important problem was already solved by then, at
+least theoretically.
+
+And now everyone has a Cray in their pocket.
+
+Or not quite everyone.
+
+And that can be a problem.
+
+And everyone who has one has to re-learn how to answer the phone every
+time there is an upgrade.
+
+Oh and this one is a wonder to behold::
+
+              PLEASE DON'T
+              
+              REMOVE CARD
