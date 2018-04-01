@@ -21,6 +21,44 @@ This uses hmm and does feature extraction and more:
 
 https://github.com/tyiannak/pyAudioAnalysis
 
+
+
+Update: back after a long absense.
+ 
+
+OK.  So I have some .wav files I want to process and use with the rest of the
+karma that is here.
+
+But there are a lot of pieces to juggle around here.
+
+I want to use the tpot.
+
+Here's the idea.
+
+Take a poor quality recording of me playing the guitar and turn it into
+something Carlos Santana might do while he's tying shoe laces.
+
+So I'm more Carlisle Sultana than Carlos, so this might take a while.
+
+Less ambitious goal?  Beware if it sounds easy ...  remember the black hole of
+code.  Did I mention the spaghetti?
+
+So the other goal is to be able to control tankrain with a guitar.
+
+Oh and update.  Laptop has a mic, so can do the recording with hush.
+
+And now I am having dega code
+
+its deja vu for you know you have an idea you want to pursue and remember
+solving the problem before (the problem in this case being reading and writing
+files).
+
+But the problem here is files with a special sound format.  And then of course
+you realise this is the place where you did it last time.
+
+Time to see if any of it still works.
+
+karma currie time to be exact.
 """
 from datetime import datetime
 import math
