@@ -31,16 +31,11 @@ For me a reasonable order to read has been:
 Introduction
 ============
 
- 
-
 Chapter 2 Sciama's Principle
-
-
 
 Chapter 6 Observations
 
 Chapter 7 Cosmology.
-
 
 Chapters 3-5 are more math heavy, don't get bogged down there and miss
 out on the joys of the final two chapters.
@@ -75,6 +70,7 @@ behave and then come back to the issue of surrounding matter.
 But first, what happens when a giant cloud of hydrogen is sent
 spinning gently through a universe?
 
+Easter Update
+=============
 
-
-
+see april1.rst 
