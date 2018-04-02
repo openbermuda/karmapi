@@ -41,9 +41,23 @@ something Carlos Santana might do while he's tying shoe laces.
 So I'm more Carlisle Sultana than Carlos, so this might take a while.
 
 Less ambitious goal?  Beware if it sounds easy ...  remember the black hole of
-code.  Did I mention the spaghetti?
+code.  Did I mention the black hole is actually made of spaghetti code?  
+
+All the failed *next generation* projects for the last generation, this is just
+one of the holes out there.
+
+The cool thing is that due to modern version control a code base can easily
+belong to multiple black holes simultaneously.   
+
+Of course a lot of this stuff is actually out there in the wild, but that is a
+whole other problem.
+
+Did I mention I digress?
 
 So the other goal is to be able to control tankrain with a guitar.
+
+And the teapot might just help with that.  Guess the state, bind the state to
+actions for tankrain.
 
 Oh and update.  Laptop has a mic, so can do the recording with hush.
 
