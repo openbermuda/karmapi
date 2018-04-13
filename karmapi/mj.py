@@ -13,7 +13,7 @@ My Queen Mary went with as simple substitution + some magic codes.
 
 But I'm not sure the magic works, even in python.  It's a human thing.
 
-So, here's a simple sub with a twist.
+So, here's a simple sub with a twist for now.
 
 """
 
@@ -79,6 +79,7 @@ import sys
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--key', default='iloveyou')
+parser.add_argument('--mj', action='store_true')
 parser.add_argument('--cheat', action='store_true')
 
 args = parser.parse_args()
@@ -89,6 +90,10 @@ message = sys.stdin.read()
 alpha = key_to_alpha(args.key)
 
 cipher = gen_cipher_lookup(alpha)
+
+if args.mj:
+    print("Not yet implemented :(")
+    sys.exit(26)
 
 if args.cheat:
     for p, c in cipher.items():
