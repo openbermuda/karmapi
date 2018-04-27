@@ -30,6 +30,8 @@ def parse(item):
 def pparse(pitem):
     """ Convert path into date time """
     fields = pitem.stem.split('_')
+    print(fields)
+
     name, day, second = fields[:3]
 
     year = int(day[:4])
@@ -60,6 +62,10 @@ if __name__ == '__main__':
     dest = Path(args.dest)
 
     for item in items.glob('*'):
+
+        # skip sub-folders for now. Pixel pics come with .inflight
+        if item.is_dir():
+            continue
 
         when, what = parse(item)
 
