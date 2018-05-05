@@ -15,7 +15,7 @@ def warp(dest, when):
 
     folder = dest / str(when.year) /  str(when.month) / str(when.day)
 
-    return folder / f'{when.hour}{when.minute}{when.second}'
+    return folder / f'{02d:when.hour}{02d:when.minute}{02d:when.second}'
 
 def parse(item):
     """ Oh no.. date parsing time """
