@@ -35,3 +35,26 @@ View a black hole as a place where time slows down.
 As such it acts as a giant capacitor, storing up energy before
 releasing a burst to the surrounding universe.
 
+Mixing of inertial fields
+=========================
+
+
+Random?
+=======
+
+
+Synchronisation
+===============
+
+
+Pseudo Harmonic
+===============
+
+Solar System
+============
+
+Earth
+=====
+
+El Nino
+-------
