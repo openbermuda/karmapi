@@ -7,7 +7,7 @@ import argparse
 
 import curio
 
-from karmapi import base, tpot
+from karmapi import base, tpot, pigfarm
 
 from random import random, randint
 
