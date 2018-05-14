@@ -27,7 +27,22 @@ class Sphere:
         pass
 
 class NestedWaves(pigfarm.Yard):
-    pass
+
+    def __init__(self, parent, start=4, end=4*1024, skip=4):
+        """ Initialise the thing """
+
+        super().__init__(parent)
+
+        self.start = start
+        self.end = end
+        self.skip = skip
+
+        # expect we'll find something to do with a queue
+        self.uq = curio.UniversalQueue()
+
+    async def start(self):
+        """ Start the thing running """
+        pass
 
     async def run(self):
         pass
@@ -57,7 +72,7 @@ def main():
     if args.snowy:
         name = 'cat'
         
-    farm.add(NestedWaves, dict(gallery=args.gallery, name=name))
+    farm.add(NestedWaves)
 
     curio.run(farm.run(), with_monitor=True)
     
