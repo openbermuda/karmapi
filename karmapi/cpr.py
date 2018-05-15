@@ -28,14 +28,14 @@ class Sphere:
 
 class NestedWaves(pigfarm.Yard):
 
-    def __init__(self, parent, start=4, end=4*1024, skip=4):
+    def __init__(self, parent, n=1024, base=4, inc=4):
         """ Initialise the thing """
 
         super().__init__(parent)
 
-        self.start = start
-        self.end = end
-        self.skip = skip
+        self.base = base
+        self.n = n
+        self.inc = inc
 
         # expect we'll find something to do with a queue
         self.uq = curio.UniversalQueue()
