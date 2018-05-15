@@ -40,11 +40,8 @@ class NestedWaves(pigfarm.Yard):
         # expect we'll find something to do with a queue
         self.uq = curio.UniversalQueue()
 
-    async def start(self):
-        """ Start the thing running """
-        pass
-
     async def run(self):
+        """ Run the waves """
         pass
 
 def main():
