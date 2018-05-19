@@ -40,6 +40,15 @@ class NestedWaves(pigfarm.Yard):
         # expect we'll find something to do with a queue
         self.uq = curio.UniversalQueue()
 
+        self.build()
+
+    def build(self):
+        """ Create the balls """
+        # add a bunch of spheres to the queue
+        size = self.base
+        for ball in range(self.n):
+            uq.put(Sphere(self.base + (ball * self.inc)))
+
     async def run(self):
         """ Run the waves """
         pass
