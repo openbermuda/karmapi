@@ -21,14 +21,15 @@ class Sphere:
         for lat in range(size):
             grid.append([random() for x in range(size)])
 
-        print(grid)
+        self.grid = grid
 
-    async def run(self):
-        pass
+    def run(self):
+
+        print(len(self.grid))
 
 class NestedWaves(pigfarm.Yard):
 
-    def __init__(self, parent, n=1024, base=4, inc=4):
+    def __init__(self, parent, n=10, base=4, inc=4):
         """ Initialise the thing """
 
         super().__init__(parent)
@@ -45,13 +46,40 @@ class NestedWaves(pigfarm.Yard):
     def build(self):
         """ Create the balls """
         # add a bunch of spheres to the queue
-        size = self.base
         for ball in range(self.n):
-            uq.put(Sphere(self.base + (ball * self.inc)))
+            size = self.base + (ball * self.inc)
+            self.uq.put(Sphere(size))
 
+
+    def step_balls(self):
+
+        uq = curio.UniversalQueue()
+        while self.uq.qsize():
+            ball = self.uq.get()
+            ball.run()
+            uq.put(ball)
+
+        self.uq = uq
+
+    def draw(self):
+        pass
+            
     async def run(self):
         """ Run the waves """
-        pass
+
+        self.sleep = 0.05
+
+        self.set_background()
+        
+        while True:
+            self.canvas.delete('all')
+
+            self.draw()
+
+            self.step_balls()
+            
+            await curio.sleep(self.sleep)            
+
 
 def main():
 
@@ -64,6 +92,7 @@ def main():
     parser.add_argument(
         '--name', default='tree',
         help='what to show')
+    parser.add_argument('-n', type=int, default=10)
                             
 
     args = parser.parse_args()
@@ -74,11 +103,7 @@ def main():
     
     farm.add(GuidoClock)
 
-    name = args.name
-    if args.snowy:
-        name = 'cat'
-        
-    farm.add(NestedWaves)
+    farm.add(NestedWaves, dict(n=args.n))
 
     curio.run(farm.run(), with_monitor=True)
     
