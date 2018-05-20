@@ -347,21 +347,21 @@ class Novgorod(Place):
     """ Central """
 
     name = 'Nizhny Novgorod'
-    lat = None
-    lon = None
+    lat = 48 + (44 / 60)
+    lon = 44 + (33 / 60)
     
 class Kaliningrad(Place):
     """ North West port """
 
     name = 'Kaliningrad'
-    lat = None
-    lon = None
+    lat = 54 + (42 / 60)
+    lon = 20 + (32 / 60)
 
 class RostovOnDon(Place):
     """ Sheffield in Russia """
     name = "Rostov-on-Don"
-    lat = None
-    lon = None
+    lat = 47 + (13 / 60)
+    lon = 39 + (44 / 60)
     
 class Kazan(Place):
     """  
@@ -380,29 +380,29 @@ class Samara(Place):
     """  """
 
     name = 'Samara'
-    lat = None
-    lon = None
+    lat = 53 + (17 / 60)
+    lon = 10 + (14 / 60)
 
 class Yekaterinburg(Place):
     """  """
 
-    name = ''
-    lat = None
-    lon = None
+    name = 'Central Stadium'
+    lat = 56 + (50 / 60)
+    lon = 60 + (34 / 60)
 
 class Saransk(Place):
     """  """
 
-    name = ''
-    lat = None
-    lon = None
+    name = 'Mordovia Arena'
+    lat = 54 + (11 / 60)
+    lon = 45 + (12 / 60)
 
 class Sochi(Place):
     """  """
 
-    name = ''
-    lat = None
-    lon = None
+    name = 'Fisht Olympic Stadium'
+    lat = 43 + (24 / 60)
+    lon = 39 + (57 / 60)
 
     
 

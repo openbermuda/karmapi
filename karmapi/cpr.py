@@ -93,7 +93,8 @@ def main():
         '--name', default='tree',
         help='what to show')
     parser.add_argument('-n', type=int, default=10)
-                            
+    parser.add_argument('--inc', type=int, default=4)
+
 
     args = parser.parse_args()
 
