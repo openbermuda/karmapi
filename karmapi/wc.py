@@ -507,43 +507,62 @@ groups = dict(
     b=Group(teams = [por, spa, mor, ira],
             games = [
                 Game(mor, ira, datetime(2018, 6, 15, 15, 0),
+                     where=places[''],
                      ascore=2, bscore=2),
                      
                 Game(por, spa, datetime(2018, 6, 15, 18, 0),
+                     where=places[''],
                      ascore=3, bscore=2),
 
                 
-                Game(por, mor, datetime(2018, 6, 20, 12, 0)),
-                Game(ira, spa, datetime(2018, 6, 20, 18, 0)),
+                Game(por, mor, datetime(2018, 6, 20, 12, 0),
+                     where=places[''],
+                     ),
+                Game(ira, spa, datetime(2018, 6, 20, 18, 0),
+                     where=places[''],
+                     ),
                 
-                Game(ira, por, datetime(2018, 6, 25, 18, 0)),
-                Game(spa, mor, datetime(2018, 6, 25, 18, 0)),
+                Game(ira, por, datetime(2018, 6, 25, 18, 0),
+                     where=places[''],
+                     ),
+                Game(spa, mor, datetime(2018, 6, 25, 18, 0),
+                     where=places[''],
+                     ),
                 ]),
                 
     c=Group(teams = [fra, aus, per, den],
 
             games = [
                 Game(fra, aus, datetime(2018, 6, 16, 10, 0),
+                     where=places[''],
                      ascore=1, bscore=2),
                      
                 Game(per, den, datetime(2018, 6, 16, 14, 0),
+                     where=places[''],
                      ascore=2, bscore=2),
 
                 
-                Game(den, aus, datetime(2018, 6, 21, 12, 0)),
-                Game(fra, per, datetime(2018, 6, 21, 15, 0)),
+                Game(den, aus, datetime(2018, 6, 21, 12, 0),
+                     ),
+                Game(fra, per, datetime(2018, 6, 21, 15, 0),
+                     ),
                 
-                Game(den, fra, datetime(2018, 6, 26, 14, 0)),
-                Game(aus, per, datetime(2018, 6, 26, 14, 0)),
+                Game(den, fra, datetime(2018, 6, 26, 14, 0),
+                     ),
+                Game(aus, per, datetime(2018, 6, 26, 14, 0),
+                     ),
+                
                 ]),
                 
     d=Group(teams = [arg, ice, cro, nig],
 
             games = [
                 Game(arg, ice, datetime(2018, 6, 16, 13, 0),
+                     where=places[''],
                      ascore=3, bscore=2),
 
                 Game(cro, nig, datetime(2018, 6, 16, 19, 0),
+                     where=places[''],
                      ascore=2, bscore=2),
 
                 
@@ -560,9 +579,11 @@ groups = dict(
 
             games = [
                 Game(crc, ser, datetime(2018, 6, 17, 12, 0),
+                     where=places[''],
                      ascore=2, bscore=4),
                      
                 Game(bra, swi, datetime(2018, 6, 17, 18, 0),
+                     where=places[''],
                      ascore=3, bscore=3),
 
                 
@@ -577,9 +598,11 @@ groups = dict(
 
             games = [
                 Game(ger, mex, datetime(2018, 6, 17, 15, 0),
+                     where=places[''],
                      ascore=1, bscore=2),
 
                 Game(swe, sko, datetime(2018, 6, 18, 12, 0),
+                     where=places[''],
                      ascore=3, bscore=2),
 
                 
@@ -594,9 +617,11 @@ groups = dict(
 
             games = [
                 Game(bel, pan, datetime(2018, 6, 18, 15, 0),
+                     where=places[''],
                      ascore=3, bscore=1),
                      
                 Game(tun, eng, datetime(2018, 6, 18, 18, 0),
+                     where=places[''],
                      ascore=0, bscore=0),
 
                 
@@ -612,9 +637,11 @@ groups = dict(
 
             games = [
                 Game(col, jap, datetime(2018, 6, 19, 12, 0),
+                     where=places[''],
                      ascore=2, bscore=1),
                      
                 Game(pol, sen, datetime(2018, 6, 19, 15, 0),
+                     where=places[''],
                      ascore=3, bscore=2),
 
                 
