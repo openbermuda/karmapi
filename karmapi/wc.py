@@ -406,25 +406,24 @@ class Sochi(Place):
 
     
 
-places = [
+places = dict(
 
-    Moscow(),
-    Spartak(),
-    StPetersberg(),
+    moscow=Moscow(),
+    spartak=Spartak(),
+    stpetersberg=StPetersberg(),
 
-    Kaliningrad(),
+    kaliningrad=Kaliningrad(),
 
-    Novgorod(),
-    Yekaterinburg(),
-    Kazan(),
-    Saransk(),
-    Samara(),
+    novgorod=Novgorod(),
+    yekaterinburg=Yekaterinburg(),
+    kazan=Kazan(),
+    saransk=Saransk(),
+    samara=Samara(),
 
-    Volgograd(),
-    RostovOnDon(),
-    Sochi(),
-    
-    ]
+    volgograd=Volgograd(),
+    rostovondon=RostovOnDon(),
+    sochi=Sochi(),
+    )
     
 
 # Group A
@@ -480,19 +479,29 @@ groups = dict(
     a=Group(teams = [rus, sau, egy, urg],
             games = [
                 Game(rus, sau, datetime(2018, 6, 14, 15, 0),
+                     where=places['moscow'],
                      ascore=4, bscore=0),
 
                 Game(egy, urg, datetime(2018, 6, 15, 12, 0),
+                     where=places['yekaterinburg'],
                      ascore=1, bscore=2),
 
                 
-                Game(rus, egy, datetime(2018, 6, 19, 18, 0)),
+                Game(rus, egy, datetime(2018, 6, 19, 18, 0),
+                     where=places['stpetersberg'],
+                    ),
                 
-                Game(urg, sau, datetime(2018, 6, 20, 15, 0)),
+                Game(urg, sau, datetime(2018, 6, 20, 15, 0),
+                     where=places['rostovondon'],
+                     ),
                 
 
-                Game(urg, rus, datetime(2018, 6, 19, 14, 0)),
-                Game(sau, egy, datetime(2018, 6, 19, 14, 0)),
+                Game(urg, rus, datetime(2018, 6, 19, 14, 0),
+                     where=places['samara'],
+                     ),
+                Game(sau, egy, datetime(2018, 6, 19, 14, 0),
+                     where=places['volgograd'],
+                     ),
                 ]),
                 
     b=Group(teams = [por, spa, mor, ira],
