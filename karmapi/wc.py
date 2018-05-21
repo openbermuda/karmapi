@@ -543,13 +543,17 @@ groups = dict(
 
                 
                 Game(den, aus, datetime(2018, 6, 21, 12, 0),
+                     where=places[''],
                      ),
                 Game(fra, per, datetime(2018, 6, 21, 15, 0),
+                     where=places[''],
                      ),
                 
                 Game(den, fra, datetime(2018, 6, 26, 14, 0),
+                     where=places[''],
                      ),
                 Game(aus, per, datetime(2018, 6, 26, 14, 0),
+                     where=places[''],
                      ),
                 
                 ]),
@@ -684,6 +688,27 @@ print()
 print("It's a knock out!")
     
 # Simulate a knockout draw + bugs
-jsf = JeuxSansFrontieres(groups)
+jsf_places = [
+    places[''],
+    places[''],
+    places[''],
+    places[''],
+    places[''],
+    places[''],
+    places[''],
+    places[''],
+    places[''],
+    places[''],
+    places[''],
+    places[''],
+    places[''],
+    places[''],
+    places[''],
+    places[''],
+    ]
+
+jsf_dates = [
+    ]
+jsf = JeuxSansFrontieres(groups, places=jsf_places, dates=jsf_dates)
 
     
