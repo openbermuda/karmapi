@@ -407,7 +407,7 @@ class Sochi(Place):
     
 
 places = dict(
-
+    
     moscow=Moscow(),
     spartak=Spartak(),
     stpetersberg=StPetersberg(),
@@ -424,7 +424,7 @@ places = dict(
     rostovondon=RostovOnDon(),
     sochi=Sochi(),
     )
-    
+places[''] = '???'    
 
 # Group A
 rus = Team('RUS')
@@ -689,25 +689,50 @@ print("It's a knock out!")
     
 # Simulate a knockout draw + bugs
 jsf_places = [
-    places[''],
-    places[''],
-    places[''],
-    places[''],
-    places[''],
-    places[''],
-    places[''],
-    places[''],
-    places[''],
-    places[''],
-    places[''],
-    places[''],
-    places[''],
-    places[''],
-    places[''],
-    places[''],
+    places['kazan'],
+    places['sochi'],
+    places['moscow'],
+    places['novgorod'],
+
+    places['samara'],
+    places['rostovondon'],
+    places['stpetersberg'],
+    places['spartak'],
+    
+    places['novgorod'],
+    places['kazan'],
+    places['samara'],
+    places['sochi'],
+    
+    places['stpetersberg'],
+    places['moscow'],
+    
+    places['stpetersberg'],
+    
+    places['moscow'],
     ]
 
 jsf_dates = [
+    datetime(2018, 6, 30, 14, 0),
+    datetime(2018, 6, 30, 18, 0),
+    datetime(2018, 7,  1, 14, 0),
+    datetime(2018, 7,  1, 18, 0),
+    
+    datetime(2018, 7,  2, 14, 0),
+    datetime(2018, 7,  2, 18, 0),
+    datetime(2018, 7,  3, 14, 0),
+    datetime(2018, 7,  3, 18, 0),
+    
+    datetime(2018, 7,  6, 14, 0),
+    datetime(2018, 7,  6, 18, 0),
+    datetime(2018, 7,  7, 14, 0),
+    datetime(2018, 7,  7, 18, 0),
+    
+    datetime(2018, 7, 10, 18, 0),
+    datetime(2018, 7, 11, 18, 0),
+    
+    datetime(2018, 7, 14, 14, 0),
+    datetime(2018, 7, 15, 15, 0),
     ]
 jsf = JeuxSansFrontieres(groups, places=jsf_places, dates=jsf_dates)
 
