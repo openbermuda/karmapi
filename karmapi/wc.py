@@ -220,8 +220,8 @@ class Group:
             if ascore > bscore:
                 a.points += 3
 
-            elif bscore > bscore:
-                b.points += bscore
+            elif bscore > ascore:
+                b.points += 3
 
             else:
                 a.points += 1
@@ -670,17 +670,8 @@ groups = dict(
 # group winners and seconds
 winners = {}
 seconds = {}
-for item in 'abcdefgh':
 
-    group = groups[item]
-    
-    winners[group] = group.winner()
-    seconds[group] = group.second()
-
-
-# do something ?
-
-# print out the games
+# print out the games while we are at it
 for xx, group  in groups.items():
     
     print(xx)
@@ -691,6 +682,9 @@ for xx, group  in groups.items():
     print()
     group.run()
     print()
+
+    winners[xx] = group.winner()
+    seconds[xx] = group.second()
 
     group.table()
 
@@ -781,15 +775,20 @@ class MexicanWaves(pigfarm.Yard):
             await curio.sleep(self.sleep)            
 
 
-farm = pigfarm.PigFarm()
+parser = argparse.ArgumentParser()
+parser.add_argument('--pig', action='store_true')
+args = parser.parse_args()            
 
-from karmapi.mclock2 import GuidoClock
+if args.pig:
+    farm = pigfarm.PigFarm()
+
+    from karmapi.mclock2 import GuidoClock
     
-farm.add(GuidoClock)
-farm.add(MexicanWaves)
+    farm.add(GuidoClock)
+    farm.add(MexicanWaves)
 
-# add a random wc time warper?
+    # add a random wc time warper?
 
-curio.run(farm.run(), with_monitor=True)
+    curio.run(farm.run(), with_monitor=True)
 
 
