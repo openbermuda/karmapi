@@ -113,6 +113,8 @@ eng tun bel and pan played already.  See Game's for results.
 
 import random
 import argparse
+import curio
+from karmapi import pigfarm
 
 from datetime import datetime, timedelta
 
@@ -139,6 +141,34 @@ class Team:
         msg +=f'{self.goals - self.against:4} {self.goals:4} {self.against:4}'
 
         return msg
+
+class Game:
+
+    def __init__(self, a, b, when, where=None, ascore=None, bscore=None):
+
+        self.a = a
+        self.b = b
+        self.when = when
+        self.where = where
+        
+        self.ascore = ascore
+        self.bscore = bscore
+
+    def score(self):
+        """ Make up a score """
+        ascore = random.randint(0, random.randint(0, 5))
+        bscore = random.randint(0, random.randint(0, 5))
+
+        return self.ascore or ascore, self.bscore or bscore
+
+    def __str__(self):
+
+        return f'{self.a.name} {self.b.name} {self.when} {self.where}'
+
+    async def run(self):
+        """ Run the game """
+        pass
+
 
 class Group:
 
@@ -285,30 +315,11 @@ class JeuxSansFrontieres:
         for game in self.games:
             print(game)
 
+    def run(self):
+        """ Run the games """
         
 
-class Game:
-
-    def __init__(self, a, b, when, where=None, ascore=None, bscore=None):
-
-        self.a = a
-        self.b = b
-        self.when = when
-        self.where = where
         
-        self.ascore = ascore
-        self.bscore = bscore
-
-    def score(self):
-        """ Make up a score """
-        ascore = random.randint(0, random.randint(0, 5))
-        bscore = random.randint(0, random.randint(0, 5))
-
-        return self.ascore or ascore, self.bscore or bscore
-
-    def __str__(self):
-
-        return f'{self.a.name} {self.b.name} {self.when} {self.where}'
 
 
 class Place:
@@ -736,4 +747,49 @@ jsf_dates = [
     ]
 jsf = JeuxSansFrontieres(groups, places=jsf_places, dates=jsf_dates)
 
+
+# add a PI Gui?
+class MexicanWaves(pigfarm.Yard):
+
+    def __init__(self, parent):
+        """ Initialise the thing """
+
+        super().__init__(parent)
+
+
+    def step_balls(self):
+        """ do something here """
+        pass
+
+    def draw(self):
+        pass
+
+    async def run(self):
+        """ Run the waves """
+
+        self.sleep = 0.05
+
+        self.set_background()
+        
+        while True:
+            self.canvas.delete('all')
+
+            self.draw()
+
+            self.step_balls()
+            
+            await curio.sleep(self.sleep)            
+
+
+farm = pigfarm.PigFarm()
+
+from karmapi.mclock2 import GuidoClock
     
+farm.add(GuidoClock)
+farm.add(MexicanWaves)
+
+# add a random wc time warper?
+
+curio.run(farm.run(), with_monitor=True)
+
+
