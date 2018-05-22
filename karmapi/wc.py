@@ -518,26 +518,26 @@ groups = dict(
     b=Group(teams = [por, spa, mor, ira],
             games = [
                 Game(mor, ira, datetime(2018, 6, 15, 15, 0),
-                     where=places[''],
+                     where=places['stpetersberg'],
                      ascore=2, bscore=2),
                      
                 Game(por, spa, datetime(2018, 6, 15, 18, 0),
-                     where=places[''],
+                     where=places['sochi'],
                      ascore=3, bscore=2),
 
                 
                 Game(por, mor, datetime(2018, 6, 20, 12, 0),
-                     where=places[''],
+                     where=places['moscow'],
                      ),
                 Game(ira, spa, datetime(2018, 6, 20, 18, 0),
-                     where=places[''],
+                     where=places['kazan'],
                      ),
                 
                 Game(ira, por, datetime(2018, 6, 25, 18, 0),
-                     where=places[''],
+                     where=places['saransk'],
                      ),
                 Game(spa, mor, datetime(2018, 6, 25, 18, 0),
-                     where=places[''],
+                     where=places['kaliningrad'],
                      ),
                 ]),
                 
@@ -545,26 +545,26 @@ groups = dict(
 
             games = [
                 Game(fra, aus, datetime(2018, 6, 16, 10, 0),
-                     where=places[''],
+                     where=places['kazan'],
                      ascore=1, bscore=2),
                      
                 Game(per, den, datetime(2018, 6, 16, 14, 0),
-                     where=places[''],
+                     where=places['saransk'],
                      ascore=2, bscore=2),
 
                 
                 Game(den, aus, datetime(2018, 6, 21, 12, 0),
-                     where=places[''],
+                     where=places['samara'],
                      ),
                 Game(fra, per, datetime(2018, 6, 21, 15, 0),
-                     where=places[''],
+                     where=places['yekaterinburg'],
                      ),
                 
                 Game(den, fra, datetime(2018, 6, 26, 14, 0),
-                     where=places[''],
+                     where=places['moscow'],
                      ),
                 Game(aus, per, datetime(2018, 6, 26, 14, 0),
-                     where=places[''],
+                     where=places['sochi'],
                      ),
                 
                 ]),
@@ -573,98 +573,138 @@ groups = dict(
 
             games = [
                 Game(arg, ice, datetime(2018, 6, 16, 13, 0),
-                     where=places[''],
+                     where=places['spartak'],
                      ascore=3, bscore=2),
 
                 Game(cro, nig, datetime(2018, 6, 16, 19, 0),
-                     where=places[''],
+                     where=places['kaliningrad'],
                      ascore=2, bscore=2),
 
                 
-                Game(arg, cro, datetime(2018, 6, 21, 18, 0)),
+                Game(arg, cro, datetime(2018, 6, 21, 18, 0),
+                     where=places['novgorod'],
+                     ),
                 
-                Game(nig, ice, datetime(2018, 6, 22, 15, 0)),
+                Game(nig, ice, datetime(2018, 6, 22, 15, 0),
+                     where=places['volgograd'],
+                    ),
 
                 
-                Game(nig, arg, datetime(2018, 6, 26, 18, 0)),
-                Game(ice, cro, datetime(2018, 6, 26, 18, 0)),
+                Game(nig, arg, datetime(2018, 6, 26, 18, 0),
+                     where=places['stpetersberg'],
+                     ),
+                Game(ice, cro, datetime(2018, 6, 26, 18, 0),
+                     where=places['rostovondon'],
+                     ),
                 ]),
                 
     e=Group(teams = [bra, swi, crc, ser],
 
             games = [
                 Game(crc, ser, datetime(2018, 6, 17, 12, 0),
-                     where=places[''],
+                     where=places['samara'],
                      ascore=2, bscore=4),
                      
                 Game(bra, swi, datetime(2018, 6, 17, 18, 0),
-                     where=places[''],
+                     where=places['rostovondon'],
                      ascore=3, bscore=3),
 
                 
-                Game(bra, crc, datetime(2018, 6, 22, 12, 0)),
-                Game(ser, swi, datetime(2018, 6, 22, 18, 0)),
+                Game(bra, crc, datetime(2018, 6, 22, 12, 0),
+                     where=places['stpetersberg'],
+                     ),
+                Game(ser, swi, datetime(2018, 6, 22, 18, 0),
+                     where=places['kaliningrad'],
+                     ),
                 
-                Game(ser, bra, datetime(2018, 6, 27, 18, 0)),
-                Game(swi, crc, datetime(2018, 6, 27, 18, 0)),
+                Game(ser, bra, datetime(2018, 6, 27, 18, 0),
+                     where=places['spartak'],
+                     ),
+                Game(swi, crc, datetime(2018, 6, 27, 18, 0),
+                     where=places['novgorod'],
+                     ),
                 ]),
                 
     f=Group(teams = [ger, swe, mex, sko],
 
             games = [
                 Game(ger, mex, datetime(2018, 6, 17, 15, 0),
-                     where=places[''],
+                     where=places['moscow'],
                      ascore=1, bscore=2),
 
                 Game(swe, sko, datetime(2018, 6, 18, 12, 0),
-                     where=places[''],
+                     where=places['novgorod'],
                      ascore=3, bscore=2),
 
                 
-                Game(sko, mex, datetime(2018, 6, 23, 15, 0)),
-                Game(ger, swe, datetime(2018, 6, 23, 18, 0)),
+                Game(sko, mex, datetime(2018, 6, 23, 15, 0),
+                     where=places['rostovondon'],
+                     ),
+                Game(ger, swe, datetime(2018, 6, 23, 18, 0),
+                     where=places['sochi'],
+                     ),
                 
-                Game(sko, ger, datetime(2018, 6, 27, 14, 0)),
-                Game(mex, swe, datetime(2018, 6, 27, 14, 0)),
+                Game(sko, ger, datetime(2018, 6, 27, 14, 0),
+                     where=places['kazan'],
+                     ),
+                Game(mex, swe, datetime(2018, 6, 27, 14, 0),
+                     where=places['yekaterinburg'],
+                     ),
                 ]),
                 
     g=Group(teams = [bel, pan, tun, eng],
 
             games = [
                 Game(bel, pan, datetime(2018, 6, 18, 15, 0),
-                     where=places[''],
+                     where=places['sochi'],
                      ascore=3, bscore=1),
                      
                 Game(tun, eng, datetime(2018, 6, 18, 18, 0),
-                     where=places[''],
+                     where=places['volgograd'],
                      ascore=0, bscore=0),
 
                 
-                Game(bel, tun, datetime(2018, 6, 23, 12, 0)),
+                Game(bel, tun, datetime(2018, 6, 23, 12, 0),
+                     where=places['spartak'],
+                     ),
                 
-                Game(eng, pan, datetime(2018, 6, 24, 12, 0)),
+                Game(eng, pan, datetime(2018, 6, 24, 12, 0),
+                     where=places['novgorod'],
+                     ),
                 
-                Game(eng, bel, datetime(2018, 6, 28, 18, 0)),
-                Game(pan, tun, datetime(2018, 6, 28, 18, 0)),
+                Game(eng, bel, datetime(2018, 6, 28, 18, 0),
+                     where=places['kaliningrad'],
+                     ),
+                Game(pan, tun, datetime(2018, 6, 28, 18, 0),
+                     where=places['saransk'],
+                     ),
                 ]),
                 
     h=Group(teams = [pol, sen, col, jap],
 
             games = [
                 Game(col, jap, datetime(2018, 6, 19, 12, 0),
-                     where=places[''],
+                     where=places['saransk'],
                      ascore=2, bscore=1),
                      
                 Game(pol, sen, datetime(2018, 6, 19, 15, 0),
-                     where=places[''],
+                     where=places['spartak'],
                      ascore=3, bscore=2),
 
                 
-                Game(jap, sen, datetime(2018, 6, 24, 15, 0)),
-                Game(pol, col, datetime(2018, 6, 24, 18, 0)),
+                Game(jap, sen, datetime(2018, 6, 24, 15, 0),
+                     where=places['yekaterinburg'],
+                     ),
+                Game(pol, col, datetime(2018, 6, 24, 18, 0),
+                     where=places['kazan'],
+                     ),
                 
-                Game(jap, pol, datetime(2018, 6, 28, 14, 0)),
-                Game(sen, col, datetime(2018, 6, 28, 14, 0)),
+                Game(jap, pol, datetime(2018, 6, 28, 14, 0),
+                     where=places['volgograd'],
+                     ),
+                Game(sen, col, datetime(2018, 6, 28, 14, 0),
+                     where=places['samara'],
+                     ),
                 ]))
 
 # group winners and seconds
