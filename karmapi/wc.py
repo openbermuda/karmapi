@@ -126,15 +126,23 @@ class Team:
     def __init__(self, name=None, win=None):
         """ Init the team with no name? """
         self.name= name
+
+        self.win = win or 1 / n
+
+        self.reset()
+
+    def reset(self):
+
         self.points = 0
         self.yellow = 0
         self.red = 0
         self.goals = 0
         self.against = 0
 
-        self.win = win or 1 / n
+        # Keep track of games played
+        self.games = []
 
-        
+
     def __str__(self):
 
         msg = f'{self.name} {self.points:3}'
@@ -143,6 +151,8 @@ class Team:
         return msg
 
 class Game:
+
+    NUMBER = 1
 
     def __init__(self, a, b, when, where=None, ascore=None, bscore=None):
 
@@ -154,21 +164,45 @@ class Game:
         self.ascore = ascore
         self.bscore = bscore
 
+        # flag if score came from self.score()
+        self.nullscore = False
+        self.number = self.NUMBER
+        self.NUMBER += 1
+
+    def reset(self):
+        """ Reset score if it was random """
+        if self.nullscore:
+            self.ascore = self.bscore = None
+
     def score(self):
         """ Make up a score """
         ascore = random.randint(0, random.randint(0, 5))
         bscore = random.randint(0, random.randint(0, 5))
 
+        self.nullscore = True
+        
         return self.ascore or ascore, self.bscore or bscore
 
     def __str__(self):
 
         return f'{self.a.name} {self.b.name} {self.when} {self.where}'
 
+    def __cmp__(self, other):
+
+        if self.when == other.when:
+            return self.number < other.number
+
+        return self.when < other.when
+
     async def run(self):
         """ Run the game """
         pass
 
+class GroupGame(Game):
+    pass
+
+class KnockoutGame(Game):
+    pass
 
 class Group:
 
@@ -194,6 +228,9 @@ class Group:
         for game in self.games:
             game.reset()
 
+        for team in self.teams:
+            team.reset()
+
     def run(self):
         """ Run the group """
         for game in self.games:
@@ -205,7 +242,6 @@ class Group:
             ascore = game.ascore
             bscore = game.bscore
 
-            print(ascore, bscore)
             # if either score is None, call score
             if game.ascore == None or game.bscore == None:
                 ascore, bscore = game.score()
@@ -277,9 +313,37 @@ class JeuxSansFrontieres:
      and badcfehg
     
 
+    So lets set it up so we can do:
+
+    * simulate groups
+    * do draw for knockout stage
+    * get games for final stage
+
     """
-    def __init__(self, groups, places=None, dates=None):
+    def __init__(self, groups, places=None, dates=None, now=None):
+        self.groups = groups
+
+        # places and dates for knockout stage
+        self.places = places
+        self.dates = dates
+
+        self.now = now or datetime(2018, 6, 14)
+        self.step = timedelta(hours=1)
+
+        self.games = curio.PriorityQueue()
+
+    async def load_group_games(self):
+        """ Put the group games into the game queue """
+        for label, group in self.groups.items():
+            for game in group.games:
+                game.group = group
+
+                await self.games.put(game)
+
+    def its_a_knockout(self):
         """ Set up knockout stage """
+
+        groups = self.groups
         key = sorted(groups.keys())
 
         key = list(key)
@@ -320,9 +384,68 @@ class JeuxSansFrontieres:
         for game in self.games:
             print(game)
 
-    def run(self):
-        """ Run the games """
+
+    def run_groups(self):
+        """ Run the group stage """
+        # group winners and seconds
+        winners = {}
+        seconds = {}
+
+        # print out the games while we are at it
+        for xx, group  in groups.items():
+            
+            print(xx)
+            
+            for game in group.games:
+                print(game.a, game.b, game.when)
+
+            print()
+            group.run()
+            print()
+
+            winners[xx] = group.winner()
+            seconds[xx] = group.second()
+
+            group.table()
+
         
+
+    async def run(self):
+        """ Run the games 
+
+        run the group stage
+
+        generate knockout bracket
+
+        run knockout
+
+        collect stats
+
+        reset
+
+        AND/OR:
+
+        Generate events.
+        """
+
+        print(self.now)
+        await self.load_group_games()
+
+        while self.games.qsize():
+
+            game = self.games.get()
+
+            if game.when < self.now:
+                print(now, self.game)
+
+                # Run the game
+
+                # Do post processing depending on the type of Game
+
+            else:
+                await self.games.put(game)
+
+        self.now += self.step
 
         
 
@@ -720,12 +843,12 @@ winners = {}
 seconds = {}
 
 # print out the games while we are at it
-for xx, group  in groups.items():
-    
-    print(xx)
+for xx, group in groups.items():
+    print()
+    print(f'Group {xx.upper()}')
     
     for game in group.games:
-        print(game.a, game.b, game.when)
+        print(game.a, game.b, game.when, 'xx')
 
     print()
     group.run()
