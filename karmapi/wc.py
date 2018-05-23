@@ -113,10 +113,13 @@ eng tun bel and pan played already.  See Game's for results.
 
 import random
 import argparse
+from collections import Counter
+from datetime import datetime, timedelta
+
 import curio
+
 from karmapi import pigfarm
 
-from datetime import datetime, timedelta
 
 # number of teams
 n = 32
@@ -422,7 +425,26 @@ class JeuxSansFrontieres:
 
             group.table()
 
-        
+    def do_teams(self):
+        """ take a look at teams """
+        pass
+
+    async def do_places(self):
+        """ Do stats on places """
+        games = []
+
+        info = Counter()
+        async for game in self.games:
+            games.append(game)
+
+            info.update([game.where])
+
+        # put them back in the queue
+        for game in games:
+            self.games.put(game)
+
+        print(self.games.qsize(), 'xxx')
+        print(info)
 
     async def run(self):
         """ Run the games 
@@ -444,6 +466,8 @@ class JeuxSansFrontieres:
 
         print(self.now)
         await self.load_group_games()
+
+        await self.do_places()
 
         while not self.games.empty():
 
@@ -926,7 +950,7 @@ class MexicanWaves(pigfarm.Yard):
 
     async def run(self):
         """ Run the waves """
-
+        print('running mexican wave')
         self.sleep = 0.05
 
         await self.jsf.run()
