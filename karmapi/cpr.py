@@ -23,7 +23,7 @@ from random import random, randint
 
 class Sphere:
 
-    def __init__(self, size=None):
+    def __init__(self, size=None, head=False, tail=False, t=0):
 
         size = size or 4
 
@@ -34,12 +34,18 @@ class Sphere:
         self.grid = grid
         self.size = size
 
-        self.head = False
-        self.tail = False
+        self.head = head
+        self.tail = tail
+        self.t = t
+
+        # time moves slower in the inner spheres?
+        self.sleep = 1 / self.size
 
     def run(self):
 
-        print(len(self.grid))
+        print(self.head, self.tail, self.size, self.t)
+
+        self.t += 1
 
 class NestedWaves(pigfarm.Yard):
     """ Inner and outer spheres 
@@ -72,7 +78,19 @@ class NestedWaves(pigfarm.Yard):
         # add a bunch of spheres to the queue
         for ball in range(self.n):
             size = self.base + (ball * self.inc)
-            self.uq.put(Sphere(size))
+
+            head = True
+            
+            if ball:
+                head = False
+
+            tail = False
+            if ball == self.n - 1:
+                tail = True
+            
+            sphere = Sphere(size, head=head, tail=tail)
+            
+            self.uq.put(sphere)
 
 
     def step_balls(self):
