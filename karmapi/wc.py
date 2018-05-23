@@ -189,6 +189,11 @@ class Group:
 
         return str(self.teams, self.games)
 
+    def reset(self):
+        """ reset for a new run """
+        for game in self.games:
+            game.reset()
+
     def run(self):
         """ Run the group """
         for game in self.games:
@@ -323,7 +328,10 @@ class JeuxSansFrontieres:
 
 
 class Place:
-    pass
+
+    def __str__(self):
+
+        return f'{self.name}'
 
 class Moscow(Place):
     """ Final """
