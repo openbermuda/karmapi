@@ -174,32 +174,71 @@ class Game:
         if self.nullscore:
             self.ascore = self.bscore = None
 
-    def score(self):
-        """ Make up a score """
-        ascore = random.randint(0, random.randint(0, 5))
-        bscore = random.randint(0, random.randint(0, 5))
-
-        self.nullscore = True
-        
-        return self.ascore or ascore, self.bscore or bscore
 
     def __str__(self):
 
-        return f'{self.a.name} {self.b.name} {self.when} {self.where}'
+        return f'{self.label} {self.a.name} {self.b.name} {self.when} {self.where}'
 
-    def __cmp__(self, other):
+    def __eq__(self, other):
 
-        if self.when == other.when:
-            return self.number < other.number
+        return self.number == other.number
 
-        return self.when < other.when
+    def __ne__(self, other):
 
-    async def run(self):
+        return self.number != other.number
+
+    def __gt__(self, other):
+
+        return (self.when, self.number) > (other.when, other.number)
+
+    def __le__(self, other):
+
+        return (self.when, self.number) <= (other.when, other.number)
+
+    def __ge__(self, other):
+
+        return (self.when, self.number) >= (other.when, other.number)
+
+    def score(self):
+        """ Make up a score """
+
+        if self.ascore == None or self.bscore == None:
+            self.ascore = random.randint(0, random.randint(0, 5))
+            self.bscore = random.randint(0, random.randint(0, 5))
+
+            self.nullscore = True
+        
+        return self.ascore, self.bscore
+
+    def run(self):
         """ Run the game """
-        pass
+        # if either score is None, call score
+        ascore, bscore = game.score()
 
-class GroupGame(Game):
-    pass
+        print(f'{ascore} {bscore}')
+        print()
+
+        a = game.a
+        b = game.b
+            
+        a.goals += ascore
+        b.goals += bscore
+
+        a.against += bscore
+        b.against += ascore
+
+        if ascore > bscore:
+            a.points += 3
+
+        elif bscore > ascore:
+            b.points += 3
+
+        else:
+            a.points += 1
+            b.points += 1
+
+        self.group.table()
+
 
 class KnockoutGame(Game):
     pass
@@ -238,35 +277,9 @@ class Group:
             print()
             print (game)
             print()
+
+            game.run()
             
-            ascore = game.ascore
-            bscore = game.bscore
-
-            # if either score is None, call score
-            if game.ascore == None or game.bscore == None:
-                ascore, bscore = game.score()
-
-            print(f'{ascore} {bscore}')
-            print()
-
-            a = game.a
-            b = game.b
-            
-            a.goals += ascore
-            b.goals += bscore
-
-            a.against += bscore
-            b.against += ascore
-
-            if ascore > bscore:
-                a.points += 3
-
-            elif bscore > ascore:
-                b.points += 3
-
-            else:
-                a.points += 1
-                b.points += 1
 
     def table(self):
         """ Show the group table """
@@ -337,6 +350,7 @@ class JeuxSansFrontieres:
         for label, group in self.groups.items():
             for game in group.games:
                 game.group = group
+                game.label = label.upper()
 
                 await self.games.put(game)
 
@@ -431,12 +445,12 @@ class JeuxSansFrontieres:
         print(self.now)
         await self.load_group_games()
 
-        while self.games.qsize():
+        while not self.games.empty():
 
-            game = self.games.get()
+            game = await self.games.get()
 
             if game.when < self.now:
-                print(now, self.game)
+                print(self.now, game)
 
                 # Run the game
 
@@ -445,7 +459,7 @@ class JeuxSansFrontieres:
             else:
                 await self.games.put(game)
 
-        self.now += self.step
+            self.now += self.step
 
         
 
@@ -838,27 +852,6 @@ groups = dict(
                      ),
                 ]))
 
-# group winners and seconds
-winners = {}
-seconds = {}
-
-# print out the games while we are at it
-for xx, group in groups.items():
-    print()
-    print(f'Group {xx.upper()}')
-    
-    for game in group.games:
-        print(game.a, game.b, game.when, 'xx')
-
-    print()
-    group.run()
-    print()
-
-    winners[xx] = group.winner()
-    seconds[xx] = group.second()
-
-    group.table()
-
 
 print()
 print("It's a knock out!")
@@ -916,10 +909,12 @@ jsf = JeuxSansFrontieres(groups, places=jsf_places, dates=jsf_dates)
 # add a PI Gui?
 class MexicanWaves(pigfarm.Yard):
 
-    def __init__(self, parent):
+    def __init__(self, parent, jsf=None):
         """ Initialise the thing """
 
         super().__init__(parent)
+
+        self.jsf = jsf
 
 
     def step_balls(self):
@@ -934,6 +929,8 @@ class MexicanWaves(pigfarm.Yard):
 
         self.sleep = 0.05
 
+        await self.jsf.run()
+
         self.set_background()
         
         while True:
@@ -947,19 +944,20 @@ class MexicanWaves(pigfarm.Yard):
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--pig', action='store_true')
+parser.add_argument('--nopig', action='store_true')
 args = parser.parse_args()            
 
-if args.pig:
-    farm = pigfarm.PigFarm()
-
-    from karmapi.mclock2 import GuidoClock
+if args.nopig:
+    sys.exit()
     
-    farm.add(GuidoClock)
-    farm.add(MexicanWaves)
+farm = pigfarm.PigFarm()
 
-    # add a random wc time warper?
+from karmapi.mclock2 import GuidoClock
+    
+farm.add(GuidoClock)
+farm.add(MexicanWaves, dict(jsf=jsf))
 
-    curio.run(farm.run(), with_monitor=True)
+# add a random wc time warper?
+curio.run(farm.run(), with_monitor=True)
 
 
