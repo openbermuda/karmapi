@@ -2,6 +2,14 @@
 Not, CPR, but Colin P Rourke.
 
 Simulate nested spherical waves.
+
+Things have moved on a little.
+
+So each ball of nested waves will have a driver at the inside and at the outside too.
+
+Different clocks at each layer.
+
+And then outer layers made up of other randomly placed nested spheres.
 """
 import argparse
 
