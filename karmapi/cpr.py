@@ -32,6 +32,10 @@ class Sphere:
             grid.append([random() for x in range(size)])
 
         self.grid = grid
+        self.size = size
+
+        self.head = False
+        self.tail = False
 
     def run(self):
 
