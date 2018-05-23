@@ -168,15 +168,14 @@ class Game:
         self.bscore = bscore
 
         # flag if score came from self.score()
-        self.nullscore = False
+        self.simulated = (ascore is None) or (bscore is None)
         self.number = self.NUMBER
         self.NUMBER += 1
 
     def reset(self):
         """ Reset score if it was random """
-        if self.nullscore:
+        if self.simulated:
             self.ascore = self.bscore = None
-
 
     def __str__(self):
 
@@ -201,6 +200,24 @@ class Game:
     def __ge__(self, other):
 
         return (self.when, self.number) >= (other.when, other.number)
+
+    async def kick_off(self):
+        pass
+
+    async def half_time(self):
+        pass
+
+    async def goal(self, team, who=None, when=None):
+        pass
+
+    async def yellow(self, team, who=None, when=None):
+        pass
+
+    async def red(self, team, who=None, when=None):
+        pass
+
+    async def sub(self, team, off=None, on=None, when=None):
+        pass
 
     def score(self):
         """ Make up a score """
@@ -243,8 +260,6 @@ class Game:
         self.group.table()
 
 
-class KnockoutGame(Game):
-    pass
 
 class Group:
 
@@ -435,6 +450,7 @@ class JeuxSansFrontieres:
 
         info = Counter()
         async for game in self.games:
+            print(game)
             games.append(game)
 
             info.update([game.where])
@@ -463,12 +479,15 @@ class JeuxSansFrontieres:
 
         Generate events.
         """
-
+        print('jsf: run start')
         print(self.now)
+        print('load games')
         await self.load_group_games()
 
+        print('do places')
         await self.do_places()
 
+        print('loop forever?')
         while not self.games.empty():
 
             game = await self.games.get()
@@ -484,6 +503,8 @@ class JeuxSansFrontieres:
                 await self.games.put(game)
 
             self.now += self.step
+            print('NOW', self.now)
+            curio.sleep(0.05)
 
         
 
@@ -943,6 +964,7 @@ class MexicanWaves(pigfarm.Yard):
 
     def step_balls(self):
         """ do something here """
+        print('mexican wave step_balls')
         pass
 
     def draw(self):
@@ -953,7 +975,8 @@ class MexicanWaves(pigfarm.Yard):
         print('running mexican wave')
         self.sleep = 0.05
 
-        await self.jsf.run()
+        print('spawning jsf')
+        await curio.spawn(self.jsf.run())
 
         self.set_background()
         
@@ -961,7 +984,7 @@ class MexicanWaves(pigfarm.Yard):
             self.canvas.delete('all')
 
             self.draw()
-
+            
             self.step_balls()
             
             await curio.sleep(self.sleep)            
