@@ -10,6 +10,8 @@ So each ball of nested waves will have a driver at the inside and at the outside
 Different clocks at each layer.
 
 And then outer layers made up of other randomly placed nested spheres.
+
+But using a universal queue, so let each sphere run in its own co-routine.
 """
 import argparse
 
@@ -36,6 +38,16 @@ class Sphere:
         print(len(self.grid))
 
 class NestedWaves(pigfarm.Yard):
+    """ Inner and outer spheres 
+
+    simulated annealing inspired in between?
+
+    but put it in the tea pot too.
+
+    Lots of tea pots of all kinds.
+
+    and draw slices on the canvas from the yard.
+    """
 
     def __init__(self, parent, n=10, base=4, inc=4):
         """ Initialise the thing """
