@@ -115,6 +115,7 @@ import random
 import argparse
 from collections import Counter
 from datetime import datetime, timedelta
+import sys
 
 import curio
 
@@ -480,6 +481,7 @@ class JeuxSansFrontieres:
         minlon = min(x.lon for x in places)
         maxlon = max(x.lon for x in places)
 
+        # need to add padding to make grid
         print(minlat, minlon, maxlat, maxlon)
 
     async def run(self):
@@ -523,8 +525,7 @@ class JeuxSansFrontieres:
                 await self.games.put(game)
 
             self.now += self.step
-            print('NOW', self.now)
-            await curio.sleep(0.05)
+            await curio.sleep(0.01)
 
 
 class Place:
@@ -647,7 +648,6 @@ places = dict(
     rostovondon=RostovOnDon(),
     sochi=Sochi(),
     )
-places[''] = '???'    
 
 # Group A
 rus = Team('RUS')
@@ -976,18 +976,70 @@ jsf = JeuxSansFrontieres(groups, places=jsf_places, dates=jsf_dates)
 # add a PI Gui?
 class MexicanWaves(pigfarm.Yard):
 
-    def __init__(self, parent, jsf=None):
+    def __init__(self, parent, jsf=None, venues=None):
         """ Initialise the thing """
 
         super().__init__(parent)
 
         self.jsf = jsf
 
+        self.scan_venues(venues)
 
+    def scan_venues(self, venues):
+        """ Set the lat lon bounds for the canvas """
+        self.places = places = list(venues.values())
+
+        minlat = min(x.lat for x in places)
+        maxlat = max(x.lat for x in places)
+        
+        minlon = min(x.lon for x in places)
+        maxlon = max(x.lon for x in places)
+
+        # need to add padding to make grid
+        print("BOUNDS:")
+        print(minlat, minlon)
+        print(maxlat, maxlon)
+
+        height = maxlat - minlat
+        width = maxlon - minlon
+
+        wpad = width / 8
+        hpad = height / 8
+
+        print(width, wpad)
+        print(height, hpad)
+
+        self.xx = minlon - wpad
+        self.yy = minlat - hpad
+
+        self.xscale = width + (2 * wpad)
+        self.yscale = height + (2 * hpad)
+
+        print(self.xx, self.yy)
+        print(self.xscale, self.yscale)
+
+    def latlon2xy(self, place):
+        """ Convert lat lon to yard coordinates """
+        lat = place.lat
+        lon = place.lon
+        
+        xx = int(((lon - self.xx) / self.xscale) * self.width)
+        yy = self.height - int(((lat - self.yy) / self.yscale) * self.height)
+ 
+        return xx, yy
+        
+        
     def step_balls(self):
         """ do something here """
-        #print('mexican wave step_balls')
-        pass
+        print('mexican wave step_balls')
+        for place in self.places:
+            print(place)
+            xx, yy = self.latlon2xy(place)
+            size = 5
+            print(self.width, self.height, xx, yy)
+            self.canvas.create_oval(xx-size, yy-size, xx+size, yy+size, fill='red')
+            self.canvas.create_text((xx + 20, yy), text=place.name, fill='yellow')
+        #sys.exit()
 
     def draw(self):
         pass
@@ -998,7 +1050,7 @@ class MexicanWaves(pigfarm.Yard):
         self.sleep = 0.05
 
         print('spawning jsf')
-        jsf = await curio.spawn(self.jsf.run())
+        jsf = await curio.spawn(self.jsf.run)
 
         self.set_background()
         
@@ -1024,7 +1076,7 @@ farm = pigfarm.PigFarm()
 from karmapi.mclock2 import GuidoClock
     
 farm.add(GuidoClock)
-farm.add(MexicanWaves, dict(jsf=jsf))
+farm.add(MexicanWaves, dict(jsf=jsf, venues=places))
 
 # add a random wc time warper?
 curio.run(farm.run(), with_monitor=True)
