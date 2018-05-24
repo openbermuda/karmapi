@@ -579,14 +579,14 @@ class JeuxSansFrontieres:
                 print(self.now, game)
 
                 # Run the game
-
+                await game.run()
                 # Do post processing depending on the type of Game
 
             else:
                 await self.games.put(game)
 
             self.now += self.step
-            await curio.sleep()
+            await curio.sleep(0)
 
 
 class Place:
@@ -1102,12 +1102,12 @@ class MexicanWaves(pigfarm.Yard):
         print('mexican wave step_balls')
         for place in self.places:
             #print(place)
-            xx, yy = self.latlon2xy(place)
-            size = 5
             #print(self.width, self.height, xx, yy)
-            self.canvas.create_oval(xx-size, yy-size, xx+size, yy+size, fill='red')
-            self.canvas.create_text((xx + 20, yy), text=place.name, fill='yellow')
+            size = 5
+            self.ball(place, fill='red', size=5)
 
+            self.message(place.name, place, yoff=-20, fill='yellow')
+            
         print('done places')
         locations = defaultdict(list)
         
@@ -1123,8 +1123,9 @@ class MexicanWaves(pigfarm.Yard):
             yoff = 30
             for team in locations[key]:
                 print(team, team.lat, team.lon, xx, yy)
-                self.canvas.create_text(
-                    (xx, yy+yoff), text=team.name, fill='green')
+
+                self.message(team.name, team, yoff=yoff, fill='green')
+
                 yoff += 30
                 
         self.when += timedelta(hours=1)
@@ -1136,12 +1137,40 @@ class MexicanWaves(pigfarm.Yard):
         """ Reset timer """
         self.when = datetime(2018, 6, 14)
 
+    async def score_flash(self):
+
+        while True:
+            event = await self.jsf.events.get()
+
+            
+            print(event)
+
+    def message(self, message, place, fill='red', size=5, xoff=0, yoff=0):
+        """ Message from a place """
+
+        xx, yy = self.latlon2xy(place)
+
+        self.canvas.create_text((xx + xoff, yy + yoff), text=message, fill=fill)
+
+
+    def ball(self, place, fill='red', size=5, xoff=0, yoff=0):
+        """ Message from a place """
+
+        xx, yy = self.latlon2xy(place)
+
+        self.canvas.create_oval(
+            xx+xoff-size,
+            yy+yoff-size,
+            xx+xoff+size, yy+yoff+size, fill='red')
+
     async def run(self):
         """ Run the waves """
         print('running mexican wave')
 
         print('spawning jsf')
         jsf = await curio.spawn(self.jsf.run)
+
+        score_flashes = await curio.spawn(self.score_flash)
 
         self.set_background()
         
