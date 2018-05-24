@@ -449,21 +449,38 @@ class JeuxSansFrontieres:
 
     async def do_places(self):
         """ Do stats on places """
+        print('do_places')
         games = []
 
         info = Counter()
-        async for game in self.games:
+        while not self.games.empty():
+            game = await self.games.get()
             print(game)
             games.append(game)
 
             info.update([game.where])
 
+            #print(info)
+
+        print('done games')
+
         # put them back in the queue
         for game in games:
-            self.games.put(game)
+            await self.games.put(game)
 
         print(self.games.qsize(), 'xxx')
-        print(info)
+        print(str(info))
+        print(info.keys())
+        places = [x for x in info.keys()]
+
+        print([x.lat for x in places])
+        minlat = min(x.lat for x in places)
+        maxlat = max(x.lat for x in places)
+        
+        minlon = min(x.lon for x in places)
+        maxlon = max(x.lon for x in places)
+
+        print(minlat, minlon, maxlat, maxlon)
 
     async def run(self):
         """ Run the games 
@@ -507,9 +524,7 @@ class JeuxSansFrontieres:
 
             self.now += self.step
             print('NOW', self.now)
-            curio.sleep(0.05)
-
-        
+            await curio.sleep(0.05)
 
 
 class Place:
@@ -517,6 +532,10 @@ class Place:
     def __str__(self):
 
         return f'{self.name}'
+
+    def __repr__(self):
+
+        return str(self)
 
 class Moscow(Place):
     """ Final """
@@ -537,15 +556,15 @@ class StPetersberg(Place):
     """ Place of many names """
 
     name = 'St Petersberg'
-    lat = None
-    lon = None
+    lat = 59 + (58 / 60)
+    lon = 30 + (14 / 60)
 
 class Volgograd(Place):
     """ Down south """
 
     name = 'Volgograd'
-    lat = None
-    lon = None
+    lat = 48 + (45 / 60)
+    lon = 44 + (33 / 60)
 
 class Novgorod(Place):
     """ Central """
@@ -967,7 +986,7 @@ class MexicanWaves(pigfarm.Yard):
 
     def step_balls(self):
         """ do something here """
-        print('mexican wave step_balls')
+        #print('mexican wave step_balls')
         pass
 
     def draw(self):
@@ -979,7 +998,7 @@ class MexicanWaves(pigfarm.Yard):
         self.sleep = 0.05
 
         print('spawning jsf')
-        await curio.spawn(self.jsf.run())
+        jsf = await curio.spawn(self.jsf.run())
 
         self.set_background()
         
