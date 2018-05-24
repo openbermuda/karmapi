@@ -169,6 +169,7 @@ class Team:
         # if one is missing, use the other
         last_game = last_game or next_game
         next_game = next_game or last_game
+        print(self, last_game, next_game)
         
         # Interpolate based on time
         self.lat, self.lon = warp(last_game, next_game, when)
@@ -198,7 +199,7 @@ def warp(a, b, when):
     bb = b.where
     
     lat = aa.lat
-    lon = bb.lon
+    lon = aa.lon
 
     lat += frac * (bb.lat - aa.lat)
     lon += frac * (bb.lon - aa.lon)
@@ -585,7 +586,7 @@ class JeuxSansFrontieres:
                 await self.games.put(game)
 
             self.now += self.step
-            await curio.sleep(0.01)
+            await curio.sleep()
 
 
 class Place:
@@ -609,8 +610,11 @@ class Spartak(Place):
     """ Spartak Moscow  """
 
     name = 'Moscow Oktkrytiye'
-    lat = 55 + (49 / 60)
-    lon = 37 + (26 / 60)
+    lat = 56 + (49 / 60)
+    lon = 34 + (26 / 60)
+
+    xlat = 55 + (49 / 60)
+    xlon = 37 + (26 / 60)
 
 
 class StPetersberg(Place):
@@ -631,8 +635,8 @@ class Novgorod(Place):
     """ Central """
 
     name = 'Nizhny Novgorod'
-    lat = 48 + (44 / 60)
-    lon = 44 + (33 / 60)
+    lat = 56 + (20 / 60)
+    lon = 43 + (57 / 60)
     
 class Kaliningrad(Place):
     """ North West port """
@@ -779,10 +783,10 @@ groups = dict(
                      ),
                 
 
-                Game(urg, rus, datetime(2018, 6, 19, 14, 0),
+                Game(urg, rus, datetime(2018, 6, 25, 14, 0),
                      where=places['samara'],
                      ),
-                Game(sau, egy, datetime(2018, 6, 19, 14, 0),
+                Game(sau, egy, datetime(2018, 6, 25, 14, 0),
                      where=places['volgograd'],
                      ),
                 ]),
@@ -1118,7 +1122,7 @@ class MexicanWaves(pigfarm.Yard):
             xx, yy = key
             yoff = 30
             for team in locations[key]:
-                print(team)
+                print(team, team.lat, team.lon, xx, yy)
                 self.canvas.create_text(
                     (xx, yy+yoff), text=team.name, fill='green')
                 yoff += 30
@@ -1135,7 +1139,6 @@ class MexicanWaves(pigfarm.Yard):
     async def run(self):
         """ Run the waves """
         print('running mexican wave')
-        self.sleep = 0.05
 
         print('spawning jsf')
         jsf = await curio.spawn(self.jsf.run)
