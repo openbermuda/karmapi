@@ -1043,7 +1043,11 @@ class MexicanWaves(pigfarm.Yard):
 
         self.jsf = jsf
 
+        self.when = datetime(2018, 6, 14)
+
         self.scan_venues(venues)
+
+        self.add_event_map('r', self.reset)
 
     def scan_venues(self, venues):
         """ Set the lat lon bounds for the canvas """
@@ -1099,21 +1103,18 @@ class MexicanWaves(pigfarm.Yard):
             #print(self.width, self.height, xx, yy)
             self.canvas.create_oval(xx-size, yy-size, xx+size, yy+size, fill='red')
             self.canvas.create_text((xx + 20, yy), text=place.name, fill='yellow')
-        #sys.exit()
 
         print('done places')
         locations = defaultdict(list)
         
         for team in jsf.generate_teams():
-            team.where(datetime.now())
+            team.where(self.when)
             xx, yy = self.latlon2xy(team)
 
             locations[(xx, yy)].append(team)
 
-        print(locations)
         # Now draw the things
         for key in locations.keys():
-            print('KEEEEY', key)
             xx, yy = key
             yoff = 30
             for team in locations[key]:
@@ -1122,10 +1123,14 @@ class MexicanWaves(pigfarm.Yard):
                     (xx, yy+yoff), text=team.name, fill='green')
                 yoff += 30
                 
-
+        self.when += timedelta(hours=1)
 
     def draw(self):
         pass
+
+    async def reset(self):
+        """ Reset timer """
+        self.when = datetime(2018, 6, 14)
 
     async def run(self):
         """ Run the waves """
