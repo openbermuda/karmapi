@@ -207,6 +207,9 @@ class Game:
     async def half_time(self):
         pass
 
+    async def penalties(self):
+        pass
+
     async def goal(self, team, who=None, when=None):
         pass
 
