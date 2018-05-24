@@ -113,7 +113,7 @@ eng tun bel and pan played already.  See Game's for results.
 
 import random
 import argparse
-from collections import Counter
+from collections import Counter, defaultdict
 from datetime import datetime, timedelta
 import sys
 
@@ -129,8 +129,12 @@ class Team:
 
     def __init__(self, name=None, win=None):
         """ Init the team with no name? """
-        self.name= name
+        self.name = name
 
+        # default location: North Pole
+        self.lat = 90
+        self.lon =  0
+        
         self.win = win or 1 / n
 
         self.reset()
@@ -143,9 +147,33 @@ class Team:
         self.goals = 0
         self.against = 0
 
-        # Keep track of games played
+        # Keep track of games played/to be played?
         self.games = []
 
+    def where(self, when):
+        """ Where is the team? """
+
+        last_game = None
+        next_game = None
+        for game in self.games:
+            if game.when < when:
+                last_game = game
+            else:
+                next_game = game
+                break
+
+        if last_game is None and next_game is None:
+            # return a defualt?
+            return self.lat, self.lon
+
+        # if one is missing, use the other
+        last_game = last_game or next_game
+        next_game = next_game or last_game
+        
+        # Interpolate based on time
+        self.lat, self.lon = warp(last_game, next_game, when)
+
+        return self.lat, self.lon
 
     def __str__(self):
 
@@ -153,6 +181,27 @@ class Team:
         msg +=f'{self.goals - self.against:4} {self.goals:4} {self.against:4}'
 
         return msg
+
+def warp(a, b, when):
+    """ Interpolate between a and b based on time """
+    
+    delta_t = (b.when - a.when).total_seconds()
+
+    if delta_t == 0:
+        return a.lat, a.lon
+
+    delta_w = (when - a.when).total_seconds()
+    
+    frac = delta_w / delta_t
+
+    lat = a.lat
+    lon = b.lon
+
+    lat += frac * (b.lat - a.lat)
+    lon += frac * (b.lon - a.lon)
+
+    return lat, lon        
+
 
 class Game:
 
@@ -447,6 +496,12 @@ class JeuxSansFrontieres:
     def do_teams(self):
         """ take a look at teams """
         pass
+
+    def generate_teams(self):
+        """ Generate teams """
+        for group in self.groups.values():
+            for team in group.teams:
+                yield team
 
     async def do_places(self):
         """ Do stats on places """
@@ -1033,13 +1088,35 @@ class MexicanWaves(pigfarm.Yard):
         """ do something here """
         print('mexican wave step_balls')
         for place in self.places:
-            print(place)
+            #print(place)
             xx, yy = self.latlon2xy(place)
             size = 5
-            print(self.width, self.height, xx, yy)
+            #print(self.width, self.height, xx, yy)
             self.canvas.create_oval(xx-size, yy-size, xx+size, yy+size, fill='red')
             self.canvas.create_text((xx + 20, yy), text=place.name, fill='yellow')
         #sys.exit()
+
+        print('done places')
+        locations = defaultdict(list)
+        
+        for team in jsf.generate_teams():
+            team.where(datetime.now())
+            xx, yy = self.latlon2xy(team)
+
+            locations[(xx, yy)].append(team)
+
+        print(locations)
+        # Now draw the things
+        for key in locations.keys():
+            print('KEEEEY', key)
+            xx, yy = key
+
+            for team in locations[key]:
+                print(team)
+                self.canvas.create_text(
+                    (xx, yy+30), text=team.name, fill='green')
+                
+
 
     def draw(self):
         pass
