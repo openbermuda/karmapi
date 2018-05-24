@@ -188,17 +188,20 @@ def warp(a, b, when):
     delta_t = (b.when - a.when).total_seconds()
 
     if delta_t == 0:
-        return a.lat, a.lon
+        return a.where.lat, a.where.lon
 
     delta_w = (when - a.when).total_seconds()
     
     frac = delta_w / delta_t
 
-    lat = a.lat
-    lon = b.lon
+    aa = a.where
+    bb = b.where
+    
+    lat = aa.lat
+    lon = bb.lon
 
-    lat += frac * (b.lat - a.lat)
-    lon += frac * (b.lon - a.lon)
+    lat += frac * (bb.lat - aa.lat)
+    lon += frac * (bb.lon - aa.lon)
 
     return lat, lon        
 
@@ -514,6 +517,8 @@ class JeuxSansFrontieres:
             print(game)
             games.append(game)
 
+            game.a.games.append(game)
+            game.b.games.append(game)
             info.update([game.where])
 
             #print(info)
@@ -1110,11 +1115,12 @@ class MexicanWaves(pigfarm.Yard):
         for key in locations.keys():
             print('KEEEEY', key)
             xx, yy = key
-
+            yoff = 30
             for team in locations[key]:
                 print(team)
                 self.canvas.create_text(
-                    (xx, yy+30), text=team.name, fill='green')
+                    (xx, yy+yoff), text=team.name, fill='green')
+                yoff += 30
                 
 
 
