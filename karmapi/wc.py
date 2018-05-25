@@ -111,7 +111,7 @@ eng tun bel and pan played already.  See Game's for results.
 
 """
 
-import random
+from random import random, randint
 import argparse
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta
@@ -329,9 +329,40 @@ class Game:
         return (self.when, self.number) >= (other.when, other.number)
 
     async def kick_off(self):
+        """ Game has kicked off """
+        minutes = 45 + randint(0, 7)
 
-        await self.full_time()
-        return 0, 0
+        for minute in range(minutes):
+            await self.run_minute()
+
+        #await self.half_time()
+        
+
+    async def run_minute(self):
+        
+        yellow_per_minute = 1 / 30
+        red_per_minute = 1 / 150
+        goals_per_minute = 1 / 30
+
+        # score a goal?
+        if random() < goals_per_minute:
+            # who scored
+            if random() <= 0.5:
+                self.ascore += 1
+            else:
+                self.bscore += 1
+                
+            await self.flash()
+                
+        if random() < yellow_per_minute:
+            # yellow card?
+            pass
+
+        if random() < red_per_minute:
+            # red card?
+            pass
+
+        return self.ascore, self.bscore
 
     async def half_time(self):
         pass
@@ -340,25 +371,7 @@ class Game:
         pass
 
     async def full_time(self):
-
-        position = [
-            [.1, .65],
-            [.3, .65],
-            [.1, .85],
-            [.3, .85]]
-
-        print('full time', self.number)
-        xx, yy = position[self.number % len(position)]
-        
-        msg = ''
-        for team in self.group.get_table():
-            
-            await self.events.put(dict(
-                msg=team.statto(),
-                xx=xx,
-                yy=yy,
-                fill='green'))
-            yy -= 0.05
+        pass
 
     async def extra_time(self):
         pass
@@ -388,8 +401,8 @@ class Game:
         """ Make up a score """
 
         if self.ascore == None or self.bscore == None:
-            self.ascore = random.randint(0, random.randint(0, 5))
-            self.bscore = random.randint(0, random.randint(0, 5))
+            self.ascore = randint(0, randint(0, 5))
+            self.bscore = randint(0, randint(0, 5))
 
             self.nullscore = True
         
@@ -399,22 +412,18 @@ class Game:
         """ Run the game """
 
         self.events = events
-        ascore, bscore = await self.kick_off()
-
-        # ascore, bscore = self.score()
-
-        print(ascore, bscore)
+        await self.kick_off()
 
         a = self.a
         b = self.b
             
-        a.goals += ascore
-        b.goals += bscore
+        a.goals += self.ascore
+        b.goals += self.bscore
 
-        a.against += bscore
-        b.against += ascore
+        a.against += self.bscore
+        b.against += self.ascore
 
-        if ascore > bscore:
+        if self.ascore > self.bscore:
             a.points += 3
 
         elif bscore > ascore:
@@ -424,9 +433,18 @@ class Game:
             a.points += 1
             b.points += 1
 
+        await self.flash()
+
+    async def flash(self):
+
+        a = self.a
+        b = self.b
+        ascore = self.ascore
+        bscore = self.bscore
+        
         msg = a.name + ' ' + str(ascore) + ' ' + str(bscore) + ' ' + b.name
         
-        await events.put(dict(where=self.where, msg=msg, yoff=-90))
+        await self.events.put(dict(where=self.where, msg=msg, yoff=-90))
 
 
 class Group:
@@ -625,7 +643,6 @@ class JeuxSansFrontieres:
         """ Reset things to start again """
         await self.load_group_games()
 
-        
     async def run(self):
         """ Run the games 
 
@@ -1208,6 +1225,8 @@ class MexicanWaves(pigfarm.Yard):
                 yoff += 30
 
         self.show_score_flashes()
+
+        self.show_tables()
                 
         self.when += timedelta(hours=self.delta_t)
 
@@ -1257,6 +1276,37 @@ class MexicanWaves(pigfarm.Yard):
             yy *= self.height
 
         self.canvas.create_text((xx + xoff, yy + yoff), text=msg, fill=fill)
+
+
+    def show_tables(self):
+        
+        position = [
+            [.1, .25],
+            [.25, .25],
+            
+            [.1,  .65],
+            [.25, .65],
+            
+            [.1,  .90],
+            [.25, .90],
+            
+            [.7, .85],
+            [.9, .85],
+            ]
+
+        for label, group in self.jsf.groups.items():
+            
+            gindex = ord(label) - ord('a')
+
+            xx, yy = position[gindex]
+        
+            for team in group.get_table():
+                self.message(
+                    msg=team.statto(),
+                    xx=xx,
+                    yy=yy,
+                    fill='cyan')
+                yy -= 0.05
 
 
     def ball(self, place, fill='red', size=5, xoff=0, yoff=0):
