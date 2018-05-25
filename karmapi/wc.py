@@ -450,6 +450,9 @@ class JeuxSansFrontieres:
                 game.group = group
                 game.label = label.upper()
 
+                game.a.games.append(game)
+                game.b.games.append(game)
+
                 await self.games.put(game)
 
     def its_a_knockout(self):
@@ -520,53 +523,11 @@ class JeuxSansFrontieres:
 
             group.table()
 
-    def do_teams(self):
-        """ take a look at teams """
-        pass
-
     def generate_teams(self):
         """ Generate teams """
         for group in self.groups.values():
             for team in group.teams:
                 yield team
-
-    async def do_places(self):
-        """ Do stats on places """
-        print('do_places')
-        games = []
-
-        info = Counter()
-        while not self.games.empty():
-            game = await self.games.get()
-            print(game)
-            games.append(game)
-
-            game.a.games.append(game)
-            game.b.games.append(game)
-            info.update([game.where])
-
-            #print(info)
-
-        print('done games')
-
-        # put them back in the queue
-        for game in games:
-            await self.games.put(game)
-
-        print(self.games.qsize(), 'xxx')
-        print(str(info))
-        print(info.keys())
-        places = [x for x in info.keys()]
-
-        print([x.lat for x in places])
-        minlat = min(x.lat for x in places)
-        maxlat = max(x.lat for x in places)
-        
-        minlon = min(x.lon for x in places)
-        maxlon = max(x.lon for x in places)
-
-        # need to add padding to make grid
-        print(minlat, minlon, maxlat, maxlon)
 
     async def run(self):
         """ Run the games 
@@ -589,9 +550,6 @@ class JeuxSansFrontieres:
         print(self.now)
         print('load games')
         await self.load_group_games()
-
-        print('do places')
-        await self.do_places()
 
         print('loop forever?')
         while not self.games.empty():
@@ -632,7 +590,7 @@ class Spartak(Place):
     """ Spartak Moscow  """
 
     name = 'Moscow Oktkrytiye'
-    lat = 56 + (49 / 60)
+    lat = 57 + (49 / 60)
     lon = 34 + (26 / 60)
 
     xlat = 55 + (49 / 60)
@@ -1070,10 +1028,22 @@ class MexicanWaves(pigfarm.Yard):
         self.jsf = jsf
 
         self.when = datetime(2018, 6, 14)
+        self.delta_t = 1.
+        self.messages = []
 
         self.scan_venues(venues)
 
         self.add_event_map('r', self.reset)
+        self.add_event_map('s', self.slower)
+        self.add_event_map('w', self.faster)
+
+    async def slower(self):
+        """ Go slower """
+        self.delta_t /= 2
+
+    async def faster(self):
+        """ Go faster """
+        self.delta_t *= 2
 
     def scan_venues(self, venues):
         """ Set the lat lon bounds for the canvas """
@@ -1085,28 +1055,19 @@ class MexicanWaves(pigfarm.Yard):
         minlon = min(x.lon for x in places)
         maxlon = max(x.lon for x in places)
 
-        # need to add padding to make grid
-        print("BOUNDS:")
-        print(minlat, minlon)
-        print(maxlat, maxlon)
-
         height = maxlat - minlat
         width = maxlon - minlon
 
         wpad = width / 8
         hpad = height / 8
 
-        print(width, wpad)
-        print(height, hpad)
-
+        # need to add padding to make grid
         self.xx = minlon - wpad
         self.yy = minlat - hpad
 
         self.xscale = width + (2 * wpad)
         self.yscale = height + (2 * hpad)
 
-        print(self.xx, self.yy)
-        print(self.xscale, self.yscale)
 
     def latlon2xy(self, place):
         """ Convert lat lon to yard coordinates """
@@ -1147,8 +1108,10 @@ class MexicanWaves(pigfarm.Yard):
                 self.message(team.name, team, yoff=yoff, fill='green')
 
                 yoff += 30
+
+        self.show_score_flashes()
                 
-        self.when += timedelta(hours=1)
+        self.when += timedelta(hours=self.delta_t)
 
         
     def draw(self):
@@ -1162,9 +1125,19 @@ class MexicanWaves(pigfarm.Yard):
 
         while True:
             place, message = await self.jsf.events.get()
-
-            self.message(message, place)
+            
+            self.messages.append([self.when, place, message])
             print(place, message)
+
+    def show_score_flashes(self):
+        """ Show the score flashes """
+        keep = []
+        for when, where, what in self.messages:
+            if self.when < when + timedelta(hours=24):
+                self.message(what, where, yoff=-90)
+                keep.append([when, where, what])
+        self.messages = keep
+                
 
     def message(self, message, place, fill='red', size=5, xoff=0, yoff=0):
         """ Message from a place """
