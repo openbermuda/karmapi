@@ -124,6 +124,7 @@ from karmapi import pigfarm
 
 # number of teams
 n = 32
+squadsize = 23
 
 class Team:
 
@@ -139,6 +140,7 @@ class Team:
 
         self.reset()
 
+
     def reset(self):
 
         self.points = 0
@@ -150,6 +152,15 @@ class Team:
         # Keep track of games played/to be played?
         self.games = []
 
+        self.load_squad()
+
+    def load_squad(self):
+        """ Numbers 1 to sqadsize """
+        self.squad = defaultdict(int)
+
+        for player in range(squadsize):
+            self.squad[player] = Player(player + 1)
+        
     def where(self, when):
         """ Where is the team? """
 
@@ -176,8 +187,8 @@ class Team:
         return self.lat, self.lon
 
     def __str__(self):
-
-        return self.name
+ 
+       return self.name
 
 
     def stats(self):
@@ -200,6 +211,44 @@ class Team:
 
         return msg
 
+class Player:
+    """ A player of class
+
+    Tony Currie, Kyle Walker, Harry Maguire
+    """
+
+    def __init__(self, number):
+
+        self.goals = []
+        self.red = []
+        self.yellow = []
+        self.number = number
+
+class Goal:
+
+    def __init__(self, team, who=None, when=None, game=None, penalty=False):
+
+        self.who = who
+        self.when = when
+        self.game = game
+        self.penalty = penalty
+
+class Penalty:
+    """ Penalty in a shoot out 
+
+    which: which penalty: 1, 2, 3 etc
+    """
+    def __init__(self, team, who=None, which=None, game=None, score=True):
+
+        self.who = who
+        self.when = when
+        self.game = game
+        self.penalty = penalty
+
+class ShootOut:
+    """ Class to run a penalty shoot out """
+    pass
+        
 def warp(a, b, when):
     """ Interpolate between a and b based on time """
     
@@ -278,9 +327,24 @@ class Game:
         return (self.when, self.number) >= (other.when, other.number)
 
     async def kick_off(self):
-        pass
+        return 0, 0
 
     async def half_time(self):
+        pass
+
+    async def second_half(self):
+        pass
+
+    async def full_time(self):
+        pass
+
+    async def extra_time(self):
+        pass
+
+    async def extra_half_time(self):
+        pass
+
+    async def extra_full_time(self):
         pass
 
     async def penalties(self):
@@ -311,7 +375,10 @@ class Game:
 
     async def run(self, events):
         """ Run the game """
-        ascore, bscore = self.score()
+
+        ascore, bscore = await self.kick_off()
+
+        # ascore, bscore = self.score()
 
         print(ascore, bscore)
 
@@ -1120,6 +1187,9 @@ class MexicanWaves(pigfarm.Yard):
     async def reset(self):
         """ Reset timer """
         self.when = datetime(2018, 6, 14)
+
+        self.jsf.reset()
+        self.jsf.load_group_games()
 
     async def score_flash(self):
 
