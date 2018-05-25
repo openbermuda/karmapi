@@ -513,6 +513,7 @@ class JeuxSansFrontieres:
     async def load_group_games(self):
         """ Put the group games into the game queue """
         for label, group in self.groups.items():
+            group.reset()
             for game in group.games:
                 game.group = group
                 game.label = label.upper()
@@ -596,6 +597,11 @@ class JeuxSansFrontieres:
             for team in group.teams:
                 yield team
 
+    async def reset(self):
+        """ Reset things to start again """
+        await self.load_group_games()
+
+        
     async def run(self):
         """ Run the games 
 
@@ -616,7 +622,7 @@ class JeuxSansFrontieres:
         print('jsf: run start')
         print(self.now)
         print('load games')
-        await self.load_group_games()
+        await self.reset()
 
         print('loop forever?')
         while not self.games.empty():
@@ -1094,9 +1100,10 @@ class MexicanWaves(pigfarm.Yard):
 
         self.jsf = jsf
 
+        self.messages = []
+
         self.when = datetime(2018, 6, 14)
         self.delta_t = 1.
-        self.messages = []
 
         self.scan_venues(venues)
 
@@ -1189,7 +1196,9 @@ class MexicanWaves(pigfarm.Yard):
         self.when = datetime(2018, 6, 14)
 
         self.jsf.reset()
-        self.jsf.load_group_games()
+        await self.jsf.load_group_games()
+
+        self.messages = []
 
     async def score_flash(self):
 
