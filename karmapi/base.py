@@ -512,7 +512,8 @@ class Timer:
         
         get_value = itemgetter(1)
         for tag, ttime in sorted(self.tt.items(), key=get_value):
-            print(f'{ttime:8.3f} {tag}')
+            print("%8.3f %s" % (ttime, tag))
+
 
 def parse_date(date):
     """ Parse a date """
