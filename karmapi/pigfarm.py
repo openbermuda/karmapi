@@ -409,7 +409,7 @@ class Space:
         height /= wscale
         width /= wscale
 
-        print(f'load {width} {height}')
+        print(width, height)
         
         image = image.resize((int(width), int(height))).convert('RGBA')
 
@@ -671,7 +671,7 @@ class MagicCarpet(Space):
         acell = tab._cells[0, 0]
         print('fontsize', acell.get_fontsize())
 
-        title = title or f'table location {loc}'
+        title = title or 'table location ' + str(loc)
         self.axes.set_title(title)
         self.axes.set_axis_off()
 
@@ -807,11 +807,11 @@ def make_timestamp_index(frame):
     return frame
 
 def filter_frame(frame, start, end):
-
+    """ FIXME - looks weird and used f-strings """
     d = start
-    start = f'{d.year}-{d.month:02}-{d.day:02} {d.hour:02}:{d.minute:02}:{d.second:02}'
+    #start = f'{d.year}-{d.month:02}-{d.day:02} {d.hour:02}:{d.minute:02}:{d.second:02}'
     d = end
-    end = f'{d.year}-{d.month:02}-{d.day:02} {d.hour:02}:{d.minute:02}:{d.second:02}'
+    #end = f'{d.year}-{d.month:02}-{d.day:02} {d.hour:02}:{d.minute:02}:{d.second:02}'
 
     return frame[start:end]    
 
