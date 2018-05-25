@@ -453,7 +453,7 @@ class Piglet(Pig):
             cellEdgeColours=colours,
             loc=loc)
             #loc='upper_center')
-        self.axes.set_title(f'table location {loc}')
+        self.axes.set_title('table location ' + str(loc))
         self.axes.set_axis_off()
 
 
