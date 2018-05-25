@@ -169,7 +169,6 @@ class Team:
         # if one is missing, use the other
         last_game = last_game or next_game
         next_game = next_game or last_game
-        print(self, last_game, next_game)
         
         # Interpolate based on time
         self.lat, self.lon = warp(last_game, next_game, when)
@@ -178,8 +177,26 @@ class Team:
 
     def __str__(self):
 
-        msg = f'{self.name} {self.points:3}'
-        msg +=f'{self.goals - self.against:4} {self.goals:4} {self.against:4}'
+        return self.name
+
+
+    def stats(self):
+
+        return dict(
+            points = self.points,
+            goals = self.goals,
+            against = self.against,
+            goal_delta = self.goals - self.against,
+            red = self.red,
+            yellow = self.yellow)
+
+    def statto(self):
+        """ Return line of stats for the team """
+
+        stats = self.stats()
+        msg = "%s" % self.name
+        msg += " {points:4d} {goal_delta:4d}".format(stats)
+        msg += " {goals:4d} {against:4d}".format(stats)
 
         return msg
 
@@ -233,7 +250,12 @@ class Game:
 
     def __str__(self):
 
-        return f'{self.label} {self.a.name} {self.b.name} {self.when} {self.where}'
+        return (
+            str(self.label) + ' '  +
+            str(self.a.name) + ' v '  +
+            str(self.b.name) + ' '  +
+            str(self.when)  + ' '  +
+            str(self.where))
 
     def __eq__(self, other):
 
@@ -287,16 +309,14 @@ class Game:
         
         return self.ascore, self.bscore
 
-    def run(self):
+    async def run(self, events):
         """ Run the game """
-        # if either score is None, call score
-        ascore, bscore = game.score()
+        ascore, bscore = self.score()
 
-        print(f'{ascore} {bscore}')
-        print()
+        print(ascore, bscore)
 
-        a = game.a
-        b = game.b
+        a = self.a
+        b = self.b
             
         a.goals += ascore
         b.goals += bscore
@@ -314,8 +334,9 @@ class Game:
             a.points += 1
             b.points += 1
 
-        self.group.table()
-
+        msg = a.name + ' ' + str(ascore) + ' ' + str(bscore) + ' ' + b.name
+        
+        await events.put((self.where, msg))
 
 
 class Group:
@@ -362,6 +383,7 @@ class Group:
         
         for team in teams:
             print(team)
+            print(team.statto)
 
         
     def get_table(self):
@@ -419,6 +441,7 @@ class JeuxSansFrontieres:
         self.step = timedelta(hours=1)
 
         self.games = curio.PriorityQueue()
+        self.events = curio.UniversalQueue()
 
     async def load_group_games(self):
         """ Put the group games into the game queue """
@@ -579,13 +602,12 @@ class JeuxSansFrontieres:
                 print(self.now, game)
 
                 # Run the game
-                await game.run()
+                await game.run(self.events)
                 # Do post processing depending on the type of Game
 
             else:
                 await self.games.put(game)
 
-            self.now += self.step
             await curio.sleep(0)
 
 
@@ -593,7 +615,7 @@ class Place:
 
     def __str__(self):
 
-        return f'{self.name}'
+        return self.name
 
     def __repr__(self):
 
@@ -1099,7 +1121,7 @@ class MexicanWaves(pigfarm.Yard):
         
     def step_balls(self):
         """ do something here """
-        print('mexican wave step_balls')
+        #print('mexican wave step_balls')
         for place in self.places:
             #print(place)
             #print(self.width, self.height, xx, yy)
@@ -1108,7 +1130,7 @@ class MexicanWaves(pigfarm.Yard):
 
             self.message(place.name, place, yoff=-20, fill='yellow')
             
-        print('done places')
+        #print('done places')
         locations = defaultdict(list)
         
         for team in jsf.generate_teams():
@@ -1122,14 +1144,13 @@ class MexicanWaves(pigfarm.Yard):
             xx, yy = key
             yoff = 30
             for team in locations[key]:
-                print(team, team.lat, team.lon, xx, yy)
-
                 self.message(team.name, team, yoff=yoff, fill='green')
 
                 yoff += 30
                 
         self.when += timedelta(hours=1)
 
+        
     def draw(self):
         pass
 
@@ -1140,10 +1161,10 @@ class MexicanWaves(pigfarm.Yard):
     async def score_flash(self):
 
         while True:
-            event = await self.jsf.events.get()
+            place, message = await self.jsf.events.get()
 
-            
-            print(event)
+            self.message(message, place)
+            print(place, message)
 
     def message(self, message, place, fill='red', size=5, xoff=0, yoff=0):
         """ Message from a place """
@@ -1180,6 +1201,8 @@ class MexicanWaves(pigfarm.Yard):
             self.draw()
             
             self.step_balls()
+
+            self.jsf.now = self.when
             
             await curio.sleep(self.sleep)            
 
