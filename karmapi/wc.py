@@ -205,7 +205,6 @@ class Team:
         """ Return line of stats for the team """
 
         stats = self.stats()
-        print(stats)
         msg = "%s" % self.name
         msg += " {points:4d} {goal_delta:4d}".format(**stats)
         msg += " {goals:4d} {against:4d}".format(**stats)
@@ -287,8 +286,9 @@ class Game:
         
         self.ascore = ascore
         self.bscore = bscore
+        self.minute = 0
 
-        # flag if score came from self.score()
+        # flag if score was simulated
         self.simulated = (ascore is None) or (bscore is None)
         self.number = Game.NUMBER
         Game.NUMBER += 1
@@ -298,6 +298,7 @@ class Game:
         """ Reset score if it was random """
         if self.simulated:
             self.ascore = self.bscore = None
+            self.minute = 0
 
     def __str__(self):
 
@@ -330,13 +331,32 @@ class Game:
 
     async def kick_off(self):
         """ Game has kicked off """
+        self.ascore = 0
+        self.bscore = 0
+        
         minutes = 45 + randint(0, 7)
+
+        await self.half(minutes)
+
+        await self.half_time()
+
+        await self.second_half()
+
+        await self.full_time()
+        if self.is_group():
+            # maybe a good time to check if group is finished?
+            return self.ascore, self.bscore
+
+    def is_group(self):
+
+        return hasattr(self, 'group')
+    
+    async def half(self, minutes):
+        """ Run a half """
 
         for minute in range(minutes):
             await self.run_minute()
 
-        #await self.half_time()
-        
 
     async def run_minute(self):
         
@@ -352,7 +372,7 @@ class Game:
             else:
                 self.bscore += 1
                 
-            await self.flash()
+            await self.flash(" %dm" % self.minute, fill='green')
                 
         if random() < yellow_per_minute:
             # yellow card?
@@ -362,16 +382,21 @@ class Game:
             # red card?
             pass
 
+        self.minute += 1
+
         return self.ascore, self.bscore
 
     async def half_time(self):
-        pass
+
+        self.flash(fill='blue', tag='HT')
 
     async def second_half(self):
-        pass
+        minutes = 45 + randint(0, 7)
+        await self.half(minutes)
 
     async def full_time(self):
-        pass
+        
+        self.flash(fill='blue', tag='FT')
 
     async def extra_time(self):
         pass
@@ -397,22 +422,12 @@ class Game:
     async def sub(self, team, off=None, on=None, when=None):
         pass
 
-    def score(self):
-        """ Make up a score """
-
-        if self.ascore == None or self.bscore == None:
-            self.ascore = randint(0, randint(0, 5))
-            self.bscore = randint(0, randint(0, 5))
-
-            self.nullscore = True
-        
-        return self.ascore, self.bscore
-
     async def run(self, events):
         """ Run the game """
-
         self.events = events
-        await self.kick_off()
+
+        if self.ascore == None or self.bscore == None:
+            await self.kick_off()
 
         a = self.a
         b = self.b
@@ -426,16 +441,16 @@ class Game:
         if self.ascore > self.bscore:
             a.points += 3
 
-        elif bscore > ascore:
+        elif self.bscore > self.ascore:
             b.points += 3
 
         else:
             a.points += 1
             b.points += 1
 
-        await self.flash()
+        await self.flash(tag='FT')
 
-    async def flash(self):
+    async def flash(self, tag='', fill='red'):
 
         a = self.a
         b = self.b
@@ -443,8 +458,12 @@ class Game:
         bscore = self.bscore
         
         msg = a.name + ' ' + str(ascore) + ' ' + str(bscore) + ' ' + b.name
-        
-        await self.events.put(dict(where=self.where, msg=msg, yoff=-90))
+        msg += ' ' + tag
+
+        print('flash', msg)
+        when = self.when + timedelta(minutes=self.minute)
+        await self.events.put(dict(where=self.where, msg=msg, yoff=-90,
+                                   when=when, fill=fill))
 
 
 class Group:
@@ -1146,6 +1165,10 @@ class MexicanWaves(pigfarm.Yard):
         self.when = datetime(2018, 6, 14)
         self.delta_t = 1.
 
+        # teleprinter location
+        self.teleprint_xxyy = .8, .025
+        self.teleprints = []
+
         self.scan_venues(venues)
 
         self.add_event_map('r', self.reset)
@@ -1248,32 +1271,59 @@ class MexicanWaves(pigfarm.Yard):
         while True:
             info = await self.jsf.events.get()
 
-            info['when'] = self.when
-            
             self.messages.append(info)
-            print(info)
+
+            self.teleprint(**info)
+
 
     def show_score_flashes(self):
         """ Show the score flashes """
-        keep = []
-        for info in self.messages:
+        xx, yy = self.teleprint_xxyy
+
+        for msg, fill in self.teleprints:
+            
+            self.message(msg=msg, fill=fill, xx=xx, yy=yy)
+            xx, yy = xx, yy + .025
+
+        # Now do messages
+        keep = {}
+        for info in reversed(self.messages):
             when = info['when']
             
-            if self.when < when + timedelta(hours=24):
+            if self.when < when + timedelta(hours=48):
+                pos = self.layout(**info)
+                if pos in keep:
+                    continue
+                keep[pos] = info
+
                 self.message(**info)
-                keep.append(info)
-        self.messages = keep
-                
 
-    def message(self, msg=None, where=None, fill='red', size=5, xoff=0, yoff=0,
-                xx=None, yy=None, **kwargs):
-        """ Message from a place """
+        self.messages = list(keep.values())
 
+
+    def teleprint(self, msg=None, fill='orange', **kwargs):
+        """ teleprinter messages """
+        self.teleprints.append((msg, fill))
+
+        if len(self.teleprints) > 10:
+            del self.teleprints[0]
+
+    def layout(self, where=None, xx=None, yy=None, **kwargs):
+        """ layout for location """
         if xx is None or yy is None:
             xx, yy = self.latlon2xy(where)
         else:
             xx *= self.width
             yy *= self.height
+
+        return xx, yy
+
+
+    def message(self, msg=None, where=None, fill='red', size=5, xoff=0, yoff=0,
+                xx=None, yy=None, **kwargs):
+        """ Message from a place """
+
+        xx, yy = self.layout(where, xx, yy)
 
         self.canvas.create_text((xx + xoff, yy + yoff), text=msg, fill=fill)
 
@@ -1281,17 +1331,17 @@ class MexicanWaves(pigfarm.Yard):
     def show_tables(self):
         
         position = [
-            [.1, .25],
-            [.25, .25],
+            [.05, .1],
+            [.15, .1],
             
-            [.1,  .65],
-            [.25, .65],
+            [.05, .25],
+            [.15, .25],
             
-            [.1,  .90],
-            [.25, .90],
+            [.85,  .75],
+            [.95,  .75],
             
-            [.7, .85],
-            [.9, .85],
+            [.85, .9],
+            [.95, .9],
             ]
 
         for label, group in self.jsf.groups.items():
@@ -1300,13 +1350,13 @@ class MexicanWaves(pigfarm.Yard):
 
             xx, yy = position[gindex]
         
-            for team in group.get_table():
+            for team in group.get_table()[::-1]:
                 self.message(
                     msg=team.statto(),
                     xx=xx,
                     yy=yy,
                     fill='cyan')
-                yy -= 0.05
+                yy -= 0.025
 
 
     def ball(self, place, fill='red', size=5, xoff=0, yoff=0):
