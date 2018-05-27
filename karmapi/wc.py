@@ -283,9 +283,12 @@ class Game:
         self.b = b
         self.when = when
         self.where = where
+        self.label = ''
         
         self.ascore = ascore
         self.bscore = bscore
+        self.apen = self.bpen = 0
+        
         self.minute = 0
 
         # flag if score was simulated
@@ -343,9 +346,21 @@ class Game:
         await self.second_half()
 
         await self.full_time()
+        
         if self.is_group():
             # maybe a good time to check if group is finished?
             return self.ascore, self.bscore
+
+        # knockout match, are we done?
+        if self.ascore == self.bscore:
+            
+            await self.extra_time()
+            await self.extra_half_time()
+            await self.extra_full_time()
+
+            if self.ascore == self.bscore:
+                await self.penalties()
+
 
     def is_group(self):
 
@@ -388,7 +403,7 @@ class Game:
 
     async def half_time(self):
 
-        self.flash(fill='blue', tag='HT')
+        await self.flash(fill='blue', tag='HT')
 
     async def second_half(self):
         minutes = 45 + randint(0, 7)
@@ -396,16 +411,18 @@ class Game:
 
     async def full_time(self):
         
-        self.flash(fill='blue', tag='FT')
+        await self.flash(fill='yellow', tag='FT')
 
     async def extra_time(self):
-        pass
+        minutes = 15 + randint(0, 3)
+        await self.half(minutes)
 
     async def extra_half_time(self):
         pass
 
     async def extra_full_time(self):
-        pass
+        minutes = 15 + randint(0, 3)
+        await self.half(minutes)
 
     async def penalties(self):
         pass
@@ -438,15 +455,17 @@ class Game:
         a.against += self.bscore
         b.against += self.ascore
 
-        if self.ascore > self.bscore:
-            a.points += 3
+        if self.is_group():
 
-        elif self.bscore > self.ascore:
-            b.points += 3
+            if self.ascore > self.bscore:
+                a.points += 3
 
-        else:
-            a.points += 1
-            b.points += 1
+            elif self.bscore > self.ascore:
+                b.points += 3
+
+            else:
+                a.points += 1
+                b.points += 1
 
         await self.flash(tag='FT')
 
@@ -465,6 +484,26 @@ class Game:
         await self.events.put(dict(where=self.where, msg=msg, yoff=-90,
                                    when=when, fill=fill))
 
+    def winner(self):
+        """ Return winning team """
+        if self.ascore > self.bscore:
+            return self.a
+        elif self.bscore > self.ascore:
+            return self.b
+
+        if self.apen > self.bpen:
+            return self.a
+
+        return self.b
+
+    def loser(self):
+
+        win = self.winner()
+        if win == self.a:
+            return self.b
+        
+        return self.a
+
 
 class Group:
 
@@ -472,6 +511,7 @@ class Group:
 
         self.teams = teams
         self.games = games or []
+        self.played = 0
 
     def winner(self):
         """ Pick a winner """
@@ -480,6 +520,11 @@ class Group:
     def second(self):
         """ Pick a second """
         return self.get_table()[1]
+
+    def is_finished(self):
+
+        size = len(self.teams)
+        return self.played == (size * (size - 1)) / 2
 
     def __str__(self):
 
@@ -492,17 +537,6 @@ class Group:
 
         for team in self.teams:
             team.reset()
-
-    def run(self):
-        """ Run the group """
-        for game in self.games:
-
-            print()
-            print (game)
-            print()
-
-            game.run()
-            
 
     def table(self):
         """ Show the group table """
@@ -569,6 +603,9 @@ class JeuxSansFrontieres:
 
         self.games = curio.PriorityQueue()
         self.events = curio.UniversalQueue()
+        self.knockout = []
+        self.winners = {}
+        self.seconds = {}
 
     async def load_group_games(self):
         """ Put the group games into the game queue """
@@ -584,8 +621,18 @@ class JeuxSansFrontieres:
 
                 await self.games.put(game)
 
+        self.its_a_knockout()
+
+        for game in self.knockout:
+            await self.games.put(game)
+
     def its_a_knockout(self):
         """ Set up knockout stage """
+        places = self.places or (['???'] * len(games))
+        dates = self.dates or [datetime.today()] * len(games)
+
+        for where, when in zip(places, dates):
+            self.knockout.append(Game(None, None, when, where))
 
         groups = self.groups
         key = sorted(groups.keys())
@@ -601,62 +648,98 @@ class JeuxSansFrontieres:
 
         games = []
 
+        ix = 0
         for gps in key, key2:
             for x in range(0, len(key), 2):
             
                 a = gps[x]
                 b = gps[x+1]
-                
-                teama = groups[a].winner()
-                teamb = groups[b].second()
 
-                games.append([teama, teamb])
+                self.winners[a] = self.knockout[ix], 'a'
+                self.seconds[b] = self.knockout[ix], 'b'
+                ix += 1
 
-        dates = dates or [datetime.today()] * len(games)
-        
-        for game, date in zip(games, dates):
-            game.append(date)
-            
-        places = places or (['???'] * len(games))
-        for game, place in zip(games, places):
-            game.append(place)
+        # now do knockout stage
+        ko = self.knockout
+        for ix, game in enumerate(ko[:8]):
+            gix = 8 + int(ix / 2)
+            if ix % 2 == 0:
+                self.winners[game.number] = self.knockout[gix], 'a'
+            else:
+                self.winners[game.number] = self.knockout[gix], 'b'
 
-        self.games = []
-        for teama, teamb, when, place in games:
-            self.games.append(Game(teama, teamb, when, place))
-        
-        for game in self.games:
-            print(game)
+        for ix, game in enumerate(ko[8:12]):
+            gix = 12 + int(ix / 2)
+            if ix % 2 == 0:
+                self.winners[game.number] = self.knockout[gix], 'a'
+            else:
+                self.winners[game.number] = self.knockout[gix], 'b'
 
+        for ix, game in enumerate(ko[12:14]):
+            print(ix, len(self.knockout))
+            if ix % 2 == 0:
+                self.winners[game.number] = self.knockout[15], 'a'
+                self.seconds[game.number] = self.knockout[14], 'b'
+            else:
+                self.winners[game.number] = self.knockout[15], 'b'
+                self.seconds[game.number] = self.knockout[14], 'a'
 
-    def run_groups(self):
-        """ Run the group stage """
-        # group winners and seconds
-        winners = {}
-        seconds = {}
-
-        # print out the games while we are at it
-        for xx, group  in groups.items():
-            
-            print(xx)
-            
-            for game in group.games:
-                print(game.a, game.b, game.when)
-
-            print()
-            group.run()
-            print()
-
-            winners[xx] = group.winner()
-            seconds[xx] = group.second()
-
-            group.table()
 
     def generate_teams(self):
         """ Generate teams """
         for group in self.groups.values():
             for team in group.teams:
                 yield team
+
+    def apres_match(self, game):
+        """ Deal with updating of knockout stage """
+
+        if game.number == 63:
+            print('third place:', game.winner())
+            return
+        if game.number == 64:
+            print('Winner:', game.winner())
+            return
+            
+        if game.is_group():
+            group = game.group
+            group.played += 1
+            
+            key = game.label.lower()
+            kgame, label = self.winners[key]
+            wteam = group.winner()
+            setattr(kgame, label, wteam)
+            if group.is_finished():
+                wteam.games.append(game)
+                
+            kgame, label = self.seconds[key]
+            steam = group.second()
+            setattr(kgame, label, group.second())
+            if group.is_finished():
+                steam.games.append(game)
+
+                for team in group.teams:
+                    out = Game(None, None, game.when, where=NorthPole())
+                    if team not in (wteam, steam):
+                        print('out', team)
+                        team.games.append(out)
+
+        else:
+            kgame, label = self.winners[game.number]
+            wteam = game.winner()
+            setattr(kgame, label, game.winner())
+            wteam.games.append(kgame)
+
+            if game.number in self.seconds:
+                kgame, label = self.seconds[game.number]
+                lteam = game.loser()
+                setattr(kgame, label, lteam)
+                lteam.games.append(kgame)
+                print('s', kgame.number, label, game.loser())
+            else:
+                out = Game(None, None, game.when, where=NorthPole())
+                game.loser().games.append(out)
+                
 
     async def reset(self):
         """ Reset things to start again """
@@ -690,11 +773,14 @@ class JeuxSansFrontieres:
             game = await self.games.get()
 
             if game.when < self.now:
+                print(game.number)
                 print(self.now, game)
 
                 # Run the game
                 await game.run(self.events)
-                # Do post processing depending on the type of Game
+
+                # post process game
+                self.apres_match(game)
 
             else:
                 await self.games.put(game)
@@ -804,6 +890,13 @@ class Sochi(Place):
     name = 'Fisht Olympic Stadium'
     lat = 43 + (24 / 60)
     lon = 39 + (57 / 60)
+
+class NorthPole(Place):
+    """  """
+
+    name = 'North Pole'
+    lat = 90
+    lon = 0
 
     
 
@@ -1117,6 +1210,7 @@ jsf_places = [
     places['samara'],
     places['sochi'],
     
+
     places['stpetersberg'],
     places['moscow'],
     
@@ -1250,6 +1344,8 @@ class MexicanWaves(pigfarm.Yard):
         self.show_score_flashes()
 
         self.show_tables()
+
+        self.show_knockout()
                 
         self.when += timedelta(hours=self.delta_t)
 
@@ -1358,9 +1454,48 @@ class MexicanWaves(pigfarm.Yard):
                     fill='cyan')
                 yy -= 0.025
 
+    def show_knockout(self):
+
+        if not self.jsf.knockout:
+            return
+        xx = .1
+        yy = .6
+        yinc = 0.025
+        for ix, game in enumerate(self.jsf.knockout):
+            aa = game.a or '   '
+            bb = game.b or '   '
+
+            ascore = game.ascore
+            bscore = game.bscore
+            if ascore is None: ascore = '-'
+            if bscore is None: bscore = '-'
+            
+            self.message(msg="{} {} {}  {}".format(
+                aa, ascore, bscore, bb),
+                xx=xx, yy=yy, fill='green')
+            
+            yy += 0.05
+
+            if ix in [7, 11, 13]:
+                xx += .1
+                yy = .6
+                yinc *= 2
+
+        final = self.jsf.knockout[-1]
+        if final.ascore != None:
+            xx += 0.1
+            yy = 0.6
+            for game in final.winner().games:
+                print(game.where, game.when)
+            self.message(msg="{}".format(
+                final.winner().name),
+                xx=xx, yy=yy,
+                fill='gold')
+            
+
 
     def ball(self, place, fill='red', size=5, xoff=0, yoff=0):
-        """ Message from a place """
+        """ Draw a filled circle at place """
 
         xx, yy = self.latlon2xy(place)
 
