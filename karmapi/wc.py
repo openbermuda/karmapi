@@ -792,7 +792,7 @@ class JeuxSansFrontieres:
             wteam = group.winner()
             setattr(kgame, label, wteam)
             if group.is_finished():
-                wteam.games.append(game)
+                wteam.games.append(kgame)
                 
             kgame, label = self.seconds[key]
             steam = group.second()
