@@ -47,6 +47,7 @@ class Sphere:
 
         self.t += 1
 
+
 class NestedWaves(pigfarm.Yard):
     """ Inner and outer spheres 
 
@@ -103,9 +104,20 @@ class NestedWaves(pigfarm.Yard):
 
         self.uq = uq
 
-    def draw(self):
-        pass
+    async def draw(self):
+
+        ball = await self.uq.get()
+
+        self.draw_ball(ball)
             
+    async def draw_ball(self, ball):
+        """ wc has everything???? 
+
+        feels like I have written this bit 20 times
+        """
+        width, height = self.width, self.height
+
+
     async def run(self):
         """ Run the waves """
 
@@ -119,6 +131,8 @@ class NestedWaves(pigfarm.Yard):
             self.draw()
 
             self.step_balls()
+
+            await self.draw()
             
             await curio.sleep(self.sleep)            
 
