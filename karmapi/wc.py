@@ -247,17 +247,17 @@ class Penalty:
 
     which: which penalty: 1, 2, 3 etc
     """
-    def __init__(self, team, who=None, which=None, game=None, score=True):
+    def __init__(self, team, who=None, which=None, when=None,
+                 game=None, score=True):
 
         self.who = who
         self.when = when
         self.game = game
-        self.penalty = penalty
+        self.which = which
+        self.score = True
+        self.penalty = True
 
-class ShootOut:
-    """ Class to run a penalty shoot out """
-    pass
-        
+
 def warp(a, b, when):
     """ Interpolate between a and b based on time """
     
@@ -296,7 +296,8 @@ class Game:
         
         self.ascore = ascore
         self.bscore = bscore
-        self.apen = self.bpen = 0
+        self.apen = []
+        self.bpen = []
         
         self.minute = 0
 
@@ -311,7 +312,8 @@ class Game:
         if self.simulated:
             self.ascore = self.bscore = None
             
-            self.apen = self.bpen = 0
+            self.apen = []
+            self.bpen = []
 
             self.minute = 0
 
@@ -437,7 +439,70 @@ class Game:
         await self.half(minutes)
 
     async def penalties(self):
-        pass
+        """ Don't miss this """
+        first, second = self.a, self.b
+
+        if random() < 0.5:
+            first, second = second, first
+
+        total = 0
+        done = False
+        while not done:
+            done = self.penalty(first)
+            first, second = second, first
+
+    def penalty(self, team):
+        """ Take a penalty """
+        which = len(self.apen) + len(self.bpen)
+        
+        if random() < 0.5:
+            pen = Penalty(team, score=True, which=which)
+
+            if team is self.a:
+                self.apen.append(pen)
+            else:
+                self.bpen.append(pen)
+
+        return self.all_over()
+
+    def pens_score(self):
+        """ score in penalties """
+        apens = [x for x in self.apen if x.score]
+        bpens = [x for x in self.bpen if x.score]
+
+        return len(apens), len(bpens)
+        
+
+    def all_over(self):
+        """ Are the pens done? """
+
+        a, b = self.pens_score()
+        
+        if a == b:
+            return False
+
+        aa = len(self.apen)
+        bb = len(self.bpen)
+        
+        which = aa + bb
+
+        if which <= 10:
+            aleft = 5 - aa
+            bleft = 5 - bb
+
+        else:
+            aleft = bleft = 0
+
+            if aa < bb:
+                aleft = 1
+            if bb < aa:
+                bleft = 1
+
+        if b > a + aleft:
+            return True
+
+        if a > b + bleft:
+            return True
 
     async def goal(self, team, who=None, when=None):
         pass
@@ -503,7 +568,9 @@ class Game:
         elif self.bscore > self.ascore:
             return self.b
 
-        if self.apen > self.bpen:
+        # penalties
+        aa, bb = self.pens_score()
+        if aa > bb:
             return self.a
 
         return self.b
