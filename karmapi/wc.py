@@ -137,6 +137,7 @@ class Team:
         self.lon =  0
         
         self.win = win or 1 / n
+        self.home = False
 
         self.reset()
 
@@ -148,6 +149,7 @@ class Team:
         self.red = 0
         self.goals = 0
         self.against = 0
+        self.home = None
 
         # Keep track of games played/to be played?
         self.games = []
@@ -163,6 +165,9 @@ class Team:
         
     def where(self, when):
         """ Where is the team? """
+
+        if self.home is not None:
+            return self.home
 
         last_game = None
         next_game = None
@@ -185,6 +190,10 @@ class Team:
         self.lat, self.lon = warp(last_game, next_game, when)
 
         return self.lat, self.lon
+
+    def go_home(self):
+
+        self.home = NorthPole()
 
     def __str__(self):
  
@@ -301,6 +310,9 @@ class Game:
         """ Reset score if it was random """
         if self.simulated:
             self.ascore = self.bscore = None
+            
+            self.apen = self.bpen = 0
+
             self.minute = 0
 
     def __str__(self):
@@ -599,6 +611,7 @@ class JeuxSansFrontieres:
         self.dates = dates
 
         self.now = now or datetime(2018, 6, 14)
+        self.start = self.now
         self.step = timedelta(hours=1)
 
         self.games = curio.PriorityQueue()
@@ -628,6 +641,9 @@ class JeuxSansFrontieres:
 
     def its_a_knockout(self):
         """ Set up knockout stage """
+        self.knockout = []
+        Game.NUMBER = 49
+        
         places = self.places or (['???'] * len(games))
         dates = self.dates or [datetime.today()] * len(games)
 
@@ -676,7 +692,6 @@ class JeuxSansFrontieres:
                 self.winners[game.number] = self.knockout[gix], 'b'
 
         for ix, game in enumerate(ko[12:14]):
-            print(ix, len(self.knockout))
             if ix % 2 == 0:
                 self.winners[game.number] = self.knockout[15], 'a'
                 self.seconds[game.number] = self.knockout[14], 'b'
@@ -735,14 +750,22 @@ class JeuxSansFrontieres:
                 lteam = game.loser()
                 setattr(kgame, label, lteam)
                 lteam.games.append(kgame)
-                print('s', kgame.number, label, game.loser())
             else:
-                out = Game(None, None, game.when, where=NorthPole())
-                game.loser().games.append(out)
+                game.loser().go_home()
                 
 
     async def reset(self):
         """ Reset things to start again """
+        self.now = self.start
+        Game.NUMBER -= len(self.knockout)
+
+        self.knockout = []
+        self.winners = {}
+        self.seconds = {}
+
+        while not self.games.empty():
+            await self.games.get()
+
         await self.load_group_games()
 
     async def run(self):
@@ -768,7 +791,8 @@ class JeuxSansFrontieres:
         await self.reset()
 
         print('loop forever?')
-        while not self.games.empty():
+        #while not self.games.empty():
+        while True:
 
             game = await self.games.get()
 
@@ -1357,10 +1381,12 @@ class MexicanWaves(pigfarm.Yard):
         """ Reset timer """
         self.when = datetime(2018, 6, 14)
 
-        self.jsf.reset()
-        await self.jsf.load_group_games()
-
         self.messages = []
+        self.teleprints =[]
+
+        await self.jsf.reset()
+        #await self.jsf.load_group_games()
+
 
     async def score_flash(self):
 
