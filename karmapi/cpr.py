@@ -17,6 +17,8 @@ import argparse
 
 import curio
 
+from PIL import Image, ImageTk
+
 from karmapi import base, tpot, pigfarm
 
 from random import random, randint
@@ -28,8 +30,8 @@ class Sphere:
         size = size or 4
 
         grid = []
-        for lat in range(size):
-            grid.append([random() for x in range(size)])
+        for pt in range(size * size):
+            grid.append(tuple(int(256 * random()) for c in 'rgb'))
 
         self.grid = grid
         self.size = size
@@ -41,11 +43,32 @@ class Sphere:
         # time moves slower in the inner spheres?
         self.sleep = 1 / self.size
 
-    def run(self):
+    def project(self):
+        """ Turn into a PIL? """
+        image = Image.new('RGB', (self.size, self.size))
+        image.putdata(self.grid)
+
+        return image
+
+    async def run(self):
 
         print(self.head, self.tail, self.size, self.t)
 
         self.t += 1
+
+        if self.head:
+            return await self.head_run()
+        
+        # now what to do?
+        pass
+
+    async def head_run(self):
+        """ inner wave
+
+        red, green, blue
+        """
+        pass
+        
 
 
 class NestedWaves(pigfarm.Yard):
@@ -94,13 +117,18 @@ class NestedWaves(pigfarm.Yard):
             self.uq.put(sphere)
 
 
-    def step_balls(self):
+    async def step_balls(self):
+        """ step all the balls once """
 
+        # FIXME -- think we just step the outer ball
+        # really need a RandomQueue()
         uq = curio.UniversalQueue()
         while self.uq.qsize():
-            ball = self.uq.get()
-            ball.run()
-            uq.put(ball)
+            ball = await self.uq.get()
+            
+            await ball.run()
+
+            await uq.put(ball)
 
         self.uq = uq
 
@@ -108,7 +136,7 @@ class NestedWaves(pigfarm.Yard):
 
         ball = await self.uq.get()
 
-        self.draw_ball(ball)
+        await self.draw_ball(ball)
             
     async def draw_ball(self, ball):
         """ wc has everything???? 
@@ -116,6 +144,15 @@ class NestedWaves(pigfarm.Yard):
         feels like I have written this bit 20 times
         """
         width, height = self.width, self.height
+
+        image = ball.project()
+        
+        image = image.resize((int(width), int(height)))
+
+        self.phim = ImageTk.PhotoImage(image)
+
+        print('creating image')
+        self.canvas.create_image(0, 0, image=self.phim)
 
 
     async def run(self):
@@ -128,11 +165,8 @@ class NestedWaves(pigfarm.Yard):
         while True:
             self.canvas.delete('all')
 
-            self.draw()
-
-            self.step_balls()
-
             await self.draw()
+            await self.step_balls()
             
             await curio.sleep(self.sleep)            
 
