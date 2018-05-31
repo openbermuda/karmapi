@@ -52,8 +52,6 @@ class Sphere:
 
     async def run(self):
 
-        print(self.head, self.tail, self.size, self.t)
-
         self.t += 1
 
         if self.head:
@@ -120,23 +118,25 @@ class NestedWaves(pigfarm.Yard):
     async def step_balls(self):
         """ step all the balls once """
 
-        # FIXME -- think we just step the outer ball
-        # really need a RandomQueue()
-        uq = curio.UniversalQueue()
+        uq = []
         while self.uq.qsize():
             ball = await self.uq.get()
             
             await ball.run()
 
-            await uq.put(ball)
+            uq.append(ball)
 
-        self.uq = uq
+        for ball in uq:
+            await self.uq.put(ball)
+        
 
     async def draw(self):
 
         ball = await self.uq.get()
 
         await self.draw_ball(ball)
+
+        await self.uq.put(ball)
             
     async def draw_ball(self, ball):
         """ wc has everything???? 
@@ -149,10 +149,13 @@ class NestedWaves(pigfarm.Yard):
         
         image = image.resize((int(width), int(height)))
 
-        self.phim = ImageTk.PhotoImage(image)
+        print(image.size)
+        self.phim = phim = ImageTk.PhotoImage(image)
 
-        print('creating image')
-        self.canvas.create_image(0, 0, image=self.phim)
+        print('creating image', phim.width(), phim.height())
+        xx = int(self.width / 2)
+        yy = int(self.height / 2)
+        self.canvas.create_image(xx, yy, image=phim)
 
 
     async def run(self):
@@ -160,11 +163,13 @@ class NestedWaves(pigfarm.Yard):
 
         self.sleep = 0.05
 
+        
         self.set_background()
         
         while True:
             self.canvas.delete('all')
 
+            print('drawing', self.uq.qsize())
             await self.draw()
             await self.step_balls()
             
