@@ -158,6 +158,12 @@ class NestedWaves(pigfarm.Yard):
         self.uq = curio.UniversalQueue()
 
         self.build()
+        self.add_event_map(' ', self.pause)
+        self.paused = False
+
+    async def pause(self):
+        """ Pause """
+        self.paused = not self.paused
 
     def build(self):
         """ Create the balls """
@@ -231,6 +237,10 @@ class NestedWaves(pigfarm.Yard):
         self.set_background()
         
         while True:
+            if self.paused:
+                await curio.sleep(self.sleep)
+                continue
+            
             self.canvas.delete('all')
 
             print('drawing', self.uq.qsize())
