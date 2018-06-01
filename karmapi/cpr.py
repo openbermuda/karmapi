@@ -13,6 +13,8 @@ And then outer layers made up of other randomly placed nested spheres.
 
 But using a universal queue, so let each sphere run in its own co-routine.
 """
+import math
+
 import argparse
 
 import curio
@@ -69,29 +71,65 @@ class Sphere:
         """ Do some set up work for a head sphere """
 
         self.waves = {}
+        self.inc = math.pi/20
+        
         for c in 'rgb':
             phase = random()
             scale = random()
             
-            self.waves[c] = dict(
-                tint=c,
-                phase=phase,
-                scale=scale)
+            self.waves[c] = [c, phase, scale]
 
     async def end_run(self):
         """ inner or outer wave
 
         red, green, blue
 
+        let's do:
+           red up down
+           blue left right
+           green in and out all over
+
         How to fill in self.grid?
         """
         n = self.size
-        for ix, (c, wave) in enumerate(self.waves.items()):
-            for x in range(n):
-                for y in range(n):
-                    pass
+        width = 2 * math.pi
+        height = math.pi
+        
+
+        grid = []
+        
+        for x in range(n):
+            xx = ((x / n) + (1 / (2 * n))) * 2 * math.pi
+
+            xx += self.inc * self.t
+                
+            for y in range(n):
+
+                yy = (y / n) + (1 / (2 * n))
+                yy += self.inc * self.t
+
+                rc, rphase, rscale = self.waves['r']
+                gc, gphase, gscale = self.waves['g']
+                bc, bphase, bscale = self.waves['b']
+                
+                value = (
+                    int(256 * sample_wave(rphase, xx) * rscale),
+                    int(256 * sample_wave(bphase, yy) * bscale),
+                    int(256 * sample_wave(gphase, xx+yy) * gscale))
+                
+                grid.append(value)
+
+        print(grid)
+
+        self.grid = grid
             
             
+def sample_wave(phase, x):
+
+    xx = x + (2 * math.pi * phase)
+
+    return math.sin(xx)
+
         
 
 
