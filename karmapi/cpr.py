@@ -17,6 +17,8 @@ import argparse
 
 import curio
 
+import numpy
+
 from PIL import Image, ImageTk
 
 from karmapi import base, tpot, pigfarm
@@ -43,6 +45,9 @@ class Sphere:
         # time moves slower in the inner spheres?
         self.sleep = 1 / self.size
 
+        if self.head or self.tail:
+            self.setup_end()
+
     def project(self):
         """ Turn into a PIL? """
         image = Image.new('RGB', (self.size, self.size))
@@ -54,18 +59,39 @@ class Sphere:
 
         self.t += 1
 
-        if self.head:
-            return await self.head_run()
+        if self.head or self.tail:
+            return await self.end_run()
         
         # now what to do?
         pass
 
-    async def head_run(self):
-        """ inner wave
+    def setup_end(self):
+        """ Do some set up work for a head sphere """
+
+        self.waves = {}
+        for c in 'rgb':
+            phase = random()
+            scale = random()
+            
+            self.waves[c] = dict(
+                tint=c,
+                phase=phase,
+                scale=scale)
+
+    async def end_run(self):
+        """ inner or outer wave
 
         red, green, blue
+
+        How to fill in self.grid?
         """
-        pass
+        n = self.size
+        for ix, (c, wave) in enumerate(self.waves.items()):
+            for x in range(n):
+                for y in range(n):
+                    pass
+            
+            
         
 
 
