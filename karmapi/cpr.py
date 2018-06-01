@@ -160,14 +160,21 @@ class NestedWaves(pigfarm.Yard):
         self.build()
         self.add_event_map(' ', self.pause)
         self.paused = False
+        self.add_event_map('r', self.reset)
 
     async def pause(self):
         """ Pause """
         self.paused = not self.paused
 
+    async def reset(self):
+        """ Reset waves """
+        self.balls[0].setup_end()
+        self.balls[-1].setup_end()
+
     def build(self):
         """ Create the balls """
         # add a bunch of spheres to the queue
+        self.balls = []
         for ball in range(self.n):
             size = self.base + (ball * self.inc)
 
@@ -183,6 +190,7 @@ class NestedWaves(pigfarm.Yard):
             sphere = Sphere(size, head=head, tail=tail)
             
             self.uq.put(sphere)
+            self.balls.append(sphere)
 
 
     async def step_balls(self):
@@ -202,11 +210,10 @@ class NestedWaves(pigfarm.Yard):
 
     async def draw(self):
 
-        ball = await self.uq.get()
+        ball = self.balls[-1]
 
         await self.draw_ball(ball)
 
-        await self.uq.put(ball)
             
     async def draw_ball(self, ball):
         """ wc has everything???? 
