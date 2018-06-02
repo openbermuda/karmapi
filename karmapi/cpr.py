@@ -42,6 +42,9 @@ class Sphere:
 
         self.head = head
         self.tail = tail
+        self.last_ball = None
+        self.next_ball = None
+        self.fade = 1 / math.e
         self.t = t
 
         # time moves slower in the inner spheres?
@@ -64,8 +67,83 @@ class Sphere:
         if self.head or self.tail:
             return await self.end_run()
         
-        # now what to do?
-        pass
+        # Here if we are between two spheres
+        # so have last_ball and next_ball
+
+        # for each point in grid select corresponding
+        # points in inner/outer spheres
+
+        lb = self.last_ball
+        nb = self.next_ball
+        
+        lsize = self.last_ball.size
+        nsize = self.next_ball.size
+        n = self.size
+        
+        grid = []
+        ix = 0
+        delta = (1 / (2 * n)) * 2 * math.pi
+            
+        for x in range(self.size):
+            x1 = (x / n) * 2 * math.pi
+            x2 = x1 + delta
+                
+            for y in range(self.size):
+                y1 = (y / n) * 2 * math.pi
+                y2 = y1 + delta
+
+                lbc = lb.sample(x1, y1, x2, y2)
+                nbc = nb.sample(x1, y1, x2, y2)
+
+                current = self.grid[len(grid)]
+
+                value = [(aa + bb + cc) * self.fade
+                             for aa, bb, cc in zip(lbc, nbc, current)]
+                
+                grid.append(tuple(self.quantise(x) for x in value))
+
+        self.grid = grid
+        self.normalise()
+
+    def quantise(self, value):
+
+        value = int(value * 256)
+        value = max(0, min(value, 255))
+
+        return value
+
+    def normalise(self):
+        """ Normalise the grid 
+        
+        want mean for each colour to be 127
+
+        let's just scale so range is 0-255
+        """
+
+        off = []
+        scale = []
+        for ix in range(len(self.grid[0])):
+            amin = min(x[ix] for x in self.grid)
+            amax = min(x[ix] for x in self.grid)
+
+            if amax != amin:
+                sc = 255 / (amax - amin)
+            else:
+                sc = 1.0
+
+            scale.append(sc)
+            off.append(amin)
+
+
+        grid = []
+        for values in self.grid:
+            value = tuple(int((x-ff) * sc)
+                          for x, sc, ff in zip(values, scale, off))
+            
+            grid.append(value)
+
+        self.grid = grid
+            
 
     def setup_end(self):
         """ Do some set up work for a head sphere """
@@ -79,11 +157,35 @@ class Sphere:
             
             self.waves[c] = [c, phase, scale]
 
+
+    def sample(self, x1, y1, x2, y2):
+        """ Return a pixel given a rectangle """
+        
+        delta = 1 / self.size
+        delta *= 2 * math.pi
+
+        xdelta = x2 - x1
+        ydelta = y2 - y1
+
+        k = int(xdelta / delta) + 1
+
+        xx = int(x1 / delta)
+
+        xx = randint(xx, xx + k - 1)
+
+        yy = int(y1 / delta)
+
+        yy = randint(yy, yy + k - 1)
+
+        #print('sample:', xx, yy, self.size, len(self.grid))
+        print(xx, yy, k, self.size)
+        return self.grid[(yy * self.size) + xx]
+            
     async def end_run(self):
         """ inner or outer wave
 
         red, green, blue
-
+ 
         let's do:
            red up down
            blue left right
@@ -116,10 +218,8 @@ class Sphere:
                     int(256 * sample_wave(rphase, xx) * rscale),
                     int(256 * sample_wave(bphase, yy) * bscale),
                     int(256 * sample_wave(gphase, xx+yy) * gscale))
-                
-                grid.append(value)
 
-        print(grid)
+                grid.append(value)
 
         self.grid = grid
             
@@ -154,6 +254,7 @@ class NestedWaves(pigfarm.Yard):
         self.n = n
         self.inc = inc
 
+
         # expect we'll find something to do with a queue
         self.uq = curio.UniversalQueue()
 
@@ -161,6 +262,10 @@ class NestedWaves(pigfarm.Yard):
         self.add_event_map(' ', self.pause)
         self.paused = False
         self.add_event_map('r', self.reset)
+        
+        self.dball = 0
+        self.add_event_map('j', self.backward)
+        self.add_event_map('k', self.forward)
 
     async def pause(self):
         """ Pause """
@@ -171,10 +276,22 @@ class NestedWaves(pigfarm.Yard):
         self.balls[0].setup_end()
         self.balls[-1].setup_end()
 
+    async def forward(self):
+        """ Move to next sphere """
+        self.dball += 1
+        self.dball %= self.n
+
+    async def backward(self):
+        """ Move to previous sphere """
+        self.dball -= 1
+        if self.dball < 0:
+            self.dball = self.n - 1
+
     def build(self):
         """ Create the balls """
         # add a bunch of spheres to the queue
         self.balls = []
+        last_ball = None
         for ball in range(self.n):
             size = self.base + (ball * self.inc)
 
@@ -186,31 +303,49 @@ class NestedWaves(pigfarm.Yard):
             tail = False
             if ball == self.n - 1:
                 tail = True
-            
+                
             sphere = Sphere(size, head=head, tail=tail)
+
+            if not sphere.head:
+                sphere.last_ball = last_ball
+                last_ball.next_ball = sphere
             
             self.uq.put(sphere)
             self.balls.append(sphere)
 
+            last_ball = sphere
+
+    async def step_all(self):
+        """ Step all balls once """
+        balls = self.balls[:]
+        while balls:
+            ix = randint(0, len(balls)-1)
+
+            await balls[ix].run()
+
+            del balls[ix]
+
 
     async def step_balls(self):
-        """ step all the balls once """
+        """ step all the balls once 
 
-        uq = []
-        while self.uq.qsize():
-            ball = await self.uq.get()
-            
-            await ball.run()
+        or maybe a random ball?
+        """
+        ball = self.pick()
 
-            uq.append(ball)
+        await ball.run()
 
-        for ball in uq:
-            await self.uq.put(ball)
-        
+    def pick(self):
+        """ Choose a ball """
+        return self.balls[randint(0, self.n-1)]
 
     async def draw(self):
 
-        ball = self.balls[-1]
+        # xx = randint(0, self.n - 1)
+        xx = self.dball
+
+        print('And the lucky number is:', xx)
+        ball = self.balls[xx]
 
         await self.draw_ball(ball)
 
@@ -226,10 +361,8 @@ class NestedWaves(pigfarm.Yard):
         
         image = image.resize((int(width), int(height)))
 
-        print(image.size)
         self.phim = phim = ImageTk.PhotoImage(image)
 
-        print('creating image', phim.width(), phim.height())
         xx = int(self.width / 2)
         yy = int(self.height / 2)
         self.canvas.create_image(xx, yy, image=phim)
@@ -242,6 +375,8 @@ class NestedWaves(pigfarm.Yard):
 
         
         self.set_background()
+
+        await self.step_all()
         
         while True:
             if self.paused:
@@ -250,7 +385,6 @@ class NestedWaves(pigfarm.Yard):
             
             self.canvas.delete('all')
 
-            print('drawing', self.uq.qsize())
             await self.draw()
             await self.step_balls()
             
