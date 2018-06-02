@@ -178,7 +178,7 @@ class Sphere:
         yy = randint(yy, yy + k - 1)
 
         #print('sample:', xx, yy, self.size, len(self.grid))
-        print(xx, yy, k, self.size)
+        #print(xx, yy, k, self.size)
         return self.grid[(yy * self.size) + xx]
             
     async def end_run(self):
@@ -315,7 +315,7 @@ class NestedWaves(pigfarm.Yard):
 
             last_ball = sphere
 
-    async def step_all(self):
+    async def random_step_some(self):
         """ Step all balls once """
         balls = self.balls[:]
         while balls:
@@ -325,15 +325,27 @@ class NestedWaves(pigfarm.Yard):
 
             del balls[ix]
 
+    async def backward_step_all(self):
+        """ Step all balls once """
+        balls = self.balls[::-1]
+        while balls:
+            ix = randint(0, len(balls)-1)
+
+            await balls[ix].run()
+
+            del balls[ix]
 
     async def step_balls(self):
         """ step all the balls once 
 
         or maybe a random ball?
         """
-        ball = self.pick()
+        n = randint(0, len(self.balls) - 1)
 
-        await ball.run()
+        for ball in range(n):
+            ball = self.pick()
+
+            await ball.run()
 
     def pick(self):
         """ Choose a ball """
@@ -376,7 +388,9 @@ class NestedWaves(pigfarm.Yard):
         
         self.set_background()
 
-        await self.step_all()
+        #await self.random_step_some()
+
+        await self.backward_step_all()
         
         while True:
             if self.paused:
@@ -404,6 +418,7 @@ def main():
         help='what to show')
     parser.add_argument('-n', type=int, default=10)
     parser.add_argument('--inc', type=int, default=4)
+    parser.add_argument('--base', type=int, default=20)
 
 
     args = parser.parse_args()
@@ -414,7 +429,7 @@ def main():
     
     farm.add(GuidoClock)
 
-    farm.add(NestedWaves, dict(n=args.n))
+    farm.add(NestedWaves, dict(n=args.n, inc=args.inc, base=args.base))
 
     curio.run(farm.run(), with_monitor=True)
     
