@@ -39,7 +39,6 @@ class Sphere:
         self.green = []
         self.blue = []
 
-        self.grid = []
         self.size = size
 
         self.head = head
@@ -68,14 +67,21 @@ class Sphere:
         image = Image.new('RGB', (self.size, self.size))
 
         # FIXME do the 256 magic int stuff here
+
+        print('rgb', len(self.red), len(self.green), len(self.blue))
+
+        image.putdata(self.rgb2grid())
+
+        return image
+
+    def rgb2grid(self):
         grid = []
         for rgb in zip(self.red, self.green, self.blue):
             pixel = tuple(self.quantise(x) for x in rgb)
             grid.append(pixel)
 
-        image.putdata(self.grid)
-
-        return image
+        return grid
+        
 
     async def run(self):
 
@@ -132,7 +138,7 @@ class Sphere:
 
     def quantise(self, value):
 
-        value = int(value * 256)
+        value = int(127 + (value * 128))
         value = max(0, min(value, 255))
 
         return value
@@ -147,9 +153,10 @@ class Sphere:
 
         off = []
         scale = []
-        for ix in range(len(self.grid[0])):
-            amin = min(x[ix] for x in self.grid)
-            amax = min(x[ix] for x in self.grid)
+        grid = self.rgb2grid()
+        for ix in range(len(grid[0])):
+            amin = min(x[ix] for x in grid)
+            amax = min(x[ix] for x in grid)
 
             if amax != amin:
                 sc = 255 / (amax - amin)
@@ -167,7 +174,8 @@ class Sphere:
             
             grid.append(value)
 
-        self.grid = grid
+        # back to rgb
+        self.grid2rgb(grid)
             
 
     def setup_end(self):
@@ -202,8 +210,6 @@ class Sphere:
 
         yy = randint(yy, yy + k - 1)
 
-        #print('sample:', xx, yy, self.size, len(self.grid))
-        #print(xx, yy, k, self.size)
         ix = (yy * self.size) + xx
         return self.red[ix], self.green[ix], self.blue[ix]
             
@@ -241,9 +247,9 @@ class Sphere:
                 bc, bphase, bscale = self.waves['b']
                 
                 value = (
-                    int(256 * sample_wave(rphase, xx) * rscale),
-                    int(256 * sample_wave(bphase, yy) * bscale),
-                    int(256 * sample_wave(gphase, xx+yy) * gscale))
+                    sample_wave(rphase, xx) * rscale,
+                    sample_wave(bphase, yy) * bscale,
+                    sample_wave(gphase, xx+yy) * gscale)
 
                 grid.append(value)
 
