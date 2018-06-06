@@ -52,15 +52,13 @@ class Sphere:
         self.sleep = 1 / self.size
 
         for pt in range(size * size):
-            self.red.append(random())
-            self.green.append(random())
-            self.blue.append(random())
+            self.red.append(randunit())
+            self.green.append(randunit())
+            self.blue.append(randunit())
 
         if self.head or self.tail:
             self.setup_end()
             return
-
-
 
     def project(self):
         """ Turn into a PIL? """
@@ -255,7 +253,15 @@ class Sphere:
 
         self.grid2rgb(grid)
             
-            
+
+def randunit():
+
+    x = random()
+    if random() > 0.5:
+        x *= -1
+
+    return x
+        
 def sample_wave(phase, x):
 
     xx = x + (2 * math.pi * phase)
@@ -432,7 +438,8 @@ class NestedWaves(pigfarm.Yard):
             self.canvas.delete('all')
 
             await self.draw()
-            await self.step_balls()
+            #await self.step_balls()
+            await self.backward_step_all()
             
             await curio.sleep(self.sleep)            
 
