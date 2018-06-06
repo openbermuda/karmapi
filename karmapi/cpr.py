@@ -29,15 +29,17 @@ from random import random, randint
 
 class Sphere:
 
-    def __init__(self, size=None, head=False, tail=False, t=0):
+    def __init__(self, size=None, head=False, tail=False,
+                 t=0, m=1., r=1.):
 
         size = size or 4
 
         grid = []
-        for pt in range(size * size):
-            grid.append(tuple(int(256 * random()) for c in 'rgb'))
+        self.red = []
+        self.green = []
+        self.blue = []
 
-        self.grid = grid
+        self.grid = []
         self.size = size
 
         self.head = head
@@ -50,12 +52,27 @@ class Sphere:
         # time moves slower in the inner spheres?
         self.sleep = 1 / self.size
 
+        for pt in range(size * size):
+            self.red.append(random())
+            self.green.append(random())
+            self.blue.append(random())
+
         if self.head or self.tail:
             self.setup_end()
+            return
+
+
 
     def project(self):
         """ Turn into a PIL? """
         image = Image.new('RGB', (self.size, self.size))
+
+        # FIXME do the 256 magic int stuff here
+        grid = []
+        for rgb in zip(self.red, self.green, self.blue):
+            pixel = tuple(self.quantise(x) for x in rgb)
+            grid.append(pixel)
+
         image.putdata(self.grid)
 
         return image
@@ -95,15 +112,23 @@ class Sphere:
                 lbc = lb.sample(x1, y1, x2, y2)
                 nbc = nb.sample(x1, y1, x2, y2)
 
-                current = self.grid[len(grid)]
+                cix = (y * self.size) + x
+                current = (self.red[cix], self.green[cix], self.blue[cix])
 
                 value = [(aa + bb + cc) * self.fade
                              for aa, bb, cc in zip(lbc, nbc, current)]
                 
-                grid.append(tuple(self.quantise(x) for x in value))
+                grid.append(value)
 
-        self.grid = grid
-        self.normalise()
+        self.grid2rgb(grid)
+        #self.normalise()
+
+    def grid2rgb(self, value):
+
+        for ix, (r, g, b) in enumerate(value):
+            self.red[ix] = r
+            self.green[ix] = g
+            self.blue[ix] = r
 
     def quantise(self, value):
 
@@ -179,7 +204,8 @@ class Sphere:
 
         #print('sample:', xx, yy, self.size, len(self.grid))
         #print(xx, yy, k, self.size)
-        return self.grid[(yy * self.size) + xx]
+        ix = (yy * self.size) + xx
+        return self.red[ix], self.green[ix], self.blue[ix]
             
     async def end_run(self):
         """ inner or outer wave
@@ -221,7 +247,7 @@ class Sphere:
 
                 grid.append(value)
 
-        self.grid = grid
+        self.grid2rgb(grid)
             
             
 def sample_wave(phase, x):
