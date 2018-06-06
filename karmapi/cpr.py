@@ -98,7 +98,6 @@ class Sphere:
         nb = self.next_ball
         
         lsize = self.last_ball.size
-        nsize = self.next_ball.size
         n = self.size
         
         grid = []
@@ -114,7 +113,11 @@ class Sphere:
                 y2 = y1 + delta
 
                 lbc = lb.sample(x1, y1, x2, y2)
-                nbc = nb.sample(x1, y1, x2, y2)
+
+                if nb:
+                    nbc = nb.sample(x1, y1, x2, y2)
+                else:
+                    nbc = tuple(randunit() for c in 'rgb')
 
                 cix = (y * self.size) + x
                 current = (self.red[cix], self.green[cix], self.blue[cix])
@@ -340,7 +343,8 @@ class NestedWaves(pigfarm.Yard):
 
             tail = False
             if ball == self.n - 1:
-                tail = True
+                #tail = True
+                pass
                 
             sphere = Sphere(size, head=head, tail=tail)
 
