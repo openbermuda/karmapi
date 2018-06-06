@@ -1,6 +1,12 @@
 """
 Not, CPR, but Colin P Rourke.
 
+Or CPU central processsor unit?
+
+CP R s t U
+
+CPR: show time universe
+
 Simulate nested spherical waves.
 
 Things have moved on a little.
