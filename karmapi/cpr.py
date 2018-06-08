@@ -472,13 +472,7 @@ def main():
 
     args = parser.parse_args()
 
-    farm = pigfarm.PigFarm()
-    
-    from karmapi.mclock2 import GuidoClock
-    
-    farm.add(GuidoClock)
-
-    farm.add(NestedWaves, dict(n=args.n, inc=args.inc, base=args.base))
+    farm = pigfarm.sty(NestedWaves, dict(n=args.n, inc=args.inc, base=args.base))
 
     curio.run(farm.run(), with_monitor=True)
     

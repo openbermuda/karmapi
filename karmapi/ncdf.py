@@ -9,10 +9,12 @@ from pathlib import Path
 import netCDF4
 import numpy
 
+import curio
+
 from matplotlib import pyplot
 from matplotlib.pyplot import show, imshow, title, colorbar
 
-from karmapi import base, sonogram, tpot
+from karmapi import base, sonogram, tpot, cpr, pigfarm
 
 def load(path):
 
@@ -205,7 +207,55 @@ def model(stamps, values):
     dt = list(stamps_to_datetime(stamps))
 
     data = pcs(stamps, values)
-    
+
+def xxx(stamps, ix, n=10):
+
+    for x in stamps[ix: ix + n]:
+        print(x)
+
+    print([x % 24 for x in stamps[ix: ix + n]])
+
+
+def noddy(stamps):
+    """ FIXME: use this to go through images in order """
+    ss = sorted(zip(stamps,
+                    stamps_to_datetime(stamps),
+                    range(len(stamps))))
+    for s, d, ix in ss:
+        yield s, d, ix
+
+
+class World(cpr.NestedWaves):
+
+    def build(self):
+        """ Create the balls """
+        # add a bunch of spheres to the queue
+        self.balls = []
+        last_ball = None
+        for ball in range(self.n):
+            size = self.base + (ball * self.inc)
+
+            head = True
+            
+            if ball:
+                head = False
+
+            tail = False
+            if ball == self.n - 1:
+                #tail = True
+                pass
+                
+            sphere = cpr.Sphere(size, head=head, tail=tail)
+
+            if not sphere.head:
+                sphere.last_ball = last_ball
+                last_ball.next_ball = sphere
+            
+            self.uq.put(sphere)
+            self.balls.append(sphere)
+
+            last_ball = sphere
+            
 
 if __name__ == '__main__':
 
@@ -232,34 +282,55 @@ if __name__ == '__main__':
 
     stamps = df.variables['time']
 
+    last = 0
+
+
+    print(df.variables)
+
+    noddy(stamps)
+
+    xxx(stamps, 0)
+
+    for ix, stamp in enumerate(stamps):
+        if stamp < last:
+            print(last, stamp)
+            xxx(stamps, ix-10)
+            xxx(stamps, ix)
+            #print([x % 24 for x in stamps[ix-10: ix]])
+            #print([x % 24 for x in stamps[ix: ix+10]])
+
+        last = stamp
+
+        
+
     args.date = base.parse_date(args.date)
 
-    if args.date:
-        stamps = stamp_filter(stamps, args.date)
+    oldcode = False
+    if oldcode:
+        path = path / args.value
 
-    values = df.variables[args.value]
+        if args.pc:
+            pca = pcs(stamps, values, 48*35)
 
-    path = path / args.value
+            pca.show_fracs(0.1)
 
-    if args.pc:
-        pca = pcs(stamps, values, 48*35)
+            for x in dir(pca):
+                print(x)
 
-        pca.show_fracs(0.1)
+        elif args.delta:
+            delta(stamps, values)
 
-        for x in dir(pca):
-            print(x)
+        elif args.model:
 
-    elif args.delta:
-        delta(stamps, values)
-
-    elif args.model:
-
-        model(stamps, values)
+            model(stamps, values)
         
-    else:
-        images(path, stamps, values)
+        else:
+            images(path, stamps, values)
     
 
+    farm = pigfarm.sty(World)
+
+    curio.run(farm.run(), with_monitor=True)
     
 
     

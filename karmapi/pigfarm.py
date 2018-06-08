@@ -287,7 +287,18 @@ class PigFarm:
         farm.toplevel().withdraw()
         
 
+def sty(clazz=None, parms={}):
+    
+    farm = PigFarm()
+    
+    from karmapi.mclock2 import GuidoClock
+    
+    farm.add(GuidoClock)
 
+    if clazz:
+        farm.add(clazz, parms)
+
+    return farm
 
 class Pig:
     """ Display piglets, part of a farm 
