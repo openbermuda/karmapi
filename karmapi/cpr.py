@@ -38,7 +38,7 @@ class Sphere:
     def __init__(self, size=None, head=False, tail=False,
                  t=0, m=1., r=1.):
 
-        size = size or 4
+        size = size or (4, 4)
 
         grid = []
         self.red = []
@@ -55,9 +55,9 @@ class Sphere:
         self.t = t
 
         # time moves slower in the inner spheres?
-        self.sleep = 1 / self.size
+        self.sleep = 1 / self.size[0]
 
-        for pt in range(size * size):
+        for pt in range(size[0] * size[1]):
             self.red.append(randunit())
             self.green.append(randunit())
             self.blue.append(randunit())
@@ -68,7 +68,7 @@ class Sphere:
 
     def project(self):
         """ Turn into a PIL? """
-        image = Image.new('RGB', (self.size, self.size))
+        image = Image.new('RGB', (self.size[0], self.size[1]))
 
         # FIXME do the 256 magic int stuff here
 
@@ -104,19 +104,20 @@ class Sphere:
         nb = self.next_ball
         
         lsize = self.last_ball.size
-        n = self.size
+        n1, n2 = self.size
         
         grid = []
         ix = 0
-        delta = (1 / (2 * n)) * 2 * math.pi
+        deltax = (1 / (2 * n1)) * 2 * math.pi
+        deltay = (1 / (2 * n2)) * 2 * math.pi
             
-        for x in range(self.size):
-            x1 = (x / n) * 2 * math.pi
-            x2 = x1 + delta
+        for x in range(self.size[0]):
+            x1 = (x / n1) * 2 * math.pi
+            x2 = x1 + deltax
                 
-            for y in range(self.size):
-                y1 = (y / n) * 2 * math.pi
-                y2 = y1 + delta
+            for y in range(self.size[1]):
+                y1 = (y / n2) * 2 * math.pi
+                y2 = y1 + deltay
 
                 lbc = lb.sample(x1, y1, x2, y2)
 
@@ -125,7 +126,7 @@ class Sphere:
                 else:
                     nbc = tuple(randunit() for c in 'rgb')
 
-                cix = (y * self.size) + x
+                cix = (y * self.size[0]) + x
                 current = (self.red[cix], self.green[cix], self.blue[cix])
 
                 value = [(aa + bb + cc) * self.fade
@@ -201,23 +202,28 @@ class Sphere:
     def sample(self, x1, y1, x2, y2):
         """ Return a pixel given a rectangle """
         
-        delta = 1 / self.size
-        delta *= 2 * math.pi
+        deltax = 1 / self.size[0]
+        deltax *= 2 * math.pi
+
+        deltay = 1 / self.size[1]
+        deltay *= 2 * math.pi
 
         xdelta = x2 - x1
         ydelta = y2 - y1
 
-        k = int(xdelta / delta) + 1
+        k = int(xdelta / deltax) + 1
 
-        xx = int(x1 / delta)
+        xx = int(x1 / deltax)
 
         xx = randint(xx, xx + k - 1)
 
-        yy = int(y1 / delta)
+        yy = int(y1 / deltay)
+
+        k = int(ydelta / deltay) + 1
 
         yy = randint(yy, yy + k - 1)
 
-        ix = (yy * self.size) + xx
+        ix = (yy * self.size[0]) + xx
         return self.red[ix], self.green[ix], self.blue[ix]
             
     async def end_run(self):
@@ -232,21 +238,21 @@ class Sphere:
 
         How to fill in self.grid?
         """
-        n = self.size
+        n1, n2 = self.size
         width = 2 * math.pi
         height = math.pi
         
 
         grid = []
         
-        for x in range(n):
-            xx = ((x / n) + (1 / (2 * n))) * 2 * math.pi
+        for x in range(n1):
+            xx = ((x / n1) + (1 / (2 * n1))) * 2 * math.pi
 
             xx += self.inc * self.t
                 
-            for y in range(n):
+            for y in range(n2):
 
-                yy = (y / n) + (1 / (2 * n))
+                yy = (y / n2) + (1 / (2 * n2))
                 yy += self.inc * self.t
 
                 rc, rphase, rscale = self.waves['r']
@@ -341,6 +347,8 @@ class NestedWaves(pigfarm.Yard):
         last_ball = None
         for ball in range(self.n):
             size = self.base + (ball * self.inc)
+
+            size = (size, size)
 
             head = True
             
