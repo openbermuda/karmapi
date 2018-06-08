@@ -224,11 +224,19 @@ def stamp_sort(stamps):
 
     return ss
 
-class Shell(cpr.Sphere):
+class WorldView(cpr.Sphere):
 
-    def __init__(self, df, **kwargs):
+    def __init__(self, stamps, values, **kwargs):
 
-        super.__init__(**kwargs)
+        self.stamps = stamps
+        self.values = values
+        self.size = self.values[0].shape
+        self.min = self.values[0].min()
+        self.max = self.values[0].max()
+        self.ix = 0
+        self.n = len(self.stamps)
+
+        super().__init__(self.size, **kwargs)
 
         # data is some sort of ncdf thing
         # set it up so run can just cycle through the
@@ -240,17 +248,61 @@ class Shell(cpr.Sphere):
 
         self.t += 1
 
+        self.next_frame()
+
+    def current(self):
+
+        s, d, ix = self.stamps[self.ix]
+
+        return self.values[ix]
+
+    def next_frame(self):
+
+        self.red = self.scale(self.current())
+
+        self.forward()
+        self.green = self.scale(self.current())
+
+        self.forward()
+        self.blue = self.scale(self.current())
         
+        self.forward()
+
+    def forward(self):
+
+        self.ix += 1
+
+        self.ix = self.ix % self.n
         
+    def backward(self):
+
+        self.ix == 1
+
+        if self.ix == -1:
+            self.ix += self.n
+
+    def scale(self, data):
+
+        #return [randunit() for x in data]
+
+        delta = self.max - self.min
+        data = [(x - self.min) / delta for x in data.flatten()]
+
+        # map to [-1, 1] interval
+        data = [max(min((2 * x) - 1.0, 1.0), 0.0) for x in data]
+
+        return data
+
 
 class World(cpr.NestedWaves):
 
-    def __init__(self, parent, stamps, values, **kwargs):
-
-        super().__init__(**kwargs)
+    def __init__(self, parent, stamps=None, values=None, **kwargs):
 
         self.stamps = list(stamps)
         self.values = values
+
+        super().__init__(parent)
+
 
     def build(self):
         """ Create the balls """
@@ -268,9 +320,12 @@ class World(cpr.NestedWaves):
             tail = False
             if ball == self.n - 1:
                 tail = True
-                pass
-                
-            sphere = cpr.Sphere((size, size), head=head, tail=tail)
+
+
+            if tail:
+                sphere = WorldView(self.stamps, self.values)
+            else:
+                sphere = cpr.Sphere((size, size), head=head, tail=tail)
 
             if not sphere.head:
                 sphere.last_ball = last_ball
@@ -301,7 +356,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    path = Path.home() + Path(args.path)
+    path = Path.home() / Path(args.path)
 
     df = load(path / args.raw)
 
@@ -332,9 +387,11 @@ if __name__ == '__main__':
     else:
         #images(path, stamps, values)
         pass
-    
 
-    farm = pigfarm.sty(World)
+    print('min max:')
+    print(values[0].min(), values[0].max())
+
+    farm = pigfarm.sty(World, dict(stamps=stamps, values=values))
 
     curio.run(farm.run(), with_monitor=True)
     
