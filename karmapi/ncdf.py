@@ -283,7 +283,7 @@ class WorldView(cpr.Sphere):
         
         self.forward()
 
-        for skip in range(9 * 11):
+        for skip in range((9 * 11) + 18):
             self.forward()
 
     def forward(self):
