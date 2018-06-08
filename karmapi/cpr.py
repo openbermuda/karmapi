@@ -91,7 +91,7 @@ class Sphere:
 
         # FIXME do the 256 magic int stuff here
 
-        print('rgb', len(self.red), len(self.green), len(self.blue))
+        #print('rgb', len(self.red), len(self.green), len(self.blue))
 
         image.putdata(self.rgb2grid())
 
@@ -430,7 +430,7 @@ class NestedWaves(pigfarm.Yard):
         # xx = randint(0, self.n - 1)
         xx = self.dball
 
-        print('And the lucky number is:', xx)
+        #print('And the lucky number is:', xx)
         ball = self.balls[xx]
 
         await self.draw_ball(ball)

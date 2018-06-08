@@ -247,8 +247,9 @@ class WorldView(cpr.Sphere):
     async def run(self):
 
         self.t += 1
-
+        
         self.next_frame()
+        print(self.current_date())
 
     def current(self):
 
@@ -256,15 +257,23 @@ class WorldView(cpr.Sphere):
 
         return self.values[ix]
 
+    def current_date(self):
+
+        s, d, ix = self.stamps[self.ix]
+
+        return d
+
     def next_frame(self):
 
         self.red = self.scale(self.current())
 
         self.forward()
-        self.green = self.scale(self.current())
+        #self.green = self.scale(self.current())
+        self.green = [0. for x in self.red]
 
         self.forward()
-        self.blue = self.scale(self.current())
+        #self.blue = self.scale(self.current())
+        self.blue = [0. for x in self.red]
         
         self.forward()
 
