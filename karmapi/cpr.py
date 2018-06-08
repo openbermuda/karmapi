@@ -40,7 +40,6 @@ class Sphere:
 
         size = size or (4, 4)
 
-        grid = []
         self.red = []
         self.green = []
         self.blue = []
@@ -57,14 +56,34 @@ class Sphere:
         # time moves slower in the inner spheres?
         self.sleep = 1 / self.size[0]
 
+        self.reset(init=True)
+
+        
+    def reset(self, init=False):
+        """ Reset the sphere """
+
+        if self.head or self.tail:
+            self.setup_end()
+            if self.red:
+                return
+
+        self.red.clear()
+        self.green.clear()
+        self.blue.clear()
+
+        self.random_grid()
+
+        return
+
+
+    def random_grid(self):
+
+        size = self.size
         for pt in range(size[0] * size[1]):
             self.red.append(randunit())
             self.green.append(randunit())
             self.blue.append(randunit())
 
-        if self.head or self.tail:
-            self.setup_end()
-            return
 
     def project(self):
         """ Turn into a PIL? """
@@ -326,8 +345,8 @@ class NestedWaves(pigfarm.Yard):
 
     async def reset(self):
         """ Reset waves """
-        self.balls[0].setup_end()
-        self.balls[-1].setup_end()
+        for ball in self.balls:
+            ball.reset()
 
     async def forward(self):
         """ Move to next sphere """
@@ -357,8 +376,7 @@ class NestedWaves(pigfarm.Yard):
 
             tail = False
             if ball == self.n - 1:
-                #tail = True
-                pass
+                tail = True
                 
             sphere = Sphere(size, head=head, tail=tail)
 
@@ -483,9 +501,6 @@ def main():
     farm = pigfarm.sty(NestedWaves, dict(n=args.n, inc=args.inc, base=args.base))
 
     curio.run(farm.run(), with_monitor=True)
-    
-
-        
             
 
 if __name__ == '__main__':

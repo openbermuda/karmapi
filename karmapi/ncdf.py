@@ -216,16 +216,41 @@ def xxx(stamps, ix, n=10):
     print([x % 24 for x in stamps[ix: ix + n]])
 
 
-def noddy(stamps):
+def stamp_sort(stamps):
     """ FIXME: use this to go through images in order """
     ss = sorted(zip(stamps,
                     stamps_to_datetime(stamps),
                     range(len(stamps))))
-    for s, d, ix in ss:
-        yield s, d, ix
 
+    return ss
+
+class Shell(cpr.Sphere):
+
+    def __init__(self, df, **kwargs):
+
+        super.__init__(**kwargs)
+
+        # data is some sort of ncdf thing
+        # set it up so run can just cycle through the
+        # frames in order.
+
+        # take 3 at a time for r g b
+
+    async def run(self):
+
+        self.t += 1
+
+        
+        
 
 class World(cpr.NestedWaves):
+
+    def __init__(self, parent, stamps, values, **kwargs):
+
+        super().__init__(**kwargs)
+
+        self.stamps = list(stamps)
+        self.values = values
 
     def build(self):
         """ Create the balls """
@@ -242,10 +267,10 @@ class World(cpr.NestedWaves):
 
             tail = False
             if ball == self.n - 1:
-                #tail = True
+                tail = True
                 pass
                 
-            sphere = cpr.Sphere(size, head=head, tail=tail)
+            sphere = cpr.Sphere((size, size), head=head, tail=tail)
 
             if not sphere.head:
                 sphere.last_ball = last_ball
@@ -276,56 +301,37 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    path = Path(args.path)
+    path = Path.home() + Path(args.path)
 
     df = load(path / args.raw)
 
     stamps = df.variables['time']
-
-    last = 0
-
+    values = df.variables[args.value]
 
     print(df.variables)
+    
+    stamps = stamp_sort(stamps)
 
-    noddy(stamps)
+    path = path / args.value
 
-    xxx(stamps, 0)
+    if args.pc:
+        pca = pcs(stamps, values, 48*35)
 
-    for ix, stamp in enumerate(stamps):
-        if stamp < last:
-            print(last, stamp)
-            xxx(stamps, ix-10)
-            xxx(stamps, ix)
-            #print([x % 24 for x in stamps[ix-10: ix]])
-            #print([x % 24 for x in stamps[ix: ix+10]])
+        pca.show_fracs(0.1)
 
-        last = stamp
+        for x in dir(pca):
+            print(x)
 
+    elif args.delta:
+        delta(stamps, values)
+
+    elif args.model:
+
+        model(stamps, values)
         
-
-    args.date = base.parse_date(args.date)
-
-    oldcode = False
-    if oldcode:
-        path = path / args.value
-
-        if args.pc:
-            pca = pcs(stamps, values, 48*35)
-
-            pca.show_fracs(0.1)
-
-            for x in dir(pca):
-                print(x)
-
-        elif args.delta:
-            delta(stamps, values)
-
-        elif args.model:
-
-            model(stamps, values)
-        
-        else:
-            images(path, stamps, values)
+    else:
+        #images(path, stamps, values)
+        pass
     
 
     farm = pigfarm.sty(World)
