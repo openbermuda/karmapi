@@ -230,7 +230,9 @@ class WorldView(cpr.Sphere):
 
         self.stamps = stamps
         self.values = values
+        self.save = False
         self.size = self.values[0].shape
+        self.size = self.size[1], self.size[0]
         self.min = self.values[0].min()
         self.max = self.values[0].max()
         self.ix = 0
@@ -247,9 +249,13 @@ class WorldView(cpr.Sphere):
     async def run(self):
 
         self.t += 1
-        
+
         self.next_frame()
-        print(self.current_date())
+        now = self.current_date()
+        print(now)
+        if self.save:
+            im = self.project()
+            im.save(f'{self.save}/{now}.png')
 
     def current(self):
 
@@ -268,14 +274,17 @@ class WorldView(cpr.Sphere):
         self.red = self.scale(self.current())
 
         self.forward()
-        #self.green = self.scale(self.current())
-        self.green = [0. for x in self.red]
+        self.green = self.scale(self.current())
+        #self.green = [0. for x in self.red]
 
         self.forward()
-        #self.blue = self.scale(self.current())
-        self.blue = [0. for x in self.red]
+        self.blue = self.scale(self.current())
+        #self.blue = [0. for x in self.red]
         
         self.forward()
+
+        for skip in range(9 * 11):
+            self.forward()
 
     def forward(self):
 
@@ -305,10 +314,12 @@ class WorldView(cpr.Sphere):
 
 class World(cpr.NestedWaves):
 
-    def __init__(self, parent, stamps=None, values=None, **kwargs):
+    def __init__(self, parent, stamps=None, values=None,
+                 save=None, **kwargs):
 
         self.stamps = list(stamps)
         self.values = values
+        self.save = save
 
         super().__init__(parent)
 
@@ -333,6 +344,7 @@ class World(cpr.NestedWaves):
 
             if tail:
                 sphere = WorldView(self.stamps, self.values)
+                sphere.save = self.save or False
             else:
                 sphere = cpr.Sphere((size, size), head=head, tail=tail)
 
@@ -362,6 +374,7 @@ if __name__ == '__main__':
     parser.add_argument('--delta', action='store_true')
     parser.add_argument('--model', action='store_true')
     parser.add_argument('--offset', type=int, default=0)
+    parser.add_argument('--save')
 
     args = parser.parse_args()
 
@@ -400,7 +413,9 @@ if __name__ == '__main__':
     print('min max:')
     print(values[0].min(), values[0].max())
 
-    farm = pigfarm.sty(World, dict(stamps=stamps, values=values))
+    parms = dict(stamps=stamps, values=values, save=args.save)
+    
+    farm = pigfarm.sty(World, parms)
 
     curio.run(farm.run(), with_monitor=True)
     

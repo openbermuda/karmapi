@@ -430,7 +430,7 @@ class NestedWaves(pigfarm.Yard):
         # xx = randint(0, self.n - 1)
         xx = self.dball
 
-        #print('And the lucky number is:', xx)
+        print(xx, 'lucky for some')
         ball = self.balls[xx]
 
         await self.draw_ball(ball)
