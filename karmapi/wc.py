@@ -119,7 +119,7 @@ import sys
 
 import curio
 
-from karmapi import pigfarm
+from karmapi import pigfarm, beanstalk
 
 
 # number of teams
@@ -1338,7 +1338,7 @@ jsf = JeuxSansFrontieres(groups, places=jsf_places, dates=jsf_dates)
 # add a PI Gui?
 class MexicanWaves(pigfarm.Yard):
 
-    def __init__(self, parent, jsf=None, venues=None):
+    def __init__(self, parent, jsf=None, venues=None, gallery='.'):
         """ Initialise the thing """
 
         super().__init__(parent)
@@ -1442,7 +1442,9 @@ class MexicanWaves(pigfarm.Yard):
 
         
     def draw(self):
-        pass
+
+        print(self.beanstalk.image)
+        self.beanstalk.draw(self.canvas, self.width, self.height, 'red')
 
     async def reset(self):
         """ Reset timer """
@@ -1607,9 +1609,21 @@ class MexicanWaves(pigfarm.Yard):
         score_flashes = await curio.spawn(self.score_flash)
 
         self.set_background()
+
+        self.beanstalk = beanstalk.BeanStalk()
+        self.beanstalk.xx = 0.5
+        self.beanstalk.yy = 0.5
+        self.beanstalk.x = ''
         
         while True:
             self.canvas.delete('all')
+
+            image = self.find_image('1991')
+            if image:
+                image = self.load_image(image)
+
+                image = image.resize((int(self.width), int(self.height)))
+                self.beanstalk.image = image
 
             self.draw()
             
@@ -1622,6 +1636,7 @@ class MexicanWaves(pigfarm.Yard):
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--nopig', action='store_true')
+parser.add_argument('--gallery')
 args = parser.parse_args()            
 
 if args.nopig:
@@ -1632,7 +1647,7 @@ farm = pigfarm.PigFarm()
 from karmapi.mclock2 import GuidoClock
     
 farm.add(GuidoClock)
-farm.add(MexicanWaves, dict(jsf=jsf, venues=places))
+farm.add(MexicanWaves, dict(jsf=jsf, venues=places, gallery=args.gallery))
 
 # add a random wc time warper?
 curio.run(farm.run(), with_monitor=True)
