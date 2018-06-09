@@ -1443,7 +1443,10 @@ class MexicanWaves(pigfarm.Yard):
         
     def draw(self):
 
-        print(self.beanstalk.image)
+        import time
+        self.beanstalk.create_time = time.time()
+        print(self.beanstalk.xx, self.beanstalk.yy)
+
         self.beanstalk.draw(self.canvas, self.width, self.height, 'red')
 
     async def reset(self):
