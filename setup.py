@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 
-__version__ = '0.9.1.0'
+__version__ = '0.9.2.0'
 
 here = path.abspath(path.dirname(__file__))
 
@@ -33,8 +33,8 @@ setup(
     entry_points = {
         'console_scripts': [
             'tankrain = karmapi.tankrain:main',
-            'orongo = karmapi.orongo:main',
-            'currie = karmapi.currie:main',
+            'cpr = karmapi.cpr:main',
+            'fifawc = karmapi.wc:main',
             ],
         },
     keywords='data pi karma',
