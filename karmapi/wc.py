@@ -680,6 +680,7 @@ class JeuxSansFrontieres:
         self.now = now or datetime(2018, 6, 14)
         self.start = self.now
         self.step = timedelta(hours=1)
+        self.sleep = 0.05
 
         self.games = curio.PriorityQueue()
         self.events = curio.UniversalQueue()
@@ -876,7 +877,7 @@ class JeuxSansFrontieres:
             else:
                 await self.games.put(game)
 
-            await curio.sleep(0)
+            await curio.sleep(self.sleep)
 
 
 class Place:
@@ -1357,15 +1358,15 @@ class MexicanWaves(pigfarm.Yard):
         self.scan_venues(venues)
 
         self.add_event_map('r', self.reset)
-        self.add_event_map('s', self.slower)
-        self.add_event_map('w', self.faster)
+        self.add_event_map('S', self.slower)
+        self.add_event_map('W', self.faster)
 
     async def slower(self):
-        """ Go slower """
+        """ Go through time more slowly """
         self.delta_t /= 2
 
     async def faster(self):
-        """ Go faster """
+        """ Go through time more quickly  """
         self.delta_t *= 2
 
     def scan_venues(self, venues):
@@ -1623,9 +1624,11 @@ class MexicanWaves(pigfarm.Yard):
 
             image = self.find_image('1991')
             if image:
+                print(image)
                 image = self.load_image(image)
-
-                image = image.resize((int(self.width), int(self.height)))
+                print(image.size)
+                image = image.resize((int(self.height), int(self.width)))
+                print(image.size, self.width, self.height)
                 self.beanstalk.image = image
 
             self.draw()
@@ -1633,7 +1636,8 @@ class MexicanWaves(pigfarm.Yard):
             self.step_balls()
 
             self.jsf.now = self.when
-            
+
+            print('sleeping', self.sleep)
             await curio.sleep(self.sleep)            
 
 

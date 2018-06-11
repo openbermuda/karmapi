@@ -154,7 +154,7 @@ class BeanStalk:
     def draw(self, canvas, width, height, colour):
 
         xx = self.xx * width
-        yy = self.yy * width
+        yy = self.yy * height
 
         
         canvas.create_text(
