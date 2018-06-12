@@ -87,8 +87,12 @@ import time
 
 from matplotlib import pyplot
 
+try:
+    import pyaudio
+    FORMAT = pyaudio.paInt16
+except:
+    FORMAT = None
 
-import pyaudio
 import wave
 import numpy as np
 
@@ -96,7 +100,6 @@ from karmapi import base
 
 CHUNK = 1024 * 4
 #CHUNK = 256 * 1
-FORMAT = pyaudio.paInt16
 CHANNELS = 2
 RATE = 44100
 RECORD_SECONDS = 5

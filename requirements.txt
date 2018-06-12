@@ -5,7 +5,7 @@ pandas       # this might provide matplotib
 #pyaudio      # for sound
 curio        # for async magic
 
-blockchain  # for trust and meta data exchange
+#blockchain  # for trust and meta data exchange
 
 Pillow       # pillow for PIL for images
 
@@ -19,6 +19,6 @@ pytest       # to run the test(s)
 hypothesis   # needed to make writing tests fun
 
 
-requests  # seems to be miss
+requests  # seems to be missing from core python
 
 

@@ -69,4 +69,4 @@ For now, the goal is get a simple working example.  Famous last words.
 
 import this
 
-import blockchain
+#import blockchain

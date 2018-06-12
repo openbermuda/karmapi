@@ -23,6 +23,8 @@ import math
 
 import argparse
 
+from collections import deque, defaultdict, Counter, namedtuple
+
 import curio
 
 import numpy
@@ -45,6 +47,8 @@ class Sphere:
         self.blue = []
 
         self.size = size
+        self.history = None
+        self.delta = False
 
         self.head = head
         self.tail = tail
