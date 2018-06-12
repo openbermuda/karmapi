@@ -506,7 +506,35 @@ To refresh to the latest code on github::
 
   git pull
  
+I have this little function devined in .bashrc::
 
+  function karma
+  {
+     module=karmapi.$*
+     python3.6 -m $module
+  }
+
+Which allows me to type things like::
+
+  karma cpr
+
+  karma currie
+
+  karma zen
+
+  karma wc
+
+To get help on options that may be available::
+
+  karma cpr -h
+
+Many karma pi modules can be run this way.
+
+Check the code to see what the options actually do.
+
+The *argparse* module is used for option parsing.
+  
+  
 Raspberry Pi
 ============
 
