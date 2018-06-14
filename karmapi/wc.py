@@ -145,6 +145,7 @@ class Team:
     def reset(self):
 
         self.points = 0
+        self.played = 0
         self.yellow = 0
         self.red = 0
         self.goals = 0
@@ -167,7 +168,8 @@ class Team:
         """ Where is the team? """
 
         if self.home is not None:
-            return self.home
+            self.lat, self.lon = self.home.lat, self.home.lon
+            return self.lat, self.lon
 
         last_game = None
         next_game = None
@@ -203,6 +205,7 @@ class Team:
     def stats(self):
 
         return dict(
+            played = self.played,
             points = self.points,
             goals = self.goals,
             against = self.against,
@@ -215,6 +218,7 @@ class Team:
 
         stats = self.stats()
         msg = "%s" % self.name
+        msg += " {played:4d}".format(**stats)
         msg += " {points:4d} {goal_delta:4d}".format(**stats)
         msg += " {goals:4d} {against:4d}".format(**stats)
 
@@ -621,6 +625,9 @@ class Group:
         for team in self.teams:
             team.reset()
 
+        self.played = 0
+
+
     def table(self):
         """ Show the group table """
         teams = self.get_table()
@@ -799,6 +806,9 @@ class JeuxSansFrontieres:
         if game.number == 64:
             print('Winner:', game.winner())
             return
+
+        game.a.played += 1
+        game.b.played += 1
             
         if game.is_group():
             group = game.group
@@ -818,10 +828,9 @@ class JeuxSansFrontieres:
                 steam.games.append(game)
 
                 for team in group.teams:
-                    out = Game(None, None, game.when, where=NorthPole())
                     if team not in (wteam, steam):
                         print('out', team)
-                        team.games.append(out)
+                        team.go_home()
 
         else:
             kgame, label = self.winners[game.number]
@@ -1378,10 +1387,13 @@ class MexicanWaves(pigfarm.Yard):
         self.add_event_map('m', self.toggle_show_games)
         self.add_event_map('g', self.toggle_show_groups)
         self.add_event_map('t', self.toggle_show_teams)
+        self.add_event_map('j', self.previous_group)
+        self.add_event_map('k', self.next_group)
         
         self.game_view = False
         self.team_view = False
         self.group_view = False
+        self.which_group = 0
 
     async def slower(self):
         """ Go through time more slowly """
@@ -1401,7 +1413,22 @@ class MexicanWaves(pigfarm.Yard):
 
     async def toggle_show_groups(self):
         """ Toggle groups view """
-        self.game_view = not self.group_view
+        self.group_view = not self.group_view
+
+    async def next_group(self):
+        """ Go to next group """
+        self.which_group += 1
+
+        if self.which_group == len(self.jsf.groups):
+            self.which_group = 0
+
+    async def previous_group(self):
+        """ Go to previous group """
+        self.which_group -= 1
+
+        if self.which_group < 0:
+            self.which_group += len(self.jsf.groups)
+        
 
     def scan_venues(self, venues):
         """ Set the lat lon bounds for the canvas """
@@ -1597,6 +1624,23 @@ class MexicanWaves(pigfarm.Yard):
                     fill='cyan')
                 yy -= 0.025
 
+    def show_groups(self):
+
+        xx = 0.6
+        yy = 0.05
+
+        which = chr(self.which_group + ord('a'))
+
+        group = self.jsf.groups[which]
+
+        for game in group.games:
+
+            self.message(msg=str(game),
+                         xx=xx, yy=yy, fill='magenta')
+
+            yy += 0.025
+
+                
     def show_games(self):
 
         xx = 0.2
@@ -1610,7 +1654,6 @@ class MexicanWaves(pigfarm.Yard):
 
             yy += 0.025
 
-                
     def show_knockout(self):
 
         if not self.jsf.knockout:
