@@ -1359,7 +1359,13 @@ class MexicanWaves(pigfarm.Yard):
 
         self.add_event_map('r', self.reset)
         self.add_event_map('S', self.slower)
-        self.add_event_map('W', self.faster)
+        self.add_event_map('m', self.toggle_show_games)
+        self.add_event_map('g', self.toggle_show_groups)
+        self.add_event_map('t', self.toggle_show_teams)
+        
+        self.game_view = False
+        self.team_view = False
+        self.group_view = False
 
     async def slower(self):
         """ Go through time more slowly """
@@ -1368,6 +1374,18 @@ class MexicanWaves(pigfarm.Yard):
     async def faster(self):
         """ Go through time more quickly  """
         self.delta_t *= 2
+
+    async def toggle_show_games(self):
+        """ Toggle matches view """
+        self.game_view = not self.game_view
+
+    async def toggle_show_teams(self):
+        """ Toggle teams view """
+        self.game_view = not self.team_view
+
+    async def toggle_show_groups(self):
+        """ Toggle groups view """
+        self.game_view = not self.group_view
 
     def scan_venues(self, venues):
         """ Set the lat lon bounds for the canvas """
@@ -1435,9 +1453,19 @@ class MexicanWaves(pigfarm.Yard):
 
         self.show_score_flashes()
 
-        self.show_tables()
+        if self.game_view:
+            self.show_games()
 
-        self.show_knockout()
+        if self.team_view:
+            self.show_teams()
+
+        if self.group_view:
+            self.show_groups()
+
+        if not self.group_view and not self.team_view and not self.game_view:
+            self.show_tables()
+
+            self.show_knockout()
                 
         self.when += timedelta(hours=self.delta_t)
 
@@ -1553,6 +1581,9 @@ class MexicanWaves(pigfarm.Yard):
                     fill='cyan')
                 yy -= 0.025
 
+    def show_games(self):
+        pass
+                
     def show_knockout(self):
 
         if not self.jsf.knockout:
