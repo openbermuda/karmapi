@@ -307,6 +307,10 @@ class Game:
         Game.NUMBER += 1
 
 
+    def __hash__(self):
+        
+        return id(self)
+
     def reset(self):
         """ Reset score if it was random """
         if self.simulated:
@@ -774,6 +778,18 @@ class JeuxSansFrontieres:
             for team in group.teams:
                 yield team
 
+    def generate_games(self):
+        """ Generate games """
+        games = set()
+
+        for team in self.generate_teams():
+            for game in team.games:
+                games.add(game)
+
+        for game in sorted(games):
+            yield game
+        
+
     def apres_match(self, game):
         """ Deal with updating of knockout stage """
 
@@ -984,7 +1000,7 @@ class Sochi(Place):
     lon = 39 + (57 / 60)
 
 class NorthPole(Place):
-    """  """
+    """  Where teams go when out? """
 
     name = 'North Pole'
     lat = 90
@@ -1582,7 +1598,18 @@ class MexicanWaves(pigfarm.Yard):
                 yy -= 0.025
 
     def show_games(self):
-        pass
+
+        xx = 0.2
+        yy = 0.05
+        
+        for game in self.jsf.generate_games():
+            print(game)
+
+            self.message(msg=str(game),
+                         xx=xx, yy=yy, fill='pink')
+
+            yy += 0.025
+
                 
     def show_knockout(self):
 

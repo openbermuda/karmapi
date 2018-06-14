@@ -303,7 +303,7 @@ def main(args=None):
 
     parser.add_argument('--pig', action='store_false', default=True)
     parser.add_argument('--minutes', type=int, default=30)
-    parser.add_argument('path', nargs='?', default='~/karmapi/tankrain')
+    parser.add_argument('path', nargs='?', default='.')
     parser.add_argument('--version', default='')
     parser.add_argument('--date')
                             
