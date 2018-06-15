@@ -1,8 +1,23 @@
 year, month, day, hour, minute, ateam, bteam, what, team, player
-2018, 6, 14, 15, 11, rus, sau, goal, rus, 8
+2018, 6, 14, 15,  0, rus, sau, ko, 0, 0
 2018, 6, 14, 15, 42, rus, sau, goal, rus, 5
+2018, 6, 14, 15, 45, rus, sau, ht, 2, 0
 2018, 6, 14, 15, 71, rus, sau, goal, rus, 22
 2018, 6, 14, 15, 88, rus, sau, yellow, rus, 17
-2018, 6, 14, 15, 88, rus, sau, goal, rus, 6
-2018, 6, 14, 15, 88, rus, sau, goal, rus, 11
+2018, 6, 14, 15, 91, rus, sau, goal, rus, 6
+2018, 6, 14, 15, 94, rus, sau, goal, rus, 11
+2018, 6, 14, 15, 95, rus, sau, ft, 5, 0
+
+2018, 6, 15, 14, 89, egy, urg, goal, urg, 2
+2018, 6, 15, 14, 93, egy, urg, yellow, egy, 5
+2018, 6, 15, 14, 96, egy, urg, yellow, egy, 6
+2018, 6, 15, 14, 96, egy, urg, ft, 1, 0
+
+2018, 6, 15, 15,  0, mor, ira, ko, 0, 0
+2018, 6, 15, 15, 10, mor, ira, yellow, ira, 7
+2018, 6, 15, 15, 30, mor, ira, yellow, ira, 8
+2018, 6, 15, 15, 45, mor, ira, ht, 0, 0
+2018, 6, 15, 15, 47, mor, ira, yellow, ira,  18
+2018, 6, 15, 15, 94, mor, ira, goal, ira, 122
+2018, 6, 15, 15, 96, mor, ira, ft, 1, 0
 

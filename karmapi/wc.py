@@ -691,7 +691,7 @@ class JeuxSansFrontieres:
         self.now = now or datetime(2018, 6, 14)
         self.start = self.now
         self.step = timedelta(hours=1)
-        self.sleep = 0.05
+        self.sleep = 0.01
 
         self.games = curio.PriorityQueue()
         self.events = curio.UniversalQueue()
@@ -1090,11 +1090,11 @@ groups = dict(
             games = [
                 Game(rus, sau, datetime(2018, 6, 14, 15, 0),
                      where=places['moscow'],
-                     ascore=4, bscore=0),
+                     ascore=5, bscore=0),
 
                 Game(egy, urg, datetime(2018, 6, 15, 12, 0),
                      where=places['yekaterinburg'],
-                     ascore=1, bscore=2),
+                     ascore=0, bscore=1),
 
                 
                 Game(rus, egy, datetime(2018, 6, 19, 18, 0),
@@ -1118,11 +1118,11 @@ groups = dict(
             games = [
                 Game(mor, ira, datetime(2018, 6, 15, 15, 0),
                      where=places['stpetersberg'],
-                     ascore=2, bscore=2),
+                     ascore=0, bscore=1),
                      
                 Game(por, spa, datetime(2018, 6, 15, 18, 0),
                      where=places['sochi'],
-                     ascore=3, bscore=2),
+                     ascore=None, bscore=None),
 
                 
                 Game(por, mor, datetime(2018, 6, 20, 12, 0),
@@ -1145,11 +1145,11 @@ groups = dict(
             games = [
                 Game(fra, aus, datetime(2018, 6, 16, 10, 0),
                      where=places['kazan'],
-                     ascore=1, bscore=2),
+                     ascore=None, bscore=None),
                      
                 Game(per, den, datetime(2018, 6, 16, 14, 0),
                      where=places['saransk'],
-                     ascore=2, bscore=2),
+                     ascore=None, bscore=None),
 
                 
                 Game(den, aus, datetime(2018, 6, 21, 12, 0),
@@ -1173,7 +1173,7 @@ groups = dict(
             games = [
                 Game(arg, ice, datetime(2018, 6, 16, 13, 0),
                      where=places['spartak'],
-                     ascore=3, bscore=2),
+                     ascore=None, bscore=None),
 
                 Game(cro, nig, datetime(2018, 6, 16, 19, 0),
                      where=places['kaliningrad'],
@@ -1202,7 +1202,7 @@ groups = dict(
             games = [
                 Game(crc, ser, datetime(2018, 6, 17, 12, 0),
                      where=places['samara'],
-                     ascore=2, bscore=4),
+                     ascore=None, bscore=None),
                      
                 Game(bra, swi, datetime(2018, 6, 17, 18, 0),
                      where=places['rostovondon'],
@@ -1229,11 +1229,11 @@ groups = dict(
             games = [
                 Game(ger, mex, datetime(2018, 6, 17, 15, 0),
                      where=places['moscow'],
-                     ascore=1, bscore=2),
+                     ascore=None, bscore=None),
 
                 Game(swe, sko, datetime(2018, 6, 18, 12, 0),
                      where=places['novgorod'],
-                     ascore=3, bscore=2),
+                     ascore=None, bscore=None),
 
                 
                 Game(sko, mex, datetime(2018, 6, 23, 15, 0),
@@ -1384,6 +1384,7 @@ class MexicanWaves(pigfarm.Yard):
 
         self.add_event_map('r', self.reset)
         self.add_event_map('S', self.slower)
+        self.add_event_map('M', self.faster)
         self.add_event_map('m', self.toggle_show_games)
         self.add_event_map('g', self.toggle_show_groups)
         self.add_event_map('t', self.toggle_show_teams)
@@ -1395,6 +1396,7 @@ class MexicanWaves(pigfarm.Yard):
         self.group_view = False
         self.which_group = 0
 
+        
     async def slower(self):
         """ Go through time more slowly """
         self.delta_t /= 2
@@ -1739,7 +1741,7 @@ class MexicanWaves(pigfarm.Yard):
             self.jsf.now = self.when
 
             print('sleeping', self.sleep)
-            await curio.sleep(self.sleep)            
+            await curio.sleep(0)            
 
 
 parser = argparse.ArgumentParser()
