@@ -883,6 +883,16 @@ class JeuxSansFrontieres:
         print('load games')
         await self.reset()
 
+        if self.dump:
+            print(self.dump, dump)
+            for game in self.generate_games():
+                #print(game)
+                dump(game, self.dump)
+
+            self.dump.close()
+            sys.exit(0)
+            
+
         print('loop forever?')
         #while not self.games.empty():
         while True:
@@ -1122,7 +1132,7 @@ groups = dict(
                      
                 Game(por, spa, datetime(2018, 6, 15, 18, 0),
                      where=places['sochi'],
-                     ascore=None, bscore=None),
+                     ascore=3, bscore=3),
 
                 
                 Game(por, mor, datetime(2018, 6, 20, 12, 0),
@@ -1145,11 +1155,11 @@ groups = dict(
             games = [
                 Game(fra, aus, datetime(2018, 6, 16, 10, 0),
                      where=places['kazan'],
-                     ascore=None, bscore=None),
+                     ascore=2, bscore=1),
                      
                 Game(per, den, datetime(2018, 6, 16, 14, 0),
                      where=places['saransk'],
-                     ascore=None, bscore=None),
+                     ascore=0, bscore=1),
 
                 
                 Game(den, aus, datetime(2018, 6, 21, 12, 0),
@@ -1173,11 +1183,11 @@ groups = dict(
             games = [
                 Game(arg, ice, datetime(2018, 6, 16, 13, 0),
                      where=places['spartak'],
-                     ascore=None, bscore=None),
+                     ascore=1, bscore=1),
 
                 Game(cro, nig, datetime(2018, 6, 16, 19, 0),
                      where=places['kaliningrad'],
-                     ascore=2, bscore=2),
+                     ascore=2, bscore=0),
 
                 
                 Game(arg, cro, datetime(2018, 6, 21, 18, 0),
@@ -1206,7 +1216,7 @@ groups = dict(
                      
                 Game(bra, swi, datetime(2018, 6, 17, 18, 0),
                      where=places['rostovondon'],
-                     ascore=3, bscore=3),
+                     ascore=None, bscore=None),
 
                 
                 Game(bra, crc, datetime(2018, 6, 22, 12, 0),
@@ -1256,11 +1266,11 @@ groups = dict(
             games = [
                 Game(bel, pan, datetime(2018, 6, 18, 15, 0),
                      where=places['sochi'],
-                     ascore=3, bscore=1),
+                     ascore=None, bscore=None),
                      
                 Game(tun, eng, datetime(2018, 6, 18, 18, 0),
                      where=places['volgograd'],
-                     ascore=0, bscore=0),
+                     ascore=None, bscore=None),
 
                 
                 Game(bel, tun, datetime(2018, 6, 23, 12, 0),
@@ -1284,11 +1294,11 @@ groups = dict(
             games = [
                 Game(col, jap, datetime(2018, 6, 19, 12, 0),
                      where=places['saransk'],
-                     ascore=2, bscore=1),
+                     ascore=None, bscore=None),
                      
                 Game(pol, sen, datetime(2018, 6, 19, 15, 0),
                      where=places['spartak'],
-                     ascore=3, bscore=2),
+                     ascore=None, bscore=None),
 
                 
                 Game(jap, sen, datetime(2018, 6, 24, 15, 0),
@@ -1364,12 +1374,14 @@ jsf = JeuxSansFrontieres(groups, places=jsf_places, dates=jsf_dates)
 # add a PI Gui?
 class MexicanWaves(pigfarm.Yard):
 
-    def __init__(self, parent, jsf=None, venues=None, gallery='.'):
+    def __init__(self, parent, jsf=None, venues=None, gallery='.',
+                 dump=None, events=None):
         """ Initialise the thing """
 
         super().__init__(parent)
 
         self.jsf = jsf
+        self.jsf.dump = dump
 
         self.messages = []
 
@@ -1519,7 +1531,7 @@ class MexicanWaves(pigfarm.Yard):
 
         import time
         self.beanstalk.create_time = time.time()
-        print(self.beanstalk.xx, self.beanstalk.yy)
+        #print(self.beanstalk.xx, self.beanstalk.yy)
 
         self.beanstalk.draw(self.canvas, self.width, self.height, 'red')
 
@@ -1727,11 +1739,11 @@ class MexicanWaves(pigfarm.Yard):
 
             image = self.find_image('1991')
             if image:
-                print(image)
+                #print(image)
                 image = self.load_image(image)
-                print(image.size)
+                #print(image.size)
                 image = image.resize((int(self.height), int(self.width)))
-                print(image.size, self.width, self.height)
+                #print(image.size, self.width, self.height)
                 self.beanstalk.image = image
 
             self.draw()
@@ -1740,13 +1752,27 @@ class MexicanWaves(pigfarm.Yard):
 
             self.jsf.now = self.when
 
-            print('sleeping', self.sleep)
+            #print('sleeping', self.sleep)
             await curio.sleep(0)            
 
+def dump(game, out):
+
+    print('dumping')
+    when = game.when
+    print(when.year, when.month, when.day, when.hour, sep=', ', end=' ', file=out)
+    print(0, game.a, game.b, 'ko', 0, 0, sep=', ', file=out)
+
+    print(when.year, when.month, when.day, when.hour, sep=', ', end=' ', file=out)
+    print(45, game.a, game.b, 'ht', 0, 0, sep=', ', file=out)
+
+    print(when.year, when.month, when.day, when.hour, sep=', ', end=' ', file=out)
+    print(90, game.a, game.b, 'ft', 0, 0, sep=', ', file=out)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--nopig', action='store_true')
 parser.add_argument('--gallery')
+parser.add_argument('--dump')
+parser.add_argument('--events')
 args = parser.parse_args()            
 
 if args.nopig:
@@ -1755,9 +1781,19 @@ if args.nopig:
 farm = pigfarm.PigFarm()
 
 from karmapi.mclock2 import GuidoClock
+
+xdump = args.dump
+if xdump:
+    xdump = open(args.dump, 'w')
+
+if args.events:
+    args.events = open(args.events)
+    
     
 farm.add(GuidoClock)
-farm.add(MexicanWaves, dict(jsf=jsf, venues=places, gallery=args.gallery))
+farm.add(MexicanWaves, dict(jsf=jsf, venues=places, gallery=args.gallery,
+                            events=args.events,
+                            dump=xdump))
 
 # add a random wc time warper?
 curio.run(farm.run(), with_monitor=True)
