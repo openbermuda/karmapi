@@ -59,26 +59,42 @@ year, month, day, hour, minute, ateam, bteam, what, team, player
 2018, 6, 16, 14, 93, PER, DEN, yellow, den, 20
 2018, 6, 16, 14, 94, PER, DEN, ft, 0, 1
 
-2018, 6, 16, 19 0, CRO, NIG, ko, 0, 0
-2018, 6, 16, 19 30, CRO, NIG, yellow, cro, 7
-2018, 6, 16, 19 32, CRO, NIG, goal, cro, 108
-2018, 6, 16, 19 45, CRO, NIG, ht, 0, 0
-2018, 6, 16, 19 70, CRO, NIG, yellow, nig, 5
-2018, 6, 16, 19 71, CRO, NIG, goal, cro, 10
-2018, 6, 16, 19 89, CRO, NIG, yellow, cro, 11
-2018, 6, 16, 19 90, CRO, NIG, ft, 0, 0
+2018, 6, 16, 19, 0, CRO, NIG, ko, 0, 0
+2018, 6, 16, 19, 30, CRO, NIG, yellow, cro, 7
+2018, 6, 16, 19, 32, CRO, NIG, goal, cro, 108
+2018, 6, 16, 19, 45, CRO, NIG, ht, 0, 0
+2018, 6, 16, 19, 70, CRO, NIG, yellow, nig, 5
+2018, 6, 16, 19, 71, CRO, NIG, goal, cro, 10
+2018, 6, 16, 19, 89, CRO, NIG, yellow, cro, 11
+2018, 6, 16, 19, 90, CRO, NIG, ft, 2, 0
 
-2018, 6, 17, 12 0, CRC, SER, ko, 0, 0
-2018, 6, 17, 12 45, CRC, SER, ht, 0, 0
-2018, 6, 17, 12 90, CRC, SER, ft, 0, 0
+2018, 6, 17, 12, 0, CRC, SER, ko, 0, 0
+2018, 6, 17, 12, 15, CRC, SER, yellow, crc, 15
+2018, 6, 17, 12, 45, CRC, SER, ht, 0, 0
+2018, 6, 17, 12, 56, CRC, SER, yellow, crc, 20
+2018, 6, 17, 12, 0, CRC, SER, goal, ser, 11
+2018, 6, 17, 12, 59, CRC, SER, yellow, ser, 6
+2018, 6, 17, 12, 98, CRC, SER, yellow, ser, 8
+2018, 6, 17, 12, 98, CRC, SER, ft, 0, 1
 
-2018, 6, 17, 15 0, GER, MEX, ko, 0, 0
-2018, 6, 17, 15 45, GER, MEX, ht, 0, 0
-2018, 6, 17, 15 90, GER, MEX, ft, 0, 0
+2018, 6, 17, 15, 0, GER, MEX, ko, 0, 0
+2018, 6, 17, 15, 35, GER, MEX, goal, mex, 22
+2018, 6, 17, 15, 40, GER, MEX, yellow, mex, 15
+2018, 6, 17, 15, 45, GER, MEX, ht, 0, 1
+2018, 6, 17, 15, 83, GER, MEX, yellow, ger, 13
+2018, 6, 17, 83, 84, GER, MEX, yellow, ger, 5
+2018, 6, 17, 15, 90, GER, MEX, yellow, mex, 16
+2018, 6, 17, 15, 93, GER, MEX, ft, 0, 1
 
-2018, 6, 17, 18 0,  BRA, SWI, ko, 0, 0
-2018, 6, 17, 18 45, BRA, SWI, ht, 0, 0
-2018, 6, 17, 18 90, BRA, SWI, ft, 0, 0
+2018, 6, 17, 18, 0,  BRA, SWI, ko, 0, 0
+2018, 6, 17, 18, 20, BRA, SWI, goal, bra, 11
+2018, 6, 17, 18, 31, BRA, SWI, yellow, swi, 2
+2018, 6, 17, 18, 45, BRA, SWI, ht, 1, 0
+2018, 6, 17, 18, 47, BRA, SWI, yellow, swi, 5
+2018, 6, 17, 18, 49, BRA, SWI, goal, swi, 14
+2018, 6, 17, 18, 65, BRA, SWI, yellow, swi, 22
+2018, 6, 17, 18, 68, BRA, SWI, yellow, swi, 11
+2018, 6, 17, 18 90, BRA, SWI, ft, 1, 1
 
 2018, 6, 18, 12 0, SWE, SKO, ko, 0, 0
 2018, 6, 18, 12 45, SWE, SKO, ht, 0, 0
