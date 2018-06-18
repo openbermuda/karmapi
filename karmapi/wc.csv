@@ -97,12 +97,27 @@ year, month, day, hour, minute, ateam, bteam, what, team, player
 2018, 6, 17, 18 90, BRA, SWI, ft, 1, 1
 
 2018, 6, 18, 12 0, SWE, SKO, ko, 0, 0
+2018, 6, 18, 12 12, SWE, SKO, yellow, sko, 9
 2018, 6, 18, 12 45, SWE, SKO, ht, 0, 0
-2018, 6, 18, 12 90, SWE, SKO, ft, 0, 0
+2018, 6, 18, 12 55, SWE, SKO, yellow, sko, 11
+2018, 6, 18, 12 61, SWE, SKO, yellow, swe, 17
+2018, 6, 18, 12 65, SWE, SKO, goal, swe, 17
+2018, 6, 18, 12 90, SWE, SKO, ft, 1, 0
 
 2018, 6, 18, 15 0, BEL, PAN, ko, 0, 0
+2018, 6, 18, 15 14, BEL, PAN, yellow, bel, 15
+2018, 6, 18, 15 18, BEL, PAN, yellow, pan, 15
 2018, 6, 18, 15 45, BEL, PAN, ht, 0, 0
-2018, 6, 18, 15 90, BEL, PAN, ft, 0, 0
+2018, 6, 18, 15 47, BEL, PAN, goal, bel, 14
+2018, 6, 18, 15 49, BEL, PAN, yellow, pan, 11
+2018, 6, 18, 15 51, BEL, PAN, yellow, pan, 2
+2018, 6, 18, 15 57, BEL, PAN, yellow, pan, 20
+2018, 6, 18, 15 59, BEL, PAN, yellow, bel, 5
+2018, 6, 18, 15 51, BEL, PAN, yellow, pan, 2
+2018, 6, 18, 15 69, BEL, PAN, goal, bel, 9
+2018, 6, 18, 15 75, BEL, PAN, goal, bel, 9
+2018, 6, 18, 15 88, BEL, PAN, yellow, bel, 7
+2018, 6, 18, 15 90, BEL, PAN, ft, 3, 0
 
 2018, 6, 18, 18 0, TUN, ENG, ko, 0, 0
 2018, 6, 18, 18 45, TUN, ENG, ht, 0, 0
