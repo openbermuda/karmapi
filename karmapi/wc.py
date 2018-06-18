@@ -115,6 +115,7 @@ from random import random, randint
 import argparse
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta
+import calendar
 import sys
 
 import curio
@@ -331,8 +332,13 @@ class Game:
             str(self.label) + ' '  +
             str(self.a.name) + ' v '  +
             str(self.b.name) + ' '  +
+            self.day_name() + ' ' +
             str(self.when)  + ' '  +
             str(self.where))
+
+    def day_name(self):
+
+        return calendar.day_name[self.when.weekday()]
 
     def __eq__(self, other):
 
@@ -1402,6 +1408,7 @@ class MexicanWaves(pigfarm.Yard):
         self.add_event_map('t', self.toggle_show_teams)
         self.add_event_map('j', self.previous_group)
         self.add_event_map('k', self.next_group)
+        #self.add_event_map(' ', self.toggle_pause)
         
         self.game_view = False
         self.team_view = False
