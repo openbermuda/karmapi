@@ -120,8 +120,12 @@ year, month, day, hour, minute, ateam, bteam, what, team, player
 2018, 6, 18, 15 90, BEL, PAN, ft, 3, 0
 
 2018, 6, 18, 18 0, TUN, ENG, ko, 0, 0
-2018, 6, 18, 18 45, TUN, ENG, ht, 0, 0
-2018, 6, 18, 18 90, TUN, ENG, ft, 0, 0
+2018, 6, 18, 18 11, TUN, ENG, goal, eng, 9
+2018, 6, 18, 18 33, TUN, ENG, yellow, eng, 2
+2018, 6, 18, 18 35, TUN, ENG, goal, tun, 13
+2018, 6, 18, 18 45, TUN, ENG, ht, 1, 1
+2018, 6, 18, 18 91, TUN, ENG, goal, eng, 9
+2018, 6, 18, 18 95, TUN, ENG, ft, 1, 2
 
 2018, 6, 19, 12 0, COL, JAP, ko, 0, 0
 2018, 6, 19, 12 45, COL, JAP, ht, 0, 0
