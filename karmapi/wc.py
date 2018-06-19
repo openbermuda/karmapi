@@ -1765,8 +1765,13 @@ class MexicanWaves(pigfarm.Yard):
 
 def dump(game, out):
 
+    now = datetime.now()
     print('dumping')
     when = game.when
+
+    if when < now:
+        return
+    
     print(when.year, when.month, when.day, when.hour, sep=', ', end=' ', file=out)
     print(0, game.a, game.b, 'ko', 0, 0, sep=', ', file=out)
 
@@ -1776,10 +1781,19 @@ def dump(game, out):
     print(when.year, when.month, when.day, when.hour, sep=', ', end=' ', file=out)
     print(90, game.a, game.b, 'ft', 0, 0, sep=', ', file=out)
 
-def parse_events(events):
+def parse_events(events, out=None):
 
+    if out:
+        writer = csv.writer(out)
+    else:
+        writer = csv.writer(sys.stdout)
+        
     for row in csv.reader(events):
-        print(row)
+        
+        row = row[:4] + row[5:7] + row[4:5] + row[7:]
+        row = [x.strip() for x in row]
+        writer.writerow(row)
+
         
 
 parser = argparse.ArgumentParser()
