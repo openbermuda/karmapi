@@ -1116,7 +1116,7 @@ groups = dict(
                 
                 Game(rus, egy, datetime(2018, 6, 19, 18, 0),
                      where=places['stpetersberg'],
-                    ),
+                     ascore=3, bscore=1),
                 
                 Game(urg, sau, datetime(2018, 6, 20, 15, 0),
                      where=places['rostovondon'],
