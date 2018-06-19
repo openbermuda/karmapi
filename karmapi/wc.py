@@ -113,6 +113,7 @@ eng tun bel and pan played already.  See Game's for results.
 
 from random import random, randint
 import argparse
+import csv
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta
 import calendar
@@ -1775,6 +1776,12 @@ def dump(game, out):
     print(when.year, when.month, when.day, when.hour, sep=', ', end=' ', file=out)
     print(90, game.a, game.b, 'ft', 0, 0, sep=', ', file=out)
 
+def parse_events(events):
+
+    for row in csv.reader(events):
+        print(row)
+        
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--nopig', action='store_true')
 parser.add_argument('--gallery')
@@ -1795,6 +1802,9 @@ if xdump:
 
 if args.events:
     args.events = open(args.events)
+
+    parse_events(args.events)
+    sys.exit()
     
     
 farm.add(GuidoClock)

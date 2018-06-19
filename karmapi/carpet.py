@@ -8,7 +8,7 @@ from karmapi import pigfarm
 
 class MagicMosaic(pigfarm.Space):
 
-    def __init__(self, parent, carpets=[])
+    def __init__(self, parent, carpets=[]):
 
         super().__init__(parent)
 
