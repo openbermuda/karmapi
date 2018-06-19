@@ -1219,11 +1219,11 @@ groups = dict(
             games = [
                 Game(crc, ser, datetime(2018, 6, 17, 12, 0),
                      where=places['samara'],
-                     ascore=None, bscore=None),
+                     ascore=0, bscore=1),
                      
                 Game(bra, swi, datetime(2018, 6, 17, 18, 0),
                      where=places['rostovondon'],
-                     ascore=None, bscore=None),
+                     ascore=1, bscore=1),
 
                 
                 Game(bra, crc, datetime(2018, 6, 22, 12, 0),
@@ -1246,11 +1246,11 @@ groups = dict(
             games = [
                 Game(ger, mex, datetime(2018, 6, 17, 15, 0),
                      where=places['moscow'],
-                     ascore=None, bscore=None),
+                     ascore=0, bscore=1),
 
                 Game(swe, sko, datetime(2018, 6, 18, 12, 0),
                      where=places['novgorod'],
-                     ascore=None, bscore=None),
+                     ascore=1, bscore=0),
 
                 
                 Game(sko, mex, datetime(2018, 6, 23, 15, 0),
@@ -1273,11 +1273,11 @@ groups = dict(
             games = [
                 Game(bel, pan, datetime(2018, 6, 18, 15, 0),
                      where=places['sochi'],
-                     ascore=None, bscore=None),
+                     ascore=3, bscore=0),
                      
                 Game(tun, eng, datetime(2018, 6, 18, 18, 0),
                      where=places['volgograd'],
-                     ascore=None, bscore=None),
+                     ascore=1, bscore=2),
 
                 
                 Game(bel, tun, datetime(2018, 6, 23, 12, 0),
@@ -1301,11 +1301,11 @@ groups = dict(
             games = [
                 Game(col, jap, datetime(2018, 6, 19, 12, 0),
                      where=places['saransk'],
-                     ascore=None, bscore=None),
+                     ascore=1, bscore=2),
                      
                 Game(pol, sen, datetime(2018, 6, 19, 15, 0),
                      where=places['spartak'],
-                     ascore=None, bscore=None),
+                     ascore=1, bscore=2),
 
                 
                 Game(jap, sen, datetime(2018, 6, 24, 15, 0),

@@ -146,12 +146,14 @@ year,month,day,hour,ateam,bteam,minute,what,team,player
 2018,6,19,15,POL,SEN,72,yellow,sen,5
 2018,6,19,49,POL,SEN,0,yellow,sen,6
 2018,6,19,15,POL,SEN,86,goal,pol,10
-2018,6,19,15,POL,SEN,95,ft,0,0
+2018,6,19,15,POL,SEN,95,ft,1,2
 
 2018,6,19,18,RUS,EGY,0,ko,0,0
 2018,6,19,18,RUS,EGY,45,ht,0,0
-2018,6,19,,RUS,EGY,0,
-2018,6,19,,RUS,EGY,0,
-2018,6,19,,RUS,EGY,0,
+2018,6,19,,RUS,EGY, 46, rus, goal, 107
+2018,6,19,,RUS,EGY, 57, yellow, egy, 21
+2018,6,19,,RUS,EGY, 59, rus, goal, 6
+2018,6,19,,RUS,EGY, 62, rus, goal, 22
+2018,6,19,,RUS,EGY, 73, egy, goal, 10
 2018,6,19,18,RUS,EGY,90,ft,0,0
 
