@@ -1773,16 +1773,25 @@ def dump(game, out):
         return
     
     print(when.year, when.month, when.day, when.hour, sep=', ', end=' ', file=out)
-    print(0, game.a, game.b, 'ko', 0, 0, sep=', ', file=out)
+    print(game.a, game.b, 0, 'ko', 0, 0, sep=', ', file=out)
 
     print(when.year, when.month, when.day, when.hour, sep=', ', end=' ', file=out)
-    print(45, game.a, game.b, 'ht', 0, 0, sep=', ', file=out)
+    print(game.a, game.b, 45, 'ht', 0, 0, sep=', ', file=out)
 
     print(when.year, when.month, when.day, when.hour, sep=', ', end=' ', file=out)
-    print(90, game.a, game.b, 'ft', 0, 0, sep=', ', file=out)
+    print(game.a, game.b, 90, 'ft', 0, 0, sep=', ', file=out)
 
 def parse_events(events, out=None):
 
+    return shuffle_events(events, out)
+    
+    for row in csv.reader(events):
+        pass
+        
+    
+
+def shuffle_events(events, out=None):
+    
     if out:
         writer = csv.writer(out)
     else:
