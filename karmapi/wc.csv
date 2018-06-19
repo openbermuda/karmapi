@@ -1,5 +1,3 @@
-
-It's a knock out!
 year,month,day,hour,ateam,bteam,minute,what,team,player
 2018,6,14,15,rus,sau,0,ko,0,0
 2018,6,14,15,rus,sau,42,goal,rus,5
@@ -151,9 +149,9 @@ year,month,day,hour,ateam,bteam,minute,what,team,player
 2018,6,19,15,POL,SEN,95,ft,0,0
 
 2018,6,19,18,RUS,EGY,0,ko,0,0
-2018,6,19,,RUS,EGY,0,
-2018,6,19,,RUS,EGY,0,
-2018,6,19,,RUS,EGY,0,
 2018,6,19,18,RUS,EGY,45,ht,0,0
+2018,6,19,,RUS,EGY,0,
+2018,6,19,,RUS,EGY,0,
+2018,6,19,,RUS,EGY,0,
 2018,6,19,18,RUS,EGY,90,ft,0,0
 

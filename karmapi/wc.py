@@ -1783,9 +1783,25 @@ def dump(game, out):
 
 def parse_events(events, out=None):
 
-    return shuffle_events(events, out)
+    if out:
+        out = csv.writer(out)
     
     for row in csv.reader(events):
+
+        if out:
+            row = [x.strip() for x in row]
+            out.writerow(row)
+            continue
+        
+        year, month, day, hour = [int(x) for x in row[:4]]
+
+        a, b = row[4], row[5]
+
+        minute = int(row[6])
+        what = row[7].strip().lower()
+        extras = [x.strip().lower() for x in row[8:]]
+
+        # Need to find the game the event applies to
         pass
         
     
@@ -1810,6 +1826,7 @@ parser.add_argument('--nopig', action='store_true')
 parser.add_argument('--gallery')
 parser.add_argument('--dump')
 parser.add_argument('--events')
+parser.add_argument('--outfile')
 args = parser.parse_args()            
 
 if args.nopig:
@@ -1823,10 +1840,13 @@ xdump = args.dump
 if xdump:
     xdump = open(args.dump, 'w')
 
+if args.outfile:
+    args.outfile = open(args.outfile, 'w')
+
 if args.events:
     args.events = open(args.events)
 
-    parse_events(args.events)
+    parse_events(args.events, args.outfile)
     sys.exit()
     
     
