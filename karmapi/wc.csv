@@ -158,3 +158,16 @@ year,month,day,hour,ateam,bteam,minute,what,team,player
 2018,6,19,,RUS,EGY, 84, rus, yellow, 10
 2018,6,19,18,RUS,EGY,90,ft,0,0
 
+2018, 6, 20, 12 POR, MOR, 0, ko, 0, 0
+2018, 6, 20, 12 POR, MOR, 4, goal, por, 7
+2018, 6, 20, 12 POR, MOR, 40, yellow, mor, 5
+2018, 6, 20, 12 POR, MOR, 45, ht, 1, 0
+2018, 6, 20, 12 POR, MOR, 90, ft, 1, 0
+
+2018, 6, 20, 15 URG, SAU, 0, ko, 0, 0
+2018, 6, 20, 15 URG, SAU, 45, ht, 0, 0
+2018, 6, 20, 15 URG, SAU, 90, ft, 0, 0
+
+2018, 6, 20, 18 IRA, SPA, 0, ko, 0, 0
+2018, 6, 20, 18 IRA, SPA, 45, ht, 0, 0
+2018, 6, 20, 18 IRA, SPA, 90, ft, 0, 0
