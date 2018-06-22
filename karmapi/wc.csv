@@ -220,8 +220,15 @@ year,month,day,hour,ateam,bteam,minute,what,team,player
 2018, 6, 22, 15 NIG, ICE, 44, yellow, nig, 2
 2018, 6, 22, 15 NIG, ICE, 45, ht, 0, 0
 2018, 6, 22, 15 NIG, ICE, 49, goal, nig, 7
-2018, 6, 22, 15 NIG, ICE, 90, ft, 1, 0
+2018, 6, 22, 15 NIG, ICE, 75, goal, nig, 7
+2018, 6, 22, 15 NIG, ICE, 90, ft, 2, 0
 
 2018, 6, 22, 18 SER, SWI, 0, ko, 0, 0
-2018, 6, 22, 18 SER, SWI, 45, ht, 0, 0
-2018, 6, 22, 18 SER, SWI, 90, ft, 0, 0
+2018, 6, 22, 18 SER, SWI,  5, goal, ser, 9
+2018, 6, 22, 18 SER, SWI, 33, yellow, ser, 20
+2018, 6, 22, 18 SER, SWI, 39, yellow, ser, 4
+2018, 6, 22, 18 SER, SWI, 47, yellow, ser, 21
+2018, 6, 22, 18 SER, SWI, 47, ht, 1, 0
+2018, 6, 22, 18 SER, SWI, 52, goal, swi, 10
+2018, 6, 22, 18 SER, SWI, 89, goal, swi, 23
+2018, 6, 22, 18 SER, SWI, 90, ft, 1, 2
