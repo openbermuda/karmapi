@@ -114,7 +114,7 @@ eng tun bel and pan played already.  See Game's for results.
 from random import random, randint
 import argparse
 import csv
-from collections import Counter, defaultdict
+from collections import Counter, defaultdict, deque
 from datetime import datetime, timedelta
 import calendar
 import sys
@@ -701,10 +701,14 @@ class JeuxSansFrontieres:
         self.sleep = 0.01
 
         self.games = curio.PriorityQueue()
-        self.events = curio.UniversalQueue()
         self.knockout = []
         self.winners = {}
         self.seconds = {}
+
+        self.events = curio.UniversalQueue()
+
+        self.game_events = deque()
+
 
     async def load_group_games(self):
         """ Put the group games into the game queue """
@@ -1416,7 +1420,7 @@ class MexicanWaves(pigfarm.Yard):
         self.group_view = False
         self.which_group = 0
 
-        
+
     async def slower(self):
         """ Go through time more slowly """
         self.delta_t /= 2

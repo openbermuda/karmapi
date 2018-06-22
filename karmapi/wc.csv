@@ -165,9 +165,63 @@ year,month,day,hour,ateam,bteam,minute,what,team,player
 2018, 6, 20, 12 POR, MOR, 90, ft, 1, 0
 
 2018, 6, 20, 15 URG, SAU, 0, ko, 0, 0
-2018, 6, 20, 15 URG, SAU, 45, ht, 0, 0
-2018, 6, 20, 15 URG, SAU, 90, ft, 0, 0
+2018, 6, 20, 15 URG, SAU, 23, goal, urg, 9
+2018, 6, 20, 15 URG, SAU, 45, ht, 1, 0
+2018, 6, 20, 15 URG, SAU, 90, ft, 1, 0
 
 2018, 6, 20, 18 IRA, SPA, 0, ko, 0, 0
 2018, 6, 20, 18 IRA, SPA, 45, ht, 0, 0
+2018, 6, 20, 18 IRA, SPA, 54, goal, spa, 19
+2018, 6, 20, 18 IRA, SPA, 79, yellow, ira, 11
+2018, 6, 20, 18 IRA, SPA, 92, yellow, ira, 9
 2018, 6, 20, 18 IRA, SPA, 90, ft, 0, 0
+
+2018, 6, 21, 12 DEN, AUS, 0, ko, 0, 0
+2018, 6, 21, 12 DEN, AUS,  7, goal, den, 10
+2018, 6, 21, 12 DEN, AUS, 37, yellow, den, 20
+2018, 6, 21, 12 DEN, AUS, 38, goal, aus, 15
+2018, 6, 21, 12 DEN, AUS, 45, ht, 1, 1
+2018, 6, 21, 12 DEN, AUS, 84, yellow, den, 23
+2018, 6, 21, 12 DEN, AUS, 90, ft, 1, 1
+
+2018, 6, 21, 15 FRA, PER,  0, ko, 0, 0
+2018, 6, 21, 15 FRA, PER, 18, yellow, fra, 14
+2018, 6, 21, 15 FRA, PER, 23, yellow, per, 9
+2018, 6, 21, 15 FRA, PER, 34, goal, fra, 10
+2018, 6, 21, 15 FRA, PER, 45, ht, 1, 0
+2018, 6, 21, 15 FRA, PER, 81, yellow, per, 23
+2018, 6, 21, 15 FRA, PER, 86, yellow, fra, 6
+2018, 6, 21, 15 FRA, PER, 90, ft, 1, 0
+
+2018, 6, 21, 18 ARG, CRO, 0, ko, 0, 0
+2018, 6, 21, 18 ARG, CRO, 39, yellow, cro, 18
+2018, 6, 21, 18 ARG, CRO, 45, ht, 0, 0
+2018, 6, 21, 18 ARG, CRO, 51, yellow, arg, 2
+2018, 6, 21, 18 ARG, CRO, 53, goal, cro, 18
+2018, 6, 21, 18 ARG, CRO, 58, yellow, cro, 17
+2018, 6, 21, 18 ARG, CRO, 67, yellow, cro, 2
+2018, 6, 21, 18 ARG, CRO, 80, goal, cro, 10
+2018, 6, 21, 18 ARG, CRO, 85, yellow, arg, 17
+2018, 6, 21, 18 ARG, CRO, 87, yellow, arg, 8
+2018, 6, 21, 18 ARG, CRO, 91, goal, cro, 7
+2018, 6, 21, 18 ARG, CRO, 94, yellow, cro, 5
+2018, 6, 21, 18 ARG, CRO, 95, ft, 0, 0
+
+2018, 6, 22, 12 BRA, CRC, 0, ko, 0, 0
+2018, 6, 22, 12 BRA, CRC, 45, ht, 0, 0
+2018, 6, 22, 12 BRA, CRC, 81, yellow, bra, 10
+2018, 6, 22, 12 BRA, CRC, 81, yellow, bra, 11
+2018, 6, 22, 12 BRA, CRC, 84, yellow, crc, 2
+2018, 6, 22, 12 BRA, CRC, 91, goal, bra, 11
+2018, 6, 22, 12 BRA, CRC, 97, goal, bra, 10
+2018, 6, 22, 12 BRA, CRC, 99, ft, 2, 0
+
+2018, 6, 22, 15 NIG, ICE, 0, ko, 0, 0
+2018, 6, 22, 15 NIG, ICE, 44, yellow, nig, 2
+2018, 6, 22, 15 NIG, ICE, 45, ht, 0, 0
+2018, 6, 22, 15 NIG, ICE, 49, goal, nig, 7
+2018, 6, 22, 15 NIG, ICE, 90, ft, 1, 0
+
+2018, 6, 22, 18 SER, SWI, 0, ko, 0, 0
+2018, 6, 22, 18 SER, SWI, 45, ht, 0, 0
+2018, 6, 22, 18 SER, SWI, 90, ft, 0, 0
