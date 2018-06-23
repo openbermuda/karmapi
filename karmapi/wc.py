@@ -241,15 +241,29 @@ class Player:
 
 class Event:
         
-    def __init__(self, team, who=None, when=None, game=None):
+    def __init__(self, team, who=None, when=None, game=None, og=False):
 
         self.team = team
         self.who = who
         self.when = when
         self.game = game
+        self.og = og
+        self.start_evt = curio.Event()
+
+    async def start(self):
+
+        # curio events ??
+        await curio.timeout_after(warp, self.start_evt)
+
+        await self.run()
         
 class Goal(Event):
-    pass
+
+    async def run(self):
+
+        # this sort of seems weird
+        await self.game.goal(self)
+    
 
 
 class Penalty(Goal):
@@ -257,11 +271,18 @@ class Penalty(Goal):
 
     which: which penalty: 1, 2, 3 etc
     """
-    def __init__(self, which=None, score=True):
+    def __init__(self, team, who=None, when=None, game=None, og=False,
+                 which=None, score=True):
 
+        super().__init___(team, **kwargs)
+        
         self.which = which
         self.score = True
         self.penalty = True
+
+    async def run(self):
+
+        await self.game.penalty(self)
 
 
 def warp(a, b, when):
@@ -471,7 +492,7 @@ class Game:
         which = len(self.apen) + len(self.bpen)
         
         if random() < 0.5:
-            pen = Penalty(team, score=True, which=which)
+            pen = Penalty(team, score=True, which=which, when=)
 
             if team is self.a:
                 self.apen.append(pen)
@@ -710,7 +731,7 @@ class JeuxSansFrontieres:
         self.game_events = game_events
 
 
-    def dispatch_events(self):
+    async def dispatch_events(self):
         """ Dispatch events to the appropriate game """
 
         if not self.game_events:
@@ -719,13 +740,45 @@ class JeuxSansFrontieres:
         # build game lookup
         gl = {}
         for game in self.generate_games():
-            gl[(game.when, game.a, game.b)] = game
+            gl[(game.when.date(), game.a.name, game.b.name)] = game
 
         print('ggg', self.game_events)
+        knockout = []
         for event in parse_events(self.game_events):
             print(event)
-            
+            when, ateam, bteam, what, extras = event
 
+            key = when.date(), ateam, bteam
+
+            game = gl.get(key)
+
+            if not game:
+                knockout.append(game)
+
+            # turn team names into teams
+            ateam = name2team(ateam)
+            bteam = name2team(bteam)
+            
+            # got the game.  now create an appropriate event
+            if what == 'goal':
+                team = name2team[extras[0]]
+
+                who = int(extras[1])
+                og = False
+                if who > 23:
+                    og = True
+                    who -= 100
+                
+                event = Goal(team, who, when, game, og)
+
+                await curio.spawn(event.start)
+            else:
+                # just print out the event info
+                print('*****', when, ateam, bteam, what, extras)
+
+
+        # fixme do something with knockout
+        pass
 
     async def load_group_games(self):
         """ Put the group games into the game queue """
@@ -741,7 +794,7 @@ class JeuxSansFrontieres:
 
                 await self.games.put(game)
 
-        self.dispatch_events()
+        await self.dispatch_events()
         
         self.its_a_knockout()
 
@@ -1853,7 +1906,10 @@ def shuffle_events(events, out=None):
         row = [x.strip() for x in row]
         writer.writerow(row)
 
-        
+def name2team(name):
+    """ Convert string to team object """
+    return globals()[name]
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--nopig', action='store_true')
