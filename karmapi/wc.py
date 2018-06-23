@@ -239,31 +239,64 @@ class Player:
         self.yellow = []
         self.number = number
 
-class Event:
+class GameEvent:
         
+    def __init__(self, when=None, game=None):
+
+        self.when = when
+        self.game = game
+        self.start_evt = curio.Event()
+
+    async def start(self):
+
+        # want to wait appropriate time, for now just 1
+        try:
+            await curio.timeout_after(1, self.start_evt.wait)
+        except curio.TaskTimeout:
+            print("time to run the event")
+
+        await self.run()
+
+    async def run(self):
+
+        print(self.when, self.game)
+
+        
+class TeamEvent(GameEvent):
+    """ An event that involves one team in the game """
+    
     def __init__(self, team, who=None, when=None, game=None, og=False):
+
+        super().__init__(when, game)
 
         self.team = team
         self.who = who
         self.when = when
         self.game = game
         self.og = og
-        self.start_evt = curio.Event()
-
-    async def start(self):
-
-        # curio events ??
-        await curio.timeout_after(warp, self.start_evt)
-
-        await self.run()
         
-class Goal(Event):
+class Goal(TeamEvent):
 
     async def run(self):
 
+        print(self.team, self.when, self.who, self.game, self.og)
         # this sort of seems weird
         await self.game.goal(self)
+
+class Whistle(GameEvent):
     
+    async def run(self):
+
+        self.game.end_event.set()
+
+class FullTime(GameEvent):
+
+    async def run(self):
+
+        print(self.when, self.game, 'FULL TIME')
+        await self.game.full_time()
+
+        
 
 
 class Penalty(Goal):
@@ -271,10 +304,9 @@ class Penalty(Goal):
 
     which: which penalty: 1, 2, 3 etc
     """
-    def __init__(self, team, who=None, when=None, game=None, og=False,
-                 which=None, score=True):
+    def __init__(self, team, which=None, score=True, **kwargs):
 
-        super().__init___(team, **kwargs)
+        super().__init__(team, **kwargs)
         
         self.which = which
         self.score = True
@@ -320,16 +352,20 @@ class Game:
         self.when = when
         self.where = where
         self.label = ''
+
+        # ignore ascore/bscore, let events do the work
+        self.ascore = None
+        self.bscore = None
         
-        self.ascore = ascore
-        self.bscore = bscore
         self.apen = []
         self.bpen = []
         
         self.minute = 0
 
+        self.end_event = curio.Event()
+
         # flag if score was simulated
-        self.simulated = (ascore is None) or (bscore is None)
+        self.simulated = self.when > datetime.now()
         self.number = Game.NUMBER
         Game.NUMBER += 1
 
@@ -460,7 +496,13 @@ class Game:
         await self.half(minutes)
 
     async def full_time(self):
-        
+
+        if self.is_group():
+            self.end_event.set()
+
+        elif self.ascore != self.bscore:
+            self.end_event.set()
+            
         await self.flash(fill='yellow', tag='FT')
 
     async def extra_time(self):
@@ -492,7 +534,9 @@ class Game:
         which = len(self.apen) + len(self.bpen)
         
         if random() < 0.5:
-            pen = Penalty(team, score=True, which=which, when=)
+            pen = Penalty(team, score=True, which=which, game=self,
+                          when=self.when + timedelta(minutes=120 + which),
+                          who = randint(1, 23))
 
             if team is self.a:
                 self.apen.append(pen)
@@ -541,7 +585,15 @@ class Game:
             return True
 
     async def goal(self, team, who=None, when=None):
-        pass
+
+        if team is self.a:
+            self.ascore += 1
+        else:
+            self.bscore += 1
+
+        minute = (when - self.when).minutes
+        await self.flash(" %dm" % minute, fill='green')
+
 
     async def yellow(self, team, who=None, when=None):
         pass
@@ -556,8 +608,10 @@ class Game:
         """ Run the game """
         self.events = events
 
-        if self.ascore == None or self.bscore == None:
+        if self.simulated:
             await self.kick_off()
+        else:
+            await self.end_event.wait()
 
         a = self.a
         b = self.b
@@ -740,17 +794,19 @@ class JeuxSansFrontieres:
         # build game lookup
         gl = {}
         for game in self.generate_games():
-            gl[(game.when.date(), game.a.name, game.b.name)] = game
+            gl[(game.when.date(), game.a.name.lower(), game.b.name.lower())] = game
 
         print('ggg', self.game_events)
         knockout = []
+        print(gl.keys())
         for event in parse_events(self.game_events):
-            print(event)
+            print('xxx', event)
             when, ateam, bteam, what, extras = event
 
             key = when.date(), ateam, bteam
 
             game = gl.get(key)
+            print(key, game)
 
             if not game:
                 knockout.append(game)
@@ -761,7 +817,7 @@ class JeuxSansFrontieres:
             
             # got the game.  now create an appropriate event
             if what == 'goal':
-                team = name2team[extras[0]]
+                team = name2team(extras[0])
 
                 who = int(extras[1])
                 og = False
@@ -772,6 +828,12 @@ class JeuxSansFrontieres:
                 event = Goal(team, who, when, game, og)
 
                 await curio.spawn(event.start)
+
+            elif what == 'ft':
+
+                event = FullTime(when, game)
+                await curio.spawn(event.start)
+
             else:
                 # just print out the event info
                 print('*****', when, ateam, bteam, what, extras)
@@ -1889,7 +1951,7 @@ def parse_events(events, out=None):
         when = datetime(year, month, day, hour, 0)
         when += timedelta(minutes=minute)
 
-        yield when, a.lower(), b.lower(), what, extras
+        yield when, a.lower().strip(), b.lower().strip(), what, extras
         
     
 

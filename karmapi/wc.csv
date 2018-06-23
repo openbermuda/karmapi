@@ -246,12 +246,25 @@
 2018, 6, 23, 12, BEL, TUN, 94, ft, 5, 2
 
 2018, 6, 23, 15, SKO, MEX, 0, ko, 0, 0
-2018, 6, 23, 15, SKO, MEX, 45, ht, 0, 0
-2018, 6, 23, 15, SKO, MEX, 90, ft, 0, 0
+2018, 6, 23, 15, SKO, MEX, 25, goal, mex, 11
+2018, 6, 23, 15, SKO, MEX, 45, ht, 0, 1
+2018, 6, 23, 15, SKO, MEX, 58, yellow, sko, 19
+2018, 6, 23, 15, SKO, MEX, 63, yellow, sko, 2
+2018, 6, 23, 15, SKO, MEX, 66, goal, mex, 14
+2018, 6, 23, 15, SKO, MEX, 72, yellow, sko, 10
+2018, 6, 23, 15, SKO, MEX, 80, yellow, sko, 15
+2018, 6, 23, 15, SKO, MEX, 93, goal, sko, 7
+2018, 6, 23, 15, SKO, MEX, 96, ft, 1, 2
 
 2018, 6, 23, 18, GER, SWE, 0, ko, 0, 0
-2018, 6, 23, 18, GER, SWE, 45, ht, 0, 0
-2018, 6, 23, 18, GER, SWE, 90, ft, 0, 0
+2018, 6, 23, 18, GER, SWE, 31, goal, swe, 20
+2018, 6, 23, 18, GER, SWE, 45, ht, 0, 1
+2018, 6, 23, 18, GER, SWE, 48, goal, ger, 11
+2018, 6, 23, 18, GER, SWE, 52, yellow, swe, 8
+2018, 6, 23, 18, GER, SWE, 71, yellow, ger, 17
+2018, 6, 23, 18, GER, SWE, 82, yellow, ger, 17
+2018, 6, 23, 18, GER, SWE, 94, goal, ger, 8
+2018, 6, 23, 18, GER, SWE, 95, ft, 2, 1
 
 2018, 6, 24, 12, ENG, PAN, 0, ko, 0, 0
 2018, 6, 24, 12, ENG, PAN, 45, ht, 0, 0
