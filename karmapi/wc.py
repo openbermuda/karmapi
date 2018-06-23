@@ -239,26 +239,26 @@ class Player:
         self.yellow = []
         self.number = number
 
-class Goal:
+class Event:
+        
+    def __init__(self, team, who=None, when=None, game=None):
 
-    def __init__(self, team, who=None, when=None, game=None, penalty=False):
-
+        self.team = team
         self.who = who
         self.when = when
         self.game = game
-        self.penalty = penalty
+        
+class Goal(Event):
+    pass
 
-class Penalty:
+
+class Penalty(Goal):
     """ Penalty in a shoot out 
 
     which: which penalty: 1, 2, 3 etc
     """
-    def __init__(self, team, who=None, which=None, when=None,
-                 game=None, score=True):
+    def __init__(self, which=None, score=True):
 
-        self.who = who
-        self.when = when
-        self.game = game
         self.which = which
         self.score = True
         self.penalty = True
@@ -688,7 +688,8 @@ class JeuxSansFrontieres:
     * get games for final stage
 
     """
-    def __init__(self, groups, places=None, dates=None, now=None):
+    def __init__(self, groups, places=None, dates=None,
+                 now=None, game_events=None):
         self.groups = groups
 
         # places and dates for knockout stage
@@ -706,8 +707,24 @@ class JeuxSansFrontieres:
         self.seconds = {}
 
         self.events = curio.UniversalQueue()
+        self.game_events = game_events
 
-        self.game_events = deque()
+
+    def dispatch_events(self):
+        """ Dispatch events to the appropriate game """
+
+        if not self.game_events:
+            return
+        
+        # build game lookup
+        gl = {}
+        for game in self.generate_games():
+            gl[(game.when, game.a, game.b)] = game
+
+        print('ggg', self.game_events)
+        for event in parse_events(self.game_events):
+            print(event)
+            
 
 
     async def load_group_games(self):
@@ -724,8 +741,12 @@ class JeuxSansFrontieres:
 
                 await self.games.put(game)
 
+        self.dispatch_events()
+        
         self.its_a_knockout()
 
+        # need to dispatch knockout events around here some how.
+                
         for game in self.knockout:
             await self.games.put(game)
 
@@ -1393,6 +1414,7 @@ class MexicanWaves(pigfarm.Yard):
 
         self.jsf = jsf
         self.jsf.dump = dump
+        self.jsf.game_events = events
 
         self.messages = []
 
@@ -1776,13 +1798,13 @@ def dump(game, out):
     if when < now:
         return
     
-    print(when.year, when.month, when.day, when.hour, sep=', ', end=' ', file=out)
+    print(when.year, when.month, when.day, when.hour, sep=', ', end=', ', file=out)
     print(game.a, game.b, 0, 'ko', 0, 0, sep=', ', file=out)
 
-    print(when.year, when.month, when.day, when.hour, sep=', ', end=' ', file=out)
+    print(when.year, when.month, when.day, when.hour, sep=', ', end=', ', file=out)
     print(game.a, game.b, 45, 'ht', 0, 0, sep=', ', file=out)
 
-    print(when.year, when.month, when.day, when.hour, sep=', ', end=' ', file=out)
+    print(when.year, when.month, when.day, when.hour, sep=', ', end=', ', file=out)
     print(game.a, game.b, 90, 'ft', 0, 0, sep=', ', file=out)
 
 def parse_events(events, out=None):
@@ -1796,6 +1818,12 @@ def parse_events(events, out=None):
             row = [x.strip() for x in row]
             out.writerow(row)
             continue
+
+        if not row:
+            continue
+
+        if row[0].startswith('#'):
+            continue
         
         year, month, day, hour = [int(x) for x in row[:4]]
 
@@ -1805,8 +1833,10 @@ def parse_events(events, out=None):
         what = row[7].strip().lower()
         extras = [x.strip().lower() for x in row[8:]]
 
-        # Need to find the game the event applies to
-        pass
+        when = datetime(year, month, day, hour, 0)
+        when += timedelta(minutes=minute)
+
+        yield when, a.lower(), b.lower(), what, extras
         
     
 
@@ -1850,8 +1880,8 @@ if args.outfile:
 if args.events:
     args.events = open(args.events)
 
-    parse_events(args.events, args.outfile)
-    sys.exit()
+    #parse_events(args.events, args.outfile)
+    #sys.exit()
     
     
 farm.add(GuidoClock)
