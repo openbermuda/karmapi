@@ -241,10 +241,11 @@ class Player:
 
 class GameEvent:
         
-    def __init__(self, when=None, game=None):
+    def __init__(self, when=None, game=None, jsf=None):
 
         self.when = when
         self.game = game
+        self.jsf = jsf
         self.start_evt = curio.Event()
 
     async def start(self, delay):
@@ -270,9 +271,9 @@ class GameEvent:
 class TeamEvent(GameEvent):
     """ An event that involves one team in the game """
     
-    def __init__(self, team, who=None, when=None, game=None, og=False):
+    def __init__(self, team, who=None, when=None, game=None, og=False, **kwargs):
 
-        super().__init__(when, game)
+        super().__init__(when, game, **kwargs)
 
         self.team = team
         self.who = who
@@ -313,7 +314,10 @@ class FullTime(GameEvent):
     async def run(self):
 
         print(self.when, self.game, 'FULL TIME')
-        await self.game.full_time()
+        done = await self.game.full_time()
+
+        if done:
+            self.jsf.apres_match(self.game)
 
         
 
@@ -519,13 +523,19 @@ class Game:
 
     async def full_time(self):
 
+        done = False
         if self.is_group():
-            self.end_event.set()
+            done = True
 
         elif self.ascore != self.bscore:
-            self.end_event.set()
+            done = True
+
+        if done:
+            await self.end_event.set()
             
         await self.flash(fill='yellow', tag='FT')
+
+        return done
 
     async def extra_time(self):
         minutes = 15 + randint(0, 3)
@@ -639,6 +649,12 @@ class Game:
             await self.end_event.wait()
             print('GAME OVER!')
 
+        self.apres_match()
+        
+        await self.flash(tag='FT')
+
+    def apres_match(self):
+        
         a = self.a
         b = self.b
             
@@ -659,8 +675,6 @@ class Game:
             else:
                 a.points += 1
                 b.points += 1
-
-        await self.flash(tag='FT')
 
     async def flash(self, tag='', fill='red'):
 
@@ -829,9 +843,11 @@ class JeuxSansFrontieres:
         # build game lookup
         gl = {}
         for game in self.generate_games():
+            game.events = self.events
             gl[(game.when.date(), game.a.name.lower(), game.b.name.lower())] = game
 
         knockout = []
+        etasks = []
         for event in parse_events(self.game_events):
             when, ateam, bteam, what, extras = event
 
@@ -856,24 +872,29 @@ class JeuxSansFrontieres:
                     og = True
                     who -= 100
 
-                event = Goal(team, who, when, game, og)
+                event = Goal(team, who, when, game, og, jsf=self)
 
-                await curio.spawn(event.start(self.warp(when)))
+                task = await curio.spawn(event.start, self.warp(when))
+                etasks.append(task)
 
             elif what == 'ko':
 
-                event = KickOff(when, game)
-                await curio.spawn(event.start(self.warp(when)))
+                event = KickOff(when, game, jsf=self)
+                task = await curio.spawn(event.start, self.warp(when))
+                etasks.append(task)
 
             elif what == 'ft':
 
-                event = FullTime(when, game)
-                await curio.spawn(event.start(self.warp(when)))
+                event = FullTime(when, game, jsf=self)
+                task = await curio.spawn(event.start, self.warp(when))
+                etasks.append(task)
 
             else:
                 # just print out the event info
                 print('*****', when, ateam, bteam, what, extras)
 
+        for task in etasks:
+            await task.join()
 
         # fixme do something with knockout
         pass
@@ -892,9 +913,10 @@ class JeuxSansFrontieres:
 
                 await self.games.put(game)
 
+        self.its_a_knockout()
+
         await self.dispatch_events()
         
-        self.its_a_knockout()
 
         # need to dispatch knockout events around here some how.
                 
@@ -983,6 +1005,8 @@ class JeuxSansFrontieres:
     def apres_match(self, game):
         """ Deal with updating of knockout stage """
 
+        game.apres_match()
+
         if game.number == 63:
             print('third place:', game.winner())
             return
@@ -1066,18 +1090,12 @@ class JeuxSansFrontieres:
         print('load games')
         await self.reset()
 
-        for game in self.generate_games():
-
-            game.events = self.events
-            
-            if self.dump:
+        if self.dump:
+            for game in self.generate_games():
                 dump(game, self.dump)
 
-
-        if self.dump:
             self.dump.close()
             sys.exit(0)
-
 
         return
 

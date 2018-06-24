@@ -8,6 +8,7 @@
 2018,6,14,15,rus,sau,94,goal,rus,11
 2018,6,14,15,rus,sau,95,ft,5,0
 
+2018,6,15,14,egy,urg,0,ko,0,0
 2018,6,15,14,egy,urg,89,goal,urg,2
 2018,6,15,14,egy,urg,93,yellow,egy,5
 2018,6,15,14,egy,urg,96,yellow,egy,6
@@ -150,13 +151,13 @@
 
 2018,6,19,18,RUS,EGY,0,ko,0,0
 2018,6,19,18,RUS,EGY,45,ht,0,0
-2018,6,19,18,RUS,EGY, 46, rus, goal, 107
+2018,6,19,18,RUS,EGY, 46, goal, rus, 107
 2018,6,19,18,RUS,EGY, 57, yellow, egy, 21
-2018,6,19,18,RUS,EGY, 59, rus, goal, 6
-2018,6,19,18,RUS,EGY, 62, rus, goal, 22
-2018,6,19,18,RUS,EGY, 73, egy, goal, 10
-2018,6,19,18,RUS,EGY, 84, rus, yellow, 10
-2018,6,19,18,RUS,EGY,90,ft,0,0
+2018,6,19,18,RUS,EGY, 59, goal, rus, 6
+2018,6,19,18,RUS,EGY, 62, goal, rus, 22
+2018,6,19,18,RUS,EGY, 73, goal, egy, 10
+2018,6,19,18,RUS,EGY, 84, yellow, rus, 10
+2018,6,19,18,RUS,EGY,90,ft,3,1
 
 2018, 6, 20, 12, POR, MOR, 0, ko, 0, 0
 2018, 6, 20, 12, POR, MOR, 4, goal, por, 7
@@ -285,9 +286,16 @@
 2018, 6, 24, 15, JAP, SEN, 0, ko, 0, 0
 2018, 6, 24, 15, JAP, SEN, 11, goal, sen, 10
 2018, 6, 24, 15, JAP, SEN, 33, goal, sen, 14
-2018, 6, 24, 15, JAP, SEN, 45, ht, 0, 0
+2018, 6, 24, 15, JAP, SEN, 45, ht, 1, 1
+2018, 6, 24, 15, JAP, SEN, 59, yellow, sen, 19
 2018, 6, 24, 15, JAP, SEN, 90, ft, 0, 0
 
 2018, 6, 24, 18, POL, COL, 0, ko, 0, 0
-2018, 6, 24, 18, POL, COL, 45, ht, 0, 0
-2018, 6, 24, 18, POL, COL, 90, ft, 0, 0
+2018, 6, 24, 18, POL, COL, 40, goal, col, 13
+2018, 6, 24, 18, POL, COL, 45, ht, 0, 1
+2018, 6, 24, 18, POL, COL, 61, yellow, pol, 5
+2018, 6, 24, 18, POL, COL, 70, goal, col, 9
+2018, 6, 24, 18, POL, COL, 75, goal, col, 11
+2018, 6, 24, 18, POL, COL, 85, yellow, pol, 6
+2018, 6, 24, 18, POL, COL, 96, ft, 0, 3
+
