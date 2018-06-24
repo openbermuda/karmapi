@@ -247,11 +247,11 @@ class GameEvent:
         self.game = game
         self.start_evt = curio.Event()
 
-    async def start(self):
+    async def start(self, delay):
 
         # want to wait appropriate time, for now just 1
         try:
-            await curio.timeout_after(1, self.start_evt.wait)
+            await curio.timeout_after(delay, self.start_evt.wait)
         except curio.TaskTimeout:
             print("time to run the event")
 
@@ -260,6 +260,11 @@ class GameEvent:
     async def run(self):
 
         print(self.when, self.game)
+
+
+    def __str__(self):
+
+        return 'GAMEEVENT ' + str(self.when)
 
         
 class TeamEvent(GameEvent):
@@ -271,8 +276,6 @@ class TeamEvent(GameEvent):
 
         self.team = team
         self.who = who
-        self.when = when
-        self.game = game
         self.og = og
         
 class Goal(TeamEvent):
@@ -281,13 +284,29 @@ class Goal(TeamEvent):
 
         print(self.team, self.when, self.who, self.game, self.og)
         # this sort of seems weird
-        await self.game.goal(self)
+        await self.game.goal(self.team, self.who, self.when)
 
-class Whistle(GameEvent):
-    
+
+class KickOff(GameEvent):
+
     async def run(self):
 
-        self.game.end_event.set()
+        print(self.when, self.game, 'KICK OFF')
+        await self.game.kick_off()
+
+class FullTime(GameEvent):
+
+    async def run(self):
+
+        print(self.when, self.game, 'FULL TIME')
+        await self.game.full_time()
+
+class FullTime(GameEvent):
+
+    async def run(self):
+
+        print(self.when, self.game, 'FULL TIME')
+        await self.game.full_time()
 
 class FullTime(GameEvent):
 
@@ -364,7 +383,7 @@ class Game:
 
         self.end_event = curio.Event()
 
-        # flag if score was simulated
+        # flag if score was simulated - do this if game is in the future
         self.simulated = self.when > datetime.now()
         self.number = Game.NUMBER
         Game.NUMBER += 1
@@ -422,6 +441,9 @@ class Game:
         """ Game has kicked off """
         self.ascore = 0
         self.bscore = 0
+
+        if not self.simulated:
+            return
         
         minutes = 45 + randint(0, 7)
 
@@ -591,7 +613,10 @@ class Game:
         else:
             self.bscore += 1
 
-        minute = (when - self.when).minutes
+        if when is None:
+            sys.exit()
+            
+        minute = int((when - self.when).total_seconds() / 60)
         await self.flash(" %dm" % minute, fill='green')
 
 
@@ -612,6 +637,7 @@ class Game:
             await self.kick_off()
         else:
             await self.end_event.wait()
+            print('GAME OVER!')
 
         a = self.a
         b = self.b
@@ -773,7 +799,9 @@ class JeuxSansFrontieres:
 
         self.now = now or datetime(2018, 6, 14)
         self.start = self.now
-        self.step = timedelta(hours=1)
+
+        # factor to warp time by
+        self.timewarp = 60 / (30 * 24 * 60 * 60)
         self.sleep = 0.01
 
         self.games = curio.PriorityQueue()
@@ -783,6 +811,13 @@ class JeuxSansFrontieres:
 
         self.events = curio.UniversalQueue()
         self.game_events = game_events
+
+    def warp(self, when):
+        """ convert when to a delay in seconds """
+        start = self.start
+        seconds = (when - start).total_seconds()
+
+        return seconds * self.timewarp
 
 
     async def dispatch_events(self):
@@ -796,17 +831,13 @@ class JeuxSansFrontieres:
         for game in self.generate_games():
             gl[(game.when.date(), game.a.name.lower(), game.b.name.lower())] = game
 
-        print('ggg', self.game_events)
         knockout = []
-        print(gl.keys())
         for event in parse_events(self.game_events):
-            print('xxx', event)
             when, ateam, bteam, what, extras = event
 
             key = when.date(), ateam, bteam
 
             game = gl.get(key)
-            print(key, game)
 
             if not game:
                 knockout.append(game)
@@ -824,15 +855,20 @@ class JeuxSansFrontieres:
                 if who > 23:
                     og = True
                     who -= 100
-                
+
                 event = Goal(team, who, when, game, og)
 
-                await curio.spawn(event.start)
+                await curio.spawn(event.start(self.warp(when)))
+
+            elif what == 'ko':
+
+                event = KickOff(when, game)
+                await curio.spawn(event.start(self.warp(when)))
 
             elif what == 'ft':
 
                 event = FullTime(when, game)
-                await curio.spawn(event.start)
+                await curio.spawn(event.start(self.warp(when)))
 
             else:
                 # just print out the event info
@@ -1030,15 +1066,20 @@ class JeuxSansFrontieres:
         print('load games')
         await self.reset()
 
-        if self.dump:
-            print(self.dump, dump)
-            for game in self.generate_games():
-                #print(game)
+        for game in self.generate_games():
+
+            game.events = self.events
+            
+            if self.dump:
                 dump(game, self.dump)
 
+
+        if self.dump:
             self.dump.close()
             sys.exit(0)
-            
+
+
+        return
 
         print('loop forever?')
         #while not self.games.empty():
