@@ -29,11 +29,11 @@
 2018,6,15,18,por,spa,24,goal,spa,19
 2018,6,15,18,por,spa,28,yellow,por,16
 2018,6,15,18,por,spa,44,goal,por,7
-2018,6,15,18,por,spa,0,ht,2,1
+2018,6,15,18,por,spa,45,ht,2,1
 2018,6,15,18,por,spa,55,goal,spa,19
 2018,6,15,18,por,spa,58,goal,spa,4
 2018,6,15,18,por,spa,88,goal,por,7
-2018,6,15,18,por,spa,0,ft,3,3
+2018,6,15,18,por,spa,90,ft,3,3
 
 2018,6,16,10,fra,aus,0,ko,0,0
 2018,6,13,10,fra,aus,13,yellow aus,7
@@ -73,7 +73,7 @@
 2018,6,17,12,CRC,SER,15,yellow,crc,15
 2018,6,17,12,CRC,SER,45,ht,0,0
 2018,6,17,12,CRC,SER,56,yellow,crc,20
-2018,6,17,12,CRC,SER,0,goal,ser,11
+2018,6,17,12,CRC,SER,56,goal,ser,11
 2018,6,17,12,CRC,SER,59,yellow,ser,6
 2018,6,17,12,CRC,SER,98,yellow,ser,8
 2018,6,17,12,CRC,SER,98,ft,0,1
@@ -263,7 +263,7 @@
 2018, 6, 23, 18, GER, SWE, 48, goal, ger, 11
 2018, 6, 23, 18, GER, SWE, 52, yellow, swe, 8
 2018, 6, 23, 18, GER, SWE, 71, yellow, ger, 17
-2018, 6, 23, 18, GER, SWE, 82, yellow, ger, 17
+2018, 6, 23, 18, GER, SWE, 82, red, ger, 17
 2018, 6, 23, 18, GER, SWE, 94, goal, ger, 8
 2018, 6, 23, 18, GER, SWE, 95, ft, 2, 1
 
@@ -299,16 +299,23 @@
 2018, 6, 24, 18, POL, COL, 85, yellow, pol, 6
 2018, 6, 24, 18, POL, COL, 96, ft, 0, 3
 
-# 2018, 6, 25, 14, URG, RUS, 0, ko, 0, 0
-# 2018, 6, 25, 14, URG, RUS, 9, yellow, urg, 8
-# 2018, 6, 25, 14, URG, RUS, 10, goal, urg, 9
-# 2018, 6, 25, 14, URG, RUS, 22, goal, urg, 10
-# 2018, 6, 25, 14, URG, RUS, 45, ht, 1, 0
-# 2018, 6, 25, 14, URG, RUS, 90, ft, 1, 0
-# 
-# 2018, 6, 25, 14, SAU, EGY, 0, ko, 0, 0
-# 2018, 6, 25, 14, SAU, EGY, 45, ht, 0, 0
-# 2018, 6, 25, 14, SAU, EGY, 90, ft, 0, 0
+2018, 6, 25, 14, URG, RUS, 0, ko, 0, 0
+2018, 6, 25, 14, URG, RUS, 9, yellow, urg, 8
+2018, 6, 25, 14, URG, RUS, 10, goal, urg, 9
+2018, 6, 25, 14, URG, RUS, 22, goal, urg, 10
+2018, 6, 25, 14, URG, RUS, 28, yellow, rus, 23
+2018, 6, 25, 14, URG, RUS, 35, red, rus, 23
+2018, 6, 25, 14, URG, RUS, 45, ht, 2, 0
+2018, 6, 25, 14, URG, RUS, 90, ft, 2, 0
+
+2018, 6, 25, 14, SAU, EGY, 0, ko, 0, 0
+2018, 6, 25, 14, SAU, EGY, 22, goal, egy, 10
+2018, 6, 25, 14, SAU, EGY, 50, yellow, egy, 2
+2018, 6, 25, 14, SAU, EGY, 51, goal, sau, 7
+2018, 6, 25, 14, SAU, EGY, 53, ht, 0, 1
+2018, 6, 25, 14, SAU, EGY, 86, yellow, egy, 7
+2018, 6, 25, 14, SAU, EGY, 95, goal, sau, 18
+2018, 6, 25, 14, SAU, EGY, 96, ft, 2, 1
 
 2018, 6, 25, 18, IRA, POR, 0, ko, 0, 0
 2018, 6, 25, 18, IRA, POR, 45, ht, 0, 0

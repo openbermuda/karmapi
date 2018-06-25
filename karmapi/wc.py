@@ -396,7 +396,7 @@ class Game:
     def reset(self):
         """ Reset score if it was random """
         if self.simulated:
-            self.ascore = self.bscore = None
+            self.ascore = self.bscore = 0
             
             self.apen = []
             self.bpen = []
@@ -405,13 +405,19 @@ class Game:
 
     def __str__(self):
 
-        return (
-            str(self.label) + ' '  +
-            str(self.a.name) + ' v '  +
-            str(self.b.name) + ' '  +
-            self.day_name() + ' ' +
-            str(self.when)  + ' '  +
-            str(self.where))
+        msg = ' '. join((
+            str(self.label),
+            str(self.a.name),
+            'v',
+            str(self.b.name),
+            self.day_name(),
+            str(self.when),
+            str(self.where)))
+
+        if self.ascore is not None:
+            msg += ' ' + '-'.join((str(self.ascore), str(self.bscore)))
+
+        return msg
 
     def day_name(self):
 
@@ -439,6 +445,7 @@ class Game:
 
     async def kick_off(self, jsf):
         """ Game has kicked off """
+        print('wtf ko', self)
         self.ascore = 0
         self.bscore = 0
 
@@ -615,14 +622,16 @@ class Game:
 
     async def goal(self, team, who=None, when=None):
 
+        if self.ascore is None:
+            print('wtf', self, who, when, team)
+
+        print('zzzz', team, self.a.name, self.b.name, self.ascore, self.bscore)
+            
         if team is self.a:
             self.ascore += 1
         else:
             self.bscore += 1
 
-        if when is None:
-            sys.exit()
-            
         minute = int((when - self.when).total_seconds() / 60)
         await self.flash(" %dm" % minute, fill='green')
 
@@ -640,7 +649,7 @@ class Game:
         
         a = self.a
         b = self.b
-            
+
         a.goals += self.ascore
         b.goals += self.bscore
 
@@ -787,18 +796,20 @@ class JeuxSansFrontieres:
 
     """
     def __init__(self, groups, places=None, dates=None,
-                 now=None, game_events=None):
+                 when=None, game_events=None):
         self.groups = groups
 
         # places and dates for knockout stage
         self.places = places
         self.dates = dates
 
-        self.now = now or datetime(2018, 6, 14)
-        self.start = self.now
+        self.when = when or datetime(2018, 6, 14)
+        self.start = self.when
+
+        self.start_time = datetime.now()
 
         # factor to warp time by
-        self.timewarp = 10 / (30 * 24 * 60 * 60)
+        self.timewarp = 120 / (30 * 24 * 60 * 60)
         self.sleep = 0.01
 
         self.knockout = []
@@ -809,11 +820,21 @@ class JeuxSansFrontieres:
         self.game_events = game_events
 
     def warp(self, when):
-        """ convert when to a delay in seconds """
+        """ convert when to a delay in seconds """ 
         start = self.start
         seconds = (when - start).total_seconds()
 
-        return seconds * self.timewarp
+        # how far are we in?
+        elapsed = (datetime.now() - self.start_time).total_seconds()
+
+        print('WARP', when, seconds, elapsed)
+
+        warp = (seconds * self.timewarp) - elapsed
+        return warp
+
+    def iwarp(self, ticks):
+        """ convert tick time to a datetime  """
+        return self.start + timedelta(seconds=ticks / self.timewarp)
 
 
     async def dispatch_events(self):
@@ -845,6 +866,8 @@ class JeuxSansFrontieres:
             bteam = name2team(bteam)
             
             # got the game.  now create an appropriate event
+            delay = self.warp(when)
+            print('wtf', when, delay, what, self)
             if what == 'goal':
                 team = name2team(extras[0])
 
@@ -856,19 +879,18 @@ class JeuxSansFrontieres:
 
                 event = Goal(team, who, when, game, og, jsf=self)
 
-                task = await curio.spawn(event.start, self.warp(when))
+                task = await curio.spawn(event.start, delay)
                 etasks.append(task)
 
             elif what == 'ko':
-
                 event = KickOff(when, game, jsf=self)
-                task = await curio.spawn(event.start, self.warp(when))
+                task = await curio.spawn(event.start, delay)
                 etasks.append(task)
 
             elif what == 'ft':
 
                 event = FullTime(when, game, jsf=self)
-                task = await curio.spawn(event.start, self.warp(when))
+                task = await curio.spawn(event.start, delay)
                 etasks.append(task)
 
             else:
@@ -1077,8 +1099,6 @@ class JeuxSansFrontieres:
         Generate events.
         """
         print('jsf: run start')
-        print(self.now)
-        print('load games')
         await self.reset()
 
         if self.dump:
@@ -1563,7 +1583,7 @@ class MexicanWaves(pigfarm.Yard):
 
         self.messages = []
 
-        self.when = datetime(2018, 6, 14)
+        self.start_time = datetime.now()
         self.delta_t = 1.
 
         # teleprinter location
@@ -1658,7 +1678,7 @@ class MexicanWaves(pigfarm.Yard):
         return xx, yy
         
         
-    def step_balls(self):
+    async def step_balls(self):
         """ do something here """
         #print('mexican wave step_balls')
         for place in self.places:
@@ -1673,7 +1693,7 @@ class MexicanWaves(pigfarm.Yard):
         locations = defaultdict(list)
         
         for team in jsf.generate_teams():
-            team.where(self.when)
+            team.where(self.what_time_is_it())
             xx, yy = self.latlon2xy(team)
 
             locations[(xx, yy)].append(team)
@@ -1702,9 +1722,17 @@ class MexicanWaves(pigfarm.Yard):
             self.show_tables()
 
             self.show_knockout()
-                
-        self.when += timedelta(hours=self.delta_t)
 
+
+        
+    def what_time_is_it(self):
+
+        elapsed = (datetime.now() - self.start_time).total_seconds()
+
+        elapsed /= self.jsf.timewarp
+
+        return self.start_time + timedelta(seconds=elapsed)
+ 
         
     def draw(self):
 
@@ -1716,7 +1744,7 @@ class MexicanWaves(pigfarm.Yard):
 
     async def reset(self):
         """ Reset timer """
-        self.when = datetime(2018, 6, 14)
+        self.start_time = datetime.now()
 
         self.messages = []
         self.teleprints =[]
@@ -1749,7 +1777,7 @@ class MexicanWaves(pigfarm.Yard):
         for info in reversed(self.messages):
             when = info['when']
             
-            if self.when < when + timedelta(hours=48):
+            if self.what_time_is_it() < when + timedelta(hours=48):
                 pos = self.layout(**info)
                 if pos in keep:
                     continue
@@ -1926,13 +1954,14 @@ class MexicanWaves(pigfarm.Yard):
                 self.beanstalk.image = image
 
             self.draw()
-            
-            self.step_balls()
 
-            self.jsf.now = self.when
+            # step balls
+            await self.step_balls()
 
-            #print('sleeping', self.sleep)
-            await curio.sleep(0)            
+            #self.jsf.now = self.when()
+
+            # wait for event here.  We want to repaint in a minute game time
+            await curio.sleep(self.sleep)            
 
 def dump(game, out):
 
