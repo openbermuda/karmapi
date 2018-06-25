@@ -1693,7 +1693,9 @@ class MexicanWaves(pigfarm.Yard):
         locations = defaultdict(list)
         
         for team in jsf.generate_teams():
-            team.where(self.what_time_is_it())
+
+            wtit = self.what_time_is_it()
+            team.where(wtit)
             xx, yy = self.latlon2xy(team)
 
             locations[(xx, yy)].append(team)
@@ -1724,15 +1726,12 @@ class MexicanWaves(pigfarm.Yard):
             self.show_knockout()
 
 
-        
     def what_time_is_it(self):
 
         elapsed = (datetime.now() - self.start_time).total_seconds()
 
-        elapsed /= self.jsf.timewarp
+        return self.jsf.iwarp(elapsed)
 
-        return self.start_time + timedelta(seconds=elapsed)
- 
         
     def draw(self):
 
@@ -1860,6 +1859,10 @@ class MexicanWaves(pigfarm.Yard):
                          xx=xx, yy=yy, fill='magenta')
 
             yy += 0.025
+
+    def show_teams(self):
+
+        pass
 
                 
     def show_games(self):
