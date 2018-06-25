@@ -254,7 +254,7 @@ class GameEvent:
         try:
             await curio.timeout_after(delay, self.start_evt.wait)
         except curio.TaskTimeout:
-            print("time to run the event")
+            pass
 
         await self.run()
 
@@ -293,21 +293,14 @@ class KickOff(GameEvent):
     async def run(self):
 
         print(self.when, self.game, 'KICK OFF')
-        await self.game.kick_off()
+        await self.game.kick_off(self.jsf)
 
-class FullTime(GameEvent):
-
-    async def run(self):
-
-        print(self.when, self.game, 'FULL TIME')
-        await self.game.full_time()
-
-class FullTime(GameEvent):
+class HalfTime(GameEvent):
 
     async def run(self):
 
-        print(self.when, self.game, 'FULL TIME')
-        await self.game.full_time()
+        print(self.when, self.game, 'HALF TIME')
+        await self.game.half_time()
 
 class FullTime(GameEvent):
 
@@ -318,6 +311,8 @@ class FullTime(GameEvent):
 
         if done:
             self.jsf.apres_match(self.game)
+        else:
+            print('NOT DONE???')
 
         
 
@@ -389,6 +384,7 @@ class Game:
 
         # flag if score was simulated - do this if game is in the future
         self.simulated = self.when > datetime.now()
+        print('SIMULATED', self.simulated)
         self.number = Game.NUMBER
         Game.NUMBER += 1
 
@@ -441,14 +437,15 @@ class Game:
 
         return (self.when, self.number) >= (other.when, other.number)
 
-    async def kick_off(self):
+    async def kick_off(self, jsf):
         """ Game has kicked off """
         self.ascore = 0
         self.bscore = 0
 
         if not self.simulated:
             return
-        
+
+        print('SIMULATING', self)
         minutes = 45 + randint(0, 7)
 
         await self.half(minutes)
@@ -457,14 +454,12 @@ class Game:
 
         await self.second_half()
 
-        await self.full_time()
+        done = await self.full_time()
         
-        if self.is_group():
-            # maybe a good time to check if group is finished?
-            return self.ascore, self.bscore
+        ko = not self.is_group()
 
         # knockout match, are we done?
-        if self.ascore == self.bscore:
+        if ko and self.ascore == self.bscore:
             
             await self.extra_time()
             await self.extra_half_time()
@@ -473,6 +468,8 @@ class Game:
             if self.ascore == self.bscore:
                 await self.penalties()
 
+        print('APRES!!!')
+        jsf.apres_match(self)
 
     def is_group(self):
 
@@ -639,20 +636,6 @@ class Game:
     async def sub(self, team, off=None, on=None, when=None):
         pass
 
-    async def run(self, events):
-        """ Run the game """
-        self.events = events
-
-        if self.simulated:
-            await self.kick_off()
-        else:
-            await self.end_event.wait()
-            print('GAME OVER!')
-
-        self.apres_match()
-        
-        await self.flash(tag='FT')
-
     def apres_match(self):
         
         a = self.a
@@ -815,10 +798,9 @@ class JeuxSansFrontieres:
         self.start = self.now
 
         # factor to warp time by
-        self.timewarp = 60 / (30 * 24 * 60 * 60)
+        self.timewarp = 10 / (30 * 24 * 60 * 60)
         self.sleep = 0.01
 
-        self.games = curio.PriorityQueue()
         self.knockout = []
         self.winners = {}
         self.seconds = {}
@@ -901,6 +883,9 @@ class JeuxSansFrontieres:
 
     async def load_group_games(self):
         """ Put the group games into the game queue """
+
+        kos = []
+        
         for label, group in self.groups.items():
             group.name = label
             group.reset()
@@ -911,17 +896,25 @@ class JeuxSansFrontieres:
                 game.a.games.append(game)
                 game.b.games.append(game)
 
-                await self.games.put(game)
+                if game.simulated:
+                    print('XXXXXXXX', game.when)
+                    kos.append(KickOff(game.when, game, jsf=self))
 
         self.its_a_knockout()
 
         await self.dispatch_events()
-        
 
-        # need to dispatch knockout events around here some how.
-                
         for game in self.knockout:
-            await self.games.put(game)
+            game.events = self.events
+            kos.append(KickOff(game.when, game, jsf=self))
+
+        kotasks = []
+        for ko in kos:
+            task = await curio.spawn(ko.start, self.warp(ko.when))
+            kotasks.append(task)
+
+        for ko in kotasks:
+            await ko.join()
 
     def its_a_knockout(self):
         """ Set up knockout stage """
@@ -1063,9 +1056,6 @@ class JeuxSansFrontieres:
         self.winners = {}
         self.seconds = {}
 
-        while not self.games.empty():
-            await self.games.get()
-
         await self.load_group_games()
 
     async def run(self):
@@ -1099,26 +1089,6 @@ class JeuxSansFrontieres:
 
         return
 
-        print('loop forever?')
-        #while not self.games.empty():
-        while True:
-
-            game = await self.games.get()
-
-            if game.when < self.now:
-                print(game.number)
-                print(self.now, game)
-
-                # Run the game
-                await game.run(self.events)
-
-                # post process game
-                self.apres_match(game)
-
-            else:
-                await self.games.put(game)
-
-            await curio.sleep(self.sleep)
 
 
 class Place:
