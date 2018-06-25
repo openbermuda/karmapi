@@ -1007,12 +1007,13 @@ class JeuxSansFrontieres:
             print('Winner:', game.winner())
             return
 
-        game.a.played += 1
-        game.b.played += 1
             
         if game.is_group():
             group = game.group
             group.played += 1
+
+            game.a.played += 1
+            game.b.played += 1
             
             key = game.label.lower()
             kgame, label = self.winners[key]
