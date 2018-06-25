@@ -320,8 +320,13 @@
 2018, 6, 25, 18, IRA, POR, 0, ko, 0, 0
 2018, 6, 25, 18, IRA, POR, 33, yellow, por, 5
 2018, 6, 25, 18, IRA, POR, 44, goal, por, 20
-2018, 6, 25, 18, IRA, POR, 45, ht, 0, 0
-2018, 6, 25, 18, IRA, POR, 90, ft, 0, 0
+2018, 6, 25, 18, IRA, POR, 45, ht, 0, 1
+2018, 6, 25, 18, IRA, POR, 52, yellow, ira, 3
+2018, 6, 25, 18, IRA, POR, 54, yellow, ira, 20
+2018, 6, 25, 18, IRA, POR, 64, yellow, por, 20
+2018, 6, 25, 18, IRA, POR, 83, yellow, por, 7
+2018, 6, 25, 18, IRA, POR, 92, goal, ira, 10
+2018, 6, 25, 18, IRA, POR, 96, ft, 1, 1
 
 2018, 6, 25, 18, SPA, MOR, 0, ko, 0, 0
 2018, 6, 25, 18, SPA, MOR, 14, goal, mor, 13
@@ -331,4 +336,8 @@
 2018, 6, 25, 18, SPA, MOR, 31, yellow, mor, 4
 2018, 6, 25, 18, SPA, MOR, 31, yellow, mor, 14
 2018, 6, 25, 18, SPA, MOR, 45, ht, 0, 0
-2018, 6, 25, 18, SPA, MOR, 90, ft, 0, 0
+2018, 6, 25, 18, SPA, MOR, 81, goal, mor, 19
+2018, 6, 25, 18, SPA, MOR, 89, yellow, mor, 12
+2018, 6, 25, 18, SPA, MOR, 91, goal, spa, 17
+2018, 6, 25, 18, SPA, MOR, 94, yellow, mor, 2
+2018, 6, 25, 18, SPA, MOR, 97, ft, 2, 2

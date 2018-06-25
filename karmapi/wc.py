@@ -248,9 +248,10 @@ class GameEvent:
         self.jsf = jsf
         self.start_evt = curio.Event()
 
-    async def start(self, delay):
+    async def start(self):
 
         # want to wait appropriate time, for now just 1
+        delay = self.jsf.warp(self.when)
         try:
             await curio.timeout_after(delay, self.start_evt.wait)
         except curio.TaskTimeout:
@@ -266,6 +267,19 @@ class GameEvent:
     def __str__(self):
 
         return 'GAMEEVENT ' + str(self.when)
+
+class CheckPoint(GameEvent):
+
+    async def run(self):
+
+        print('check point: ', self.when, self.game)
+        
+        await self.jsf.check_point()
+
+    def __str__(self):
+
+        return 'CHECK POINT ' + str(self.when)
+    
 
         
 class TeamEvent(GameEvent):
@@ -876,8 +890,6 @@ class JeuxSansFrontieres:
             bteam = name2team(bteam)
             
             # got the game.  now create an appropriate event
-            delay = self.warp(when)
-            print('wtf', when, delay, what, self)
             if what == 'goal':
                 team = name2team(extras[0])
 
@@ -889,18 +901,18 @@ class JeuxSansFrontieres:
 
                 event = Goal(team, who, when, game, og, jsf=self)
 
-                task = await curio.spawn(event.start, delay)
+                task = await curio.spawn(event.start)
                 etasks.append(task)
 
             elif what == 'ko':
                 event = KickOff(when, game, jsf=self)
-                task = await curio.spawn(event.start, delay)
+                task = await curio.spawn(event.start)
                 etasks.append(task)
 
             elif what == 'ft':
 
                 event = FullTime(when, game, jsf=self)
-                task = await curio.spawn(event.start, delay)
+                task = await curio.spawn(event.start)
                 etasks.append(task)
 
             else:
@@ -936,17 +948,24 @@ class JeuxSansFrontieres:
 
         await self.dispatch_events()
 
+        # create an event for now, to trigger checkpoint for reset
+        cp = CheckPoint(when=datetime.utcnow(), jsf=self)
+        cptask = curio.spawn(cp.start)
+
         for game in self.knockout:
             game.events = self.events
             kos.append(KickOff(game.when, game, jsf=self))
 
         kotasks = []
         for ko in kos:
-            task = await curio.spawn(ko.start, self.warp(ko.when))
+            task = await curio.spawn(ko.start)
             kotasks.append(task)
 
         for ko in kotasks:
             await ko.join()
+
+        await cp.join()
+
 
     def its_a_knockout(self):
         """ Set up knockout stage """
@@ -1597,7 +1616,7 @@ class MexicanWaves(pigfarm.Yard):
         self.delta_t = 1.
 
         # teleprinter location
-        self.teleprint_xxyy = .8, .025
+        self.teleprint_xxyy = .85, .425
         self.teleprints = []
 
         self.scan_venues(venues)
