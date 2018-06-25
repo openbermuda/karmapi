@@ -260,7 +260,7 @@ class GameEvent:
 
     async def run(self):
 
-        print(self.when, self.game)
+        print('ruunning: ', self.when, self.game)
 
 
     def __str__(self):
@@ -383,8 +383,11 @@ class Game:
         self.end_event = curio.Event()
 
         # flag if score was simulated - do this if game is in the future
-        self.simulated = self.when > datetime.now()
-        print('SIMULATED', self.simulated)
+        self.simulated = self.when > datetime.utcnow()
+        if self.simulated:
+            print('SIMULATED', self.simulated, self)
+
+        # this has to go away..
         self.number = Game.NUMBER
         Game.NUMBER += 1
 
@@ -405,11 +408,18 @@ class Game:
 
     def __str__(self):
 
+        aname = bname = '---'
+        if self.a:
+            aname = self.a.name
+
+        if self.b:
+            bname= self.b.name
+    
         msg = ' '. join((
             str(self.label),
-            str(self.a.name),
+            aname,
             'v',
-            str(self.b.name),
+            bname,
             self.day_name(),
             str(self.when),
             str(self.where)))
@@ -806,7 +816,7 @@ class JeuxSansFrontieres:
         self.when = when or datetime(2018, 6, 14)
         self.start = self.when
 
-        self.start_time = datetime.now()
+        self.start_time = datetime.utcnow()
 
         # factor to warp time by
         self.timewarp = 120 / (30 * 24 * 60 * 60)
@@ -825,7 +835,7 @@ class JeuxSansFrontieres:
         seconds = (when - start).total_seconds()
 
         # how far are we in?
-        elapsed = (datetime.now() - self.start_time).total_seconds()
+        elapsed = (datetime.utcnow() - self.start_time).total_seconds()
 
         print('WARP', when, seconds, elapsed)
 
@@ -1583,7 +1593,7 @@ class MexicanWaves(pigfarm.Yard):
 
         self.messages = []
 
-        self.start_time = datetime.now()
+        self.start_time = datetime.utcnow()
         self.delta_t = 1.
 
         # teleprinter location
@@ -1728,7 +1738,7 @@ class MexicanWaves(pigfarm.Yard):
 
     def what_time_is_it(self):
 
-        elapsed = (datetime.now() - self.start_time).total_seconds()
+        elapsed = (datetime.utcnow() - self.start_time).total_seconds()
 
         return self.jsf.iwarp(elapsed)
 
@@ -1743,7 +1753,7 @@ class MexicanWaves(pigfarm.Yard):
 
     async def reset(self):
         """ Reset timer """
-        self.start_time = datetime.now()
+        self.start_time = datetime.utcnow()
 
         self.messages = []
         self.teleprints =[]
@@ -1968,7 +1978,7 @@ class MexicanWaves(pigfarm.Yard):
 
 def dump(game, out):
 
-    now = datetime.now()
+    now = datetime.utcnow()
     print('dumping')
     when = game.when
 
