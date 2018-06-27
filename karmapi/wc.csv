@@ -55,7 +55,7 @@
 2018,6,16,14,PER,DEN,0,ko,0,0
 2018,6,16,14,PER,DEN,38,yellow,per,13
 2018,6,16,14,PER,DEN,45,ht,0,0
-2018,6,16,14,PER,DEN,58,goal,per,20
+2018,6,16,14,PER,DEN,58,goal,den,20
 2018,6,16,14,PER,DEN,86,yellow,den,8
 2018,6,16,14,PER,DEN,93,yellow,den,20
 2018,6,16,14,PER,DEN,94,ft,0,1
@@ -341,3 +341,43 @@
 2018, 6, 25, 18, SPA, MOR, 91, goal, spa, 17
 2018, 6, 25, 18, SPA, MOR, 94, yellow, mor, 2
 2018, 6, 25, 18, SPA, MOR, 97, ft, 2, 2
+
+2018, 6, 26, 14, DEN, FRA, 0, ko, 0, 0
+2018, 6, 26, 14, DEN, FRA, 48, yellow, den, 13
+2018, 6, 26, 14, DEN, FRA, 49, ht, 0, 0
+2018, 6, 26, 14, DEN, FRA, 90, ft, 0, 0
+
+2018, 6, 26, 14, AUS, PER, 0, ko, 0, 0
+2018, 6, 26, 14, AUS, PER, 10, yellow, aus, 15
+2018, 6, 26, 14, AUS, PER, 18, goal, per, 18
+2018, 6, 26, 14, AUS, PER, 44, yellow, per, 19
+2018, 6, 26, 14, AUS, PER, 45, ht, 0, 1
+2018, 6, 26, 14, AUS, PER, 50, goal, per, 9
+2018, 6, 26, 14, AUS, PER, 60, yellow, aus, 17
+2018, 6, 26, 14, AUS, PER, 66, yellow, aus, 23
+2018, 6, 26, 14, AUS, PER, 79, yellow, per, 7
+2018, 6, 26, 14, AUS, PER, 88, yellow, aus, 5
+2018, 6, 26, 14, AUS, PER, 95, ft, 0, 2
+
+2018, 6, 26, 18, NIG, ARG, 0, ko, 0, 0
+2018, 6, 26, 18, NIG, ARG, 14, goal, arg, 10
+2018, 6, 26, 18, NIG, ARG, 32, yellow, nig, 6
+2018, 6, 26, 18, NIG, ARG, 45, ht, 0, 1
+2018, 6, 26, 18, NIG, ARG, 49, yellow, arg, 14
+2018, 6, 26, 18, NIG, ARG, 51, goal, nig, 11
+2018, 6, 26, 18, NIG, ARG, 64, yellow, arg, 7
+2018, 6, 26, 18, NIG, ARG, 86, goal, arg, 16
+2018, 6, 26, 18, NIG, ARG, 32, yellow, nig, 10
+2018, 6, 26, 18, NIG, ARG, 90, ft, 1, 2
+
+2018, 6, 26, 18, ICE, CRO, 0, ko, 0, 0
+2018, 6, 26, 18, ICE, CRO, 14, yellow, cro, 20
+2018, 6, 26, 18, ICE, CRO, 45, ht, 0, 0
+2018, 6, 26, 18, ICE, CRO, 53, goal, cro, 19
+2018, 6, 26, 18, ICE, CRO, 59, yellow, ice, 20
+2018, 6, 26, 18, ICE, CRO, 64, yellow, ice, 11
+2018, 6, 26, 18, ICE, CRO, 76, goal, ice, 10
+2018, 6, 26, 18, ICE, CRO, 84, yellow, ice, 2
+2018, 6, 26, 18, ICE, CRO, 90, goal, cro, 4
+2018, 6, 26, 18, ICE, CRO, 92, ft, 1, 2
+
