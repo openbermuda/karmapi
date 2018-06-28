@@ -165,7 +165,7 @@ class Team:
 
         for player in range(squadsize):
             self.squad[player] = Player(player + 1)
-        
+
     def where(self, when):
         """ Where is the team? """
 
@@ -300,6 +300,15 @@ class Goal(TeamEvent):
         print(self.team, self.when, self.who, self.game, self.og)
         # this sort of seems weird
         await self.game.goal(self.team, self.who, self.when)
+
+
+class Yellow(TeamEvent):
+
+    async def run(self):
+
+        print(self.team, self.when, self.who, self.game, self.og)
+        # this sort of seems weird
+        await self.game.yellow(self.team, self.who, self.when)
 
 
 class KickOff(GameEvent):
@@ -469,7 +478,6 @@ class Game:
 
     async def kick_off(self, jsf):
         """ Game has kicked off """
-        print('wtf ko', self)
         self.ascore = 0
         self.bscore = 0
 
@@ -646,11 +654,6 @@ class Game:
 
     async def goal(self, team, who=None, when=None):
 
-        if self.ascore is None:
-            print('wtf', self, who, when, team)
-
-        print('zzzz', team, self.a.name, self.b.name, self.ascore, self.bscore)
-            
         if team is self.a:
             self.ascore += 1
         else:
@@ -659,9 +662,17 @@ class Game:
         minute = int((when - self.when).total_seconds() / 60)
         await self.flash(" %dm" % minute, fill='green')
 
-
+        
     async def yellow(self, team, who=None, when=None):
-        pass
+        
+        if team is self.a:
+            self.a.yellow += 1
+        else:
+            self.b.yellow += 1
+
+        minute = int((when - self.when).total_seconds() / 60)
+        await self.flash(" %dm" % minute, fill='purple')
+
 
     async def red(self, team, who=None, when=None):
         pass
@@ -692,7 +703,7 @@ class Game:
                 a.points += 1
                 b.points += 1
 
-    async def flash(self, tag='', fill='red'):
+    async def flash(self, tag='', fill='red', card=False):
 
         a = self.a
         b = self.b
@@ -702,10 +713,9 @@ class Game:
         msg = a.name + ' ' + str(ascore) + ' ' + str(bscore) + ' ' + b.name
         msg += ' ' + tag
 
-        print('flash', msg)
         when = self.when + timedelta(minutes=self.minute)
         await self.events.put(dict(where=self.where, msg=msg, yoff=-90,
-                                   when=when, fill=fill))
+                                   when=when, fill=fill, card=card))
 
     def winner(self):
         """ Return winning team """
@@ -841,8 +851,11 @@ class JeuxSansFrontieres:
         self.seconds = {}
 
         self.events = curio.UniversalQueue()
-        self.game_events = game_events
 
+        self.game_events = game_events or []
+
+        self.tasks = []
+            
     def warp(self, when):
         """ convert when to a delay in seconds """ 
         start = self.start
@@ -875,7 +888,8 @@ class JeuxSansFrontieres:
 
         knockout = []
         etasks = []
-        for event in parse_events(self.game_events):
+        for event in self.game_events:
+
             when, ateam, bteam, what, extras = event
 
             key = when.date(), ateam, bteam
@@ -904,6 +918,12 @@ class JeuxSansFrontieres:
                 task = await curio.spawn(event.start)
                 etasks.append(task)
 
+            elif what == 'yellow':
+                event = Yellow(team, who, when, game, jsf=self)
+                task = await curio.spawn(event.start)
+                etasks.append(task)
+                
+
             elif what == 'ko':
                 event = KickOff(when, game, jsf=self)
                 task = await curio.spawn(event.start)
@@ -919,6 +939,7 @@ class JeuxSansFrontieres:
                 # just print out the event info
                 print('*****', when, ateam, bteam, what, extras)
 
+        self.tasks += etasks
         for task in etasks:
             await task.join()
 
@@ -948,10 +969,6 @@ class JeuxSansFrontieres:
 
         await self.dispatch_events()
 
-        # create an event for now, to trigger checkpoint for reset
-        cp = CheckPoint(when=datetime.utcnow(), jsf=self)
-        cptask = curio.spawn(cp.start)
-
         for game in self.knockout:
             game.events = self.events
             kos.append(KickOff(game.when, game, jsf=self))
@@ -961,10 +978,10 @@ class JeuxSansFrontieres:
             task = await curio.spawn(ko.start)
             kotasks.append(task)
 
+        self.tasks += kotasks
+
         for ko in kotasks:
             await ko.join()
-
-        await cp.join()
 
 
     def its_a_knockout(self):
@@ -1101,7 +1118,11 @@ class JeuxSansFrontieres:
 
     async def reset(self):
         """ Reset things to start again """
+        for task in self.tasks:
+            await task.cancel()
+            
         self.now = self.start
+        self.start_time = datetime.utcnow()
         Game.NUMBER -= len(self.knockout)
 
         self.knockout = []
@@ -1608,6 +1629,10 @@ class MexicanWaves(pigfarm.Yard):
 
         self.jsf = jsf
         self.jsf.dump = dump
+
+        if events:
+            events = list(parse_events(events))
+        
         self.jsf.game_events = events
 
         self.messages = []
@@ -2018,7 +2043,7 @@ def parse_events(events, out=None):
     if out:
         out = csv.writer(out)
     
-    for row in csv.reader(events):
+    for ix, row in enumerate(csv.reader(events)):
 
         if out:
             row = [x.strip() for x in row]

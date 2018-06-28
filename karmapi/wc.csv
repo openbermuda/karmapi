@@ -427,3 +427,33 @@
 2018, 6, 27, 18, SWI, CRC, 93, goal, crc, 101
 2018, 6, 27, 18, SWI, CRC, 94, ft, 2, 2
 
+2018, 6, 28, 14, JAP, POL, 0, ko, 0, 0
+2018, 6, 28, 14, JAP, POL, 45, ht, 0, 0
+2018, 6, 28, 14, JAP, POL, 59, goal, pol, 5
+2018, 6, 28, 14, JAP, POL, 66, yellow, jap, 20
+2018, 6, 28, 14, JAP, POL, 90, ft, 0, 0
+
+2018, 6, 28, 14, SEN, COL, 0, ko, 0, 0
+2018, 6, 28, 14, SEN, COL, 44, yellow, col, 17
+2018, 6, 28, 14, SEN, COL, 45, ht, 0, 0
+2018, 6, 28, 14, SEN, COL, 51, yellow, sen, 19
+2018, 6, 28, 14, SEN, COL, 74, goal, col, 13
+2018, 6, 28, 14, SEN, COL, 90, ft, 0, 0
+
+2018, 6, 28, 18, ENG, BEL, 0, ko, 0, 0
+2018, 6, 28, 18, ENG, BEL, 19, yellow, bel, 17
+2018, 6, 28, 18, ENG, BEL, 33, yellow, bel, 23
+2018, 6, 28, 18, ENG, BEL, 45, ht, 0, 0
+2018, 6, 28, 18, ENG, BEL, 51, goal, bel, 18
+2018, 6, 28, 18, ENG, BEL, 90, ft, 0, 1
+
+2018, 6, 28, 18, PAN, TUN, 0, ko, 0, 0
+2018, 6, 28, 18, PAN, TUN, 33, goal, pan, 104
+2018, 6, 28, 18, PAN, TUN, 44, yellow, tun, 13
+2018, 6, 28, 18, PAN, TUN, 45, ht, 1, 0
+2018, 6, 28, 18, PAN, TUN, 51, goal, tun, 8
+2018, 6, 28, 18, PAN, TUN, 66, goal, tun, 10
+2018, 6, 28, 18, PAN, TUN, 71, yellow, tun, 9
+2018, 6, 28, 18, PAN, TUN, 80, yellow, tun, 6
+2018, 6, 28, 18, PAN, TUN, 90, ft, 1, 2
+
