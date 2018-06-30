@@ -843,7 +843,7 @@ class JeuxSansFrontieres:
         self.start_time = datetime.utcnow()
 
         # factor to warp time by
-        self.timewarp = 120 / (30 * 24 * 60 * 60)
+        self.timewarp = 10 / (30 * 24 * 60 * 60)
         self.sleep = 0.01
 
         self.knockout = []
@@ -897,7 +897,7 @@ class JeuxSansFrontieres:
             game = gl.get(key)
 
             if not game:
-                knockout.append(game)
+                knockout.append(key)
 
             # turn team names into teams
             ateam = name2team(ateam)
