@@ -112,7 +112,7 @@ class PigFarm:
 
         while True:
             meta, kwargs = await self.builds.get()
-            print('building piglet:', meta)
+            print('building piglet:', meta, kwargs)
 
             piglet = meta(self.toplevel(), **kwargs)
 

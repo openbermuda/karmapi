@@ -874,30 +874,54 @@ class JeuxSansFrontieres:
         return self.start + timedelta(seconds=ticks / self.timewarp)
 
 
+    def match_game(self, key):
+
+        when, ateam, bteam = key
+
+        # build game lookup
+        gl = {}
+        for game in self.generate_games():
+            game.events = self.events
+
+            aname = bname = '-'
+            if game.a:
+                aname = game.a.name.lower()
+                bname = game.b.name.lower()
+
+            gkey = (game.when, aname, bname)
+            #print(game, gkey)
+            if gkey in gl:
+                raise ValueError("Duplicate game key %s" % str(key))
+            gl[gkey] = game
+
+        # Now find the game for this key
+        game = gl.get(key)
+
+        if game is None:
+            game = gl.get((key[0], '-','-'))
+
+        return game
+
+    
     async def dispatch_events(self):
         """ Dispatch events to the appropriate game """
 
         if not self.game_events:
             return
         
-        # build game lookup
-        gl = {}
-        for game in self.generate_games():
-            game.events = self.events
-            gl[(game.when.date(), game.a.name.lower(), game.b.name.lower())] = game
-
         knockout = []
         etasks = []
         for event in self.game_events:
 
-            when, ateam, bteam, what, extras = event
+            kotime, when, ateam, bteam, what, extras = event
 
-            key = when.date(), ateam, bteam
+            key = kotime, ateam, bteam
 
-            game = gl.get(key)
+            game = self.match_game(key)
 
             if not game:
-                knockout.append(key)
+                knockout.append((key, event))
+                continue
 
             # turn team names into teams
             ateam = name2team(ateam)
@@ -905,20 +929,13 @@ class JeuxSansFrontieres:
             
             # got the game.  now create an appropriate event
             if what == 'goal':
-                team = name2team(extras[0])
-
-                who = int(extras[1])
-                og = False
-                if who > 23:
-                    og = True
-                    who -= 100
-
+                team, who, og = whodunnit(extras)
                 event = Goal(team, who, when, game, og, jsf=self)
-
                 task = await curio.spawn(event.start)
                 etasks.append(task)
 
             elif what == 'yellow':
+                team, who, og = whodunnit(extras)
                 event = Yellow(team, who, when, game, jsf=self)
                 task = await curio.spawn(event.start)
                 etasks.append(task)
@@ -1059,9 +1076,11 @@ class JeuxSansFrontieres:
             for game in team.games:
                 games.add(game)
 
+        games.update(self.knockout)
+        
         for game in sorted(games):
             yield game
-        
+
 
     def apres_match(self, game):
         """ Deal with updating of knockout stage """
@@ -1092,9 +1111,9 @@ class JeuxSansFrontieres:
                 
             kgame, label = self.seconds[key]
             steam = group.second()
-            setattr(kgame, label, group.second())
+            setattr(kgame, label, steam)
             if group.is_finished():
-                steam.games.append(game)
+                steam.games.append(kgame)
 
                 for team in group.teams:
                     if team not in (wteam, steam):
@@ -1104,7 +1123,9 @@ class JeuxSansFrontieres:
         else:
             kgame, label = self.winners[game.number]
             wteam = game.winner()
-            setattr(kgame, label, game.winner())
+
+            print('knockout winner:', wteam, game)
+            setattr(kgame, label, wteam)
             wteam.games.append(kgame)
 
             if game.number in self.seconds:
@@ -2064,10 +2085,10 @@ def parse_events(events, out=None):
         what = row[7].strip().lower()
         extras = [x.strip().lower() for x in row[8:]]
 
-        when = datetime(year, month, day, hour, 0)
-        when += timedelta(minutes=minute)
+        kotime = datetime(year, month, day, hour, 0)
+        when = kotime + timedelta(minutes=minute)
 
-        yield when, a.lower().strip(), b.lower().strip(), what, extras
+        yield kotime, when, a.lower().strip(), b.lower().strip(), what, extras
         
     
 
@@ -2087,6 +2108,19 @@ def shuffle_events(events, out=None):
 def name2team(name):
     """ Convert string to team object """
     return globals()[name]
+
+
+def whodunnit(extras):
+    
+    team = name2team(extras[0])
+
+    who = int(extras[1])
+    og = False
+    if who > 23:
+        og = True
+        who -= 100
+
+    return team, who, og
 
 
 parser = argparse.ArgumentParser()
