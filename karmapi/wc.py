@@ -297,7 +297,7 @@ class Goal(TeamEvent):
 
     async def run(self):
 
-        print(self.team, self.when, self.who, self.game, self.og)
+        print('goal', self.team, self.when, self.who, self.game, self.og)
         # this sort of seems weird
         await self.game.goal(self.team, self.who, self.when)
 
@@ -306,7 +306,7 @@ class Yellow(TeamEvent):
 
     async def run(self):
 
-        print(self.team, self.when, self.who, self.game, self.og)
+        print('yellow', self.team, self.when, self.who, self.game, self.og)
         # this sort of seems weird
         await self.game.yellow(self.team, self.who, self.when)
 
@@ -315,7 +315,7 @@ class KickOff(GameEvent):
 
     async def run(self):
 
-        print(self.when, self.game, 'KICK OFF')
+        print('ko', self.when, self.game, 'KICK OFF')
         await self.game.kick_off(self.jsf)
 
 class HalfTime(GameEvent):
@@ -330,13 +330,9 @@ class FullTime(GameEvent):
     async def run(self):
 
         print(self.when, self.game, 'FULL TIME')
-        done = await self.game.full_time()
+        await self.game.full_time()
 
-        if done:
-            self.jsf.apres_match(self.game)
-        else:
-            print('NOT DONE???')
-
+        self.jsf.apres_match(self.game)
         
 
 
@@ -345,12 +341,13 @@ class Penalty(Goal):
 
     which: which penalty: 1, 2, 3 etc
     """
-    def __init__(self, team, which=None, score=True, **kwargs):
+    def __init__(self, team, who=None, when=None, game=None, score=False, **kwargs):
 
-        super().__init__(team, **kwargs)
+        super().__init__(team, who=who, when=when, game=game, **kwargs)
+
+        print('PEN', self.when, team, score)
         
-        self.which = which
-        self.score = True
+        self.score = score
         self.penalty = True
 
     async def run(self):
@@ -403,8 +400,6 @@ class Game:
         
         self.minute = 0
 
-        self.end_event = curio.Event()
-
         # flag if score was simulated - do this if game is in the future
         self.simulated = self.when > datetime.utcnow()
         if self.simulated:
@@ -421,13 +416,12 @@ class Game:
 
     def reset(self):
         """ Reset score if it was random """
-        if self.simulated:
-            self.ascore = self.bscore = 0
+        self.ascore = self.bscore = 0
             
-            self.apen = []
-            self.bpen = []
+        self.apen = []
+        self.bpen = []
 
-            self.minute = 0
+        self.minute = 0
 
     def __str__(self):
 
@@ -478,13 +472,13 @@ class Game:
 
     async def kick_off(self, jsf):
         """ Game has kicked off """
-        self.ascore = 0
-        self.bscore = 0
+        self.reset()
 
         if not self.simulated:
             return
 
         print('SIMULATING', self)
+            
         minutes = 45 + randint(0, 7)
 
         await self.half(minutes)
@@ -493,7 +487,7 @@ class Game:
 
         await self.second_half()
 
-        done = await self.full_time()
+        await self.full_time()
         
         ko = not self.is_group()
 
@@ -559,19 +553,7 @@ class Game:
 
     async def full_time(self):
 
-        done = False
-        if self.is_group():
-            done = True
-
-        elif self.ascore != self.bscore:
-            done = True
-
-        if done:
-            await self.end_event.set()
-            
         await self.flash(fill='yellow', tag='FT')
-
-        return done
 
     async def extra_time(self):
         minutes = 15 + randint(0, 3)
@@ -594,15 +576,15 @@ class Game:
         total = 0
         done = False
         while not done:
-            done = self.penalty(first)
+            done = self._penalty(first)
             first, second = second, first
 
-    def penalty(self, team):
-        """ Take a penalty """
+    def _penalty(self, team):
+        """ Simulate a penalty """
         which = len(self.apen) + len(self.bpen)
         
         if random() < 0.5:
-            pen = Penalty(team, score=True, which=which, game=self,
+            pen = Penalty(team, score=True, game=self,
                           when=self.when + timedelta(minutes=120 + which),
                           who = randint(1, 23))
 
@@ -612,6 +594,13 @@ class Game:
                 self.bpen.append(pen)
 
         return self.all_over()
+
+    async def penalty(self, pen):
+
+        if pen.team is self.a:
+            self.apen.append(pen)
+        else:
+            self.bpen.append(pen)
 
     def pens_score(self):
         """ score in penalties """
@@ -709,6 +698,10 @@ class Game:
         b = self.b
         ascore = self.ascore
         bscore = self.bscore
+        if self.apen:
+            aa, bb = self.pens_score()
+            ascore = "%d(%d)" % (self.ascore, aa)
+            bscore = "%d(%d)" % (self.bscore, bb)
         
         msg = a.name + ' ' + str(ascore) + ' ' + str(bscore) + ' ' + b.name
         msg += ' ' + tag
@@ -795,7 +788,7 @@ class Group:
 
     def tablesort(self, key):
         """ Order teams """
-        return key.points, key.goals - key.against, key.goals
+        return key.points, key.goals - key.against, key.goals, -1 * key.yellow
         
             
 
@@ -843,7 +836,7 @@ class JeuxSansFrontieres:
         self.start_time = datetime.utcnow()
 
         # factor to warp time by
-        self.timewarp = 10 / (30 * 24 * 60 * 60)
+        self.timewarp = 120 / (30 * 24 * 60 * 60)
         self.sleep = 0.01
 
         self.knockout = []
@@ -863,8 +856,6 @@ class JeuxSansFrontieres:
 
         # how far are we in?
         elapsed = (datetime.utcnow() - self.start_time).total_seconds()
-
-        print('WARP', when, seconds, elapsed)
 
         warp = (seconds * self.timewarp) - elapsed
         return warp
@@ -889,7 +880,6 @@ class JeuxSansFrontieres:
                 bname = game.b.name.lower()
 
             gkey = (game.when, aname, bname)
-            #print(game, gkey)
             if gkey in gl:
                 raise ValueError("Duplicate game key %s" % str(key))
             gl[gkey] = game
@@ -946,6 +936,15 @@ class JeuxSansFrontieres:
                 task = await curio.spawn(event.start)
                 etasks.append(task)
 
+            elif what == 'penalty':
+                team, who, og = whodunnit(extras)
+
+                score = int(extras[-1]) != 0
+                
+                event = Penalty(team, who, when, game, score, jsf=self)
+                task = await curio.spawn(event.start)
+                etasks.append(task)
+
             elif what == 'ft':
 
                 event = FullTime(when, game, jsf=self)
@@ -979,7 +978,6 @@ class JeuxSansFrontieres:
                 game.b.games.append(game)
 
                 if game.simulated:
-                    print('XXXXXXXX', game.when)
                     kos.append(KickOff(game.when, game, jsf=self))
 
         self.its_a_knockout()
@@ -988,7 +986,8 @@ class JeuxSansFrontieres:
 
         for game in self.knockout:
             game.events = self.events
-            kos.append(KickOff(game.when, game, jsf=self))
+            if game.simulated:
+                kos.append(KickOff(game.when, game, jsf=self))
 
         kotasks = []
         for ko in kos:
@@ -1016,13 +1015,10 @@ class JeuxSansFrontieres:
         key = sorted(groups.keys())
 
         key = list(key)
-        print(key)
 
         key2 = ''
         for x in range(0, len(key), 2):
             key2 += key[x+1] + key[x]
-
-        print(key2) 
 
         games = []
 
@@ -1061,6 +1057,7 @@ class JeuxSansFrontieres:
                 self.winners[game.number] = self.knockout[15], 'b'
                 self.seconds[game.number] = self.knockout[14], 'a'
 
+            
 
     def generate_teams(self):
         """ Generate teams """
@@ -1124,8 +1121,8 @@ class JeuxSansFrontieres:
             kgame, label = self.winners[game.number]
             wteam = game.winner()
 
-            print('knockout winner:', wteam, game)
             setattr(kgame, label, wteam)
+            print('knockout winner:', wteam, game, kgame)
             wteam.games.append(kgame)
 
             if game.number in self.seconds:
@@ -1590,13 +1587,13 @@ print("It's a knock out!")
     
 # Simulate a knockout draw + bugs
 jsf_places = [
-    places['kazan'],
     places['sochi'],
-    places['moscow'],
-    places['novgorod'],
-
+    places['kazan'],
     places['samara'],
     places['rostovondon'],
+
+    places['moscow'],
+    places['novgorod'],
     places['stpetersberg'],
     places['spartak'],
     
@@ -1615,13 +1612,13 @@ jsf_places = [
     ]
 
 jsf_dates = [
-    datetime(2018, 6, 30, 14, 0),
     datetime(2018, 6, 30, 18, 0),
-    datetime(2018, 7,  1, 14, 0),
-    datetime(2018, 7,  1, 18, 0),
-    
+    datetime(2018, 6, 30, 14, 0),
     datetime(2018, 7,  2, 14, 0),
     datetime(2018, 7,  2, 18, 0),
+
+    datetime(2018, 7,  1, 14, 0),
+    datetime(2018, 7,  1, 18, 0),
     datetime(2018, 7,  3, 14, 0),
     datetime(2018, 7,  3, 18, 0),
     
@@ -1659,7 +1656,6 @@ class MexicanWaves(pigfarm.Yard):
         self.messages = []
 
         self.start_time = datetime.utcnow()
-        self.delta_t = 1.
 
         # teleprinter location
         self.teleprint_xxyy = .85, .425
@@ -1685,11 +1681,11 @@ class MexicanWaves(pigfarm.Yard):
 
     async def slower(self):
         """ Go through time more slowly """
-        self.delta_t /= 2
+        self.jsf.timewarp *= 2
 
     async def faster(self):
         """ Go through time more quickly  """
-        self.delta_t *= 2
+        self.jsf.timewarp /= 2
 
     async def toggle_show_games(self):
         """ Toggle matches view """
@@ -1755,16 +1751,13 @@ class MexicanWaves(pigfarm.Yard):
         
     async def step_balls(self):
         """ do something here """
-        #print('mexican wave step_balls')
+
         for place in self.places:
-            #print(place)
-            #print(self.width, self.height, xx, yy)
             size = 5
             self.ball(place, fill='red', size=5)
 
             self.message(place.name, place, yoff=-20, fill='yellow')
             
-        #print('done places')
         locations = defaultdict(list)
         
         for team in jsf.generate_teams():
@@ -1812,7 +1805,6 @@ class MexicanWaves(pigfarm.Yard):
 
         import time
         self.beanstalk.create_time = time.time()
-        #print(self.beanstalk.xx, self.beanstalk.yy)
 
         self.beanstalk.draw(self.canvas, self.width, self.height, 'red')
 
@@ -1946,8 +1938,6 @@ class MexicanWaves(pigfarm.Yard):
         yy = 0.05
         
         for game in self.jsf.generate_games():
-            print(game)
-
             self.message(msg=str(game),
                          xx=xx, yy=yy, fill='pink')
 
@@ -1968,6 +1958,11 @@ class MexicanWaves(pigfarm.Yard):
             bscore = game.bscore
             if ascore is None: ascore = '-'
             if bscore is None: bscore = '-'
+
+            elif ascore == bscore:
+                apen, bpen = game.pens_score()
+                ascore += apen / 10
+                bscore += bpen / 10
             
             self.message(msg="{} {} {}  {}".format(
                 aa, ascore, bscore, bb),
@@ -1984,8 +1979,6 @@ class MexicanWaves(pigfarm.Yard):
         if final.ascore != None:
             xx += 0.1
             yy = 0.6
-            for game in final.winner().games:
-                print(game.where, game.when)
             self.message(msg="{}".format(
                 final.winner().name),
                 xx=xx, yy=yy,

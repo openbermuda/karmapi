@@ -8,11 +8,11 @@
 2018,6,14,15,rus,sau,94,goal,rus,11
 2018,6,14,15,rus,sau,95,ft,5,0
 
-2018,6,15,14,egy,urg,0,ko,0,0
-2018,6,15,14,egy,urg,89,goal,urg,2
-2018,6,15,14,egy,urg,93,yellow,egy,5
-2018,6,15,14,egy,urg,96,yellow,egy,6
-2018,6,15,14,egy,urg,96,ft,1,0
+2018,6,15,12,egy,urg,0,ko,0,0
+2018,6,15,12,egy,urg,89,goal,urg,2
+2018,6,15,12,egy,urg,93,yellow,egy,5
+2018,6,15,12,egy,urg,96,yellow,egy,6
+2018,6,15,12,egy,urg,96,ft,1,0
 
 2018,6,15,15,mor,ira,0,ko,0,0
 2018,6,15,15,mor,ira,10,yellow,ira,7
@@ -285,10 +285,16 @@
 
 2018, 6, 24, 15, JAP, SEN, 0, ko, 0, 0
 2018, 6, 24, 15, JAP, SEN, 11, goal, sen, 10
-2018, 6, 24, 15, JAP, SEN, 33, goal, sen, 14
+2018, 6, 24, 15, JAP, SEN, 33, goal, jap, 14
 2018, 6, 24, 15, JAP, SEN, 45, ht, 1, 1
 2018, 6, 24, 15, JAP, SEN, 59, yellow, sen, 19
-2018, 6, 24, 15, JAP, SEN, 90, ft, 0, 0
+2018, 6, 24, 15, JAP, SEN, 68, yellow, jap, 14
+2018, 6, 24, 15, JAP, SEN, 71, goal, sen, 22
+2018, 6, 24, 15, JAP, SEN, 78, goal, jap, 4
+2018, 6, 24, 15, JAP, SEN, 90, yellow, sen, 12
+2018, 6, 24, 15, JAP, SEN, 91, yellow, sen, 11
+2018, 6, 24, 15, JAP, SEN, 94, yellow, jap, 17
+2018, 6, 24, 15, JAP, SEN, 95, ft, 2, 2
 
 2018, 6, 24, 18, POL, COL, 0, ko, 0, 0
 2018, 6, 24, 18, POL, COL, 40, goal, col, 13
@@ -550,3 +556,21 @@
 2018, 7,  3, 14, swe, swi, 68, yellow, swi, 10
 2018, 7,  3, 14, swe, swi, 94, red, swi, 6
 2018, 7,  3, 14, swe, swi, 96, ft, 1, 0
+
+2018, 7,  3, 18, col, eng, 0, ko, 0, 0
+2018, 7,  3, 18, col, eng, 41, yellow, col, 5
+2018, 7,  3, 18, col, eng, 45, ht, 0, 0
+2018, 7,  3, 18, col, eng, 57, goal, eng, 9
+2018, 7,  3, 18, col, eng, 93, goal, col, 13
+
+2018, 7,  3, 18, col, eng, 120, penalty, col,  9, 1
+2018, 7,  3, 18, col, eng, 121, penalty, eng,  9, 1
+2018, 7,  3, 18, col, eng, 122, penalty, col,  7, 1
+2018, 7,  3, 18, col, eng, 123, penalty, eng, 10, 1
+2018, 7,  3, 18, col, eng, 124, penalty, col, 14, 1
+2018, 7,  3, 18, col, eng, 125, penalty, eng,  8, 0
+2018, 7,  3, 18, col, eng, 126, penalty, col, 15, 0
+2018, 7,  3, 18, col, eng, 127, penalty, eng, 12, 1
+2018, 7,  3, 18, col, eng, 128, penalty, col,  7, 0
+2018, 7,  3, 18, col, eng, 127, penalty, eng,  4, 1
+2018, 7,  3, 18, col, eng, 130, ft, 1, 1
