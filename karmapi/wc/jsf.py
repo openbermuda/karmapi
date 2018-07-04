@@ -255,11 +255,11 @@ class JeuxSansFrontieres:
 
         for ix, game in enumerate(ko[12:14]):
             if ix % 2 == 0:
-                self.winners[game.number] = self.knockout[15], 'a'
-                self.seconds[game.number] = self.knockout[14], 'b'
+                self.winners[game.number] = self.knockout[14], 'a'
+                self.seconds[game.number] = self.knockout[15], 'b'
             else:
-                self.winners[game.number] = self.knockout[15], 'b'
-                self.seconds[game.number] = self.knockout[14], 'a'
+                self.winners[game.number] = self.knockout[14], 'b'
+                self.seconds[game.number] = self.knockout[15], 'a'
 
             
 

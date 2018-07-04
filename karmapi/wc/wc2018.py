@@ -527,9 +527,9 @@ jsf_places = [
     places['stpetersberg'],
     places['moscow'],
     
-    places['stpetersberg'],
-    
     places['moscow'],
+
+    places['stpetersberg'],
     ]
 
 jsf_dates = [
@@ -551,8 +551,8 @@ jsf_dates = [
     datetime(2018, 7, 10, 18, 0),
     datetime(2018, 7, 11, 18, 0),
     
-    datetime(2018, 7, 14, 14, 0),
     datetime(2018, 7, 15, 15, 0),
+    datetime(2018, 7, 14, 14, 0),
     ]
 
 def name2team(name):

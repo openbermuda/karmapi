@@ -332,6 +332,23 @@ class MexicanWaves(pigfarm.Yard):
             self.message(msg="{} {} {}  {}".format(
                 aa, ascore, bscore, bb),
                 xx=xx, yy=yy, fill='green')
+
+            px = xx - 0.01
+            dx = -0.01
+            
+            for pens in game.apen, game.bpen:
+                for pix, pen in enumerate(pens):
+                    if pen.score:
+                        rog = 'green'
+                    else:
+                        rog = 'red'
+
+                    print(rog, ix)
+                    xp = px + (pix * dx)
+                    self.ball(xx=xp, yy=yy + 0.025, fill=rog, size=2)
+                    
+                px = xx + 0.01
+                dx *= -1
             
             yy += 0.05
 
@@ -340,7 +357,7 @@ class MexicanWaves(pigfarm.Yard):
                 yy = .6
                 yinc *= 2
 
-        final = self.jsf.knockout[-1]
+        final = self.jsf.knockout[-2]
         if final.ascore != None:
             xx += 0.1
             yy = 0.6
@@ -351,15 +368,16 @@ class MexicanWaves(pigfarm.Yard):
             
 
 
-    def ball(self, place, fill='red', size=5, xoff=0, yoff=0):
+    def ball(self, place=None, fill='red', size=5, xoff=0, yoff=0,
+             xx=None, yy=None, **kwargs):
         """ Draw a filled circle at place """
 
-        xx, yy = self.latlon2xy(place)
+        xx, yy = self.layout(place, xx, yy)
 
         self.canvas.create_oval(
             xx+xoff-size,
             yy+yoff-size,
-            xx+xoff+size, yy+yoff+size, fill='red')
+            xx+xoff+size, yy+yoff+size, fill=fill)
 
     async def run(self):
         """ Run the waves """
