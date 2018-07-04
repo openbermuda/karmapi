@@ -836,7 +836,7 @@ class JeuxSansFrontieres:
         self.start_time = datetime.utcnow()
 
         # factor to warp time by
-        self.timewarp = 120 / (30 * 24 * 60 * 60)
+        self.timewarp = 10 / (30 * 24 * 60 * 60)
         self.sleep = 0.01
 
         self.knockout = []
@@ -956,11 +956,7 @@ class JeuxSansFrontieres:
                 print('*****', when, ateam, bteam, what, extras)
 
         self.tasks += etasks
-        for task in etasks:
-            await task.join()
 
-        # fixme do something with knockout
-        pass
 
     async def load_group_games(self):
         """ Put the group games into the game queue """
@@ -995,9 +991,6 @@ class JeuxSansFrontieres:
             kotasks.append(task)
 
         self.tasks += kotasks
-
-        for ko in kotasks:
-            await ko.join()
 
 
     def its_a_knockout(self):
