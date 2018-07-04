@@ -212,14 +212,6 @@ class Sochi(Place):
     lat = 43 + (24 / 60)
     lon = 39 + (57 / 60)
 
-class NorthPole(Place):
-    """  Where teams go when out? """
-
-    name = 'North Pole'
-    lat = 90
-    lon = 0
-
-    
 
 places = dict(
     

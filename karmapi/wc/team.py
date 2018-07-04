@@ -1,4 +1,7 @@
 from .base import *
+from .place import Place
+
+
 
 squadsize = 23
 n = 32
@@ -102,6 +105,14 @@ class Team:
         return msg
 
 
+class NorthPole(Place):
+    """  Where teams go when out? """
+
+    name = 'North Pole'
+    lat = 90
+    lon = 0
+
+    
 class Player:
     """ A player of class
 

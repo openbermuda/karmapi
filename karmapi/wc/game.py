@@ -1,5 +1,7 @@
 from .base import *
 
+from .events import Penalty
+
 class Game:
 
     NUMBER = 1
