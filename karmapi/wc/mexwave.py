@@ -198,9 +198,9 @@ class MexicanWaves(pigfarm.Yard):
         """ Show the score flashes """
         xx, yy = self.teleprint_xxyy
 
-        for msg, fill in self.teleprints:
+        for msg, fill, card in self.teleprints:
             
-            self.message(msg=msg, fill=fill, xx=xx, yy=yy)
+            self.message(msg=msg, fill=fill, card=card, xx=xx, yy=yy)
             xx, yy = xx, yy + .025
 
         # Now do messages
@@ -219,9 +219,9 @@ class MexicanWaves(pigfarm.Yard):
         self.messages = list(keep.values())
 
 
-    def teleprint(self, msg=None, fill='orange', **kwargs):
+    def teleprint(self, msg=None, fill='orange', card=None, **kwargs):
         """ teleprinter messages """
-        self.teleprints.append((msg, fill))
+        self.teleprints.append((msg, fill, card))
 
         if len(self.teleprints) > 10:
             del self.teleprints[0]
@@ -237,13 +237,21 @@ class MexicanWaves(pigfarm.Yard):
         return xx, yy
 
 
-    def message(self, msg=None, where=None, fill='red', size=5, xoff=0, yoff=0,
+    def message(self, msg=None, where=None, fill='red',
+                card=False, 
+                size=5, xoff=0, yoff=0,
                 xx=None, yy=None, **kwargs):
         """ Message from a place """
 
         xx, yy = self.layout(where, xx, yy)
 
         self.canvas.create_text((xx + xoff, yy + yoff), text=msg, fill=fill)
+
+        if card:
+            print("CARD", card)
+            x = xx + xoff - 150
+            y = yy + yoff
+            self.canvas.create_rectangle(x, y, x + 10, y + 10, fill=card)
 
 
     def show_tables(self):
@@ -334,7 +342,7 @@ class MexicanWaves(pigfarm.Yard):
                 xx=xx, yy=yy, fill='green')
 
             px = xx - 0.01
-            dx = -0.01
+            dx = -0.005
             
             for pens in game.apen, game.bpen:
                 for pix, pen in enumerate(pens):
@@ -343,9 +351,8 @@ class MexicanWaves(pigfarm.Yard):
                     else:
                         rog = 'red'
 
-                    print(rog, ix)
                     xp = px + (pix * dx)
-                    self.ball(xx=xp, yy=yy + 0.025, fill=rog, size=2)
+                    self.ball(xx=xp, yy=yy + 0.025, fill=rog, size=3)
                     
                 px = xx + 0.01
                 dx *= -1

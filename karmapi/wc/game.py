@@ -205,16 +205,19 @@ class Game:
     def _penalty(self, team):
         """ Simulate a penalty """
         which = len(self.apen) + len(self.bpen)
-        
-        if random() < 0.5:
-            pen = Penalty(team, score=True, game=self,
-                          when=self.when + timedelta(minutes=120 + which),
+
+        score = False
+        if random() < 0.8:
+            score = True
+            
+        pen = Penalty(team, score=score, game=self,
+                      when=self.when + timedelta(minutes=120 + which),
                           who = randint(1, 23))
 
-            if team is self.a:
-                self.apen.append(pen)
-            else:
-                self.bpen.append(pen)
+        if team is self.a:
+            self.apen.append(pen)
+        else:
+            self.bpen.append(pen)
 
         return self.all_over()
 
@@ -283,7 +286,7 @@ class Game:
             self.b.yellow += 1
 
         minute = int((when - self.when).total_seconds() / 60)
-        await self.flash(" %dm" % minute, fill='purple')
+        await self.flash(" %dm" % minute, fill='purple', card='yellow')
 
 
     async def red(self, team, who=None, when=None):

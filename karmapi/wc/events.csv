@@ -574,3 +574,23 @@
 2018, 7,  3, 18, col, eng, 128, penalty, col,  7, 0
 2018, 7,  3, 18, col, eng, 127, penalty, eng,  4, 1
 2018, 7,  3, 18, col, eng, 130, ft, 1, 1
+
+2018, 7,  6, 14, urg, fra, 0, ko, 0, 0
+2018, 7,  6, 14, urg, fra, 33, yellow, fra, 21
+2018, 7,  6, 14, urg, fra, 38, yellow, urg, 6
+2018, 7,  6, 14, urg, fra, 40, goal, fra, 4
+2018, 7,  6, 14, urg, fra, 45, ht, 0, 1
+2018, 7,  6, 14, urg, fra, 61, goal, fra, 7
+2018, 7,  6, 14, urg, fra, 69, yellow, fra, 10
+2018, 7,  6, 14, urg, fra, 69, yellow, urg, 7
+2018, 7,  6, 14, urg, fra, 90, ft, 0, 2
+
+
+2018, 7,  6, 18, bra, bel, 0, ko, 0, 0
+2018, 7,  6, 18, bra, bel, 13, goal, bel, 107
+2018, 7,  6, 18, bra, bel, 31, goal, bel, 7
+2018, 7,  6, 18, bra, bel, 45, ht, 0, 2
+2018, 7,  6, 18, bra, bel, 47, yellow, bel, 2
+2018, 7,  6, 18, bra, bel, 71, yellow, bel, 15
+2018, 7,  6, 18, bra, bel, 75, goal, bra, 8
+2018, 7,  6, 18, bra, bel, 90, ft, 1, 2
