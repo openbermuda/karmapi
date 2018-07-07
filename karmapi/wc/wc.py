@@ -117,6 +117,7 @@ from .jsf import JeuxSansFrontieres
 from .mexwave import MexicanWaves
 
 # break with tradition and import *
+# so if you can't fint it here, check wcYYYY
 from .wc2018 import *
 
 from karmapi import pigfarm
@@ -126,6 +127,8 @@ parser.add_argument('--nopig', action='store_true')
 parser.add_argument('--gallery')
 parser.add_argument('--dump')
 parser.add_argument('--events')
+parser.add_argument('--warp', type=float, default=1.0,
+                    help="warp speed")
 parser.add_argument('--outfile')
 args = parser.parse_args()            
 
@@ -148,7 +151,8 @@ if args.events:
 
     #parse_events(args.events, args.outfile)
     #sys.exit()
-    
+
+jsf.timewarp *= args.warp    
     
 farm.add(GuidoClock)
 farm.add(MexicanWaves, dict(jsf=jsf, venues=places, gallery=args.gallery,
