@@ -1,6 +1,6 @@
-from .base import *
-from .place import Place
+from collections import defaultdict
 
+from .place import Place
 
 
 squadsize = 23

@@ -110,14 +110,16 @@ eng tun bel and pan played already.  See Game's for results.
 
 
 """
+import argparse
+import curio
 
 from .jsf import JeuxSansFrontieres
 from .mexwave import MexicanWaves
 
 # break with tradition and import *
-from .base import *
 from .wc2018 import *
 
+from karmapi import pigfarm
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--nopig', action='store_true')

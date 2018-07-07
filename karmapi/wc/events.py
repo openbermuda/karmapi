@@ -1,4 +1,4 @@
-from .base import *
+import curio
 
 class GameEvent:
         

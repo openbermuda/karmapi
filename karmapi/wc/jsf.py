@@ -1,4 +1,10 @@
-from .base import *
+""" Jeus Sans Frontieres
+
+"""
+from datetime import datetime, timedelta
+
+import curio
+
 from .events import *
 from .game import Game
 
@@ -288,10 +294,10 @@ class JeuxSansFrontieres:
 
         game.apres_match()
 
-        if game.number == 63:
+        if game.number == 64:
             print('third place:', game.winner())
             return
-        if game.number == 64:
+        if game.number == 63:
             print('Winner:', game.winner())
             return
 
