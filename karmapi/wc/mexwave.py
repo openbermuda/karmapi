@@ -248,7 +248,7 @@ class MexicanWaves(pigfarm.Yard):
         self.canvas.create_text((xx + xoff, yy + yoff), text=msg, fill=fill)
 
         if card:
-            print("CARD", card)
+            #print("CARD", card, msg)
             x = xx + xoff - 150
             y = yy + yoff
             self.canvas.create_rectangle(x, y, x + 10, y + 10, fill=card)

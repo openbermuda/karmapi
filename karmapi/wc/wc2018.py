@@ -520,8 +520,8 @@ jsf_places = [
     
     places['novgorod'],
     places['kazan'],
-    places['samara'],
     places['sochi'],
+    places['samara'],
     
 
     places['stpetersberg'],
@@ -545,8 +545,8 @@ jsf_dates = [
     
     datetime(2018, 7,  6, 14, 0),
     datetime(2018, 7,  6, 18, 0),
-    datetime(2018, 7,  7, 14, 0),
     datetime(2018, 7,  7, 18, 0),
+    datetime(2018, 7,  7, 14, 0),
     
     datetime(2018, 7, 10, 18, 0),
     datetime(2018, 7, 11, 18, 0),

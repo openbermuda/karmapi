@@ -47,7 +47,7 @@ class JeuxSansFrontieres:
         self.start_time = datetime.utcnow()
 
         # factor to warp time by
-        self.timewarp = 10 / (30 * 24 * 60 * 60)
+        self.timewarp = 1 / (30 * 24 * 60 * 60)
         self.sleep = 0.01
 
         self.knockout = []
