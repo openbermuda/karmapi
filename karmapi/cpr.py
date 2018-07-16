@@ -484,7 +484,7 @@ class NestedWaves(pigfarm.Yard):
             await curio.sleep(self.sleep)            
 
 
-def main():
+def argument_parser():
 
     parser = argparse.ArgumentParser()
 
@@ -499,6 +499,10 @@ def main():
     parser.add_argument('--inc', type=int, default=4)
     parser.add_argument('--base', type=int, default=20)
 
+    
+def main():
+
+    parser = argparse.ArgumentParser()
 
     args = parser.parse_args()
 

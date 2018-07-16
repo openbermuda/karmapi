@@ -321,7 +321,7 @@ class World(cpr.NestedWaves):
         self.values = values
         self.save = save
 
-        super().__init__(parent)
+        super().__init__(parent, **kwargs)
 
 
     def build(self):
@@ -361,7 +361,7 @@ class World(cpr.NestedWaves):
 if __name__ == '__main__':
 
 
-    parser = argparse.ArgumentParser()
+    parser = cpr.argument_parser()
 
     parser.add_argument('--path', default='karmapi/ecmwf')
     parser.add_argument('--value', default='t2m')
@@ -413,7 +413,8 @@ if __name__ == '__main__':
     print('min max:')
     print(values[0].min(), values[0].max())
 
-    parms = dict(stamps=stamps, values=values, save=args.save)
+    parms = dict(stamps=stamps, values=values, save=args.save,
+                 n=args.n, inc=args.inc, base=args.base)
     
     farm = pigfarm.sty(World, parms)
 
