@@ -76,9 +76,11 @@ def terry(flag=None):
 
     Credits: @dabeaz and @yarkot
     """
-    flag = flag or 256
-    
-    return sys._getframe(2).f_code.co_flags & flag
+    flag = flag or 128
+
+    co_flags = sys._getframe(2).f_code.co_flags
+
+    return co_flags & flag
 
 
 if __name__ == '__main__':

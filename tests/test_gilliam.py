@@ -2,19 +2,15 @@ import curio
 
 from karmapi.gilliam import terry
 
+def func():
+
+    assert not terry()
 
 async def coro():
 
-    for x in range(10):
-        await curio.sleep(.1)
-        print(x)
-        
+    assert terry()
+
+func()
     
-    print('CORO terry():', terry())
-
-    assert terry() == False
-
-
 xx = curio.run(coro)
 
-print(xx)
