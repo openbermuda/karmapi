@@ -342,8 +342,8 @@ class World(cpr.NestedWaves):
                 tail = True
 
 
-            if tail:
-                sphere = WorldView(self.stamps, self.values)
+            if tail or head:
+                sphere = WorldView(self.stamps, self.values, head=head, tail=tail)
                 sphere.save = self.save or False
             else:
                 sphere = cpr.Sphere((size, size), head=head, tail=tail)

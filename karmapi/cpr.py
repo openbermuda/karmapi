@@ -499,6 +499,8 @@ def argument_parser():
     parser.add_argument('--inc', type=int, default=4)
     parser.add_argument('--base', type=int, default=20)
 
+    return parser
+
     
 def main():
 
