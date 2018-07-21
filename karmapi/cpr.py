@@ -504,7 +504,7 @@ def argument_parser():
     
 def main():
 
-    parser = argparse.ArgumentParser()
+    parser = argument_parser()
 
     args = parser.parse_args()
 
