@@ -56,7 +56,10 @@ class Sphere:
         self.next_ball = None
         self.fade = 1 / math.e
         self.t = t
+        self.M = m
+        self.r = r
 
+        
         # time moves slower in the inner spheres?
         self.sleep = 1 / self.size[0]
 
@@ -290,6 +293,23 @@ class Sphere:
                 grid.append(value)
 
         self.grid2rgb(grid)
+
+        
+class CelestialSphere(Sphere):
+    """ An outer sphere 
+
+    Embed random neutron stars in a de Sitter Space
+
+    Present a window onto this sphere to inner layers.
+    """
+    pass
+
+class NeutronStar(Sphere):
+    """ An inner sphere 
+    
+    Just supply the mass.
+    """
+    pass
             
 
 def randunit():
