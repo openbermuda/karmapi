@@ -56,6 +56,7 @@ class TankRain(pigfarm.MagicCarpet):
 
         self.add_event_map('l', self.fewer_images)
         self.add_event_map('m', self.more_images)
+        self.add_event_map('X', self.switcheroo)
 
     def load_images(self):
         
@@ -86,13 +87,29 @@ class TankRain(pigfarm.MagicCarpet):
             
         self.ix = ix
                             
-        self.data = im 
+        self.data = im
 
-    def get_images(self):
+
+    def when(self):
+        """ current date """
+        date = self.date + datetime.timedelta(seconds=self.timewarp)
+
+        return date
+
+    def where(self, when=None):
+        """ Path for date """
+        date = when or self.when()
+
+        path = Path(f'{self.path}/{date.year}/{date.month}/{date.day}/').expanduser()
+
+        return path
+
+
+    def get_images(self, when=None):
 
         # FIXME -- create key bindings to select time
-        date = self.date + datetime.timedelta(seconds=self.timewarp)
-        path = Path(f'{self.path}/{date.year}/{date.month}/{date.day}/').expanduser()
+        date = when or self.when()
+        path = self.where(date)
 
         print(f'loading images for path: {path} v{self.version}v')
 
@@ -105,6 +122,25 @@ class TankRain(pigfarm.MagicCarpet):
                 continue
             print(image)
             yield image
+
+
+    async def switcheroo(self):
+        """ switcheroo
+        
+        Swap images with those for previous day 
+
+        """
+        current = self.when()
+        previous = current - datetime.timedelta(days=1)
+
+        cfolder = self.where(current)
+        pfolder = self.where(previous)
+        
+        for image in self.get_images(current):
+            image.rename(pfolder)
+
+        for image in self.get_images(previous):
+            image.rename(cfolder)
 
 
     async def next_view(self):
