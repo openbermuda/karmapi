@@ -135,12 +135,21 @@ class TankRain(pigfarm.MagicCarpet):
 
         cfolder = self.where(current)
         pfolder = self.where(previous)
-        
-        for image in self.get_images(current):
-            image.rename(pfolder)
 
-        for image in self.get_images(previous):
-            image.rename(cfolder)
+        # Get the lists of image names before we start moving things around
+        cimages = list(self.get_images(current))
+        pimages = list(self.get_images(previous))
+        print('switcheroo time')
+        print(cimages)
+        print(pimages)
+
+        for image in cimages:
+            image.rename(pfolder / image.name)
+
+        for image in pimages:
+            image.rename(cfolder / image.name)
+
+        self.load_images()
 
 
     async def next_view(self):
