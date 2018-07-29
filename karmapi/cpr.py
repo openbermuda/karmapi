@@ -295,15 +295,6 @@ class Sphere:
         self.grid2rgb(grid)
 
         
-class CelestialSphere(Sphere):
-    """ An outer sphere 
-
-    Embed random neutron stars in a de Sitter Space
-
-    Present a window onto this sphere to inner layers.
-    """
-    pass
-
 class NeutronStar(Sphere):
     """ An inner sphere 
     
@@ -503,6 +494,29 @@ class NestedWaves(pigfarm.Yard):
             
             await curio.sleep(self.sleep)            
 
+
+class CelestialSphere(NestedWaves):
+    """ An outer sphere of nested waves
+
+    Embed random neutron stars in a de Sitter Space
+
+    Present a window onto this sphere to inner layers.
+
+    N = a / M for number of stars
+
+    Give them mass, velocity to get ball rolling
+
+    Each star does its own thing, schedules itself to run.
+
+    Stars collide -- for now do pass through.
+
+    Just model gravitational wave
+
+    reflect what passes its way
+    """
+    pass
+
+            
 
 def argument_parser():
 
