@@ -105,6 +105,7 @@ class Sphere:
         return image
 
     def rgb2grid(self):
+        """ Change lists of red green blue to a quantised pixel grid"""
         grid = []
         for rgb in zip(self.red, self.green, self.blue):
             pixel = tuple(self.quantise(x) for x in rgb)
@@ -114,6 +115,16 @@ class Sphere:
         
 
     async def run(self):
+        """ Run a sphere 
+
+        
+        Does one tick for the sphere.
+
+        so self.t is also a count of how often we've been here.
+
+        at least in this thread.
+
+        """
 
         self.t += 1
 
@@ -278,7 +289,7 @@ class Sphere:
                 
             for y in range(n2):
 
-                yy = (y / n2) + (1 / (2 * n2))
+                yy = (y / n2) + (1 / (2 * n2)) * 2 * math.pi
                 yy += self.inc * self.t
 
                 rc, rphase, rscale = self.waves['r']
@@ -288,7 +299,8 @@ class Sphere:
                 value = (
                     sample_wave(rphase, xx) * rscale,
                     sample_wave(bphase, yy) * bscale,
-                    sample_wave(gphase, xx+yy) * gscale)
+                    # scratches head and wonders if xx is ok in next line
+                    sample_wave(gphase, xx) * gscale)
 
                 grid.append(value)
 
@@ -514,7 +526,33 @@ class CelestialSphere(NestedWaves):
 
     reflect what passes its way
     """
-    pass
+    def __init__(self, parent, a=1, n=None, m=None):
+        """ Initialise.
+
+        *a* is the size of the universe
+
+        *m* the mean mass of galaxies.
+
+        *n* is the number of galaxies.
+
+        However, we assume:
+
+            n = a / m
+
+        By setting a = 1 as a default, you can control the 
+        expected number of galaxies by setting m to 1/n.
+
+
+        So, for ~7 galaxies, set m to 1/7 or just supply n == 7
+        """
+
+        super().__init__(parent)
+
+        
+
+    def build(self):
+        """ Create the balls """
+        pass
 
             
 
@@ -529,7 +567,9 @@ def argument_parser():
     parser.add_argument(
         '--name', default='tree',
         help='what to show')
+    parser.add_argument('-a', type=int, default=1)
     parser.add_argument('-n', type=int, default=10)
+    parser.add_argument('-m', type=int, default=1)
     parser.add_argument('--inc', type=int, default=4)
     parser.add_argument('--base', type=int, default=20)
 
