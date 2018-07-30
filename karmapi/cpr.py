@@ -507,7 +507,7 @@ class NestedWaves(pigfarm.Yard):
             await curio.sleep(self.sleep)            
 
 
-class CelestialSphere(NestedWaves):
+class CelestialSphere(Sphere):
     """ An outer sphere of nested waves
 
     Embed random neutron stars in a de Sitter Space
@@ -548,13 +548,30 @@ class CelestialSphere(NestedWaves):
 
         super().__init__(parent)
 
-        
+        n = n or a / m
+        a = a or n * m
+        m = a / n
+
+        self.n = n
+        self.m = m
+        self.a = a
+
 
     def build(self):
-        """ Create the balls """
-        pass
+        """ Create the balls
 
-            
+        Really should place them in the five dimensions,
+
+        but have a constraint that gets us down to four dimensions.
+
+        For now, place them randomly in a unit cube.
+        """
+        self.balls = NeutronStar
+
+
+    async def run(self):
+        """ ??? """
+        super().run()
 
 def argument_parser():
 
