@@ -33,13 +33,14 @@ from PIL import Image, ImageTk
 
 from karmapi import base, tpot, pigfarm
 
-from random import random, randint
+from random import random, randint, gauss
 
 class Sphere:
 
     def __init__(self, size=None, head=False, tail=False,
-                 t=0, m=1., r=1.):
+                t=0, m=None, r=None, omega=None, velocity=None):
 
+        # resolution
         size = size or (4, 4)
 
         self.red = []
@@ -56,11 +57,23 @@ class Sphere:
         self.next_ball = None
         self.fade = 1 / math.e
         self.t = t
-        self.M = m
+
+        # Default for mass??
+        if mu and m:
+            m = gauss(m, mu)
+            
+        self.M = m or gauss(1., 0.1)
+        
+        self.omega = omega or [random() for x in range(3)]
+        self.velocity = velocity or [random() for x in range(3)]
+
+
+        # radius corresponding to grid view???
         self.r = r
 
         
         # time moves slower in the inner spheres?
+        # FIXME?
         self.sleep = 1 / self.size[0]
 
         self.reset(init=True)
@@ -312,7 +325,9 @@ class NeutronStar(Sphere):
     
     Just supply the mass.
     """
-    pass
+    def __init__(self):
+        pass
+        
             
 
 def randunit():
@@ -338,6 +353,7 @@ class NestedWaves(pigfarm.Yard):
     simulated annealing inspired in between?
 
     but put it in the tea pot too.
+
 
     Lots of tea pots of all kinds.
 
@@ -507,7 +523,7 @@ class NestedWaves(pigfarm.Yard):
             await curio.sleep(self.sleep)            
 
 
-class CelestialSphere(Sphere):
+class CelestialSphere(NestedWaves):
     """ An outer sphere of nested waves
 
     Embed random neutron stars in a de Sitter Space
@@ -566,12 +582,18 @@ class CelestialSphere(Sphere):
 
         For now, place them randomly in a unit cube.
         """
-        self.balls = NeutronStar
+        self.balls = {}
+        for wave in range(self.n):
+            
+            self.ball[wave] = Sphere(m=1, mu=0.1)
 
+            # where is it?  what's the observer?
+
+        
 
     async def run(self):
         """ ??? """
-        super().run()
+        
 
 def argument_parser():
 
