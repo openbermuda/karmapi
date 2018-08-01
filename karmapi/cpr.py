@@ -574,7 +574,7 @@ class CelestialSphere(NestedWaves):
     reflect what passes its way
     """
     def __init__(self, parent, a=1, n=None, m=None):
-        """ Initialise.
+        """Initialise.
 
         *a* is the size of the universe
 
@@ -591,6 +591,41 @@ class CelestialSphere(NestedWaves):
 
 
         So, for ~7 galaxies, set m to 1/7 or just supply n == 7
+
+
+        Where to put the galaxies?
+
+        Should really put them in de Sitter Space
+
+        A 4-dimensional subspace of a 5 dimensional Minkowski space
+
+        metric
+
+        ds**2 = sum ((x[i] - y[i]) ** 2) - (t - u) ** 2)
+
+        R = sum  ((x[i] - y[i]) ** 2) - (t - u) ** 2)) ** 0.5
+
+
+        For now just place randomly in unit sphere with random velocity?
+
+        Relative to the centre of the unit sphere?
+
+        But try to set it to be in sync with the existing balls ***
+
+        So don't need velocity after all.
+
+        Just record each run what it is, balanced by the grid.
+
+        For now everything is on a p * p grid, with p grids to make a cube.
+
+        Each grid can be viewed as the surface of a sphere, latitude and
+        longitude grids.
+
+        Aim to be able to navigate the grid of galaxies.
+        
+        Some interesting possibilities arise as sizes of grids vary.
+
+        Elliptic curves and modular forms???
         """
 
         super().__init__(parent)
