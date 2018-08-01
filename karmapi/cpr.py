@@ -442,7 +442,8 @@ class NestedWaves(pigfarm.Yard):
 
             M, mu = 1.0, 0.1
 
-            if ball and ball != self.n -1:
+            #if ball and ball != self.n -1:
+            if ball:
                 M, mu = None, None
 
             sphere = Sphere(size, m=M, mu=mu)
