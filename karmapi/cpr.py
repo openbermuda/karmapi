@@ -36,9 +36,17 @@ from karmapi import base, tpot, pigfarm
 from random import random, randint, gauss
 
 class Sphere:
+    """ If it hass mass (m) then pass through waves
 
-    def __init__(self, size=None, head=False, tail=False,
-                t=0, m=None, r=None, omega=None, velocity=None):
+    Regardless, show the view at radius r from centre of mass.
+
+    omega: angular velocity, three orthogonal directions
+
+    velocity: relative to what???
+    """
+
+    def __init__(self, size=None, 
+                t=0, m=None, r=None, omega=None, velocity=None, mu=None):
 
         # resolution
         size = size or (4, 4)
@@ -51,8 +59,6 @@ class Sphere:
         self.history = None
         self.delta = False
 
-        self.head = head
-        self.tail = tail
         self.last_ball = None
         self.next_ball = None
         self.fade = 1 / math.e
@@ -62,15 +68,13 @@ class Sphere:
         if mu and m:
             m = gauss(m, mu)
             
-        self.M = m or gauss(1., 0.1)
+        self.M = m
         
         self.omega = omega or [random() for x in range(3)]
         self.velocity = velocity or [random() for x in range(3)]
 
-
         # radius corresponding to grid view???
         self.r = r
-
         
         # time moves slower in the inner spheres?
         # FIXME?
@@ -82,10 +86,12 @@ class Sphere:
     def reset(self, init=False):
         """ Reset the sphere """
 
-        if self.head or self.tail:
-            self.setup_end()
+        if self.M:
+            self.setup_wave()
+
+            # first time only, carry on?
             if self.red:
-                return
+                return 
 
         self.red.clear()
         self.green.clear()
@@ -141,8 +147,8 @@ class Sphere:
 
         self.t += 1
 
-        if self.head or self.tail:
-            return await self.end_run()
+        if self.M:
+            return await self.wave_run()
         
         # Here if we are between two spheres
         # so have last_ball and next_ball
@@ -236,15 +242,15 @@ class Sphere:
         self.grid2rgb(grid)
             
 
-    def setup_end(self):
-        """ Do some set up work for a head sphere """
+    def setup_wave(self):
+        """ Do some set up work for a sphere with mass """
 
         self.waves = {}
         self.inc = math.pi/20
         
         for c in 'rgb':
             phase = random()
-            scale = random()
+            scale = 1 # was random() wondering if should just use 1?
             
             self.waves[c] = [c, phase, scale]
 
@@ -276,8 +282,8 @@ class Sphere:
         ix = (yy * self.size[0]) + xx
         return self.red[ix], self.green[ix], self.blue[ix]
             
-    async def end_run(self):
-        """ inner or outer wave
+    async def wave_run(self):
+        """ wave
 
         red, green, blue
  
@@ -320,10 +326,23 @@ class Sphere:
         self.grid2rgb(grid)
 
         
-class NeutronStar(Sphere):
-    """ An inner sphere 
+class NeutronStar:
+    """
+
+    An inner sphere 
     
     Just supply the mass.
+
+    or... maybe a bit more complex.
+
+    So, nest some waves and figure out project and sample.
+
+    So what radii are interesting?
+
+    Each star, or galaxy can have its own process, and a pi can run a
+    good few stars.
+
+    
     """
     def __init__(self):
         pass
@@ -412,21 +431,18 @@ class NestedWaves(pigfarm.Yard):
 
             size = (size, size)
 
-            head = True
-            
-            if ball:
-                head = False
+            M, mu = 1.0, 0.1
 
-            tail = False
-            if ball == self.n - 1:
-                tail = True
-                
-            sphere = Sphere(size, head=head, tail=tail)
+            if ball and ball != self.n -1:
+                M, mu = None, None
 
-            if not sphere.head:
+            sphere = Sphere(size, m=M, mu=mu)
+
+            if last_ball:
                 sphere.last_ball = last_ball
                 last_ball.next_ball = sphere
-            
+                
+            # may need to revisit this, spread some work
             self.uq.put(sphere)
             self.balls.append(sphere)
 
@@ -473,8 +489,8 @@ class NestedWaves(pigfarm.Yard):
         # xx = randint(0, self.n - 1)
         xx = self.dball
 
-        print(xx, 'lucky for some')
         ball = self.balls[xx]
+        print(xx, 'lucky for some', ball.size, ball.M)
 
         await self.draw_ball(ball)
 
