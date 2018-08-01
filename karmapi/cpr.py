@@ -31,7 +31,7 @@ import numpy
 
 from PIL import Image, ImageTk
 
-from karmapi import base, tpot, pigfarm
+from karmapi import base, tpot, prime, pigfarm
 
 from random import random, randint, gauss
 
@@ -426,8 +426,17 @@ class NestedWaves(pigfarm.Yard):
         # add a bunch of spheres to the queue
         self.balls = []
         last_ball = None
-        for ball in range(self.n):
-            size = self.base + (ball * self.inc)
+        ball = 0
+        
+        for nn in range(2, 1000_0000):
+
+            if not prime.isprime(nn):
+                continue
+
+
+            print('prime', nn)
+            
+            size = self.base + (nn * self.inc)
 
             size = (size, size)
 
@@ -447,6 +456,11 @@ class NestedWaves(pigfarm.Yard):
             self.balls.append(sphere)
 
             last_ball = sphere
+
+            # next ball
+            ball += 1
+            if ball == self.n:
+                break
 
     async def random_step_some(self):
         """ Step all balls once """
