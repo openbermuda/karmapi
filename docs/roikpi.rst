@@ -102,10 +102,13 @@ The onion
 
 Nested layers of spheres.
 
+Open data science
+
+
 Sunshine at Myrtle Park
 =======================
 
-Demo time
+Demo time + questions
 
 World Cup::
 
@@ -113,7 +116,16 @@ World Cup::
 
 World warms::
 
-  python3.6 -m karmapi.ncdf 
+  python3.6 -m karmapi.ncdf
 
-Johnny G
-========
+Another Pardigm::
+
+  python3.6 -m karmapi.cpr
+
+Black hole on a pi?::
+
+  maybe..
+
+
+Question time
+=============
