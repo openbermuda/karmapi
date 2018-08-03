@@ -505,6 +505,10 @@ If you want to install that version under the local user try::
 To refresh to the latest code on github::
 
   git pull
+
+And re-run the install::
+
+  python3 setup.py install --user
  
 I have this little function devined in .bashrc::
 
