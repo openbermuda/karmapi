@@ -146,11 +146,20 @@ class PigFarm:
         keys.update(self.event_map)
         msg = ''
         for key, value in sorted(keys.items()):
-            msg += '{} {}\n'.format(key, value.__doc__)
+            msg += '{} {}\n'.format(key,
+                                    self.doc_firstline(value.__doc__))
 
         from karmapi import piglet
 
         piglet.Help(msg)
+
+    def doc_firstline(self, doc):
+        """ Return first line of doc """
+        if doc:
+            return doc.split('\n')[0]
+        else:
+            return "????"
+        
 
     async def quit(self):
         """ quit the farm """
