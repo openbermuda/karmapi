@@ -71,6 +71,43 @@ World Cup
 
 DIY visualisation
 
+Breaking the rules.
+
+the rules
+---------
+
+events: a time and a value
+
+Everything else is meta data.
+
+Code uses meta data to decide what to do with events.
+
+breaking
+--------
+
+mix events with meta data
+
+data in the data structures
+
+helps understanding
+-------------------
+
+Get something tangible working.
+
+Let it help you explore
+
+Drinking from the hosepipe
+--------------------------
+
+Just time to record the events, with a few garbles?
+
+fixing the code
+---------------
+
+taking away and re-moulding
+
+time for tankrain...
+
 Tankrain
 ========
 
@@ -82,6 +119,10 @@ Getting warmer
 Slow it down
 
 ncdf needs love
+
+deltas
+
+
  
 Professor Ian Stewart
 =====================
