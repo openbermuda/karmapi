@@ -12,7 +12,8 @@ from karmapi import pigfarm, beanstalk
 # add a PI Gui?
 class MexicanWaves(pigfarm.Yard):
 
-    def __init__(self, parent, jsf=None, venues=None, gallery='.',
+    def __init__(self, parent, jsf=None, venues=None,
+                 back_image=None,
                  dump=None, events=None):
         """ Initialise the thing """
 
@@ -20,6 +21,7 @@ class MexicanWaves(pigfarm.Yard):
 
         self.jsf = jsf
         self.jsf.dump = dump
+        self.back_image = back_image
 
         if events:
             events = list(parse_events(events))
@@ -413,14 +415,14 @@ class MexicanWaves(pigfarm.Yard):
         while True:
             self.canvas.delete('all')
 
-            image = self.find_image('1991')
-            if image:
-                #print(image)
-                image = self.load_image(image)
-                #print(image.size)
-                image = image.resize((int(self.height), int(self.width)))
-                #print(image.size, self.width, self.height)
-                self.beanstalk.image = image
+            if self.back_image:
+                image = self.find_image(self.back_imabe)
+                if image:
+                    image = self.load_image(image)
+
+                    image = image.resize((int(self.height), int(self.width)))
+
+                    self.beanstalk.image = image
 
             self.draw()
 

@@ -122,45 +122,51 @@ from .wc2018 import *
 
 from karmapi import pigfarm
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--nopig', action='store_true')
-parser.add_argument('--gallery')
-parser.add_argument('--dump')
-parser.add_argument('--events')
-parser.add_argument('--warp', type=float, default=1.0,
-                    help="warp speed")
-parser.add_argument('--outfile')
-args = parser.parse_args()            
 
-if args.nopig:
-    sys.exit()
-    
-farm = pigfarm.PigFarm()
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--nopig', action='store_true')
+    parser.add_argument('--back_image')
+    parser.add_argument('--dump')
+    parser.add_argument('--events')
+    parser.add_argument('--warp', type=float, default=1.0,
+                        help="warp speed")
+    parser.add_argument('--outfile')
+    args = parser.parse_args()            
 
-from karmapi.mclock2 import GuidoClock
+    if args.nopig:
+        sys.exit()
 
-xdump = args.dump
-if xdump:
-    xdump = open(args.dump, 'w')
+    farm = pigfarm.PigFarm()
 
-if args.outfile:
-    args.outfile = open(args.outfile, 'w')
+    from karmapi.mclock2 import GuidoClock
 
-if args.events:
-    args.events = open(args.events)
+    xdump = args.dump
+    if xdump:
+        xdump = open(args.dump, 'w')
 
-    #parse_events(args.events, args.outfile)
-    #sys.exit()
+    if args.outfile:
+        args.outfile = open(args.outfile, 'w')
 
-jsf.timewarp *= args.warp    
-    
-farm.add(GuidoClock)
-farm.add(MexicanWaves, dict(jsf=jsf, venues=places, gallery=args.gallery,
-                            events=args.events,
-                            dump=xdump))
+    if args.events:
+        args.events = open(args.events)
 
-# add a random wc time warper?
-curio.run(farm.run(), with_monitor=True)
+        #parse_events(args.events, args.outfile)
+        #sys.exit()
+
+    jsf.timewarp *= args.warp    
+    farm.add(GuidoClock)
+    farm.add(MexicanWaves, dict(jsf=jsf,
+                                venues=places,
+                                back_image=args.back_image,
+                                events=args.events,
+                                dump=xdump))
+
+    # add a random wc time warper?
+    curio.run(farm.run(), with_monitor=True)
 
 
 
+if __name__ == '__main__':
+
+    main()
