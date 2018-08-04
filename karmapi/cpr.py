@@ -203,7 +203,7 @@ class Sphere:
     def quantise(self, value):
 
         value = int(127 + (value * 128))
-        value = max(0, min(value, 255))
+        value = int(value % 256)
 
         return value
 
