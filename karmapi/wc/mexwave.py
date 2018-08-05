@@ -416,7 +416,7 @@ class MexicanWaves(pigfarm.Yard):
             self.canvas.delete('all')
 
             if self.back_image:
-                image = self.find_image(self.back_imabe)
+                image = self.find_image(self.back_image)
                 if image:
                     image = self.load_image(image)
 

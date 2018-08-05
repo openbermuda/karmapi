@@ -11,13 +11,31 @@ Simulate nested spherical waves.
 
 Things have moved on a little.
 
-So each ball of nested waves will have a driver at the inside and at the outside too.
+So each ball of nested waves will have a driver at the inside and at the
+outside too.
 
 Different clocks at each layer.
 
 And then outer layers made up of other randomly placed nested spheres.
 
 But using a universal queue, so let each sphere run in its own co-routine.
+
+Update: 2018/8/4
+================
+
+The Sphere and NestedWaves classes are moving along.
+
+For now, a sphere is represented by a square grid.
+
+We can decide later where the grid points lie.
+
+I have been experimenting with grids multiples of primes and made a few code
+changes moving it closer to *anpotu*.
+
+Some interesting patterns emerging::
+
+   python3.6 cpr --base 0 --inc 23 -n 7
+
 """
 import math
 
