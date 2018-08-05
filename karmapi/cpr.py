@@ -216,7 +216,7 @@ class Sphere:
         for ix, (r, g, b) in enumerate(value):
             self.red[ix] = r
             self.green[ix] = g
-            self.blue[ix] = r
+            self.blue[ix] = b
 
     def quantise(self, value):
 
