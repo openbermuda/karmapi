@@ -274,32 +274,54 @@ class Sphere:
 
 
     def sample(self, x1, y1, x2, y2):
-        """ Return a pixel given a rectangle """
-        
+        """ Return a pixel given a rectangle 
+
+        x1, y1, x2, y2 are real
+
+        Want to select a point from a rectangle around this
+        point.
+
+        allowing the rectangle to wrap around, identifying the left right
+        edges as well as the top and bottom.
+
+        (perhaps make this optional?)
+        """
+
+        # radians per x-step
         deltax = 1 / self.size[0]
         deltax *= 2 * math.pi
 
+        # radians per y-step
         deltay = 1 / self.size[1]
         deltay *= 2 * math.pi
 
+        # width height of rectangle.
         xdelta = x2 - x1
         ydelta = y2 - y1
 
-        k = int(xdelta / deltax) + 1
+        # expansion or contraction modulus
+        xk = int(xdelta / deltax)
+
+        xk = xk or 1
 
         xx = int(x1 / deltax)
 
-        xx = randint(xx, xx + k - 1)
+        xk2 = xk // 2
+        xx = randint(xx-xk2, xx + xk - (1 + xk2))
+
+        yk = int(ydelta / deltay)
+        yk = yk or 1
 
         yy = int(y1 / deltay)
 
-        k = int(ydelta / deltay) + 1
-
-        yy = randint(yy, yy + k - 1)
+        yk2 = yk // 2
+        yy = randint(yy - yk2, yy + yk - (1 + yk2))
 
         ix = (yy * self.size[0]) + xx
-        return self.red[ix], self.green[ix], self.blue[ix]
             
+        return self.red[ix], self.green[ix], self.blue[ix]
+    
+
     async def wave_run(self):
         """ wave
 
