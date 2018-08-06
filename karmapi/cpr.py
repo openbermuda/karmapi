@@ -468,7 +468,7 @@ class NestedWaves(pigfarm.Yard):
         last_ball = None
         ball = 0
         
-        for nn in range(2, 1000_0000):
+        for nn in range(self.base, 1000_0000):
 
             if not prime.isprime(nn):
                 continue
@@ -476,7 +476,7 @@ class NestedWaves(pigfarm.Yard):
 
             print('prime', nn)
             
-            size = self.base + (nn * self.inc)
+            size = nn
 
             size = (size, size)
 
