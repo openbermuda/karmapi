@@ -1,4 +1,21 @@
 """ Bermuda weather
+
+
+Or at least that is how it started.
+
+Download and view Bermuda Weather radar.
+
+tankrain being heavy rains that fill the water tanks beneath Bermuda homes.
+
+Now it has morphed into an image viewer.
+
+Sort your image into folders by year month day
+
+Tankrain will let you navigate.
+
+It also works for viewing models and data.
+
+Just store the images for each day.
 """
 import itertools
 import argparse
@@ -33,11 +50,13 @@ target = 'tankrain/{date.year}/{date.month}/{date.day}/{name}_{date:%H%M}{suffix
 class TankRain(pigfarm.MagicCarpet):
     """ Widget to show tankrain images """
 
-    def __init__(self, parent, path=None, version='local', date=None, *args):
+    def __init__(self, parent, path=None, version='local', date=None,
+                 save=None, *args):
         
         self.version = version
         self.paused = False
-        self.path = path or '~/karmapi/tankrain'
+        self.path = path or '.'
+        self.save_folder = save
         self.timewarp = 0
         self.cut = 0
         self.date = date
@@ -57,6 +76,7 @@ class TankRain(pigfarm.MagicCarpet):
         self.add_event_map('l', self.fewer_images)
         self.add_event_map('m', self.more_images)
         self.add_event_map('X', self.switcheroo)
+        self.add_event_map('S', self.save)
 
     def load_images(self):
         
@@ -96,16 +116,17 @@ class TankRain(pigfarm.MagicCarpet):
 
         return date
 
-    def where(self, when=None):
+    def where(self, when=None, path=None):
         """ Path for date """
         date = when or self.when()
 
-        path = Path(f'{self.path}/{date.year}/{date.month}/{date.day}/').expanduser()
+        path = path or self.path
+        path = Path(f'{path}/{date.year}/{date.month}/{date.day}/').expanduser()
 
         return path
 
 
-    def get_images(self, when=None):
+    def get_images(self, when=None, path=None):
 
         # FIXME -- create key bindings to select time
         date = when or self.when()
@@ -123,6 +144,22 @@ class TankRain(pigfarm.MagicCarpet):
             print(image)
             yield image
 
+
+    async def save(self):
+        """ Save image somewhere else
+
+        This one saves the current data, not the PIL file
+        so can be used to make transforms along the way.
+        """
+        # save relative to cwd
+        target = self.where(self.when(), self.save_folder or '.')
+
+
+        target /= self.paths[self.ix].name
+        # fixme -- where's the path
+        print('saving to', target)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        self.data.save(target)
 
     async def switcheroo(self):
         """ switcheroo
@@ -204,14 +241,15 @@ class TankRain(pigfarm.MagicCarpet):
         self.cut = self.ix % abs(self.inc)
 
     async def start(self):
-        """ FIXME: get yoser to run fetch """
+        """ FIXME: get yosser to run? """
         #farm.yosser.run(fetch, minutes=20, sleep=300)
+        
         pass
 
     async def run(self):
 
-        # use yosser?
-        await pigfarm.aside(runfetch)
+        # use yosser?  ironically awaiting yosser
+        #await pigfarm.aside(runfetch)
 
         self.dark()
         while True:
@@ -350,6 +388,9 @@ def main(args=None):
     parser.add_argument('--minutes', type=int, default=30)
     parser.add_argument('path', nargs='?', default='.')
     parser.add_argument('--version', default='')
+    parser.add_argument('--save',
+                        help='folder to save to')
+
     parser.add_argument('--date')
                             
     args = parser.parse_args()
@@ -360,7 +401,8 @@ def main(args=None):
         farm = pigfarm.PigFarm()
         farm.add(
             TankRain,
-            dict(path=args.path, version=args.version, date=args.date))
+            dict(path=args.path, version=args.version, date=args.date,
+                 save=args.save))
 
         from karmapi.mclock2 import GuidoClock
         farm.add(GuidoClock)
