@@ -63,6 +63,8 @@ class TankRain(pigfarm.MagicCarpet):
         if self.date is None:
             self.date = utcnow()
 
+        self.title = 'k'
+
         self.load_images()
 
         super().__init__(parent, axes=[111])
@@ -77,6 +79,7 @@ class TankRain(pigfarm.MagicCarpet):
         self.add_event_map('m', self.more_images)
         self.add_event_map('X', self.switcheroo)
         self.add_event_map('S', self.save)
+        self.add_event_map('T', self.toggle_title)
 
     def load_images(self):
         
@@ -240,6 +243,13 @@ class TankRain(pigfarm.MagicCarpet):
 
         self.cut = self.ix % abs(self.inc)
 
+    async def toggle_title(self):
+        """ toggle titles """
+        if self.title == 'k':
+            self.title = 'gold'
+        else:
+            self.title = 'k'
+
     async def start(self):
         """ FIXME: get yosser to run? """
         #farm.yosser.run(fetch, minutes=20, sleep=300)
@@ -257,17 +267,18 @@ class TankRain(pigfarm.MagicCarpet):
                 await curio.sleep(self.sleep)
                 continue
 
-            #title = self.paths[self.ix]
             if self.paths:
                 title = self.paths[self.ix]
             else:
                 title = f'{self.ix} : {len(self.paths)} {self.path}'
-            
+
             self.compute_data()
             self.axes.clear()
             print('TITLE:', title)
             try:
-                self.axes.set_title(title)
+                #self.axes.set_title(title, color=self.title)
+                self.axes.set_title(title, color=self.title or 'k')
+                
                 self.axes.imshow(self.data)
             except OSError:
                 print('dodgy image:', self.paths[self.ix])
