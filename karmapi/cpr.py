@@ -318,7 +318,7 @@ class Sphere:
         yy = randint(yy - yk2, yy + yk - (1 + yk2))
 
         ix = (yy * self.size[0]) + xx
-            
+
         return self.red[ix], self.green[ix], self.blue[ix]
     
 
@@ -419,20 +419,17 @@ class NestedWaves(pigfarm.Yard):
     and draw slices on the canvas from the yard.
     """
 
-    def __init__(self, parent, n=10, base=4, inc=4):
+    def __init__(self, parent, balls=None):
         """ Initialise the thing """
 
         super().__init__(parent)
 
-        self.base = base
-        self.n = n
-        self.inc = inc
-
+        self.n = len(balls)
 
         # expect we'll find something to do with a queue
         self.uq = curio.UniversalQueue()
 
-        self.build()
+        self.build(balls)
         self.add_event_map(' ', self.pause)
         self.paused = False
         self.add_event_map('r', self.reset)
@@ -461,21 +458,15 @@ class NestedWaves(pigfarm.Yard):
         if self.dball < 0:
             self.dball = self.n - 1
 
-    def build(self):
+    def build(self, balls):
         """ Create the balls """
         # add a bunch of spheres to the queue
         self.balls = []
         last_ball = None
         ball = 0
         
-        for nn in range(self.base, 1000_0000):
+        for nn in balls:
 
-            if not prime.isprime(nn):
-                continue
-
-
-            print('prime', nn)
-            
             size = nn
 
             size = (size, size)
@@ -594,6 +585,31 @@ class NestedWaves(pigfarm.Yard):
             await curio.sleep(self.sleep)            
 
 
+def prime_balls(base, n):
+    """ Generate next n primes starting at base"""
+
+    for nn in range(base, 1000_0000):
+        
+        if not prime.isprime(nn):
+            continue
+
+        print('prime', nn)
+        yield nn
+
+        n -= 1
+        if n == 0:
+            return
+
+def pi_balls(base, n):
+    """ Generate next n pi-based balls starting at base 
+
+    pi = 4 * sum((-1)^n * (1/(1 + (2*n))))
+    """
+    # for now, punt to prime balls
+    return prime_balls(base, n)
+            
+
+            
 class CelestialSphere(NestedWaves):
     """ An outer sphere of nested waves
 
@@ -720,6 +736,12 @@ def argument_parser():
 
     return parser
 
+def random_prime_balls(nmin, nmax):
+    """ generate a random prime balls """
+    while True:
+        base = random.randint(nmin, nmax)
+        ball = list(prime_balls(base, random.randint(3, 13)))
+        yield ball
     
 def main():
 
@@ -727,7 +749,14 @@ def main():
 
     args = parser.parse_args()
 
-    farm = pigfarm.sty(NestedWaves, dict(n=args.n, inc=args.inc, base=args.base))
+    # pass list of balls into NestedWaves
+
+    balls = list(prime_balls(args.base, args.n))
+    
+    #for ball in random_prime_balls(args.base, 127):
+    #    balls.append(ball)
+
+    farm = pigfarm.sty(NestedWaves, dict(balls=balls))
 
     curio.run(farm.run(), with_monitor=True)
             

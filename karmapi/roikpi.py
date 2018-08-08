@@ -59,9 +59,11 @@ def main():
              back_image=args.background,
              events=args.events))
 
+    balls = list(cpr.prime_balls(args.base, args.n))
+
     farm.add(
         cpr.NestedWaves,
-        dict(n=args.n, inc=args.inc, base=args.base))
+        dict(balls=balls))
 
     curio.run(farm.run(), with_monitor=True)
             
