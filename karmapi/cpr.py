@@ -129,27 +129,80 @@ class Sphere:
             self.blue.append(randunit())
 
 
-    def project(self):
+    def project(self, view=None):
         """ Turn into a PIL? """
+
+        views = dict(
+            grid=self.rgb2grid,
+            northpole=self.northpole,
+            southpole=self.southpole)
+            
         image = Image.new('RGB', (self.size[0], self.size[1]))
 
         # FIXME do the 256 magic int stuff here
 
         #print('rgb', len(self.red), len(self.green), len(self.blue))
 
-        image.putdata(self.rgb2grid())
+        project = views.get(view, self.rgb2grid)
+        
+        image.putdata(project())
 
         return image
 
     def rgb2grid(self):
-        """ Change lists of red green blue to a quantised pixel grid"""
+        """ Change lists of red green blue to a pixel grid"""
         grid = []
         for rgb in zip(self.red, self.green, self.blue):
             pixel = tuple(self.quantise(x) for x in rgb)
             grid.append(pixel)
 
         return grid
+
+    def poleview(self, pixels):
+        """ View from a pole """
+    
+        # make black everywhere
+        width, height = self.size
+        grid = [(0, 0, 0)] * width * height
+
+        xorig = int(width / 2)
+        yorig = int(height/ 2)
         
+        for ix, rgb in enumerate(pixels):
+
+            pixel = tuple(self.quantise(x) for x in rgb)
+            xx = ix % width
+            yy = ix // height
+
+            #if yy >= height / 2:
+            #    break
+                        
+            # so radius yy from centre and xx how far round the circle
+            angle = xx * 2 * math.pi / width
+             
+            xoff = yy * math.cos(angle) / 2
+            yoff = yy * math.sin(angle) / 2
+
+            xpos = int(xorig + xoff)
+            ypos = int(yorig + yoff)
+
+            target = xpos + ypos * width
+            
+            grid[target] = pixel
+            
+        return grid
+
+    def northpole(self):
+        """ Give a circular view from the north pole """
+        pixels = zip(self.red, self.green, self.blue)
+
+        return self.poleview(pixels)
+
+    def southpole(self):
+        """ Give a circular view from the south pole """
+        pixels = zip(self.red[::-1], self.green[::-1], self.blue[::-1])
+
+        return self.poleview(pixels)
 
     async def run(self):
         """ Run a sphere 
@@ -427,6 +480,9 @@ class NestedWaves(pigfarm.Yard):
         # expect we'll find something to do with a queue
         self.uq = curio.UniversalQueue()
 
+        self.views = ['grid', 'northpole', 'southpole']
+        self.view = 0
+
         self.build(balls)
         self.add_event_map(' ', self.pause)
         self.paused = False
@@ -435,6 +491,8 @@ class NestedWaves(pigfarm.Yard):
         self.dball = 0
         self.add_event_map('j', self.backward)
         self.add_event_map('k', self.forward)
+        self.add_event_map('v', self.next_view)
+        self.add_event_map('b', self.previous_view)
 
     async def pause(self):
         """ Pause """
@@ -455,6 +513,16 @@ class NestedWaves(pigfarm.Yard):
         self.dball -= 1
         if self.dball < 0:
             self.dball = len(self.balls) - 1
+
+    async def next_view(self):
+        """ next view """
+        self.view += 1
+        self.view %= len(self.views)
+
+    async def previous_view(self):
+        """ previous view """
+        self.view += 1
+        self.view %= len(self.views)
 
     def build(self, balls):
         """ Create the balls """
@@ -545,7 +613,7 @@ class NestedWaves(pigfarm.Yard):
         """
         width, height = self.width, self.height
 
-        image = ball.project()
+        image = ball.project(self.views[self.view])
         
         image = image.resize((int(width), int(height)))
 
