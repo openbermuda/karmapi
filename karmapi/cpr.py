@@ -36,6 +36,28 @@ Some interesting patterns emerging::
 
    python3.6 cpr --base 0 --inc 23 -n 7
 
+Update: 2018/8/9
+
+The motivation for using grids with prime dimensions was that it makes it makes
+it challenging for the spheres to stay in sync with each other.
+
+Their periods are co-prime.
+
+As a result, spirals emerge.
+
+In the initial runs there was a strong diagonal property developing.
+
+A smooth, square, space in the top left corner.
+
+A more random square bottom right, with the corners of these two squares meeting.
+
+Much symmetry for the bands to the top and left of the view.
+
+My interpretation is these bands show the layers largely being in sync.
+
+Regardless, another view of these grids is to view them from the north or south
+pole.  When you do that there are spirals everywhere.
+
 """
 import math
 
