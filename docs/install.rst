@@ -490,6 +490,10 @@ type 'h' on Guido's clock.
 Post Install
 ============
 
+To upgrade to latest release using pip::
+
+  pip3.6 install --upgrade karmapi
+
 If you want to take a look at the latest code::
 
   git clone https://github.com/karmapi/swfiua
@@ -545,3 +549,12 @@ Raspberry Pi
 That is a whole other adventure.
 
 But Raspbian Stretch may have python 3.6.   Fingers crossed.
+
+Latest fun commands::
+
+  python3 -m karmapi.cpr -n 7 --base 31
+
+To get an overview of what a module is about::
+
+  >>> from karmapi import cpr
+  >>> help(cpr)
