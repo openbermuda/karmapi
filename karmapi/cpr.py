@@ -424,8 +424,6 @@ class NestedWaves(pigfarm.Yard):
 
         super().__init__(parent)
 
-        self.n = len(balls)
-
         # expect we'll find something to do with a queue
         self.uq = curio.UniversalQueue()
 
@@ -450,13 +448,13 @@ class NestedWaves(pigfarm.Yard):
     async def forward(self):
         """ Move to next sphere """
         self.dball += 1
-        self.dball %= self.n
+        self.dball %= len(self.balls)
 
     async def backward(self):
         """ Move to previous sphere """
         self.dball -= 1
         if self.dball < 0:
-            self.dball = self.n - 1
+            self.dball = len(self.balls) - 1
 
     def build(self, balls):
         """ Create the balls """
@@ -491,8 +489,7 @@ class NestedWaves(pigfarm.Yard):
 
             # next ball
             ball += 1
-            if ball == self.n:
-                break
+
 
     async def random_step_some(self):
         """ Step all balls once """
