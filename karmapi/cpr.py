@@ -273,7 +273,6 @@ class Sphere:
         lb = self.last_ball
         nb = self.next_ball
         
-        lsize = self.last_ball.size
         n1, n2 = self.size
         
         grid = []
@@ -289,7 +288,10 @@ class Sphere:
                 y1 = (y / n2) * 2 * math.pi
                 y2 = y1 + deltay
 
-                lbc = lb.sample(x1, y1, x2, y2)
+                if lb:
+                    lbc = lb.sample(x1, y1, x2, y2)
+                else:
+                    lbc = tuple(randunit() for c in 'rgb')
 
                 if nb:
                     nbc = nb.sample(x1, y1, x2, y2)
@@ -859,15 +861,10 @@ def random_prime_balls(nmin, nmax):
         base = random.randint(nmin, nmax)
         ball = list(prime_balls(base, random.randint(3, 13)))
         yield ball
+
+
+def args_to_spheres(args):
     
-def main():
-
-    parser = argument_parser()
-
-    args = parser.parse_args()
-
-    # pass list of balls into NestedWaves
-
     if args.stride:
         stride = args.stride
         start = args.base
@@ -879,10 +876,19 @@ def main():
 
     print('balls', balls)
     spheres = list(generate_spheres(balls))
-    
-    #for ball in random_prime_balls(args.base, 127):
-    #    balls.append(ball)
 
+    return spheres
+    
+        
+def main():
+
+    parser = argument_parser()
+
+    args = parser.parse_args()
+
+    # pass list of balls into NestedWaves
+    spheres = args_to_spheres(args)
+    
     farm = pigfarm.sty(NestedWaves, dict(balls=spheres))
 
     curio.run(farm.run(), with_monitor=True)

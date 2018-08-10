@@ -315,47 +315,21 @@ class WorldView(cpr.Sphere):
 class World(cpr.NestedWaves):
 
     def __init__(self, parent, stamps=None, values=None,
+                 balls=None,
                  save=None, **kwargs):
 
         self.stamps = list(stamps)
         self.values = values
         self.save = save
 
-        super().__init__(parent, **kwargs)
+        
+        sphere = WorldView(self.stamps, self.values)
+        balls.append(sphere)
+        balls[0].M = None
+
+        super().__init__(parent, balls=balls, **kwargs)
 
 
-    def build(self, balls):
-        """ Create the balls """
-        # add a bunch of spheres to the queue
-        self.balls = []
-        last_ball = None
-        for nn in balls:
-            size = nn
-
-            head = True
-            
-            if ball:
-                head = False
-
-            tail = False
-            if ball == self.n - 1:
-                tail = True
-
-
-            if tail or head:
-                sphere = WorldView(self.stamps, self.values, head=head, tail=tail)
-                sphere.save = self.save or False
-            else:
-                sphere = cpr.Sphere((size, size), head=head, tail=tail)
-
-            if not sphere.head:
-                sphere.last_ball = last_ball
-                last_ball.next_ball = sphere
-            
-            self.uq.put(sphere)
-            self.balls.append(sphere)
-
-            last_ball = sphere
             
 
 if __name__ == '__main__':
@@ -412,10 +386,11 @@ if __name__ == '__main__':
 
     print('min max:')
     print(values[0].min(), values[0].max())
-    balls = list(cpr.prime_balls(args.base, args.n))
+    
+    spheres = cpr.args_to_spheres(args)
 
     parms = dict(stamps=stamps, values=values, save=args.save,
-                 balls=balls)
+                 balls=spheres)
     
     farm = pigfarm.sty(World, parms)
 

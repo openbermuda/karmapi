@@ -59,7 +59,7 @@ def main():
              back_image=args.background,
              events=args.events))
 
-    balls = list(cpr.prime_balls(args.base, args.n))
+    spheres = cpr.args_to_spheres(args)
 
     farm.add(
         cpr.NestedWaves,
