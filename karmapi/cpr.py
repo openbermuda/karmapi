@@ -521,7 +521,7 @@ class NestedWaves(pigfarm.Yard):
         super().__init__(parent)
 
         # expect we'll find something to do with a queue
-        self.uq = curio.UniversalQueue()
+        #self.uq = curio.UniversalQueue()
 
         self.views = ['grid', 'northpole', 'southpole', 'uphemi', 'downhemi']
         self.view = 0
@@ -574,34 +574,20 @@ class NestedWaves(pigfarm.Yard):
         # add a bunch of spheres to the queue
         self.balls = []
         last_ball = None
-        ball = 0
         
-        for nn in balls:
-
-            size = nn
-
-            size = (size, size)
-
-            M, mu = 1.0, 0.1
-
-            #if ball and ball != self.n -1:
-            if ball:
-                M, mu = None, None
-
-            sphere = Sphere(size, m=M, mu=mu)
-
+        for sphere in balls:
+            
             if last_ball:
                 sphere.last_ball = last_ball
                 last_ball.next_ball = sphere
                 
             # may need to revisit this, spread some work
-            self.uq.put(sphere)
+            # self.uq.put(sphere)
+            print('adding ball', sphere.size)
             self.balls.append(sphere)
 
             last_ball = sphere
 
-            # next ball
-            ball += 1
 
 
     async def random_step_some(self):
@@ -694,6 +680,27 @@ class NestedWaves(pigfarm.Yard):
             
             await curio.sleep(self.sleep)            
 
+
+def generate_spheres(sizes):
+
+    first = True
+    for nn in sizes:
+
+        size = nn
+
+        size = (size, size)
+
+        M, mu = 1.0, 0.1
+
+        #if ball and ball != self.n -1:
+        if not first:
+            M, mu = None, None
+        first = False
+            
+        sphere = Sphere(size, m=M, mu=mu)
+
+        yield sphere
+        
 
 def prime_balls(base, n):
     """ Generate next n primes starting at base"""
@@ -840,8 +847,8 @@ def argument_parser():
         help='what to show')
     parser.add_argument('-a', type=int, default=1)
     parser.add_argument('-n', type=int, default=10)
+    parser.add_argument('--stride', type=int)
     parser.add_argument('-m', type=int, default=1)
-    parser.add_argument('--inc', type=int, default=4)
     parser.add_argument('--base', type=int, default=20)
 
     return parser
@@ -861,12 +868,22 @@ def main():
 
     # pass list of balls into NestedWaves
 
-    balls = list(prime_balls(args.base, args.n))
+    if args.stride:
+        stride = args.stride
+        start = args.base
+        end = start + (args.n * args.stride)
+        
+        balls = range(start, end, stride)
+    else:
+        balls = prime_balls(args.base, args.n)
+
+    print('balls', balls)
+    spheres = list(generate_spheres(balls))
     
     #for ball in random_prime_balls(args.base, 127):
     #    balls.append(ball)
 
-    farm = pigfarm.sty(NestedWaves, dict(balls=balls))
+    farm = pigfarm.sty(NestedWaves, dict(balls=spheres))
 
     curio.run(farm.run(), with_monitor=True)
             

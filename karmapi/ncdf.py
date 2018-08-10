@@ -324,13 +324,13 @@ class World(cpr.NestedWaves):
         super().__init__(parent, **kwargs)
 
 
-    def build(self):
+    def build(self, balls):
         """ Create the balls """
         # add a bunch of spheres to the queue
         self.balls = []
         last_ball = None
-        for ball in range(self.n):
-            size = self.base + (ball * self.inc)
+        for nn in balls:
+            size = nn
 
             head = True
             
@@ -412,9 +412,10 @@ if __name__ == '__main__':
 
     print('min max:')
     print(values[0].min(), values[0].max())
+    balls = list(cpr.prime_balls(args.base, args.n))
 
     parms = dict(stamps=stamps, values=values, save=args.save,
-                 n=args.n, inc=args.inc, base=args.base)
+                 balls=balls)
     
     farm = pigfarm.sty(World, parms)
 
