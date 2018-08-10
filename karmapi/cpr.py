@@ -157,7 +157,9 @@ class Sphere:
         views = dict(
             grid=self.rgb2grid,
             northpole=self.northpole,
-            southpole=self.southpole)
+            southpole=self.southpole,
+            uphemi=self.uphemi,
+            downhemi=self.downhemi)
             
         image = Image.new('RGB', (self.size[0], self.size[1]))
 
@@ -166,6 +168,7 @@ class Sphere:
         #print('rgb', len(self.red), len(self.green), len(self.blue))
 
         project = views.get(view, self.rgb2grid)
+        print(view)
         
         image.putdata(project())
 
@@ -180,7 +183,7 @@ class Sphere:
 
         return grid
 
-    def poleview(self, pixels):
+    def poleview(self, pixels, scale=1):
         """ View from a pole """
     
         # make black everywhere
@@ -202,13 +205,17 @@ class Sphere:
             # so radius yy from centre and xx how far round the circle
             angle = xx * 2 * math.pi / width
              
-            xoff = yy * math.cos(angle) / 2
-            yoff = yy * math.sin(angle) / 2
+            xoff = yy * math.cos(angle) / scale
+            yoff = yy * math.sin(angle) / scale
 
             xpos = int(xorig + xoff)
             ypos = int(yorig + yoff)
 
             target = xpos + ypos * width
+
+            ix = ix % (width * height)
+
+            target %= width * height
             
             grid[target] = pixel
             
@@ -218,11 +225,25 @@ class Sphere:
         """ Give a circular view from the north pole """
         pixels = zip(self.red, self.green, self.blue)
 
-        return self.poleview(pixels)
+        return self.poleview(pixels, scale=2)
 
     def southpole(self):
         """ Give a circular view from the south pole """
         pixels = zip(self.red[::-1], self.green[::-1], self.blue[::-1])
+
+        return self.poleview(pixels, scale=2)
+
+    def uphemi(self):
+        """ show top hemisphere """
+        nn = int(len(self.red) / 2)
+        pixels = zip(self.red[:nn], self.green[:nn], self.blue[:nn])
+
+        return self.poleview(pixels)
+
+    def downhemi(self):
+        """ show top hemisphere """
+        nn = int(len(self.red) / 2)
+        pixels = zip(self.red[nn::-1], self.green[nn::-1], self.blue[nn::-1])
 
         return self.poleview(pixels)
 
@@ -502,7 +523,7 @@ class NestedWaves(pigfarm.Yard):
         # expect we'll find something to do with a queue
         self.uq = curio.UniversalQueue()
 
-        self.views = ['grid', 'northpole', 'southpole']
+        self.views = ['grid', 'northpole', 'southpole', 'uphemi', 'downhemi']
         self.view = 0
 
         self.build(balls)
@@ -543,8 +564,10 @@ class NestedWaves(pigfarm.Yard):
 
     async def previous_view(self):
         """ previous view """
-        self.view += 1
-        self.view %= len(self.views)
+        if self.view:
+            self.view -= 1
+        else:
+            self.view = len(self.views) - 1
 
     def build(self, balls):
         """ Create the balls """
