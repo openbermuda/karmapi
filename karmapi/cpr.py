@@ -103,7 +103,7 @@ class Sphere:
         self.next_ball = None
 
         #self.fade = 1 / math.e
-        self.fade = 3
+        self.fade = 1
 
         self.t = t
 
@@ -128,13 +128,6 @@ class Sphere:
         
     def reset(self, init=False):
         """ Reset the sphere """
-
-        if self.M:
-            self.setup_wave()
-
-            # first time only, carry on?
-            if self.red:
-                return 
 
         self.red.clear()
         self.green.clear()
@@ -266,9 +259,6 @@ class Sphere:
 
         self.t += 1
 
-        if self.M:
-            return await self.wave_run()
-        
         # Here if we are between two spheres
         # so have last_ball and next_ball
 
@@ -289,7 +279,7 @@ class Sphere:
         lbweight = (lb or self).weight(self)
         nbweight = (nb or self).weight(self)
 
-        print(cbweight, lbweight, nbweight)
+        #print(cbweight, lbweight, nbweight)
         
         for x in range(self.size[0]):
             x1 = (x / n1) * 2 * math.pi
@@ -445,7 +435,33 @@ class Sphere:
         return self.red[ix], self.green[ix], self.blue[ix]
     
 
-    async def wave_run(self):
+
+        
+class NeutronStar(Sphere):
+    """
+
+    An sphere with a mass
+    
+    Just supply the mass.
+
+    or... maybe a bit more complex.
+
+    So, nest some waves and figure out project and sample.
+
+    So what radii are interesting?
+
+    Each star, or galaxy can have its own process, and a pi can run a
+    good few stars.
+
+    
+    """
+    def reset(self, init=False):
+        """ Reset the sphere """
+
+        super().reset(init)
+        self.setup_wave()
+
+    async def run(self):
         """ wave
 
         red, green, blue
@@ -457,6 +473,8 @@ class Sphere:
 
         How to fill in self.grid?
         """
+        self.t += 1
+
         n1, n2 = self.size
         width = 2 * math.pi
         height = math.pi
@@ -488,29 +506,6 @@ class Sphere:
 
         self.grid2rgb(grid)
 
-        
-class NeutronStar:
-    """
-
-    An inner sphere 
-    
-    Just supply the mass.
-
-    or... maybe a bit more complex.
-
-    So, nest some waves and figure out project and sample.
-
-    So what radii are interesting?
-
-    Each star, or galaxy can have its own process, and a pi can run a
-    good few stars.
-
-    
-    """
-    def __init__(self):
-        pass
-        
-            
 
 def randunit():
 
@@ -708,8 +703,10 @@ class NestedWaves(pigfarm.Yard):
             await curio.sleep(self.sleep)            
 
 
-def generate_spheres(sizes):
+def generate_spheres(sizes, clazz=None):
 
+    clazz = clazz or NeutronStar
+    
     first = True
     for r, nn in enumerate(sizes):
 
@@ -719,12 +716,14 @@ def generate_spheres(sizes):
 
         M, mu = 1.0, 0.1
 
-        #if ball and ball != self.n -1:
-        if not first:
-            M, mu = None, None
-        first = False
-            
-        sphere = Sphere(size, r=r, m=M, mu=mu)
+        R = 1 * r
+
+        #M = M / (R+1)
+        mu = M / 10
+
+        sphere = clazz(size, r=R, m=M, mu=mu)
+
+        clazz = Sphere
 
         yield sphere
         
