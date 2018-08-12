@@ -103,7 +103,7 @@ class Sphere:
         self.next_ball = None
 
         #self.fade = 1 / math.e
-        self.fade = 1
+        self.fade = 3
 
         self.t = t
 
