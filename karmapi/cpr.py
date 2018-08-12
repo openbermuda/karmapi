@@ -313,7 +313,7 @@ class Sphere:
 
                 value = [((aa * lbweight) +
                           (bb * cbweight) +
-                          (cc * nbweight)) 
+                          (cc * nbweight)) * (1 / math.e)
                               for aa, bb, cc in zip(lbc, cbc, nbc)]
 
                 grid.append(value)
