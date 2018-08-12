@@ -363,6 +363,8 @@ if __name__ == '__main__':
     
     stamps = stamp_sort(stamps)
 
+    print("number of observations:", len(stamps))
+
     path = path / args.value
 
     if args.pc:

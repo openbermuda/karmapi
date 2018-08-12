@@ -159,7 +159,7 @@ class Sphere:
             northpole=self.northpole,
             southpole=self.southpole,
             uphemi=self.uphemi,
-            downhemi=self.downhemi)
+            lowhemi=self.lowhemi)
             
         image = Image.new('RGB', (self.size[0], self.size[1]))
 
@@ -183,12 +183,14 @@ class Sphere:
 
         return grid
 
-    def poleview(self, pixels, scale=1):
+    def poleview(self, pixels, scale=1, wind=1):
         """ View from a pole """
     
         # make black everywhere
         width, height = self.size
-        grid = [(0, 0, 0)] * width * height
+
+        
+        grid = [(127, 127, 127)] * width * height
 
         xorig = int(width / 2)
         yorig = int(height/ 2)
@@ -203,7 +205,7 @@ class Sphere:
             #    break
                         
             # so radius yy from centre and xx how far round the circle
-            angle = xx * 2 * math.pi / width
+            angle = wind * xx * 2 * math.pi / width
              
             xoff = yy * math.cos(angle) / scale
             yoff = yy * math.sin(angle) / scale
@@ -231,21 +233,21 @@ class Sphere:
         """ Give a circular view from the south pole """
         pixels = zip(self.red[::-1], self.green[::-1], self.blue[::-1])
 
-        return self.poleview(pixels, scale=2)
+        return self.poleview(pixels, scale=2, wind=-1)
 
     def uphemi(self):
-        """ show top hemisphere """
+        """ show upper hemisphere """
         nn = int(len(self.red) / 2)
         pixels = zip(self.red[:nn], self.green[:nn], self.blue[:nn])
 
         return self.poleview(pixels)
 
-    def downhemi(self):
-        """ show top hemisphere """
+    def lowhemi(self):
+        """ show lower hemisphere """
         nn = int(len(self.red) / 2)
         pixels = zip(self.red[nn::-1], self.green[nn::-1], self.blue[nn::-1])
 
-        return self.poleview(pixels)
+        return self.poleview(pixels, wind=-1)
 
     async def run(self):
         """ Run a sphere 
@@ -525,7 +527,7 @@ class NestedWaves(pigfarm.Yard):
         # expect we'll find something to do with a queue
         #self.uq = curio.UniversalQueue()
 
-        self.views = ['grid', 'northpole', 'southpole', 'uphemi', 'downhemi']
+        self.views = ['grid', 'northpole', 'southpole', 'uphemi', 'lowhemi']
         self.view = 0
 
         self.build(balls)
