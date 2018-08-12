@@ -101,7 +101,10 @@ class Sphere:
 
         self.last_ball = None
         self.next_ball = None
-        self.fade = 1 / math.e
+
+        #self.fade = 1 / math.e
+        self.fade = 1
+
         self.t = t
 
         # Default for mass??
@@ -282,7 +285,11 @@ class Sphere:
         deltax = (1 / (2 * n1)) * 2 * math.pi
         deltay = (1 / (2 * n2)) * 2 * math.pi
 
-        cweight = self.weight(self)
+        cbweight = self.weight(self)
+        lbweight = (lb or self).weight(self)
+        nbweight = (nb or self).weight(self)
+
+        print(cbweight, lbweight, nbweight)
         
         for x in range(self.size[0]):
             x1 = (x / n1) * 2 * math.pi
@@ -294,24 +301,20 @@ class Sphere:
 
                 if lb:
                     lbc = lb.sample(x1, y1, x2, y2)
-                    lbweight = lb.weight(self)
                 else:
                     lbc = tuple(randunit() for c in 'rgb')
-                    lbweight = 1
                 if nb:
                     nbc = nb.sample(x1, y1, x2, y2)
-                    nbweight = nb.weight(self)
                 else:
                     nbc = tuple(randunit() for c in 'rgb')
-                    nbweight = 1
 
                 cix = (y * self.size[0]) + x
-                current = (self.red[cix], self.green[cix], self.blue[cix])
+                cbc = (self.red[cix], self.green[cix], self.blue[cix])
 
                 value = [((aa * lbweight) +
-                          (bb * cweight) +
+                          (bb * cbweight) +
                           (cc * nbweight)) 
-                              for aa, bb, cc in zip(lbc, current, nbc)]
+                              for aa, bb, cc in zip(lbc, cbc, nbc)]
 
                 grid.append(value)
 
@@ -320,12 +323,13 @@ class Sphere:
 
     def weight(self, ball):
 
-        delta_r = ball.r - self.r
+        delta_r = abs(ball.r - self.r)
 
         if delta_r == 0:
             return self.M or 1
 
         weight = (self.M or 1) / (delta_r ** self.fade)
+        #print(delta_r, self.M or 1, self.fade, weight)
 
         return weight
     
