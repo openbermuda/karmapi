@@ -281,7 +281,9 @@ class Sphere:
         ix = 0
         deltax = (1 / (2 * n1)) * 2 * math.pi
         deltay = (1 / (2 * n2)) * 2 * math.pi
-            
+
+        cweight = self.weight(self)
+        
         for x in range(self.size[0]):
             x1 = (x / n1) * 2 * math.pi
             x2 = x1 + deltax
@@ -292,25 +294,42 @@ class Sphere:
 
                 if lb:
                     lbc = lb.sample(x1, y1, x2, y2)
+                    lbweight = lb.weight(self)
                 else:
                     lbc = tuple(randunit() for c in 'rgb')
-
+                    lbweight = 1
                 if nb:
                     nbc = nb.sample(x1, y1, x2, y2)
+                    nbweight = nb.weight(self)
                 else:
                     nbc = tuple(randunit() for c in 'rgb')
+                    nbweight = 1
 
                 cix = (y * self.size[0]) + x
                 current = (self.red[cix], self.green[cix], self.blue[cix])
 
-                value = [(aa + bb + cc) * self.fade
-                             for aa, bb, cc in zip(lbc, nbc, current)]
-                
+                value = [((aa * lbweight) +
+                          (bb * cweight) +
+                          (cc * nbweight)) 
+                              for aa, bb, cc in zip(lbc, current, nbc)]
+
                 grid.append(value)
 
         self.grid2rgb(grid)
         #self.normalise()
 
+    def weight(self, ball):
+
+        delta_r = ball.r - self.r
+
+        if delta_r == 0:
+            return self.M or 1
+
+        weight = (self.M or 1) / (delta_r ** self.fade)
+
+        return weight
+    
+            
     def grid2rgb(self, value):
 
         for ix, (r, g, b) in enumerate(value):
@@ -688,7 +707,7 @@ class NestedWaves(pigfarm.Yard):
 def generate_spheres(sizes):
 
     first = True
-    for nn in sizes:
+    for r, nn in enumerate(sizes):
 
         size = nn
 
@@ -701,7 +720,7 @@ def generate_spheres(sizes):
             M, mu = None, None
         first = False
             
-        sphere = Sphere(size, m=M, mu=mu)
+        sphere = Sphere(size, r=r, m=M, mu=mu)
 
         yield sphere
         
