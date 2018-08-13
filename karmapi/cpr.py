@@ -317,6 +317,7 @@ class Sphere:
         self.grid2rgb(grid)
         #self.normalise()
 
+
     def weight(self, ball):
 
         delta_r = abs(ball.r - self.r)
@@ -329,7 +330,7 @@ class Sphere:
         #print(delta_r, self.M or 1, self.fade, weight)
 
         return weight
-    
+
             
     def grid2rgb(self, value):
 
@@ -545,7 +546,7 @@ class NestedWaves(pigfarm.Yard):
     and draw slices on the canvas from the yard.
     """
 
-    def __init__(self, parent, balls=None):
+    def __init__(self, parent, balls=None, fade=1):
         """ Initialise the thing """
 
         super().__init__(parent)
@@ -555,6 +556,7 @@ class NestedWaves(pigfarm.Yard):
 
         self.views = ['grid', 'northpole', 'southpole', 'uphemi', 'lowhemi']
         self.view = 0
+        self.fade = fade
 
         self.build(balls)
         self.add_event_map(' ', self.pause)
@@ -566,6 +568,19 @@ class NestedWaves(pigfarm.Yard):
         self.add_event_map('k', self.forward)
         self.add_event_map('v', self.next_view)
         self.add_event_map('b', self.previous_view)
+        self.add_event_map('d', self.lessfade)
+        self.add_event_map('f', self.morefade)
+
+
+    async def lessfade(self):
+        """ Decrease r exponent """
+        self.fade -= 1
+        print(f"metric: 1 / (r ** {self.fade})")
+
+    async def morefade(self):
+        """ Increase r exponent """
+        self.fade += 1
+        print(f"metric: 1 / (r ** {self.fade})")
 
     async def pause(self):
         """ Pause """
@@ -614,6 +629,7 @@ class NestedWaves(pigfarm.Yard):
             # may need to revisit this, spread some work
             # self.uq.put(sphere)
             print('adding ball', sphere.size)
+            sphere.fade = self.fade
             self.balls.append(sphere)
 
             last_ball = sphere
@@ -718,15 +734,19 @@ def generate_spheres(sizes, clazz=None):
     
     first = True
     sizes = list(sizes)
+
+    K = 2
     for r, nn in enumerate(sizes[:-1]):
 
         size = nn
 
         size = (size, size)
 
-        M, mu = 1.0, 0.1
+        M = 1.0 * K
 
-        R = 1 * r
+        mu = M / 10
+
+        R = 2 * r
 
         #M = M / (R+1)
         mu = M / 10
@@ -892,6 +912,7 @@ def argument_parser():
         help='what to show')
     parser.add_argument('-a', type=int, default=1)
     parser.add_argument('-n', type=int, default=10)
+    parser.add_argument('--fade', type=int, default=1)
     parser.add_argument('--stride', type=int)
     parser.add_argument('-m', type=int, default=1)
     parser.add_argument('--base', type=int, default=20)
@@ -932,7 +953,7 @@ def main():
     # pass list of balls into NestedWaves
     spheres = args_to_spheres(args)
     
-    farm = pigfarm.sty(NestedWaves, dict(balls=spheres))
+    farm = pigfarm.sty(NestedWaves, dict(balls=spheres, fade=args.fade))
 
     curio.run(farm.run(), with_monitor=True)
             
