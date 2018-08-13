@@ -279,6 +279,8 @@ class Sphere:
         lbweight = (lb or self).weight(self)
         nbweight = (nb or self).weight(self)
 
+        print('weights', cbweight, lbweight, nbweight)
+
         #print(cbweight, lbweight, nbweight)
         
         for x in range(self.size[0]):
@@ -315,6 +317,7 @@ class Sphere:
 
         delta_r = abs(ball.r - self.r)
 
+        
         if delta_r == 0:
             return self.M or 1
 
@@ -330,6 +333,7 @@ class Sphere:
             self.red[ix] = r
             self.green[ix] = g
             self.blue[ix] = b
+
 
     def quantise(self, value):
 
@@ -475,6 +479,10 @@ class NeutronStar(Sphere):
         """
         await super().run()
 
+        self.red = [x/10 for x in self.red]
+        self.blue = [x/10 for x in self.blue]
+        self.green = [x/10 for x in self.green]
+
         n1, n2 = self.size
         width = 2 * math.pi
         height = math.pi
@@ -495,11 +503,11 @@ class NeutronStar(Sphere):
                 gc, gphase, gscale = self.waves['g']
                 bc, bphase, bscale = self.waves['b']
 
-                self.red[ix] = sample_wave(rphase, xx) * rscale
-                self.blue[ix] = sample_wave(bphase, yy) * bscale
+                self.red[ix] += sample_wave(rphase, xx) * rscale
+                self.blue[ix] += sample_wave(bphase, yy) * bscale
 
                 # not sure xx is the right thing here
-                self.green[ix] = sample_wave(gphase, xx) * gscale
+                self.green[ix] += sample_wave(gphase, xx) * gscale
 
                 ix += 1
 
@@ -707,7 +715,7 @@ def generate_spheres(sizes, clazz=None):
     
     first = True
     sizes = list(sizes)
-    for r, nn in enumerate(sizes):
+    for r, nn in enumerate(sizes[:-1]):
 
         size = nn
 
@@ -729,7 +737,10 @@ def generate_spheres(sizes, clazz=None):
     # Add an outer sphere too
     size = sizes[-1]
     size = (size, size)
-    #yield xclazz(size=size, r=r+1, m=100 * M, mu = M)
+
+    #M = 10 * M
+    #mu = M / 10
+    yield xclazz(size=size, r=r+1, m=M, mu=mu)
         
 
 def prime_balls(base, n):
