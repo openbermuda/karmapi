@@ -473,15 +473,14 @@ class NeutronStar(Sphere):
 
         How to fill in self.grid?
         """
-        self.t += 1
+        await super().run()
 
         n1, n2 = self.size
         width = 2 * math.pi
         height = math.pi
         
 
-        grid = []
-        
+        ix = 0
         for x in range(n1):
             xx = ((x / n1) + (1 / (2 * n1))) * 2 * math.pi
 
@@ -495,16 +494,12 @@ class NeutronStar(Sphere):
                 rc, rphase, rscale = self.waves['r']
                 gc, gphase, gscale = self.waves['g']
                 bc, bphase, bscale = self.waves['b']
-                
-                value = (
-                    sample_wave(rphase, xx) * rscale,
-                    sample_wave(bphase, yy) * bscale,
-                    # scratches head and wonders if xx is ok in next line
-                    sample_wave(gphase, xx) * gscale)
 
-                grid.append(value)
+                self.red[ix] = sample_wave(rphase, xx) * rscale
+                self.blue[ix] = sample_wave(bphase, yy) * bscale
 
-        self.grid2rgb(grid)
+                # not sure xx is the right thing here
+                self.green[ix] = sample_wave(gphase, xx) * gscale
 
 
 def randunit():
