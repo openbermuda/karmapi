@@ -501,6 +501,8 @@ class NeutronStar(Sphere):
                 # not sure xx is the right thing here
                 self.green[ix] = sample_wave(gphase, xx) * gscale
 
+                ix += 1
+
 
 def randunit():
 
@@ -701,8 +703,10 @@ class NestedWaves(pigfarm.Yard):
 def generate_spheres(sizes, clazz=None):
 
     clazz = clazz or NeutronStar
+    xclazz = clazz
     
     first = True
+    sizes = list(sizes)
     for r, nn in enumerate(sizes):
 
         size = nn
@@ -721,6 +725,11 @@ def generate_spheres(sizes, clazz=None):
         clazz = Sphere
 
         yield sphere
+
+    # Add an outer sphere too
+    size = sizes[-1]
+    size = (size, size)
+    #yield xclazz(size=size, r=r+1, m=100 * M, mu = M)
         
 
 def prime_balls(base, n):
