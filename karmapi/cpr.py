@@ -280,6 +280,7 @@ class Sphere:
         nbweight = (nb or self).weight(self)
 
         print('weights', cbweight, lbweight, nbweight)
+        #cbweight = lbweight = nbweight = 1
 
         #print(cbweight, lbweight, nbweight)
         
@@ -294,11 +295,14 @@ class Sphere:
                 if lb:
                     lbc = lb.sample(x1, y1, x2, y2)
                 else:
-                    lbc = tuple(randunit() for c in 'rgb')
+                    #lbc = tuple(randunit() for c in 'rgb')
+                    lbc = (127, 127, 127)
+                    
                 if nb:
                     nbc = nb.sample(x1, y1, x2, y2)
                 else:
-                    nbc = tuple(randunit() for c in 'rgb')
+                    #nbc = tuple(randunit() for c in 'rgb')
+                    nbc = (127, 127, 127)
 
                 cix = (y * self.size[0]) + x
                 cbc = (self.red[cix], self.green[cix], self.blue[cix])
@@ -486,7 +490,6 @@ class NeutronStar(Sphere):
         n1, n2 = self.size
         width = 2 * math.pi
         height = math.pi
-        
 
         ix = 0
         for x in range(n1):
@@ -740,6 +743,7 @@ def generate_spheres(sizes, clazz=None):
 
     #M = 10 * M
     #mu = M / 10
+    print(xclazz)
     yield xclazz(size=size, r=r+1, m=M, mu=mu)
         
 

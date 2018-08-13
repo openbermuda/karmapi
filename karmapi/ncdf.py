@@ -327,6 +327,7 @@ class World(cpr.NestedWaves):
         sphere.M = 1
         sphere.r = 0
         balls[0] = sphere
+        #del balls[-1]
 
         super().__init__(parent, balls=balls, **kwargs)
 
@@ -400,4 +401,4 @@ if __name__ == '__main__':
     curio.run(farm.run(), with_monitor=True)
     
 
-    
+   
