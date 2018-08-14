@@ -327,7 +327,12 @@ class World(cpr.NestedWaves):
         sphere.M = 1
         sphere.r = 0
         balls[0] = sphere
-        #del balls[-1]
+        
+        sphere = WorldView(self.stamps, self.values)
+        sphere.M = balls[-1].M
+        sphere.r = balls[-1].r
+        balls[-1] = sphere
+
 
         super().__init__(parent, balls=balls, **kwargs)
 

@@ -63,7 +63,7 @@ def main():
 
     farm.add(
         cpr.NestedWaves,
-        dict(balls=balls))
+        dict(balls=spheres))
 
     curio.run(farm.run(), with_monitor=True)
             

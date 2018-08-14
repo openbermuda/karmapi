@@ -334,7 +334,7 @@ class Space:
 
         self.scale = 400
         self.fade = 30
-        self.sleep = 1.0
+        self.sleep = 0.05
         self.napcount = 0
         self.naptime = self.sleep
         self.images = {}
