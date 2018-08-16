@@ -237,6 +237,7 @@ class WorldView(cpr.Sphere):
         self.max = self.values[0].max()
         self.ix = 0
         self.n = len(self.stamps)
+        self.spin = 1
 
         super().__init__(self.size, **kwargs)
 
@@ -261,7 +262,9 @@ class WorldView(cpr.Sphere):
 
         s, d, ix = self.stamps[self.ix]
 
-        return self.values[ix]
+        data = self.values[ix]
+
+        return data
 
     def current_date(self):
 
@@ -271,18 +274,26 @@ class WorldView(cpr.Sphere):
 
     def next_frame(self):
 
-        self.red = self.scale(self.current())
+        red = self.scale(self.current())
+        self.red = red[self.spin:] + red[0:self.spin]
 
         self.forward()
-        self.green = self.scale(self.current())
+        green = self.scale(self.current())
+        self.green = green[self.spin:] + green[0:self.spin]
         #self.green = [0. for x in self.red]
 
         self.forward()
-        self.blue = self.scale(self.current())
+        blue = self.scale(self.current())
+        self.blue = blue[self.spin:] + blue[0:self.spin]
+
+        self.spin += 1
+        self.spin %= self.size[0]
+        
         #self.blue = [0. for x in self.red]
         
         self.forward()
 
+        # fix me
         for skip in range((9 * 11) + 18):
             self.forward()
 
