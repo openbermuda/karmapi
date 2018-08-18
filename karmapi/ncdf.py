@@ -286,7 +286,7 @@ class WorldView(cpr.Sphere):
         blue = self.scale(self.current())
         self.blue = blue[self.spin:] + blue[0:self.spin]
 
-        self.spin += 1
+        self.spin += 5
         self.spin %= self.size[0]
         
         #self.blue = [0. for x in self.red]
@@ -332,6 +332,7 @@ class World(cpr.NestedWaves):
         self.stamps = list(stamps)
         self.values = values
         self.save = save
+        self.spin = 1
 
         
         sphere = WorldView(self.stamps, self.values)
@@ -344,6 +345,8 @@ class World(cpr.NestedWaves):
         sphere.r = balls[-1].r
         balls[-1] = sphere
 
+        #self.add_event_map('w', self.more_spin)
+        #self.add_event_map('w', self.less_spin)
 
         super().__init__(parent, balls=balls, **kwargs)
 
