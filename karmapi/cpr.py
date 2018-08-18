@@ -246,6 +246,14 @@ class Sphere:
         return self.poleview(pixels, wind=-1)
 
     async def run(self):
+        """ Run the sphere """
+
+        while True:
+            await self.tick()
+            await curio.sleep(self.sleep)
+        
+
+    async def tick(self):
         """ Run a sphere 
 
         
@@ -470,7 +478,8 @@ class NeutronStar(Sphere):
         super().reset(init)
         self.setup_wave()
 
-    async def run(self):
+
+    async def tick(self):
         """ wave
 
         red, green, blue
@@ -482,7 +491,7 @@ class NeutronStar(Sphere):
 
         How to fill in self.grid?
         """
-        await super().run()
+        await super().tick()
 
         self.red = [x/10 for x in self.red]
         self.blue = [x/10 for x in self.blue]
@@ -514,6 +523,8 @@ class NeutronStar(Sphere):
                 self.green[ix] += sample_wave(gphase, xx) * gscale
 
                 ix += 1
+                
+            #await curio.sleep(0)
 
 
 def randunit():
@@ -522,7 +533,7 @@ def randunit():
     if random() > 0.5:
         x *= -1
 
-    return x
+    return x / 10
         
 def sample_wave(phase, x):
 
@@ -700,6 +711,15 @@ class NestedWaves(pigfarm.Yard):
         yy = int(self.height / 2)
         self.canvas.create_image(xx, yy, image=phim)
 
+    async def start_balls_running(self):
+
+        spheres = []
+        for ball in self.balls:
+            sphere = await curio.spawn(ball.run)
+            spheres.append(sphere)
+            
+        return sphere
+
 
     async def run(self):
         """ Run the waves """
@@ -711,7 +731,9 @@ class NestedWaves(pigfarm.Yard):
 
         #await self.random_step_some()
 
-        await self.backward_step_all()
+        #await self.backward_step_all()
+
+        spheres = await self.start_balls_running()
         
         while True:
             if self.paused:
@@ -722,9 +744,11 @@ class NestedWaves(pigfarm.Yard):
 
             await self.draw()
             #await self.step_balls()
-            await self.backward_step_all()
+            #await self.backward_step_all()
             
-            await curio.sleep(self.sleep)            
+            await curio.sleep(self.sleep)
+
+        curio.join(spheres)
 
 
 def generate_spheres(sizes, clazz=None):
