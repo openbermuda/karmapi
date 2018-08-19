@@ -263,12 +263,9 @@ class Sphere:
         
 
     async def tick(self):
-        """ Run a sphere 
+        """ Do one tick for the sphere
 
-        
-        Does one tick for the sphere.
-
-        so self.t is also a count of how often we've been here.
+        so self.t is also a count of how often we've been here ??
 
         at least in this thread.
 
@@ -317,14 +314,16 @@ class Sphere:
                 if lb:
                     lbc = lb.sample(x1, y1, x2, y2)
                 else:
-                    #lbc = tuple(randunit() for c in 'rgb')
-                    lbc = (127, 127, 127)
+                    lbc = tuple(randunit() for c in 'rgb')
+                    #lbc = (127, 127, 127)
+                    #lbweight = 0
                     
                 if nb:
                     nbc = nb.sample(x1, y1, x2, y2)
                 else:
-                    #nbc = tuple(randunit() for c in 'rgb')
-                    nbc = (127, 127, 127)
+                    nbc = tuple(randunit() for c in 'rgb')
+                    #nbweight = 0
+                    #nbc = (127, 127, 127)
 
                 cix = (y * self.size[0]) + x
                 cbc = (self.red[cix], self.green[cix], self.blue[cix])
