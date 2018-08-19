@@ -73,7 +73,7 @@ from PIL import Image, ImageTk
 
 from karmapi import base, tpot, prime, pigfarm
 
-from random import random, randint, gauss
+from random import random, randint, gauss, shuffle
 
 class Sphere:
     """ If it hass mass (m) then pass through waves
@@ -136,6 +136,15 @@ class Sphere:
         self.random_grid()
 
         return
+
+    async def more_sleepy(self):
+        """ Make the ball sleep more """
+        self.sleep *= 2
+
+
+    async def more_wakey(self):
+        """ Make the ball sleep less """
+        self.sleep /= 2
 
 
     def random_grid(self):
@@ -278,7 +287,7 @@ class Sphere:
         
         n1, n2 = self.size
         
-        grid = []
+        grid = [0] * n1 * n2
         ix = 0
         deltax = (1 / (2 * n1)) * 2 * math.pi
         deltay = (1 / (2 * n2)) * 2 * math.pi
@@ -291,12 +300,17 @@ class Sphere:
         #cbweight = lbweight = nbweight = 1
 
         #print(cbweight, lbweight, nbweight)
-        
-        for x in range(self.size[0]):
+
+        xgrid = list(range(self.size[0]))
+        ygrid = list(range(self.size[1]))
+        shuffle(xgrid)
+        for x in xgrid:
+            curio.sleep(0)
             x1 = (x / n1) * 2 * math.pi
             x2 = x1 + deltax
-                
-            for y in range(self.size[1]):
+
+            shuffle(ygrid)
+            for y in ygrid:
                 y1 = (y / n2) * 2 * math.pi
                 y2 = y1 + deltay
 
@@ -320,7 +334,7 @@ class Sphere:
                           (cc * nbweight)) * (1 / math.e)
                               for aa, bb, cc in zip(lbc, cbc, nbc)]
 
-                grid.append(value)
+                grid[cix] = value
 
         self.grid2rgb(grid)
         #self.normalise()
@@ -581,6 +595,8 @@ class NestedWaves(pigfarm.Yard):
         self.add_event_map('b', self.previous_view)
         self.add_event_map('d', self.lessfade)
         self.add_event_map('f', self.morefade)
+        self.add_event_map('s', self.more_sleepy)
+        self.add_event_map('w', self.more_wakey)
 
 
     async def lessfade(self):
@@ -593,6 +609,28 @@ class NestedWaves(pigfarm.Yard):
         self.fade += 1
         print(f"metric: 1 / (r ** {self.fade})")
 
+    async def more_sleepy(self):
+        """ Sleep more
+
+        Tell each ball and self to sleep more
+        """
+        await self.sleepy()
+
+        for ball in self.balls:
+            await ball.more_sleepy()
+
+
+    async def more_wakey(self):
+        """ Sleep less
+
+        Tell each ball and self to sleep less
+        """
+        await self.wakey()
+
+        for ball in self.balls:
+            await ball.more_wakey()
+
+    
     async def pause(self):
         """ Pause """
         self.paused = not self.paused

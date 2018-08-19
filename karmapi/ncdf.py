@@ -237,7 +237,7 @@ class WorldView(cpr.Sphere):
         self.max = self.values[0].max()
         self.ix = 0
         self.n = len(self.stamps)
-        self.spin = 1
+        self.spin = 5
 
         super().__init__(self.size, **kwargs)
 
@@ -247,7 +247,7 @@ class WorldView(cpr.Sphere):
 
         # take 3 at a time for r g b
 
-    async def run(self):
+    async def tick(self):
 
         self.t += 1
 
