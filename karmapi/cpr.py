@@ -298,8 +298,8 @@ class Sphere:
 
         #print(cbweight, lbweight, nbweight)
 
-        xgrid = list(range(self.size[0]))
-        ygrid = list(range(self.size[1]))
+        xgrid = list(range(n2))
+        ygrid = list(range(n1))
         shuffle(xgrid)
         for x in xgrid:
             curio.sleep(0)
@@ -325,7 +325,7 @@ class Sphere:
                     #nbweight = 0
                     #nbc = (127, 127, 127)
 
-                cix = (y * self.size[0]) + x
+                cix = (y * n1) + x
                 cbc = (self.red[cix], self.green[cix], self.blue[cix])
 
                 value = [((aa * lbweight) +
