@@ -86,7 +86,8 @@ class Sphere:
     """
 
     def __init__(self, size=None, 
-                t=0, m=None, r=None, omega=None, velocity=None, mu=None):
+                t=0, m=None, r=None, omega=None, velocity=None, mu=None,
+                twist=True):
 
         # resolution
         size = size or (4, 4)
@@ -101,6 +102,8 @@ class Sphere:
 
         self.last_ball = None
         self.next_ball = None
+
+        self.twist = True
 
         #self.fade = 1 / math.e
         self.fade = 1
@@ -300,16 +303,19 @@ class Sphere:
 
         xgrid = list(range(n2))
         ygrid = list(range(n1))
-        shuffle(xgrid)
-        for x in xgrid:
-            curio.sleep(0)
-            x1 = (x / n1) * 2 * math.pi
-            x2 = x1 + deltax
 
-            shuffle(ygrid)
-            for y in ygrid:
-                y1 = (y / n2) * 2 * math.pi
-                y2 = y1 + deltay
+        shuffle(ygrid)
+        for y in ygrid:
+            curio.sleep(0)
+            y1 = (y / n2) * 2 * math.pi
+            y2 = y1 + deltay
+
+            shuffle(xgrid)
+            for x in xgrid:
+                #curio.sleep(0)
+
+                x1 = (x / n1) * 2 * math.pi
+                x2 = x1 + deltax
 
                 if lb:
                     lbc = lb.sample(x1, y1, x2, y2)
@@ -325,7 +331,12 @@ class Sphere:
                     #nbweight = 0
                     #nbc = (127, 127, 127)
 
-                cix = (y * n1) + x
+                
+                tix = cix = (y * n1) + x
+
+                if n1 == n2 and self.twist:
+                    tix = (x * n1) + y
+                        
                 cbc = (self.red[cix], self.green[cix], self.blue[cix])
 
                 value = [((aa * lbweight) +
@@ -333,7 +344,10 @@ class Sphere:
                           (cc * nbweight)) * (1 / math.e)
                               for aa, bb, cc in zip(lbc, cbc, nbc)]
 
-                grid[cix] = value
+                    
+                grid[tix] = value
+
+            
 
         self.grid2rgb(grid)
         #self.normalise()
@@ -570,7 +584,7 @@ class NestedWaves(pigfarm.Yard):
     and draw slices on the canvas from the yard.
     """
 
-    def __init__(self, parent, balls=None, fade=1):
+    def __init__(self, parent, balls=None, fade=1, twist=True):
         """ Initialise the thing """
 
         super().__init__(parent)
@@ -581,6 +595,7 @@ class NestedWaves(pigfarm.Yard):
         self.views = ['grid', 'northpole', 'southpole', 'uphemi', 'lowhemi']
         self.view = 0
         self.fade = fade
+        self.twist = twist
 
         self.build(balls)
         self.add_event_map(' ', self.pause)
@@ -596,6 +611,7 @@ class NestedWaves(pigfarm.Yard):
         self.add_event_map('f', self.morefade)
         self.add_event_map('s', self.more_sleepy)
         self.add_event_map('w', self.more_wakey)
+        self.add_event_map('t', self.toggle_twist)
 
 
     async def lessfade(self):
@@ -628,6 +644,16 @@ class NestedWaves(pigfarm.Yard):
 
         for ball in self.balls:
             await ball.more_wakey()
+
+    async def toggle_twist(self):
+        """ Toggle 90 degree twist 
+
+        Tell each ball to toggle twist
+        """
+        self.twist = not self.twist
+        
+        for ball in self.balls:
+            ball.twist = self.twist
 
     
     async def pause(self):
@@ -960,19 +986,13 @@ class CelestialSphere(NestedWaves):
         """ ??? """
         
 
-def argument_parser():
+def argument_parser(parser=None):
 
-    parser = argparse.ArgumentParser()
+    parser = parser or argparse.ArgumentParser()
 
-    parser.add_argument('--gallery', nargs='*', default=['.', '../gallery'])
-    parser.add_argument(
-        '--snowy', action='store_true',
-        help='random cat pictures')
-    parser.add_argument(
-        '--name', default='tree',
-        help='what to show')
     parser.add_argument('-a', type=int, default=1)
     parser.add_argument('-n', type=int, default=10)
+    parser.add_argument('--twist', type=bool, default=True)
     parser.add_argument('--fade', type=int, default=1)
     parser.add_argument('--stride', type=int)
     parser.add_argument('-m', type=int, default=1)
@@ -1014,7 +1034,8 @@ def main():
     # pass list of balls into NestedWaves
     spheres = args_to_spheres(args)
     
-    farm = pigfarm.sty(NestedWaves, dict(balls=spheres, fade=args.fade))
+    farm = pigfarm.sty(NestedWaves, dict(balls=spheres, fade=args.fade,
+                                         twist=args.twist))
 
     curio.run(farm.run(), with_monitor=True)
             

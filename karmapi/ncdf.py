@@ -1,5 +1,13 @@
 """
-Interface to netcdf files
+View netcdf files of global data
+
+Fit models
+
+Simulate future
+
+n c d f
+
+natural circular data field?
 """
 import datetime
 import math
@@ -351,17 +359,12 @@ class World(cpr.NestedWaves):
         super().__init__(parent, balls=balls, **kwargs)
 
 
+def argument_parser(parser=None):        
             
-
-if __name__ == '__main__':
-
-
-    parser = cpr.argument_parser()
-
+    parser = cpr.argument_parser(parser)
     parser.add_argument('--path', default='karmapi/ecmwf')
     parser.add_argument('--value', default='t2m')
     parser.add_argument('--raw', default='temperature.nc')
-    parser.add_argument('--date')
     parser.add_argument(
         '--pc', action='store_true',
         help='do principal components')
@@ -371,22 +374,34 @@ if __name__ == '__main__':
     parser.add_argument('--offset', type=int, default=0)
     parser.add_argument('--save')
 
+    return parser
+
+class CircularField:
+
+    def __init__(self, args):
+        """ Load the file """
+
+        path = Path.home() / Path(args.path)
+
+        self.df = load(path / args.raw)
+
+        stamps = self.df.variables['time']
+        self.values = self.df.variables[args.value]
+
+        print(self.df.variables)
+        
+        self.stamps = stamp_sort(stamps)
+
+        print("number of observations:", len(stamps))
+        
+
+if __name__ == '__main__':
+
+
+    parser = argument_parser()
+
     args = parser.parse_args()
 
-    path = Path.home() / Path(args.path)
-
-    df = load(path / args.raw)
-
-    stamps = df.variables['time']
-    values = df.variables[args.value]
-
-    print(df.variables)
-    
-    stamps = stamp_sort(stamps)
-
-    print("number of observations:", len(stamps))
-
-    path = path / args.value
 
     if args.pc:
         pca = pcs(stamps, values, 48*35)
@@ -404,15 +419,18 @@ if __name__ == '__main__':
         model(stamps, values)
         
     else:
+        #path = path / args.value
         #images(path, stamps, values)
         pass
 
+    cf = CircularField(args)
+
     print('min max:')
-    print(values[0].min(), values[0].max())
+    print(cf.values[0].min(), cf.values[0].max())
     
     spheres = cpr.args_to_spheres(args)
 
-    parms = dict(stamps=stamps, values=values, save=args.save,
+    parms = dict(stamps=cf.stamps, values=cf.values, save=args.save,
                  balls=spheres)
     
     farm = pigfarm.sty(World, parms)

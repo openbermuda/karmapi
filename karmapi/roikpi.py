@@ -25,18 +25,19 @@ from random import random, randint, gauss
 
 def main():
 
-    parser = cpr.argument_parser()
-
+    parser = ncdf.argument_parser()
+    
     parser.add_argument('--pig', action='store_false', default=True)
     parser.add_argument('--minutes', type=int, default=30)
-    parser.add_argument('path', nargs='?', default='.')
+    parser.add_argument('slides', nargs='?', default='.')
     parser.add_argument('--background')
     parser.add_argument('--version', default='')
     parser.add_argument('--date')
     parser.add_argument('--events')
                             
     args = parser.parse_args()
-
+    print(args)
+    
     args.date = base.parse_date(args.date)
 
     if args.events:
@@ -47,7 +48,7 @@ def main():
     
     farm.add(
         tankrain.TankRain,
-        dict(path=args.path, version=args.version, date=args.date))
+        dict(path=args.slides, version=args.version, date=args.date))
 
     # JeusSansFrontieres
     jsf = wc.jsf
@@ -64,6 +65,17 @@ def main():
     farm.add(
         cpr.NestedWaves,
         dict(balls=spheres))
+
+    cf = ncdf.CircularField(args)
+    print('min max:')
+    print(cf.values[0].min(), cf.values[0].max())
+    
+    spheres = cpr.args_to_spheres(args)
+
+    parms = dict(stamps=cf.stamps, values=cf.values, save=args.save,
+                 balls=spheres)
+    
+    farm.add(ncdf.World, parms)
 
     curio.run(farm.run(), with_monitor=True)
             
