@@ -296,13 +296,15 @@ class Sphere:
         lbweight = (lb or self).weight(self)
         nbweight = (nb or self).weight(self)
 
-        print('weights', cbweight, lbweight, nbweight)
         #cbweight = lbweight = nbweight = 1
 
         #print(cbweight, lbweight, nbweight)
 
         xgrid = list(range(n2))
         ygrid = list(range(n1))
+
+        cbweight = lbweight = nbweight = 1
+        print('weights', cbweight, lbweight, nbweight)
 
         shuffle(ygrid)
         for y in ygrid:
