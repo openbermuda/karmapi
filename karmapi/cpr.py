@@ -522,9 +522,9 @@ class NeutronStar(Sphere):
         """
         await super().tick()
 
-        self.red = [x/10 for x in self.red]
-        self.blue = [x/10 for x in self.blue]
-        self.green = [x/10 for x in self.green]
+        #self.red = [x/10 for x in self.red]
+        #self.blue = [x/10 for x in self.blue]
+        #self.green = [x/10 for x in self.green]
 
         n1, n2 = self.size
         width = 2 * math.pi
