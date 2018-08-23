@@ -92,9 +92,11 @@ class Sphere:
         # resolution
         size = size or (4, 4)
 
-        self.red = []
-        self.green = []
-        self.blue = []
+        nn = size[0] * size[1]
+        
+        self.red = [0] * nn
+        self.green = [0] * nn
+        self.blue = [0] * nn
 
         self.size = size
         self.history = None
@@ -132,10 +134,6 @@ class Sphere:
     def reset(self, init=False):
         """ Reset the sphere """
 
-        self.red.clear()
-        self.green.clear()
-        self.blue.clear()
-
         self.random_grid()
 
         return
@@ -152,11 +150,11 @@ class Sphere:
 
     def random_grid(self):
 
-        size = self.size
-        for pt in range(size[0] * size[1]):
-            self.red.append(randunit())
-            self.green.append(randunit())
-            self.blue.append(randunit())
+        width, height = self.size
+        for ix, pt in enumerate(range(width * height)):
+            self.red[ix] = randunit()
+            self.green[ix] = randunit()
+            self.blue[ix] = randunit()
 
 
     def project(self, view=None):
@@ -520,8 +518,6 @@ class NeutronStar(Sphere):
 
         How to fill in self.grid?
         """
-        await super().tick()
-
         #self.red = [x/10 for x in self.red]
         #self.blue = [x/10 for x in self.blue]
         #self.green = [x/10 for x in self.green]
@@ -553,7 +549,9 @@ class NeutronStar(Sphere):
 
                 ix += 1
                 
-            #await curio.sleep(0)
+        #await super().tick()
+
+        #await curio.sleep(0)
 
 
 def randunit():
@@ -1009,7 +1007,7 @@ def argument_parser(parser=None):
     parser.add_argument('--stride', type=int)
     parser.add_argument('-m', type=int, default=1)
     parser.add_argument('--base', type=int, default=20)
-    parser.add_argument('--mass', type=int,nargs='?',  default=[])
+    parser.add_argument('--mass', nargs='*',  type=float)
 
     return parser
 
