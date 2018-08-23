@@ -28,7 +28,6 @@ from karmapi import hush
 from karmapi import piglet
 from karmapi import toy
 
-from tkinter import Toplevel
 
 BIGLY_FONT = 'helvetica 20 bold'
 

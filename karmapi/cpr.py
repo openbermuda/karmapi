@@ -303,12 +303,12 @@ class Sphere:
         xgrid = list(range(n2))
         ygrid = list(range(n1))
 
-        cbweight = lbweight = nbweight = 1
+        #cbweight = lbweight = nbweight = 1
         print('weights', cbweight, lbweight, nbweight)
 
         shuffle(ygrid)
         for y in ygrid:
-            curio.sleep(0)
+            #curio.sleep(0)
             y1 = (y / n2) * 2 * math.pi
             y2 = y1 + deltay
 
@@ -535,7 +535,7 @@ class NeutronStar(Sphere):
             xx = ((x / n1) + (1 / (2 * n1))) * 2 * math.pi
 
             xx += self.inc * self.t
-                
+
             for y in range(n2):
 
                 yy = (y / n2) + (1 / (2 * n2)) * 2 * math.pi
@@ -783,7 +783,7 @@ class NestedWaves(pigfarm.Yard):
             sphere = await curio.spawn(ball.run)
             spheres.append(sphere)
             
-        return sphere
+        return spheres
 
 
     async def run(self):
@@ -799,24 +799,29 @@ class NestedWaves(pigfarm.Yard):
         #await self.backward_step_all()
 
         spheres = await self.start_balls_running()
-        
-        while True:
-            if self.paused:
-                await curio.sleep(self.sleep)
-                continue
-            
-            self.canvas.delete('all')
 
-            await self.draw()
-            #await self.step_balls()
-            #await self.backward_step_all()
+        while True:
+            try:
+                if self.paused:
+                    await curio.sleep(self.sleep)
+                    continue
             
-            await curio.sleep(self.sleep)
+                self.canvas.delete('all')
+
+                await self.draw()
+                #await self.step_balls()
+                #await self.backward_step_all()
+            
+                await curio.sleep(self.sleep)
+
+            except curio.CancelledError:
+                for ball in spheres:
+                    ball.cancel()
 
         curio.join(spheres)
 
 
-def generate_spheres(sizes, clazz=None):
+def generate_spheres(sizes, clazz=None, mass=None):
 
     clazz = clazz or NeutronStar
     xclazz = clazz
@@ -824,22 +829,27 @@ def generate_spheres(sizes, clazz=None):
     first = True
     sizes = list(sizes)
 
+    mass = mass or [1]
+    while len(mass) < len(sizes):
+        mass.append(mass[-1])
+
     K = 2
-    for r, nn in enumerate(sizes[:-1]):
+    for r, (nn, M) in enumerate(zip(sizes[:-1], mass)):
 
         size = nn
 
         size = (size, size)
 
-        M = 1.0 * K
+        #M = 1.0 * K
 
-        mu = M / 10
+        #mu = M / 10
 
         R = 2 * r
 
         #M = M / (R+1)
-        mu = M / 10
+        #mu = M / 10
 
+        mu = None
         sphere = clazz(size, r=R, m=M, mu=mu)
 
         clazz = Sphere
@@ -999,6 +1009,7 @@ def argument_parser(parser=None):
     parser.add_argument('--stride', type=int)
     parser.add_argument('-m', type=int, default=1)
     parser.add_argument('--base', type=int, default=20)
+    parser.add_argument('--mass', type=int,nargs='?',  default=[])
 
     return parser
 
@@ -1022,11 +1033,11 @@ def args_to_spheres(args):
         balls = prime_balls(args.base, args.n)
 
     print('balls', balls)
-    spheres = list(generate_spheres(balls))
+    spheres = list(generate_spheres(balls, mass=args.mass))
 
     return spheres
     
-        
+
 def main():
 
     parser = argument_parser()
