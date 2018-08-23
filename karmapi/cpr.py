@@ -130,6 +130,9 @@ class Sphere:
 
         self.reset(init=True)
 
+    def __repr__(self):
+        """ Show mass size and radius """
+        return f'Ball: r = {self.r} M = {self.M} size = {self.size}'
         
     def reset(self, init=False):
         """ Reset the sphere """
@@ -302,7 +305,7 @@ class Sphere:
         ygrid = list(range(n1))
 
         #cbweight = lbweight = nbweight = 1
-        print('weights', cbweight, lbweight, nbweight)
+        print(self, 'weights', cbweight, lbweight, nbweight)
 
         shuffle(ygrid)
         for y in ygrid:
@@ -541,15 +544,15 @@ class NeutronStar(Sphere):
                 gc, gphase, gscale = self.waves['g']
                 bc, bphase, bscale = self.waves['b']
 
-                self.red[ix] += sample_wave(rphase, xx) * rscale
-                self.blue[ix] += sample_wave(bphase, yy) * bscale
+                self.red[ix] = sample_wave(rphase, xx) * rscale
+                self.blue[ix] = sample_wave(bphase, yy) * bscale
 
                 # not sure xx is the right thing here
-                self.green[ix] += sample_wave(gphase, xx) * gscale
+                self.green[ix] = sample_wave(gphase, xx) * gscale
 
                 ix += 1
                 
-        #await super().tick()
+        await super().tick()
 
         #await curio.sleep(0)
 
@@ -819,20 +822,27 @@ class NestedWaves(pigfarm.Yard):
         curio.join(spheres)
 
 
-def generate_spheres(sizes, clazz=None, mass=None):
+def generate_spheres(sizes, clazz=None, mass=None, radii=None):
 
     clazz = clazz or NeutronStar
     xclazz = clazz
     
     first = True
     sizes = list(sizes)
+    n = len(sizes)
 
     mass = mass or [1]
-    while len(mass) < len(sizes):
+    while len(mass) < n:
         mass.append(mass[-1])
 
+    radii = radii or range(n)
+
+    dr = radii[-1] - radii[-2]
+    while len(radii) < n:
+        radii.append(radii[-1] + dr)
+
     K = 2
-    for r, (nn, M) in enumerate(zip(sizes[:-1], mass)):
+    for r, nn, M in zip(radii, sizes[:-1], mass):
 
         size = nn
 
@@ -842,7 +852,7 @@ def generate_spheres(sizes, clazz=None, mass=None):
 
         #mu = M / 10
 
-        R = 2 * r
+        R = 1 * r
 
         #M = M / (R+1)
         #mu = M / 10
@@ -1008,6 +1018,7 @@ def argument_parser(parser=None):
     parser.add_argument('-m', type=int, default=1)
     parser.add_argument('--base', type=int, default=20)
     parser.add_argument('--mass', nargs='*',  type=float)
+    parser.add_argument('--radii', nargs='*',  type=float)
 
     return parser
 
@@ -1031,7 +1042,10 @@ def args_to_spheres(args):
         balls = prime_balls(args.base, args.n)
 
     print('balls', balls)
-    spheres = list(generate_spheres(balls, mass=args.mass))
+    spheres = list(generate_spheres(
+        balls,
+        mass=args.mass,
+        radii=args.radii))
 
     return spheres
     
