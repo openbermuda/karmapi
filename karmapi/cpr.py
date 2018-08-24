@@ -305,7 +305,7 @@ class Sphere:
         ygrid = list(range(n1))
 
         #cbweight = lbweight = nbweight = 1
-        print(self, 'weights', cbweight, lbweight, nbweight)
+        print(self, 'weights', lbweight, cbweight, nbweight)
 
         shuffle(ygrid)
         for y in ygrid:
@@ -380,6 +380,8 @@ class Sphere:
 
     def quantise(self, value):
 
+        value = value - int(value)
+        
         value = int(127 + (value * 128))
         value = int(value % 256)
 
@@ -552,7 +554,7 @@ class NeutronStar(Sphere):
 
                 ix += 1
                 
-        await super().tick()
+        #await super().tick()
 
         #await curio.sleep(0)
 
@@ -822,7 +824,8 @@ class NestedWaves(pigfarm.Yard):
         curio.join(spheres)
 
 
-def generate_spheres(sizes, clazz=None, mass=None, radii=None):
+def generate_spheres(sizes, clazz=None, mass=None, radii=None,
+                     outer=True):
 
     clazz = clazz or NeutronStar
     xclazz = clazz
@@ -871,7 +874,8 @@ def generate_spheres(sizes, clazz=None, mass=None, radii=None):
     #M = 10 * M
     #mu = M / 10
     print(xclazz)
-    yield xclazz(size=size, r=r+1, m=M, mu=mu)
+    if outer:
+        yield xclazz(size=size, r=r+1, m=M, mu=mu)
         
 
 def prime_balls(base, n):
@@ -1019,6 +1023,7 @@ def argument_parser(parser=None):
     parser.add_argument('--base', type=int, default=20)
     parser.add_argument('--mass', nargs='*',  type=float)
     parser.add_argument('--radii', nargs='*',  type=float)
+    parser.add_argument('--noouter', action='store_false')
 
     return parser
 
@@ -1045,7 +1050,8 @@ def args_to_spheres(args):
     spheres = list(generate_spheres(
         balls,
         mass=args.mass,
-        radii=args.radii))
+        radii=args.radii,
+        outer=args.noouter))
 
     return spheres
     
