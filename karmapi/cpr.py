@@ -67,7 +67,7 @@ from collections import deque, defaultdict, Counter, namedtuple
 
 import curio
 
-import numpy
+import numpy as np
 
 from PIL import Image, ImageTk
 
@@ -94,9 +94,9 @@ class Sphere:
 
         nn = size[0] * size[1]
         
-        self.red = [0] * nn
-        self.green = [0] * nn
-        self.blue = [0] * nn
+        self.red = np.zeros(nn)
+        self.green = np.zeros(nn)
+        self.blue = np.zeros(nn)
 
         self.size = size
         self.history = None
@@ -126,7 +126,8 @@ class Sphere:
         
         # time moves slower in the inner spheres?
         # FIXME?
-        self.sleep = 1 / self.size[0]
+        #self.sleep = 1 / self.size[0]
+        self.sleep=1
 
         self.reset(init=True)
 
@@ -154,10 +155,16 @@ class Sphere:
     def random_grid(self):
 
         width, height = self.size
-        for ix, pt in enumerate(range(width * height)):
-            self.red[ix] = randunit()
-            self.green[ix] = randunit()
-            self.blue[ix] = randunit()
+        nn = width * height
+
+        self.red = np.random.random(nn)
+        self.green = np.random.random(nn)
+        self.blue = np.random.random(nn)
+        
+        #for ix, pt in enumerate(range(width * height)):
+        #    self.red[ix] = randunit()
+        #    self.green[ix] = randunit()
+        #    self.blue[ix] = randunit()
 
 
     def project(self, view=None):
@@ -262,11 +269,14 @@ class Sphere:
         """ Run the sphere """
 
         while True:
-            await self.tick()
+            tick = await curio.spawn_thread(self.tick)
+            print(f'{self} sleep:{self.sleep}')
+            ball = await tick.join()
+            print('joined', ball, self.sleep)
             await curio.sleep(self.sleep)
         
 
-    async def tick(self):
+    def tick(self):
         """ Do one tick for the sphere
 
         so self.t is also a count of how often we've been here ??
@@ -354,6 +364,8 @@ class Sphere:
 
         self.grid2rgb(grid)
         #self.normalise()
+
+        return self
 
 
     def weight(self, ball):
@@ -484,7 +496,6 @@ class Sphere:
         return self.red[ix], self.green[ix], self.blue[ix]
     
 
-
         
 class NeutronStar(Sphere):
     """
@@ -511,7 +522,7 @@ class NeutronStar(Sphere):
         self.setup_wave()
 
 
-    async def tick(self):
+    def tick(self):
         """ wave
 
         red, green, blue
@@ -554,7 +565,7 @@ class NeutronStar(Sphere):
 
                 ix += 1
                 
-        #await super().tick()
+        super().tick()
 
         #await curio.sleep(0)
 
@@ -565,7 +576,7 @@ def randunit():
     if random() > 0.5:
         x *= -1
 
-    return x / 10
+    return x
         
 def sample_wave(phase, x):
 
@@ -803,6 +814,7 @@ class NestedWaves(pigfarm.Yard):
 
         spheres = await self.start_balls_running()
 
+        print('NESTED WAVES RUNNING')
         while True:
             try:
                 if self.paused:
@@ -812,6 +824,7 @@ class NestedWaves(pigfarm.Yard):
                 self.canvas.delete('all')
 
                 await self.draw()
+                print('ball drawn')
                 #await self.step_balls()
                 #await self.backward_step_all()
             
@@ -1054,7 +1067,8 @@ def args_to_spheres(args):
         outer=args.noouter))
 
     return spheres
-    
+
+
 
 def main():
 
@@ -1068,8 +1082,9 @@ def main():
     farm = pigfarm.sty(NestedWaves, dict(balls=spheres, fade=args.fade,
                                          twist=args.twist))
 
-    curio.run(farm.run(), with_monitor=True)
-            
+    curio.run(farm.run, with_monitor=True)
+
+
 
 if __name__ == '__main__':
 
