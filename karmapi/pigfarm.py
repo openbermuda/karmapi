@@ -292,7 +292,7 @@ class PigFarm:
 
         await spawn(farm.run())
 
-        farm.toplevel().withdraw()
+        #farm.toplevel().withdraw()
         
 
 def sty(clazz=None, parms={}):

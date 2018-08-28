@@ -58,6 +58,60 @@ My interpretation is these bands show the layers largely being in sync.
 Regardless, another view of these grids is to view them from the north or south
 pole.  When you do that there are spirals everywhere.
 
+Feedback from the user base
+===========================
+
+::
+
+    The problem with all these new settings is that my computer can't manage
+    with a high enough base setting to get reasonably smooth output.
+    Eventually it all seizes up!  You either need to run on a much faster
+    machine or simplify the code.  The previous code before all these later
+    releases was much better in this respect.  I could set base to 137 and get
+    a fairly responsive output.  
+
+    But it's all very interesting.  
+
+    You still haven' t told me what it has to do with the new paradigm!  (Apart
+    from the 1/r decay).  C
+
+
+The performance has been bugging me too.
+
+I made some changes in how the spheres update and now they are busy hogging the
+cpu.  I'm working towards spreading the work across processors.  
+
+Ironically, there's a python thing called the GIL in the way -- but that is
+another story. [YOSSER]
+
+Re: the paradigm.  Up to now I have pretty much been debugging the code.
+
+Puzzling over why the images were like they were, fixing up the code along the
+way.  
+
+Once I have the code stable again (?) the next phase is to embed these spheres
+in a *celestial sphere*, summing the fields per de Sciama.
+
+Again, to begin with I will ignore all the physics and code something up that
+we can then add some reality (?) to it once I have it working.
+
+I expect the paradigm to be more evident in this part of the code.
+
+Another thing to keep in mind it is easy to add new types of spheres: a quasar
+with an accretion belt for example.
+
+I am also hoping there will be some *emergent* behaviour in the code, maybe
+even galaxies spawning new ones.
+
+Johnny GILl 2018/8/28
+
+YOSSER
+======
+
+So for now I am running each tick of a sphere by having curio spawn a thread.
+
+Let's change that to run in process.
+
 """
 import math
 
@@ -126,8 +180,9 @@ class Sphere:
         
         # time moves slower in the inner spheres?
         # FIXME?
-        #self.sleep = 1 / self.size[0]
-        self.sleep=1
+        #self.sleep = self.size[0] / 1000
+        self.sleep = self.size[0] / 100
+        #self.sleep=.01
 
         self.reset(init=True)
 
@@ -157,9 +212,9 @@ class Sphere:
         width, height = self.size
         nn = width * height
 
-        self.red = np.random.random(nn)
-        self.green = np.random.random(nn)
-        self.blue = np.random.random(nn)
+        self.red = np.random.random(nn) / 10
+        self.green = np.random.random(nn) / 10
+        self.blue = np.random.random(nn) / 10
         
         #for ix, pt in enumerate(range(width * height)):
         #    self.red[ix] = randunit()
@@ -269,9 +324,14 @@ class Sphere:
         """ Run the sphere """
 
         while True:
-            tick = await curio.spawn_thread(self.tick)
+            ball = await curio.run_in_process(self.tick)
             print(f'{self} sleep:{self.sleep}')
-            ball = await tick.join()
+            print('ID', id(ball), id(self))
+
+            # GOTCHA???
+            self.__dict__.update(ball.__dict__)
+            
+            #ball = await tick.join()
             print('joined', ball, self.sleep)
             await curio.sleep(self.sleep)
         
@@ -565,7 +625,7 @@ class NeutronStar(Sphere):
 
                 ix += 1
                 
-        super().tick()
+        return super().tick()
 
         #await curio.sleep(0)
 
@@ -831,10 +891,12 @@ class NestedWaves(pigfarm.Yard):
                 await curio.sleep(self.sleep)
 
             except curio.CancelledError:
+                print('cancelling balls from nested waves')
                 for ball in spheres:
-                    ball.cancel()
+                    print('cancelling', ball)
+                    await ball.cancel()
 
-        curio.join(spheres)
+                raise
 
 
 def generate_spheres(sizes, clazz=None, mass=None, radii=None,
