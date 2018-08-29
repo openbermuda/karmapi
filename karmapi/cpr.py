@@ -182,7 +182,7 @@ class Sphere:
         # FIXME?
         #self.sleep = self.size[0] / 1000
         self.sleep = self.size[0] / 100
-        #self.sleep=.01
+        self.sleep=.01
 
         self.reset(init=True)
 
@@ -321,7 +321,27 @@ class Sphere:
         return self.poleview(pixels, wind=-1)
 
     async def run(self):
-        """ Run the sphere """
+        """Run the sphere 
+
+        Really want to just add to queue and let something else
+        do the running.
+
+        We already have yosser so maybe should ask to help?
+
+        Want yosser to pop off the queue, run it, push back on at other
+        end of queue?
+
+        what to do about last and next ball.
+
+        don't really want them to update
+
+        how about ball locks?
+
+        will there be dead locks?
+
+        should something else supervise when balls run?
+
+        """
 
         while True:
             ball = await curio.run_in_process(self.tick)
@@ -334,6 +354,18 @@ class Sphere:
             #ball = await tick.join()
             print('joined', ball, self.sleep)
             await curio.sleep(self.sleep)
+
+    async def magic_tick(self):
+        """ Run a tick in another process """
+
+        ball = await curio.run_in_process(self.tick)
+        print('ID', id(ball), id(self), self.t)
+        print(self.last_ball, self.next_ball)
+
+        # GOTCHA should may be look before I leap???
+        self.__dict__.update(ball.__dict__)
+        print('ID', id(ball), id(self), self.t)
+        print(self.last_ball, self.next_ball)
         
 
     def tick(self):
@@ -636,7 +668,7 @@ def randunit():
     if random() > 0.5:
         x *= -1
 
-    return x
+    return x / 10
         
 def sample_wave(phase, x):
 
@@ -802,7 +834,7 @@ class NestedWaves(pigfarm.Yard):
         while balls:
             ix = randint(0, len(balls)-1)
 
-            await balls[ix].run()
+            await balls[ix].magic_tick()
 
             del balls[ix]
 
@@ -856,6 +888,7 @@ class NestedWaves(pigfarm.Yard):
         for ball in self.balls:
             sphere = await curio.spawn(ball.run)
             spheres.append(sphere)
+            curio.sleep(ball.sleep)
             
         return spheres
 
@@ -870,9 +903,10 @@ class NestedWaves(pigfarm.Yard):
 
         #await self.random_step_some()
 
-        #await self.backward_step_all()
+        await self.backward_step_all()
 
-        spheres = await self.start_balls_running()
+        #spheres = await self.start_balls_running()
+        spheres = []
 
         print('NESTED WAVES RUNNING')
         while True:
@@ -886,7 +920,7 @@ class NestedWaves(pigfarm.Yard):
                 await self.draw()
                 print('ball drawn')
                 #await self.step_balls()
-                #await self.backward_step_all()
+                await self.backward_step_all()
             
                 await curio.sleep(self.sleep)
 
