@@ -4,6 +4,10 @@
 
 *A new paradigm on the universe.*
 
+https://msp.warwick.ac.uk/~cpr/paradigm
+
+ISBN: 9781973129868
+
 Or CPU central processsor unit?
 
 CP R s t U

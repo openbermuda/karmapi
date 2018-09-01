@@ -112,6 +112,33 @@ So for now I am running each tick of a sphere by having curio spawn a thread.
 
 Let's change that to run in process.
 
+So what does it have to do with the Colin Rourke's new paradigm?
+================================================================
+
+*A new paradigm on the universe.*
+
+https://msp.warwick.ac.uk/~cpr/paradigm
+
+ISBN: 9781973129868
+
+I am currently reworking my way through the first five chapters of the book.
+
+It is the third or fourth time through, each time with new understanding.
+
+It is a wonderful work, with compelling arguments.
+
+Chapter 2, Sciama's principle finishes with:
+
+   Sciama's initiative, to base a dynamical theory on Mach's principle as
+   formulated i Sciama's principle, has never been followed up and this
+   approach to dynamics remains dormant.  One of the aims of this book is to
+   reawaken this approach.
+
+One of the aims of karma pi is to help understanding of such theories.
+
+In particular, help my own understanding with computer simulations.
+
+
 """
 import math
 
@@ -212,15 +239,10 @@ class Sphere:
         width, height = self.size
         nn = width * height
 
-        self.red = np.random.random(nn) / 10
-        self.green = np.random.random(nn) / 10
-        self.blue = np.random.random(nn) / 10
+        self.red = (np.random.random(nn) - 0.5) * 2
+        self.green = (np.random.random(nn) - 0.5) * 2
+        self.blue = (np.random.random(nn) - 0.5) * 2
         
-        #for ix, pt in enumerate(range(width * height)):
-        #    self.red[ix] = randunit()
-        #    self.green[ix] = randunit()
-        #    self.blue[ix] = randunit()
-
 
     def project(self, view=None):
         """ Turn into a PIL? """
@@ -348,8 +370,7 @@ class Sphere:
             print(f'{self} sleep:{self.sleep}')
             print('ID', id(ball), id(self))
 
-            # GOTCHA???
-            self.__dict__.update(ball.__dict__)
+            self.update(ball)
             
             #ball = await tick.join()
             print('joined', ball, self.sleep)
@@ -359,13 +380,19 @@ class Sphere:
         """ Run a tick in another process """
 
         ball = await curio.run_in_process(self.tick)
-        print('ID', id(ball), id(self), self.t)
-        print(self.last_ball, self.next_ball)
+        #print('ID', id(ball), id(self), self.t)
+        print(ball, self.last_ball, self.next_ball)
 
         # GOTCHA should may be look before I leap???
-        self.__dict__.update(ball.__dict__)
-        print('ID', id(ball), id(self), self.t)
-        print(self.last_ball, self.next_ball)
+        #self.__dict__.update(ball.__dict__)
+        self.update(ball)
+
+    def update(self, ball):
+
+        self.red = ball.red
+        self.blue = ball.blue
+        self.green = ball.green
+        self.t = ball.t
         
 
     def tick(self):
@@ -443,6 +470,8 @@ class Sphere:
                     tix = (x * n1) + y
                         
                 cbc = (self.red[cix], self.green[cix], self.blue[cix])
+
+                #print(lbc, cbc, nbc)
 
                 value = [((aa * lbweight) +
                           (bb * cbweight) +
@@ -656,10 +685,9 @@ class NeutronStar(Sphere):
                 self.green[ix] = sample_wave(gphase, xx) * gscale
 
                 ix += 1
-                
-        return super().tick()
 
-        #await curio.sleep(0)
+        # return super().tick()
+        return self
 
 
 def randunit():
@@ -668,7 +696,7 @@ def randunit():
     if random() > 0.5:
         x *= -1
 
-    return x / 10
+    return x
         
 def sample_wave(phase, x):
 
@@ -832,9 +860,12 @@ class NestedWaves(pigfarm.Yard):
         """ Step all balls once """
         balls = self.balls[::-1]
         while balls:
-            ix = randint(0, len(balls)-1)
+            #ix = randint(0, len(balls)-1)
+            ix = -1
 
-            await balls[ix].magic_tick()
+            print('Stepping:', balls[ix])
+            #await balls[ix].magic_tick()
+            balls[ix].tick()
 
             del balls[ix]
 
@@ -903,10 +934,7 @@ class NestedWaves(pigfarm.Yard):
 
         #await self.random_step_some()
 
-        await self.backward_step_all()
-
-        #spheres = await self.start_balls_running()
-        spheres = []
+        spheres = await self.start_balls_running()
 
         print('NESTED WAVES RUNNING')
         while True:
@@ -920,8 +948,6 @@ class NestedWaves(pigfarm.Yard):
                 await self.draw()
                 print('ball drawn')
                 #await self.step_balls()
-                await self.backward_step_all()
-            
                 await curio.sleep(self.sleep)
 
             except curio.CancelledError:
