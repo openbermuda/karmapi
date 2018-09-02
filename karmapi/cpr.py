@@ -168,7 +168,7 @@ class Sphere:
 
     def __init__(self, size=None, 
                 t=0, m=None, r=None, omega=None, velocity=None, mu=None,
-                twist=True):
+                twist=True, boundary=None):
 
         # resolution
         size = size or (4, 4)
@@ -185,6 +185,8 @@ class Sphere:
 
         self.last_ball = None
         self.next_ball = None
+
+        self.boundary = boundary or 'zero'
 
         self.twist = True
 
@@ -436,6 +438,8 @@ class Sphere:
         #cbweight = lbweight = nbweight = 1
         print(self, 'weights', lbweight, cbweight, nbweight)
 
+        nbc = lbc = (0., 0., 0.)
+
         shuffle(ygrid)
         for y in ygrid:
             #curio.sleep(0)
@@ -452,17 +456,14 @@ class Sphere:
                 if lb:
                     lbc = lb.sample(x1, y1, x2, y2)
                 else:
-                    lbc = tuple(randunit() for c in 'rgb')
-                    #lbc = (127, 127, 127)
-                    #lbweight = 0
+                    if self.boundary == 'random':
+                        lbc = tuple(randunit() for c in 'rgb')
                     
                 if nb:
                     nbc = nb.sample(x1, y1, x2, y2)
                 else:
-                    nbc = tuple(randunit() for c in 'rgb')
-                    #nbweight = 0
-                    #nbc = (127, 127, 127)
-
+                    if self.boundary == 'random':
+                        nbc = tuple(randunit() for c in 'rgb')
                 
                 tix = cix = (y * n1) + x
 
@@ -655,10 +656,6 @@ class NeutronStar(Sphere):
 
         How to fill in self.grid?
         """
-        #self.red = [x/10 for x in self.red]
-        #self.blue = [x/10 for x in self.blue]
-        #self.green = [x/10 for x in self.green]
-
         n1, n2 = self.size
         width = 2 * math.pi
         height = math.pi
@@ -686,9 +683,11 @@ class NeutronStar(Sphere):
 
                 ix += 1
 
-        # return super().tick()
-        return self
+        if self.boundary != 'none':
+            super().tick()
 
+        return self
+    
 
 def randunit():
 
@@ -798,8 +797,12 @@ class NestedWaves(pigfarm.Yard):
 
     async def reset(self):
         """ Reset waves """
+        await self.cancel()
+        
         for ball in self.balls:
             ball.reset()
+
+        await self.start_balls_running()
 
     async def forward(self):
         """ Move to next sphere """
@@ -920,8 +923,14 @@ class NestedWaves(pigfarm.Yard):
             sphere = await curio.spawn(ball.run)
             spheres.append(sphere)
             curio.sleep(ball.sleep)
-            
+
+        self.spheres = spheres
         return spheres
+
+    async def cancel(self):
+
+        for ball in self.spheres:
+            await ball.cancel()
 
 
     async def run(self):
@@ -960,7 +969,7 @@ class NestedWaves(pigfarm.Yard):
 
 
 def generate_spheres(sizes, clazz=None, mass=None, radii=None,
-                     outer=True):
+                     iboundary='zero', oboundary='zero'):
 
     clazz = clazz or NeutronStar
     xclazz = clazz
@@ -975,11 +984,14 @@ def generate_spheres(sizes, clazz=None, mass=None, radii=None,
 
     radii = radii or range(n)
 
+
     dr = radii[-1] - radii[-2]
     while len(radii) < n:
         radii.append(radii[-1] + dr)
 
     K = 2
+
+    boundary = iboundary
     for r, nn, M in zip(radii, sizes[:-1], mass):
 
         size = nn
@@ -996,9 +1008,10 @@ def generate_spheres(sizes, clazz=None, mass=None, radii=None,
         #mu = M / 10
 
         mu = None
-        sphere = clazz(size, r=R, m=M, mu=mu)
+        sphere = clazz(size, r=R, m=M, mu=mu, boundary=boundary)
 
         clazz = Sphere
+        boundary = 'none'
 
         yield sphere
 
@@ -1009,8 +1022,8 @@ def generate_spheres(sizes, clazz=None, mass=None, radii=None,
     #M = 10 * M
     #mu = M / 10
     print(xclazz)
-    if outer:
-        yield xclazz(size=size, r=r+1, m=M, mu=mu)
+    if oboundary != 'none':
+        yield xclazz(size=size, r=r+1, m=M, mu=mu, boundary=oboundary)
         
 
 def prime_balls(base, n):
@@ -1158,7 +1171,12 @@ def argument_parser(parser=None):
     parser.add_argument('--base', type=int, default=20)
     parser.add_argument('--mass', nargs='*',  type=float)
     parser.add_argument('--radii', nargs='*',  type=float)
-    parser.add_argument('--noouter', action='store_false')
+    parser.add_argument('--iboundary',
+                        choices=['random', 'zero', 'none'],
+                        default='zero')
+    parser.add_argument('--oboundary',
+                        choices=['random', 'zero', 'none'],
+                        default='zero')
 
     return parser
 
@@ -1186,7 +1204,7 @@ def args_to_spheres(args):
         balls,
         mass=args.mass,
         radii=args.radii,
-        outer=args.noouter))
+        iboundary=args.iboundary, oboundary=args.oboundary))
 
     return spheres
 
