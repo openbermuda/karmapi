@@ -255,16 +255,28 @@ class WorldView(cpr.Sphere):
 
         # take 3 at a time for r g b
 
-    async def tick(self):
+    def __getstate__(self):
+        """ """
+        state = self.__dict__.copy()
+        state.update(dict(stamps=None, values=None))
+        return state
+
+    def update(self, ball):
+
+        super().update(ball)
+
+        print(self.current_date())
+        self.next_frame()
+
+    def tick(self):
 
         self.t += 1
 
-        self.next_frame()
-        now = self.current_date()
-        print(now)
         if self.save:
             im = self.project()
             im.save(f'{self.save}/{now}.png')
+            
+        return self
 
     def current(self):
 
