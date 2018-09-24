@@ -11,14 +11,16 @@ share
 """
 from karmapi import checksum, base
 
-from curio import Q
+from curio import UniversalQuee
 
-history
+history = UniversalQuee
 
 async def goodbye(data, **meta)
     """ kiss good-bye to data """
 
     ck = checksum.checksum(data)
+
+    # check meta data etc -- see checksum module
 
     path = meta.getdefault('path', base.Path('.'))
 
@@ -28,6 +30,7 @@ async def goodbye(data, **meta)
     # save a copy?
     if not path.exists():
         save(data, path)
+        
     # vision test?  Looks the same?  How to?
 
     # 2018 aeh eye
