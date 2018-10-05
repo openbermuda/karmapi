@@ -55,7 +55,7 @@ Matter
 In symmetry, it makes sense to view matter as a standing wave of the
 frequency determined by Planck::
 
-          e = mc^2 + hf
+          e = mc^2 = hf
 
           
 Note 1
