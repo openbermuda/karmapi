@@ -133,13 +133,6 @@ def downsample(stamps, values, k=15):
     
 
 
-def model(stamps, values):
-    """ Build a model """
-    stamps = list(stamps)
-    xx = values[stamps[0]]
-
-    print(xx.shape)
-
 def delta(stamps, values):
 
     nn = 37
@@ -207,6 +200,14 @@ def saveimage(path, date):
     item = item / filename
 
     pyplot.savefig(str(item), bbox_inches='tight', pad_inches=0)
+
+
+def model(stamps, values):
+    """ Build a model """
+    stamps = list(stamps)
+    xx = values[stamps[0]]
+
+    print(xx.shape)
 
 
 def model(stamps, values):
@@ -287,12 +288,13 @@ class WorldView(cpr.Sphere):
         return data
 
     def current_date(self):
-
+        """ Get date for current stamp """
         s, d, ix = self.stamps[self.ix]
 
         return d
 
     def next_frame(self):
+
 
         red = self.scale(self.current())
         self.red = red[self.spin:] + red[0:self.spin]
@@ -317,8 +319,14 @@ class WorldView(cpr.Sphere):
         for skip in range((9 * 11) + 18):
             self.forward()
 
-    def forward(self):
+        
+        # TODO: take a random sample of rgb grid and add to history
+        # include stamp
+        fixme
 
+
+    def forward(self):
+        """ Step to next frame """
         self.ix += 1
 
         self.ix = self.ix % self.n
