@@ -23,6 +23,14 @@ long that journey was?
 
 Note also the new addition to our inertial field, settling in.
 
+Update
+======
+
+The emitter itself does not need to enter our visible universe.  All that is
+required is a beam of light from that emitter that enters our visible universe,
+and is heading in our direction.
+
+
 """
 
 import math
@@ -63,3 +71,6 @@ geo_test = - (e0 * shint) + (e1 * cosht)
 pp.plot(geo_test)
 
 pp.show()
+
+
+# TODO plot t against u: receiver and emitter times respectively

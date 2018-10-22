@@ -1,10 +1,14 @@
 """
-ENSO
+ENSO and HURDAT
 
 http://www.esrl.noaa.gov/psd/enso/mei/#content
 
 """
 HURDAT = 'http://www.nhc.noaa.gov/data/hurdat/hurdat2-1851-2015-070616.txt'
+
+HURDAT = 'https://www.nhc.noaa.gov/data/hurdat/hurdat2-1851-2017-050118.txt'
+
+
 
 import csv
 import datetime

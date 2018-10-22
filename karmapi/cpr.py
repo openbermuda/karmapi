@@ -180,7 +180,7 @@ class Sphere:
         self.blue = np.zeros(nn)
 
         self.size = size
-        self.history = None
+        self.history = {}
         self.delta = False
 
         self.last_ball = None

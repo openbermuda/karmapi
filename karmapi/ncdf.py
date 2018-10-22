@@ -14,6 +14,8 @@ import math
 import argparse
 from pathlib import Path
 
+from random import randint
+
 import netCDF4
 import numpy
 
@@ -248,6 +250,8 @@ class WorldView(cpr.Sphere):
         self.n = len(self.stamps)
         self.spin = 5
 
+        self.sample_points()
+
         super().__init__(self.size, **kwargs)
 
         # data is some sort of ncdf thing
@@ -255,6 +259,15 @@ class WorldView(cpr.Sphere):
         # frames in order.
 
         # take 3 at a time for r g b
+
+    def sample_points(self):
+
+        w, h = self.size
+
+        for pt in range(100):
+            x, y = randint(0, w), randint(0, h)
+        
+            self.points.append(x + (w * y))
 
     def __getstate__(self):
         """ """
@@ -312,17 +325,32 @@ class WorldView(cpr.Sphere):
         self.spin %= self.size[0]
         
         #self.blue = [0. for x in self.red]
+
+        self.sample_current()
         
         self.forward()
 
         # fix me
-        for skip in range((9 * 11) + 18):
-            self.forward()
+        #for skip in range((9 * 11) + 18):
+        #    self.forward()
 
         
-        # TODO: take a random sample of rgb grid and add to history
-        # include stamp
-        fixme
+    def sample_current(self):
+        """ Take a sample of current data 
+
+        Add it to history.
+        """
+        if self.ix in self.history:
+            print('size of history', len(history))
+            1/0
+            return
+
+        rgb = []
+        for pt in self.points:
+            value = self.red[pt], self.green[pt], self.blue[pt]
+            rgb.append(value)
+        
+        self.history[self.ix] = rgb
 
 
     def forward(self):
@@ -333,7 +361,7 @@ class WorldView(cpr.Sphere):
         
     def backward(self):
 
-        self.ix == 1
+        self.ix -= 1
 
         if self.ix == -1:
             self.ix += self.n
