@@ -498,6 +498,65 @@ as being in our universe.
 
 Gravitational waves propogate in the same manner as light.
 
+So when a galaxy comes into view, so does its gravitational field.
+
+There have been two occasions when short duration gamma ray bursts
+were seen shortly (1-2 seconds) after a gravitational wave detection.
+
+The gravitational wave, ought to have similar frequencies and power as
+the gamma ray burst.
+ 
+We also have to take into account reflections from nearby masses
+(moon, sun, planets?).   Indeed, if gravity works the way I think it
+does, these bodies will act as magnifiers of the signal.
+
+With the caveat, that those signals will also be modulated by the echo
+from earth.
+
+What we actually see should be the interference pattern from the sum
+of these reflections.
+
+The Earth too reflects the waves, and so we only ever see the delta in
+the wave that is arriving [FIXME: write this more clearly]
+
+To model this adequately, we also have to take account of the size of
+a typical galaxy, as well as the much wider region where inertial drag
+from the centre of the galaxy is still significant.
+
+Given the location in the sky of the source of the gamma ray [SGR]
+
+[SGR] localisation of GRB bursts is limited by the width of the
+baseline across all observations.
+
+Typically, the source can be narrowed to an ellipse, often with a high
+ratio between the major and minor axes.
+
+Regardless, given the source we can draw the wave front as it passes
+across our solar system and so calculate the time differences of
+arrival of waves taking different paths and so accurately re-construct
+the interference pattern.
+
+Further, we can use the fit to the observed gravitational waves to
+narrow down the source location.
+
+Some numbers to ponder.
+
+1.3 seconds earth to moon
+
+8 minutes sun to earth
+
+30-50 minutes to Jupiter
+
+
+Puzzles
+-------
+
+Why haven't we seen GW associated with the long duration GRB?
+
+Why haven't we seen events closer to home?
+
+Why do we see the gravitational wave before the gamma ray?
+
 
 de sitter geodesic isometry
 
