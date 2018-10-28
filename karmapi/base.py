@@ -203,7 +203,7 @@ def get_all_meta_data(path):
     path = []
     for field in fields:
         path.append(field)
-
+        print(path)
         meta_data = meta.update(
             load_meta_path(Path(*path)))
 
@@ -266,8 +266,9 @@ def build_from_meta(path):
 def load_meta_path(path):
     """ Load meta data a path if it exists """
     filename = path / 'meta.json'
-
+    print(filename)
     if filename.exists():
+        print(filename, 'exists')
         with filename.open() as infile:
             return json.loads(infile.read())
 
@@ -360,7 +361,8 @@ def load(path):
     """
     path = Path(path)
     meta = get_all_meta_data(path)
-
+    print(meta)
+    
     if (not path.exists()):
         # see if a peer has it
         got = try_pear(path)

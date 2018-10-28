@@ -421,9 +421,12 @@ Then these optical illusions should be a pretty regular occurrence.::
 
 Thanks.  This clears up much.
 
+Everything that is in the visible universe is in the expansive part
+for all but a vanishingly small part of its life.
+
 Arrive with a gamma flash.  Live and slowly fade away.
 
-Arrival and departure rates roughly in balance.
+Arrival and departure rates in balance.
 
 Now, back to how often do we see these GRB's::
    
@@ -438,40 +441,62 @@ So 500 billion galaxies, 12 billion year journey, one a day arrival
 feels about right.
    
 
-
-More
-----
-
-
-     Near galaxies would presumably block these rays, if it wasn't for
-     gravitational lensing.
+Returning to: **Near galaxies would presumably block these rays, if it
+wasn't for gravitational lensing.**::
 
    Not true.  They are so intense they soar through the obstruction.
    Lensing has nothing to do with it.  It's not a lensing phenomenon.  It's
    the way null geodesics work when a source comes over the horizon into
    the visible universe.::
 
-     Just occurred that the chance that the emitter is actually in the
-     direction we see it from is probably vanishingly small given all the
-     lensing effects, or gravitational fog as you put it.
+And: **Just occurred that the chance that the emitter is actually in
+the direction we see it from is probably vanishingly small given all
+the lensing effects, or gravitational fog as you put it.**::
 
    No.  The emitter is in the direction we see it.  The fog just delays the
    appearance a tiny bit and cuts the received energy down from infinite
    (OUCH) to finite.::
 
-     F.8 in the book is key: earth has moved a lot since the wave set on
-     its way.  Indeed it is that movement, over the Hubble time, that
-     modulates the signals we see from each direction.
+And finally, **F.8 in the book is key: earth has moved a lot since the
+wave set on its way.  Indeed it is that movement, over the Hubble
+time, that modulates the signals we see from each direction.**::
 
    Don't understand that.  The motion of the earth is very slow compared to
-   the speed of light at which GRBs propagate.::
+   the speed of light at which GRBs propagate.
 
-     I can't get over the simplicity of the model you present, together
-     with how quickly it becomes complex.
+Here I was talking about the actual shape of the burst being modulated
+by the relative movement of emitter and receiver sincd time -t.
+
+**I can't get over the simplicity of the model you present, together
+with how quickly it becomes complex.**
 
 Thanks.
 
 Johnny
+
+Recap
+=====
+
+If we just go with the assumptions 
+
+1. that the universe is pretty uniform round our way 
+
+2. our visible universe is just a window on a wider universe
+   and maybe:
+
+3. Our part appears to be expansive
+
+Then these optical illusions should be a pretty regular occurrence.
+
+Regarding 3., our universe is both expansive and contractive.
+
+However, we get to observe the expansive part for almost all of an
+emitter's life.
+
+All we ever see of anything is light.  Sending light to us is the same
+as being in our universe.
+
+Gravitational waves propogate in the same manner as light.
 
 
 de sitter geodesic isometry
