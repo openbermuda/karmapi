@@ -30,47 +30,207 @@ The emitter itself does not need to enter our visible universe.  All that is
 required is a beam of light from that emitter that enters our visible universe,
 and is heading in our direction.
 
+Colin::
 
-"""
+   Not quite right.  All we ever see of anything is light.  Sending light
+   to us is the same as being in our universe
+
+There was lots more from Colin. See docs/nodice/grb.rst for more on that
+story.
+
+Now if a gamma-ray burst indicates a new galaxy arriving in our visible
+universe, with the burst representing the, finite, but unbounded history of the
+universe, including the histlory of its inertial drag field.
+
+This latter, is hypothesised to be driven by a super-massive object (~10^11
+solar masses) at the centre of the galaxy.
+
+Noting that this field decays linearly with distance, but extends well beyond
+the visible part of the galaxy.
+
+When a galaxy comes into view, not just a big slice of time, but also a large
+expanse of space becomes visible in a short space of time.
+
+I picture this as a wave, like a sunrise, sweeping across our solar system.
+
+We see gamma ray bursts lasting several minutes, with the frequency rising
+rapidly to a sharp peak before slowly tailing off over the next several
+minutes.
+
+It is hypothesised that the gravitational wave that is seen will broadly follow
+the shape of the gamma-ray, but over a longer time span.
+
+It is hypothesised that large masses in our solar system will act to amplify
+the signal.
+
+The result will be echo cancellation due to the different paths that the
+gravitational wave can take.
+
+Echoes will bounce around the solar system as bodies follow the incoming wave
+together.
+
+It also has to be noted that the earth too will act to echo the wave it sees.
+
+Consider the moon, earth and sun.  It takes just 1.3 seconds for light to travel
+from earth to moon or vice versa.
+
+From moon or earth to the sun is around 500 seconds, or 8 minutes 20 seconds.
+
+Place the earth at the origin and then picture the different path lenghts.
+
+So,
+
+    P = location of GRB emitter
+    M = location of moon
+    S = location of sun
+    E = earth, location (origin)
+
+Lengths of interest::
+
+    deltaS = PSE - PE 
+
+    deltaM = PSME - PSE = SME - SE
+
+Now deltaM is independent of P.
+
+Given the location in the sky that the GRB actually comes from, we can also get
+a better estimate on deltaS.
+
+We may also be able to work this backwards: given a signal that will place some
+constraints on the geometry.
+
+Jupiter?  other planets?
+
+For now the goal is given a time and a place in the sky P, draw a picture?
+""" 
 
 import math
 import numpy as np
+import argparse
+
+import datetime
+
+from astropy import coordinates, constants
+from astropy.time import Time
 
 from matplotlib import pyplot as pp
 
+from karmapi import base, cpr
 
 
-T = 1000
-k = 10000
+class SolarSystem(cpr.NestedWaves):
 
-xx = [x * math.pi / k for x in range(T)]
-shint = np.array([math.sinh(x) for x in xx])
-cosht = np.array([math.cosh(x) for x in xx])
-print(shint.size)
-#print(xx[-100:])
-#print(yy[-100:])
+    def __init__(self, *args, **kwargs):
 
-pp.plot(list(shint), list(cosht))
+        super().__init__(*args, **kwargs)
 
+def gamma_hack():
 
-# emitter
-shinu = shint.copy()
-coshu = cosht.copy()
+    T = 1000
+    k = 10000
 
-alpha = 2
-beta  = 1
-gamma = -1
-delta = 1
-e0 = (alpha * shinu) + (beta * coshu)
-e1 = (gamma * shinu) + (delta * coshu)
+    xx = [x * math.pi / k for x in range(T)]
+    shint = np.array([math.sinh(x) for x in xx])
+    cosht = np.array([math.cosh(x) for x in xx])
+    print(shint.size)
+    #print(xx[-100:])
+    #print(yy[-100:])
 
-# 2.2
-
-geo_test = - (e0 * shint) + (e1 * cosht)
-
-pp.plot(geo_test)
-
-pp.show()
+    pp.plot(list(shint), list(cosht))
 
 
-# TODO plot t against u: receiver and emitter times respectively
+    # emitter
+    shinu = shint.copy()
+    coshu = cosht.copy()
+
+    alpha = 2
+    beta  = 1
+    gamma = -1
+    delta = 1
+    e0 = (alpha * shinu) + (beta * coshu)
+    e1 = (gamma * shinu) + (delta * coshu)
+
+    # 2.2
+
+    geo_test = - (e0 * shint) + (e1 * cosht)
+
+    pp.plot(geo_test)
+
+    pp.show()
+
+
+    # TODO plot t against u: receiver and emitter times respectively
+
+
+def argument_parser(parser=None):
+
+    parser = parser or argparse.ArgumentParser()
+
+    parser.add_argument('--lat', type=float, default=0.0)
+
+    parser.add_argument('--lon', type=float, default=0.0)
+
+    parser.add_argument('--date', default='2015/09/14/09/50/45')
+
+    return parser
+
+
+def get_body(body, t=None):
+
+    t = t or datetime.datetime.now()
+
+    return coordinates.get_body(body, Time(t))
+
+
+def get_mass(body):
+
+    em = 5.97e24
+    
+    to_earth = 1.0 / em
+
+    print(constants.GM_sun)
+    print(constants.GM_sun.to_value())
+    
+    masses = dict(
+        sun = float(constants.GM_sun / em),
+        moon =      0.073 * to_earth,
+        mercury =   0.330 * to_earth,
+        venus =     4.87  * to_earth,
+        mars =      0.64  * to_earth,
+        earth =     1.0,
+        jupiter =  1898 * to_earth,
+        saturn =  568.0 * to_earth, 
+        uranus =   86.8 * to_earth,
+        neptune = 102.0 * to_earth,
+        pluto =     0.0146 * to_earth)
+
+    return masses.get(body)
+    
+if __name__ == '__main__':    
+
+    parser = argument_parser()
+    
+    args = parser.parse_args()
+
+    print(args.date)
+    args.date = base.parse_date(args.date)
+
+    t = args.date
+
+    bodies = [
+        'sun', 'moon',
+        'mercury', 'venus',
+        'earth',
+        'mars', 'jupiter', 'saturn',
+        'neptune', 'uranus']
+        
+    print("Time of event:", t)
+
+    for body in bodies:
+        print(body)
+        print(get_body(body, t))
+        print()
+        print(get_mass(body))
+        print()
+        break
+    

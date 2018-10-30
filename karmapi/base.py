@@ -527,10 +527,13 @@ def parse_date(date):
 
     while len(fields) < 3:
         fields.append(1)
-    
-    year, month, day = fields
 
-    return datetime.date(year, month, day)
+    while len(fields) < 6:
+        fields.append(0)
+    
+    year, month, day, hour, minute, second = fields
+
+    return datetime.datetime(year, month, day, hour, minute, second)
 
     
 
