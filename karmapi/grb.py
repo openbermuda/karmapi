@@ -115,7 +115,21 @@ from astropy.time import Time
 
 from matplotlib import pyplot as pp
 
-from karmapi import base, cpr
+import curio
+
+from karmapi import base, cpr, pigfarm
+
+def angle(d, m, s):
+
+    a = s
+    a = m + a / 60
+    return d + (a / 60)
+
+LIGO_HLAT = angle( 46, 27, 18.52)
+LIGO_HLON = angle(119, 24, 27.56)
+
+LIGO_LLAT = angle(30, 33, 46.42)
+LIGO_LLON = angle(90, 46, 27.27)
 
 
 class SolarSystem(cpr.NestedWaves):
@@ -166,9 +180,9 @@ def argument_parser(parser=None):
 
     parser = parser or argparse.ArgumentParser()
 
-    parser.add_argument('--lat', type=float, default=0.0)
+    parser.add_argument('--lat', type=float, default=LIGO_HLAT)
 
-    parser.add_argument('--lon', type=float, default=0.0)
+    parser.add_argument('--lon', type=float, default=LIGO_HLON)
 
     parser.add_argument('--date', default='2015/09/14/09/50/45')
 
@@ -184,15 +198,12 @@ def get_body(body, t=None):
 
 def get_mass(body):
 
-    em = 5.97e24
+    # masses (10^24 Kg)
+    em = 5.97
     
     to_earth = 1.0 / em
 
-    print(constants.GM_sun)
-    print(constants.GM_sun.to_value())
-    
     masses = dict(
-        sun = float(constants.GM_sun / em),
         moon =      0.073 * to_earth,
         mercury =   0.330 * to_earth,
         venus =     4.87  * to_earth,
@@ -204,11 +215,106 @@ def get_mass(body):
         neptune = 102.0 * to_earth,
         pluto =     0.0146 * to_earth)
 
-    return masses.get(body)
-    
-if __name__ == '__main__':    
+    sun = masses['jupiter'] * (constants.GM_sun / constants.GM_jup)
+    masses['sun'] = sun
 
-    parser = argument_parser()
+    return masses.get(body)
+
+
+BODIES = [
+    'sun', 'moon',
+    'mercury', 'venus',
+    'earth',
+    'mars', 'jupiter', 'saturn',
+    'neptune', 'uranus']
+
+RADIUS_OF_EARTH = 6378.
+RADIUS_OF_SUN =   1.391e6
+    
+def au2earth(value=1):
+    """ Convert astronomical units to earth radii """
+
+    # earth to sun
+    e2s = float(constants.c.to('km/s').value) * 499.0
+    print(e2s)
+    return value * e2s / 6378
+    
+
+def display_body(name, t):
+        
+    print("Time of event:", t)
+    print("Viewing from:", name)
+    target = get_body(name, t)
+    results = {}
+    for body in BODIES:
+        print(body)
+
+        bd = body_data(body, t)
+
+        mass = bd['m']
+        bod = bd['body']
+        
+        if body == name:
+            if name in ['earth', 'sun']:
+                r = bd['r']
+        else:
+            r = target.separation_3d(bod)
+
+        print(bod)
+        print('mass:', mass)
+        print(f'distance to {name}: {r}')
+        print('m over r:', mass / r)
+        print()
+        print()
+
+    return results
+
+def get_distance():
+    pass
+
+def body_data(name, t):
+    
+    bod = get_body(name, t)
+    mass = get_mass(name)
+    radius = None
+    if name == 'earth':
+        radius = 6378 / 1.5e8
+    elif name == 'sun':
+        radius = 1.391e6 / au2earth(1)
+
+    return dict(
+        r=radius,
+        m=mass,
+        name=name,
+        body=bod)
+
+
+class Body(cpr.Sphere):
+
+
+    def __init__(self, name, t, size=None):
+        """ Initialise the body """
+        bd = body_data(name, t)
+        self.body = bd['body']
+
+        super().__init__(size=size, t=t, m=bd['m'], r=bd['r'])
+
+    def separation(self, body):
+        """ Return distance to body """
+        return self.body.separation_3d(body)
+
+
+def args_to_spheres(args, t):
+
+    spheres = []
+    for body in BODIES:
+        spheres.append(Body(body, t=t))
+
+    return spheres
+
+def main():
+
+    parser = argument_parser(cpr.argument_parser())
     
     args = parser.parse_args()
 
@@ -217,20 +323,25 @@ if __name__ == '__main__':
 
     t = args.date
 
-    bodies = [
-        'sun', 'moon',
-        'mercury', 'venus',
-        'earth',
-        'mars', 'jupiter', 'saturn',
-        'neptune', 'uranus']
-        
-    print("Time of event:", t)
+    earth = display_body('earth', t)
+    sun = display_body('sun', t)
 
-    for body in bodies:
-        print(body)
-        print(get_body(body, t))
-        print()
-        print(get_mass(body))
-        print()
-        break
+
+    for k,v in earth.items():
+        print(f'{k}: {v["moverr"]}')
+
+
+    # pass list of balls into NestedWaves
+    spheres = args_to_spheres(args, t)
     
+    farm = pigfarm.sty(SolarSystem, dict(balls=spheres, fade=args.fade,
+                                         twist=args.twist))
+
+    curio.run(farm.run, with_monitor=True)
+
+
+
+if __name__ == '__main__':
+
+    main()
+        
