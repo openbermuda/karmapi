@@ -20,6 +20,7 @@ Just store the images for each day.
 import itertools
 import argparse
 import random
+import numpy as np
 
 import datetime
 utcnow = datetime.datetime.utcnow
@@ -139,13 +140,14 @@ class TankRain(pigfarm.MagicCarpet):
 
     def diff(self):
 
-        print(type(self.data), type(self.last_data))
         a, b = self.data, self.last_data
 
-        diff = a - b
-        print(type(diff))
+        diff = np.array(a.getdata()) - np.array(b.getdata())
 
-        return 21.0
+        diff = (diff * diff).sum() / diff.size
+
+        print('DIFF', diff)
+        return diff
 
     def when(self):
         """ current date """
