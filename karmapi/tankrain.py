@@ -59,6 +59,7 @@ class TankRain(pigfarm.MagicCarpet):
         self.save_folder = save
         self.timewarp = 0
         self.cut = 0
+        self.last_data = None
         self.date = date
         if self.date is None:
             self.date = utcnow()
@@ -88,7 +89,31 @@ class TankRain(pigfarm.MagicCarpet):
         self.inc = 1
 
     def compute_data(self):
+        """ Set up self.data as the image
 
+        TODO: save history, alpha smoothing, skip to next if delta small
+        """
+        if self.last_data is None:
+            self._compute_data()
+            self.last_data = self.data
+            return
+
+        self._compute_data()
+        alpha = 0.1
+        beta = 1.0 - alpha
+        
+        while self.diff() < 20.:
+            
+            self.last_data = (alpha * self.last_data) + (beta * self.data)
+            self._compute_data()
+
+        self.data, self.last_data = self.last_data, self.data
+
+    def _compute_data(self):
+        """ Set self.data to image for current ix
+
+        also increment self.ix.
+        """
         from PIL import Image
 
         ix = self.ix
@@ -112,6 +137,15 @@ class TankRain(pigfarm.MagicCarpet):
                             
         self.data = im
 
+    def diff(self):
+
+        print(type(self.data), type(self.last_data))
+        a, b = self.data, self.last_data
+
+        diff = a - b
+        print(type(diff))
+
+        return 21.0
 
     def when(self):
         """ current date """
