@@ -102,11 +102,15 @@ class TankRain(pigfarm.MagicCarpet):
         self._compute_data()
         alpha = 0.1
         beta = 1.0 - alpha
-        
-        while self.diff() < 20.:
+
+
+        ix = self.ix
+        while self.diff() < 7.:
             
-            self.last_data = (alpha * self.last_data) + (beta * self.data)
+            self.last_data = (alpha * self.tonp(self.last_data)) + (beta * self.tonp(self.data))
             self._compute_data()
+            if ix == self.ix:
+                break
 
         self.data, self.last_data = self.last_data, self.data
 
@@ -125,7 +129,7 @@ class TankRain(pigfarm.MagicCarpet):
             # FIXME -- create an image that shows there is no data
             # for now, lets just show a rainbow
             rainbow = [x for x in range(100)]
-            im = [rainbow] * 100
+            im = np.array([rainbow] * 100)
 
         n = len(self.paths)
         ix = ix + self.inc
@@ -138,11 +142,22 @@ class TankRain(pigfarm.MagicCarpet):
                             
         self.data = im
 
+    def tonp(self, data):
+
+        if hasattr(data, 'getdata'):
+            data = np.array(data.getdata())
+
+        return data
+
     def diff(self):
 
-        a, b = self.data, self.last_data
+        adata, bdata = self.tonp(self.data), self.tonp(self.last_data)
 
-        diff = np.array(a.getdata()) - np.array(b.getdata())
+        if adata.size != bdata.size:
+            return 1000.0
+
+        diff = np.array(adata) - np.array(bdata)
+        print(diff.size)
 
         diff = (diff * diff).sum() / diff.size
 
