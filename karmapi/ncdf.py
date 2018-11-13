@@ -264,6 +264,7 @@ class WorldView(cpr.Sphere):
 
         w, h = self.size
 
+        self.points = []
         for pt in range(100):
             x, y = randint(0, w), randint(0, h)
         

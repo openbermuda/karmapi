@@ -173,11 +173,9 @@ class Sphere:
         # resolution
         size = size or (4, 4)
 
-        nn = size[0] * size[1]
-        
-        self.red = np.zeros(nn)
-        self.green = np.zeros(nn)
-        self.blue = np.zeros(nn)
+        ww, hh = size
+
+        self.rgb = np.zeros(shape=(ww, hh, 3))
 
         self.size = size
         self.history = {}
@@ -241,42 +239,42 @@ class Sphere:
         width, height = self.size
         nn = width * height
 
-        self.red = (np.random.random(nn) - 0.5) * 2
-        self.green = (np.random.random(nn) - 0.5) * 2
-        self.blue = (np.random.random(nn) - 0.5) * 2
+        self.rgb = (np.random.random(size=(width, height, 3)) - 0.5) * 2
+
+
+    def get_views(self):
         
-
-    def project(self, view=None):
-        """ Turn into a PIL? """
-
         views = dict(
             grid=self.rgb2grid,
             northpole=self.northpole,
             southpole=self.southpole,
             uphemi=self.uphemi,
             lowhemi=self.lowhemi)
+
+        return views
+
+    def project(self, view):
+        """ Turn into a PIL? """
             
-        image = Image.new('RGB', (self.size[0], self.size[1]))
+        #image = Image.new('RGB', (self.size[0], self.size[1]))
 
         # FIXME do the 256 magic int stuff here
+        pixels = self.quantise(self.rgb).astype(np.uint8)
 
-        #print('rgb', len(self.red), len(self.green), len(self.blue))
+        pixels = self.get_views().get(view, self.rgb2grid)(pixels)
+        print('PPPP', view, pixels.shape)
 
-        project = views.get(view, self.rgb2grid)
-        print(view)
-        
-        image.putdata(project())
+        image = Image.fromarray(pixels)
 
         return image
 
-    def rgb2grid(self):
+    def rgb2grid(self, pixels=None):
         """ Change lists of red green blue to a pixel grid"""
-        grid = []
-        for rgb in zip(self.red, self.green, self.blue):
-            pixel = tuple(self.quantise(x) for x in rgb)
-            grid.append(pixel)
+        if pixels is None:
+            pixels = self.quantise(self.rgb)
+        print('ffffffffffffff')
+        return pixels
 
-        return grid
 
     def poleview(self, pixels, scale=1, wind=1):
         """ View from a pole """
@@ -284,63 +282,54 @@ class Sphere:
         # make black everywhere
         width, height = self.size
 
-        
-        grid = [(127, 127, 127)] * width * height
+        grid = np.zeros(shape=pixels.shape, dtype=np.uint8)
+        grid += 127
 
         xorig = int(width / 2)
         yorig = int(height/ 2)
+
+        ww, hh, bands = grid.shape
         
-        for ix, rgb in enumerate(pixels):
+        for xx in range(ww):
+            for yy in range(hh):
 
-            pixel = tuple(self.quantise(x) for x in rgb)
-            xx = ix % width
-            yy = ix // height
-
-            #if yy >= height / 2:
-            #    break
-                        
-            # so radius yy from centre and xx how far round the circle
-            angle = wind * xx * 2 * math.pi / width
+                # so radius yy from centre and xx how far round the circle
+                angle = wind * xx * 2 * math.pi / width
              
-            xoff = yy * math.cos(angle) / scale
-            yoff = yy * math.sin(angle) / scale
+                xoff = yy * math.cos(angle) / scale
+                yoff = yy * math.sin(angle) / scale
 
-            xpos = int(xorig + xoff)
-            ypos = int(yorig + yoff)
+                xpos = int(xorig + xoff)
+                ypos = int(yorig + yoff)
 
-            target = xpos + ypos * width
+                xpos = xpos % ww
+                ypos = ypos % hh
+                
+                grid[xpos][ypos] = pixels[xx][yy]
 
-            ix = ix % (width * height)
-
-            target %= width * height
-            
-            grid[target] = pixel
-            
         return grid
 
-    def northpole(self):
+    def northpole(self, pixels):
         """ Give a circular view from the north pole """
-        pixels = zip(self.red, self.green, self.blue)
-
         return self.poleview(pixels, scale=2)
 
-    def southpole(self):
+    def southpole(self, pixels):
         """ Give a circular view from the south pole """
-        pixels = zip(self.red[::-1], self.green[::-1], self.blue[::-1])
+        pixels = pixels[::-1]
 
         return self.poleview(pixels, scale=2, wind=-1)
 
-    def uphemi(self):
+    def uphemi(self, pixels):
         """ show upper hemisphere """
-        nn = int(len(self.red) / 2)
-        pixels = zip(self.red[:nn], self.green[:nn], self.blue[:nn])
+        nn = int(pixels.shape[0] /2)
+        pixels = pixels[:nn]
 
         return self.poleview(pixels)
 
-    def lowhemi(self):
+    def lowhemi(self, pixels):
         """ show lower hemisphere """
-        nn = int(len(self.red) / 2)
-        pixels = zip(self.red[nn::-1], self.green[nn::-1], self.blue[nn::-1])
+        nn = int(len(pixels) / 2)
+        pixels = pixels[::-1]
 
         return self.poleview(pixels, wind=-1)
 
@@ -370,7 +359,6 @@ class Sphere:
         while True:
             ball = await curio.run_in_process(self.tick)
             print(f'{self} sleep:{self.sleep}')
-            print('ID', id(ball), id(self))
 
             self.update(ball)
             
@@ -391,9 +379,8 @@ class Sphere:
 
     def update(self, ball):
 
-        self.red = ball.red
-        self.blue = ball.blue
-        self.green = ball.green
+        self.rgb = ball.rgb
+
         self.t = ball.t
         
 
@@ -465,12 +452,12 @@ class Sphere:
                     if self.boundary == 'random':
                         nbc = tuple(randunit() for c in 'rgb')
                 
-                tix = cix = (y * n1) + x
+                tix = cix = y, x
 
                 if n1 == n2 and self.twist:
-                    tix = (x * n1) + y
+                    tix = tuple(reversed(tix))
                         
-                cbc = (self.red[cix], self.green[cix], self.blue[cix])
+                cbc = self.rgb[cix[0]][cix[1]]
 
                 #print(lbc, cbc, nbc)
 
@@ -480,12 +467,7 @@ class Sphere:
                               for aa, bb, cc in zip(lbc, cbc, nbc)]
 
                     
-                grid[tix] = value
-
-            
-
-        self.grid2rgb(grid)
-        #self.normalise()
+                self.rgb[tix[0]][tix[1]] = value
 
         return self
 
@@ -504,58 +486,16 @@ class Sphere:
         return weight
 
             
-    def grid2rgb(self, value):
-
-        for ix, (r, g, b) in enumerate(value):
-            self.red[ix] = r
-            self.green[ix] = g
-            self.blue[ix] = b
-
-
     def quantise(self, value):
 
-        value = value - int(value)
+        value = value - np.trunc(value)
         
-        value = int(127 + (value * 128))
-        value = int(value % 256)
+        value = 127 + (value * 128)
+        value = np.trunc(value % 256)
 
         return value
 
-    def normalise(self):
-        """ Normalise the grid 
-        
-        want mean for each colour to be 127
-
-        let's just scale so range is 0-255
-        """
-
-        off = []
-        scale = []
-        grid = self.rgb2grid()
-        for ix in range(len(grid[0])):
-            amin = min(x[ix] for x in grid)
-            amax = min(x[ix] for x in grid)
-
-            if amax != amin:
-                sc = 255 / (amax - amin)
-            else:
-                sc = 1.0
-
-            scale.append(sc)
-            off.append(amin)
-
-
-        grid = []
-        for values in self.grid:
-            value = tuple(int((x-ff) * sc)
-                          for x, sc, ff in zip(values, scale, off))
-            
-            grid.append(value)
-
-        # back to rgb
-        self.grid2rgb(grid)
-            
-
+ 
     def setup_wave(self):
         """ Do some set up work for a sphere with mass """
 
@@ -613,9 +553,7 @@ class Sphere:
         yk2 = yk // 2
         yy = randint(yy - yk2, yy + yk - (1 + yk2))
 
-        ix = (yy * self.size[0]) + xx
-
-        return self.red[ix], self.green[ix], self.blue[ix]
+        return self.rgb[xx][yy]
     
 
         
@@ -659,8 +597,11 @@ class NeutronStar(Sphere):
         n1, n2 = self.size
         width = 2 * math.pi
         height = math.pi
-
-        ix = 0
+        
+        rc, rphase, rscale = self.waves['r']
+        gc, gphase, gscale = self.waves['g']
+        bc, bphase, bscale = self.waves['b']
+        
         for x in range(n1):
             xx = ((x / n1) + (1 / (2 * n1))) * 2 * math.pi
 
@@ -671,17 +612,14 @@ class NeutronStar(Sphere):
                 yy = (y / n2) + (1 / (2 * n2)) * 2 * math.pi
                 yy += self.inc * self.t
 
-                rc, rphase, rscale = self.waves['r']
-                gc, gphase, gscale = self.waves['g']
-                bc, bphase, bscale = self.waves['b']
-
-                self.red[ix] = sample_wave(rphase, xx) * rscale
-                self.blue[ix] = sample_wave(bphase, yy) * bscale
+                self.rgb[x][y][0] = sample_wave(rphase, xx) * rscale
+                self.rgb[x][y][1] = sample_wave(bphase, yy) * bscale
 
                 # not sure xx is the right thing here
-                self.green[ix] = sample_wave(gphase, xx) * gscale
+                self.rgb[x][y][2] = sample_wave(gphase, xx) * gscale
 
-                ix += 1
+
+        print('NEUTRON')
 
         if self.boundary != 'none':
             super().tick()
@@ -888,7 +826,7 @@ class NestedWaves(pigfarm.Yard):
         """ Choose a ball """
         return self.balls[randint(0, self.n-1)]
 
-    async def draw(self):
+    def draw(self):
 
         # xx = randint(0, self.n - 1)
         xx = self.dball
@@ -896,10 +834,10 @@ class NestedWaves(pigfarm.Yard):
         ball = self.balls[xx]
         print(xx, 'lucky for some', ball.size, ball.M)
 
-        await self.draw_ball(ball)
+        self.draw_ball(ball)
 
             
-    async def draw_ball(self, ball):
+    def draw_ball(self, ball):
         """ wc has everything???? 
 
         feels like I have written this bit 20 times
@@ -907,6 +845,7 @@ class NestedWaves(pigfarm.Yard):
         width, height = self.width, self.height
 
         image = ball.project(self.views[self.view])
+        print('iiiiiii', image, self.view)
         
         image = image.resize((int(width), int(height)))
 
@@ -922,7 +861,7 @@ class NestedWaves(pigfarm.Yard):
         for ball in self.balls:
             sphere = await curio.spawn(ball.run)
             spheres.append(sphere)
-            curio.sleep(ball.sleep)
+            await curio.sleep(ball.sleep)
 
         self.spheres = spheres
         return spheres
@@ -954,7 +893,7 @@ class NestedWaves(pigfarm.Yard):
             
                 self.canvas.delete('all')
 
-                await self.draw()
+                self.draw()
                 print('ball drawn')
                 #await self.step_balls()
                 await curio.sleep(self.sleep)

@@ -21,6 +21,8 @@ import itertools
 import argparse
 import random
 import numpy as np
+from PIL import Image, ImageTk
+
 
 import datetime
 utcnow = datetime.datetime.utcnow
@@ -32,7 +34,7 @@ from collections import defaultdict
 
 import curio
 
-from karmapi import show, base
+from karmapi import show, base, cpr
 
 from karmapi import pigfarm, checksum
 
@@ -48,7 +50,7 @@ local_chart = 'surfaceAnalysis/Latest/Local.gif'
 target = 'tankrain/{date.year}/{date.month}/{date.day}/{name}_{date:%H%M}{suffix}'
 
 
-class TankRain(pigfarm.MagicCarpet):
+class TankRain(pigfarm.Yard):
     """ Widget to show tankrain images """
 
     def __init__(self, parent, path=None, version='local', date=None,
@@ -100,6 +102,8 @@ class TankRain(pigfarm.MagicCarpet):
             return
 
         self._compute_data()
+        return
+    
         alpha = 0.1
         beta = 1.0 - alpha
 
@@ -119,17 +123,21 @@ class TankRain(pigfarm.MagicCarpet):
 
         also increment self.ix.
         """
-        from PIL import Image
-
         ix = self.ix
 
         if ix < len(self.paths):
             im = Image.open(self.paths[ix])
+            ball = cpr.Sphere(im.size)
+            xx = list(im.getdata())
+            print(xx[0])
+            ball.grid2rgb(list(im.getdata()))
+            print('RRRRR', ix, ball.red)
         else:
             # FIXME -- create an image that shows there is no data
             # for now, lets just show a rainbow
-            rainbow = [x for x in range(100)]
-            im = np.array([rainbow] * 100)
+            #rainbow = [x for x in range(100)]
+            #im = np.array([rainbow] * 100)
+            ball = cpr.Sphere(im.size)
 
         n = len(self.paths)
         ix = ix + self.inc
@@ -139,7 +147,8 @@ class TankRain(pigfarm.MagicCarpet):
             ix = len(self.paths) - 1
             
         self.ix = ix
-                            
+        print('ixixixi', ix, self.ix, n, self.inc)
+        self.ball = ball
         self.data = im
 
     def tonp(self, data):
@@ -307,12 +316,31 @@ class TankRain(pigfarm.MagicCarpet):
         
         pass
 
+    def draw_ball(self, ball):
+        """ wc has everything???? 
+
+        feels like I have written this bit 20 times
+        """
+        width, height = self.width, self.height
+
+        image = ball.project()
+        print(image.getdata())
+        
+        image = image.resize((int(width), int(height)))
+
+        self.phim = phim = ImageTk.PhotoImage(image)
+
+        xx = int(width / 2)
+        yy = int(height / 2)
+        self.canvas.create_image(xx, yy, image=phim)
+
+
     async def run(self):
 
         # use yosser?  ironically awaiting yosser
         #await pigfarm.aside(runfetch)
 
-        self.dark()
+        #self.dark()
         while True:
             if self.paused:
                 await curio.sleep(self.sleep)
@@ -324,18 +352,19 @@ class TankRain(pigfarm.MagicCarpet):
                 title = f'{self.ix} : {len(self.paths)} {self.path}'
 
             self.compute_data()
-            self.axes.clear()
+            #self.axes.clear()
             print('TITLE:', title)
             try:
                 #self.axes.set_title(title, color=self.title)
-                self.axes.set_title(title, color=self.title or 'k')
-                
-                self.axes.imshow(self.data)
+                #self.axes.set_title(title, color=self.title or 'k')
+
+                self.draw_ball(self.ball)
+                #self.axes.imshow(self.data)
             except OSError:
                 print('dodgy image:', self.paths[self.ix])
 
 
-            self.draw()
+            #self.draw()
 
             await curio.sleep(self.sleep)
 
