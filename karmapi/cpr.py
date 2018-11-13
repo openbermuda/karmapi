@@ -254,7 +254,7 @@ class Sphere:
         return views
 
     def project(self, view):
-        """ Turn into a PIL? """
+        """ Quantise and project the data """
             
         #image = Image.new('RGB', (self.size[0], self.size[1]))
 
@@ -264,9 +264,7 @@ class Sphere:
         pixels = self.get_views().get(view, self.rgb2grid)(pixels)
         print('PPPP', view, pixels.shape)
 
-        image = Image.fromarray(pixels)
-
-        return image
+        return pixels
 
     def rgb2grid(self, pixels=None):
         """ Change lists of red green blue to a pixel grid"""
@@ -282,16 +280,17 @@ class Sphere:
         # make black everywhere
         width, height = self.size
 
-        grid = np.zeros(shape=pixels.shape, dtype=np.uint8)
+        grid = np.zeros(shape=(width, height, 3), dtype=np.uint8)
         grid += 127
 
         xorig = int(width / 2)
         yorig = int(height/ 2)
 
-        ww, hh, bands = grid.shape
+        ww, hh, bands = pixels.shape
+        print('ww hh', pixels.shape)
         
-        for xx in range(ww):
-            for yy in range(hh):
+        for xx in range(hh):
+            for yy in range(ww):
 
                 # so radius yy from centre and xx how far round the circle
                 angle = wind * xx * 2 * math.pi / width
@@ -302,10 +301,10 @@ class Sphere:
                 xpos = int(xorig + xoff)
                 ypos = int(yorig + yoff)
 
-                xpos = xpos % ww
-                ypos = ypos % hh
+                xpos = xpos % height
+                ypos = ypos % width
                 
-                grid[xpos][ypos] = pixels[xx][yy]
+                grid[ypos][xpos] = pixels[yy][xx]
 
         return grid
 
@@ -321,7 +320,7 @@ class Sphere:
 
     def uphemi(self, pixels):
         """ show upper hemisphere """
-        nn = int(pixels.shape[0] /2)
+        nn = int(pixels.shape[0] / 2)
         pixels = pixels[:nn]
 
         return self.poleview(pixels)
@@ -329,7 +328,7 @@ class Sphere:
     def lowhemi(self, pixels):
         """ show lower hemisphere """
         nn = int(len(pixels) / 2)
-        pixels = pixels[::-1]
+        pixels = pixels[::-1][:nn]
 
         return self.poleview(pixels, wind=-1)
 
@@ -358,24 +357,14 @@ class Sphere:
 
         while True:
             ball = await curio.run_in_process(self.tick)
-            print(f'{self} sleep:{self.sleep}')
+            #print(f'{self} sleep:{self.sleep}')
 
             self.update(ball)
             
             #ball = await tick.join()
-            print('joined', ball, self.sleep)
+            #print('joined', ball, self.sleep)
             await curio.sleep(self.sleep)
 
-    async def magic_tick(self):
-        """ Run a tick in another process """
-
-        ball = await curio.run_in_process(self.tick)
-        #print('ID', id(ball), id(self), self.t)
-        print(ball, self.last_ball, self.next_ball)
-
-        # GOTCHA should may be look before I leap???
-        #self.__dict__.update(ball.__dict__)
-        self.update(ball)
 
     def update(self, ball):
 
@@ -491,7 +480,7 @@ class Sphere:
         value = value - np.trunc(value)
         
         value = 127 + (value * 128)
-        value = np.trunc(value % 256)
+        value = np.clip(value, 0, 255)
 
         return value
 
@@ -619,11 +608,11 @@ class NeutronStar(Sphere):
                 self.rgb[x][y][2] = sample_wave(gphase, xx) * gscale
 
 
-        print('NEUTRON')
-
         if self.boundary != 'none':
             super().tick()
-
+        else:
+            self.t += 1
+        
         return self
     
 
@@ -845,10 +834,11 @@ class NestedWaves(pigfarm.Yard):
         width, height = self.width, self.height
 
         image = ball.project(self.views[self.view])
-        print('iiiiiii', image, self.view)
         
+        #image = image[::, ::, 1]
+        image = Image.fromarray(image)
         image = image.resize((int(width), int(height)))
-
+        
         self.phim = phim = ImageTk.PhotoImage(image)
 
         xx = int(self.width / 2)
