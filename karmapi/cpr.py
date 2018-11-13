@@ -253,13 +253,16 @@ class Sphere:
 
         return views
 
-    def project(self, view):
+    def project(self, view, quantise=True):
         """ Quantise and project the data """
             
         #image = Image.new('RGB', (self.size[0], self.size[1]))
 
         # FIXME do the 256 magic int stuff here
-        pixels = self.quantise(self.rgb).astype(np.uint8)
+        if quantise:
+            pixels = self.quantise(self.rgb).astype(np.uint8)
+        else:
+            pixels = self.rgb
 
         pixels = self.get_views().get(view, self.rgb2grid)(pixels)
         print('PPPP', view, pixels.shape)
@@ -270,7 +273,6 @@ class Sphere:
         """ Change lists of red green blue to a pixel grid"""
         if pixels is None:
             pixels = self.quantise(self.rgb)
-        print('ffffffffffffff')
         return pixels
 
 

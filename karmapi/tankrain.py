@@ -20,6 +20,7 @@ Just store the images for each day.
 import itertools
 import argparse
 import random
+import sys
 import numpy as np
 from PIL import Image, ImageTk
 
@@ -128,16 +129,16 @@ class TankRain(pigfarm.Yard):
         if ix < len(self.paths):
             im = Image.open(self.paths[ix])
             ball = cpr.Sphere(im.size)
-            xx = list(im.getdata())
-            print(xx[0])
-            ball.grid2rgb(list(im.getdata()))
-            print('RRRRR', ix, ball.red)
+
+            ball.rgb = np.array(im)
         else:
             # FIXME -- create an image that shows there is no data
             # for now, lets just show a rainbow
-            #rainbow = [x for x in range(100)]
-            #im = np.array([rainbow] * 100)
-            ball = cpr.Sphere(im.size)
+            rainbow = [x for x in range(100)]
+            im = np.array([rainbow] * 100, dtype=np.uint8)
+            im.resize((100, 100))
+            ball = cpr.Sphere(im.shape)
+            ball.rgb = im
 
         n = len(self.paths)
         ix = ix + self.inc
@@ -323,9 +324,9 @@ class TankRain(pigfarm.Yard):
         """
         width, height = self.width, self.height
 
-        image = ball.project()
-        print(image.getdata())
-        
+        image = ball.project('', quantise=False)
+        print('xxxxxxxxxx', type(image), image.shape)
+        image = Image.fromarray(image)
         image = image.resize((int(width), int(height)))
 
         self.phim = phim = ImageTk.PhotoImage(image)
