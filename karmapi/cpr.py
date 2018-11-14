@@ -259,7 +259,8 @@ class Sphere:
         #image = Image.new('RGB', (self.size[0], self.size[1]))
 
         # FIXME do the 256 magic int stuff here
-        if quantise:
+        if self.rgb.dtype != np.uint8:
+            print('quantising')
             pixels = self.quantise(self.rgb).astype(np.uint8)
         else:
             pixels = self.rgb
@@ -397,7 +398,6 @@ class Sphere:
         
         n1, n2 = self.size
         
-        grid = [0] * n1 * n2
         ix = 0
         deltax = (1 / (2 * n1)) * 2 * math.pi
         deltay = (1 / (2 * n2)) * 2 * math.pi

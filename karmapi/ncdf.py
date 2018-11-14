@@ -17,7 +17,7 @@ from pathlib import Path
 from random import randint
 
 import netCDF4
-import numpy
+import numpy as np
 
 import curio
 
@@ -112,7 +112,7 @@ def pcs(stamps, values, n=None):
             print(date)
             records.append(data[lon])
 
-    records = numpy.array(records)
+    records = np.array(records)
 
     print(records.shape)
 
@@ -243,7 +243,8 @@ class WorldView(cpr.Sphere):
         self.values = values
         self.save = False
         self.size = self.values[0].shape
-        self.size = self.size[1], self.size[0]
+        #self.size = self.size[1], self.size[0]
+        print('SIZE', self.size)
         self.min = self.values[0].min()
         self.max = self.values[0].max()
         self.ix = 0
@@ -262,13 +263,14 @@ class WorldView(cpr.Sphere):
 
     def sample_points(self):
 
-        w, h = self.size
+        h, w = self.size
 
         self.points = []
         for pt in range(100):
-            x, y = randint(0, w), randint(0, h)
-        
-            self.points.append(x + (w * y))
+            x, y = randint(0, h-1), randint(0, w-1)
+
+            self.points.append((x, y))
+
 
     def __getstate__(self):
         """ """
@@ -311,21 +313,23 @@ class WorldView(cpr.Sphere):
 
 
         red = self.scale(self.current())
-        self.red = red[self.spin:] + red[0:self.spin]
+        red = red[self.spin:] + red[0:self.spin]
 
         self.forward()
         green = self.scale(self.current())
-        self.green = green[self.spin:] + green[0:self.spin]
-        #self.green = [0. for x in self.red]
+        green = green[self.spin:] + green[0:self.spin]
 
         self.forward()
         blue = self.scale(self.current())
-        self.blue = blue[self.spin:] + blue[0:self.spin]
+        blue = blue[self.spin:] + blue[0:self.spin]
 
         self.spin += 5
         self.spin %= self.size[0]
         
-        #self.blue = [0. for x in self.red]
+        self.rgb = np.array(list(zip(red, green, blue)))
+
+        height, width = self.size
+        self.rgb.resize((height, width, 3))
 
         self.sample_current()
         
@@ -347,8 +351,8 @@ class WorldView(cpr.Sphere):
             return
 
         rgb = []
-        for pt in self.points:
-            value = self.red[pt], self.green[pt], self.blue[pt]
+        for xx, yy in self.points:
+            value = self.rgb[xx, yy]
             rgb.append(value)
         
         self.history[self.ix] = rgb
