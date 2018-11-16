@@ -138,6 +138,22 @@ class SolarSystem(cpr.NestedWaves):
 
         super().__init__(*args, **kwargs)
 
+
+    def draw(self):
+        """ Draw the balls """
+        ball = self.balls[self.dball]
+        print('current ball', ball.name, ball)
+
+        for body in self.balls:
+            name = body.name
+            where = body.body.transform_to(ball.body)
+            #print(name, where)
+            print(name, where.ra, where.dec)
+
+            self.canvas.draw
+            
+        print()
+
 def gamma_hack():
 
     T = 1000
@@ -294,11 +310,16 @@ class Body(cpr.Sphere):
 
     def __init__(self, name, t, size=None):
         """ Initialise the body """
+        self.name = name
         bd = body_data(name, t)
         self.body = bd['body']
 
-        super().__init__(size=size, t=t, m=bd['m'], r=bd['r'])
+        super().__init__(size=size, t=t.timestamp(), m=bd['m'], r=bd['r'])
 
+    def tick(self):
+
+        return self
+    
     def separation(self, body):
         """ Return distance to body """
         return self.body.separation_3d(body)
