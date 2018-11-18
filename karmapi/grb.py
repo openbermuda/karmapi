@@ -108,7 +108,7 @@ import math
 import numpy as np
 import argparse
 
-import datetime
+from datetime import datetime as dt
 
 from astropy import coordinates, constants
 from astropy.time import Time
@@ -138,22 +138,66 @@ class SolarSystem(cpr.NestedWaves):
 
         super().__init__(*args, **kwargs)
 
-
     def draw(self):
         """ Draw the balls """
         ball = self.balls[self.dball]
         print('current ball', ball.name, ball)
 
+        cv = self.canvas
+        cv.create_text(
+            (self.width/2, 50),
+            text=ball.name,
+            fill='skyblue',
+            font=pigfarm.BIGLY_FONT)
+        
         for body in self.balls:
+            body.tick()
+            if body is ball:
+                continue
             name = body.name
             where = body.body.transform_to(ball.body)
             #print(name, where)
-            print(name, where.ra, where.dec)
+            print(name.upper(), where.ra, where.dec)
+            print(name,
+                  where.ra - body.body.ra,
+                  where.dec - body.body.dec)
 
-            self.canvas.draw
+            xx, yy = self.draw_ball(where.dec.value, where.ra.value)
+            cv.create_text(
+                (xx - 30, yy + 20),
+                text=name, fill='cyan')
+
             
         print()
 
+    def draw_ball(self, dec, ra, fill='yellow', size=10,
+             xx=None, yy=None, **kwargs):
+        """ Draw a filled circle at place """
+
+        xx, yy = self.latlon2xy(dec, ra)
+        print(f'drawing oval {ra} {dec} at {xx} {yy} {self.width} {self.height}')
+        self.canvas.create_oval(
+            xx-size,
+            yy-size,
+            xx+size, yy+size, fill=fill)
+
+        return xx, yy
+
+
+    def latlon2xy(self, lat, lon):
+        """ Convert lat lon to yard coordinates """
+        if lon < 0:
+            lon += 360.
+
+        xscale = 360.0 / self.width
+        yscale = 180.0 / self.height
+
+        xx = int(lon / xscale)
+        yy = int((90 + lat) / yscale)
+ 
+        return xx, yy
+        
+        
 def gamma_hack():
 
     T = 1000
@@ -207,7 +251,7 @@ def argument_parser(parser=None):
 
 def get_body(body, t=None):
 
-    t = t or datetime.datetime.now()
+    t = t or dt.now()
 
     return coordinates.get_body(body, Time(t))
 
@@ -313,11 +357,14 @@ class Body(cpr.Sphere):
         self.name = name
         bd = body_data(name, t)
         self.body = bd['body']
+        self.inc = 3600 * 24
 
         super().__init__(size=size, t=t.timestamp(), m=bd['m'], r=bd['r'])
 
     def tick(self):
 
+        self.t += self.inc
+        self.body = get_body(self.name, dt.fromtimestamp(self.t))
         return self
     
     def separation(self, body):
@@ -332,6 +379,34 @@ def args_to_spheres(args, t):
         spheres.append(Body(body, t=t))
 
     return spheres
+
+def dump(spheres):
+
+    for a in spheres:
+        
+        for b in spheres:
+            if a is b: continue
+            xx = b.body
+            yy = xx.transform_to(a.body)
+            print(f'{a.name} {b.name} {xx.ra.value - yy.ra.value} {xx.dec.value - yy.dec.value}')
+            print(f'zzzzzzz {a.name} {b.name} {yy.ra.value} {yy.dec.value}')
+        print
+
+def sun(t=None):
+
+    return get_body('sun', t)
+
+def moon(t=None):
+
+    return get_body('moon', t)
+
+def earth(t=None):
+
+    return get_body('earth', t)
+
+def jupiter(t=None):
+
+    return get_body('jupiter', t)
 
 def main():
 
@@ -354,6 +429,8 @@ def main():
 
     # pass list of balls into NestedWaves
     spheres = args_to_spheres(args, t)
+
+    dump(spheres)
     
     farm = pigfarm.sty(SolarSystem, dict(balls=spheres, fade=args.fade,
                                          twist=args.twist))
