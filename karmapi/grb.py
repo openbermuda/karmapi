@@ -137,6 +137,7 @@ class SolarSystem(cpr.NestedWaves):
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
+        self.sleep = 2
 
     def draw(self):
         """ Draw the balls """
@@ -146,16 +147,17 @@ class SolarSystem(cpr.NestedWaves):
         cv = self.canvas
         cv.create_text(
             (self.width/2, 50),
-            text=ball.name,
+            text=ball.name + f'\n{dt.fromtimestamp(ball.t)}',
             fill='skyblue',
             font=pigfarm.BIGLY_FONT)
         
         for body in self.balls:
             body.tick()
-            if body is ball:
-                continue
+            #if body is ball:
+            #    continue
             name = body.name
             where = body.body.transform_to(ball.body)
+            where = body.body
             #print(name, where)
             print(name.upper(), where.ra, where.dec)
             print(name,
@@ -188,6 +190,8 @@ class SolarSystem(cpr.NestedWaves):
         """ Convert lat lon to yard coordinates """
         if lon < 0:
             lon += 360.
+        lon += 180
+        lon %= 360
 
         xscale = 360.0 / self.width
         yscale = 180.0 / self.height
@@ -357,7 +361,7 @@ class Body(cpr.Sphere):
         self.name = name
         bd = body_data(name, t)
         self.body = bd['body']
-        self.inc = 3600 * 24
+        self.inc = 3600 * 6
 
         super().__init__(size=size, t=t.timestamp(), m=bd['m'], r=bd['r'])
 

@@ -648,7 +648,7 @@ class NestedWaves(pigfarm.Yard):
     and draw slices on the canvas from the yard.
     """
 
-    def __init__(self, parent, balls=None, fade=1, twist=True):
+    def __init__(self, parent, balls=None, fade=1, twist=True, play=''):
         """ Initialise the thing """
 
         super().__init__(parent)
@@ -660,6 +660,7 @@ class NestedWaves(pigfarm.Yard):
         self.view = 0
         self.fade = fade
         self.twist = twist
+        self.play = play
 
         self.build(balls)
         self.add_event_map(' ', self.pause)
@@ -875,6 +876,11 @@ class NestedWaves(pigfarm.Yard):
         #await self.random_step_some()
 
         spheres = await self.start_balls_running()
+
+        print(f'PLAYYYYY TIME  *{self.play}*')
+        for x in self.play:
+            await self.farm.event.put(x)
+        self.play = ''
 
         print('NESTED WAVES RUNNING')
         while True:
@@ -1109,6 +1115,8 @@ def argument_parser(parser=None):
                         choices=['random', 'zero', 'none'],
                         default='zero')
 
+    parser.add_argument('--play', default='')
+
     return parser
 
 def random_prime_balls(nmin, nmax):
@@ -1150,9 +1158,11 @@ def main():
     # pass list of balls into NestedWaves
     spheres = args_to_spheres(args)
     
-    farm = pigfarm.sty(NestedWaves, dict(balls=spheres, fade=args.fade,
-                                         twist=args.twist))
-
+    farm = pigfarm.sty(NestedWaves, dict(
+        balls=spheres, fade=args.fade,
+        twist=args.twist,
+        play=args.play))
+    
     curio.run(farm.run, with_monitor=True)
 
 
