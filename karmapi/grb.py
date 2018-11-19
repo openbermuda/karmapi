@@ -251,6 +251,8 @@ def argument_parser(parser=None):
 
     parser.add_argument('--date', default='2015/09/14/09/50/45')
 
+    parser.add_argument('--grb', default='170817A')
+
     return parser
 
 
@@ -388,6 +390,17 @@ def args_to_spheres(args, t):
     spheres = []
     for body in BODIES:
         spheres.append(Body(body, t=t))
+
+    grb = {}
+    grb['170817A'] = (176.8, -39.8)  # RA DEC
+
+    if args.grb in grb:
+        ra, dec = grb.get(args.grb)
+
+        gbod = Body('sun', t=t)
+        gbod.body = coordinates.SkyCoord(ra, dec, unit='deg')
+        gbod.name = args.grb
+        spheres.append(gbod)
 
     return spheres
 
