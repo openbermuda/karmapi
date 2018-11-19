@@ -37,6 +37,7 @@ class PigFarm:
     def __init__(self, meta=None, events=None):
 
         self.event = curio.UniversalQueue()
+        self.play = ''
 
         self.piglet_event = curio.UniversalQueue()
 
@@ -235,6 +236,15 @@ class PigFarm:
     async def run(self):
 
         self.quit_event = curio.Event()
+
+        print(f'PLAYYYYY TIME  *{self.play}*')
+        for x in self.play:
+            await self.event.put(x)
+            
+            #print(f'playing {x] qsize {self.event.qsize}')
+            print(f'{x} xxxx')
+
+        self.play = ''
         
         runner = await spawn(self.tend())
 
@@ -295,9 +305,10 @@ class PigFarm:
         #farm.toplevel().withdraw()
         
 
-def sty(clazz=None, parms={}):
+def sty(clazz=None, parms={}, play=''):
     
     farm = PigFarm()
+    farm.play = play
     
     from karmapi.mclock2 import GuidoClock
     

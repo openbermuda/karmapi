@@ -152,11 +152,12 @@ class SolarSystem(cpr.NestedWaves):
             font=pigfarm.BIGLY_FONT)
         
         for body in self.balls:
-            body.tick()
+            #body.tick()
+
             #if body is ball:
             #    continue
             name = body.name
-            where = body.body.transform_to(ball.body)
+            #where = body.body.transform_to(ball.body)
             where = body.body
             #print(name, where)
             print(name.upper(), where.ra, where.dec)
@@ -282,7 +283,7 @@ def get_mass(body):
     sun = masses['jupiter'] * (constants.GM_sun / constants.GM_jup)
     masses['sun'] = sun
 
-    return masses.get(body)
+    return masses.get(body, 1.)
 
 
 BODIES = [
@@ -291,6 +292,7 @@ BODIES = [
     'earth',
     'mars', 'jupiter', 'saturn',
     'neptune', 'uranus']
+BODIES = coordinates.solar_system_ephemeris.bodies
 
 RADIUS_OF_EARTH = 6378.
 RADIUS_OF_SUN =   1.391e6
@@ -368,9 +370,14 @@ class Body(cpr.Sphere):
     def tick(self):
 
         self.t += self.inc
-        self.body = get_body(self.name, dt.fromtimestamp(self.t))
         return self
     
+    def update(self, ball):
+
+        super().update(ball)
+
+        self.body = get_body(self.name, dt.fromtimestamp(self.t))
+
     def separation(self, body):
         """ Return distance to body """
         return self.body.separation_3d(body)
@@ -437,7 +444,8 @@ def main():
     dump(spheres)
     
     farm = pigfarm.sty(SolarSystem, dict(balls=spheres, fade=args.fade,
-                                         twist=args.twist))
+                                         twist=args.twist),
+                           play=args.play)
 
     curio.run(farm.run, with_monitor=True)
 
