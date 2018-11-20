@@ -139,6 +139,14 @@ class SolarSystem(cpr.NestedWaves):
         super().__init__(*args, **kwargs)
         self.sleep = 2
 
+        self.add_event_map('r', self.reverse)
+
+    async def reverse(self):
+        """ Rongo Rongo change direction """
+        self.paused = False
+        for ball in self.balls:
+            ball.inc *= -1
+
     def draw(self):
         """ Draw the balls """
         ball = self.balls[self.dball]
@@ -157,7 +165,7 @@ class SolarSystem(cpr.NestedWaves):
             #if body is ball:
             #    continue
             name = body.name
-            #where = body.body.transform_to(ball.body)
+            wheret = body.body.transform_to(ball.body)
             where = body.body
             #print(name, where)
             print(name.upper(), where.ra, where.dec)
@@ -169,6 +177,14 @@ class SolarSystem(cpr.NestedWaves):
             cv.create_text(
                 (xx - 30, yy + 20),
                 text=name, fill='cyan')
+
+            
+            xx, yy = self.draw_ball(
+                wheret.dec.value, wheret.ra.value,
+                fill='red')
+            cv.create_text(
+                (xx - 30, yy + 20),
+                text=name, fill='magenta')
 
             
         print()
@@ -249,7 +265,9 @@ def argument_parser(parser=None):
 
     parser.add_argument('--lon', type=float, default=LIGO_HLON)
 
-    parser.add_argument('--date', default='2015/09/14/09/50/45')
+    #parser.add_argument('--date', default='2015/09/14/09/50/45')
+    #parser.add_argument('--date', default='2017/08/14')
+    parser.add_argument('--date', default='2017/08/17')
 
     parser.add_argument('--grb', default='170817A')
 
