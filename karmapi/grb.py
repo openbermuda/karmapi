@@ -478,6 +478,12 @@ def main():
                                          twist=args.twist),
                            play=args.play)
 
+    spheres = cpr.args_to_spheres(args)
+    farm.add(cpr.NestedWaves, dict(
+        balls=spheres, fade=args.fade,
+        twist=args.twist))
+
+
     curio.run(farm.run, with_monitor=True)
 
 
