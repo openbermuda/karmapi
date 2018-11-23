@@ -539,7 +539,7 @@ class AppEventLoop:
         """
 
         if naptime is None:
-            nap = 0.05
+            naptime = 0.05
 
         return naptime
 

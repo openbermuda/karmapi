@@ -11,9 +11,8 @@ share
 """
 from karmapi import checksum, base
 
-from curio import UniversalQuee
+from curio import run, tcp_server
 
-history = UniversalQuee
 
 async def goodbye(data, **meta)
     """ kiss good-bye to data """
@@ -39,3 +38,20 @@ async def goodbye(data, **meta)
 
 
 hello = goodbye
+
+
+
+async def echo_client(client, addr):
+    print('Connection from', addr)
+    s = client.as_stream()
+    async for line in s:
+        await s.write(line)
+    print('Connection closed')
+    await s.close()
+
+
+if __name__ == '__main__':
+    try:
+        run(tcp_server, '', 25000, echo_client)
+    except KeyboardInterrupt:
+        pass
