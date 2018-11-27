@@ -6,9 +6,14 @@ import datetime
 from pathlib import Path
 import random
 
+from io import BytesIO
+
 from picamera import PiCamera
 import time
 import curio
+
+from PIL import Image
+
 
 from fractions import Fraction
 
@@ -48,6 +53,19 @@ def random_picture(cam):
     return cam
     
 
+def as_pil(camera)
+    """ Capture an image and return as PIL.Image """
+    # Create the in-memory stream
+    stream = BytesIO()
+    camera.capture(stream, format='rgb')
+
+    # "Rewind" the stream to the beginning so we can read its content
+    stream.seek(0)
+    image = Image.open(stream)
+
+    return image
+
+
 async def capture(args):
 
     if args.long:
@@ -56,6 +74,9 @@ async def capture(args):
         camera = PiCamera()
 
     camera.start_preview()
+    curio.sleep(2)
+
+    last = None
     while True:
 
         now = datetime.datetime.now()
@@ -64,8 +85,16 @@ async def capture(args):
         path = path / f'{now.hour:02}{now.minute:02}{now.second:02}.jpg'
 
         print(path)
-        camera.capture(str(path))        
+        #camera.capture(str(path))
+        image = as_pil(camera)
         await curio.sleep(args.sleep)
+
+        if self.dedupe:
+            # Compare image to last and save if it is different enough
+            pass
+
+        # save the image
+        image.save(path)
 
         if args.random:
             camera = random_picture(camera)

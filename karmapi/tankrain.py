@@ -55,9 +55,10 @@ class TankRain(pigfarm.Yard):
     """ Widget to show tankrain images """
 
     def __init__(self, parent, path=None, version='local', date=None,
-                 save=None, *args):
+                 save=None, dedupe=0, *args):
         
         self.version = version
+        self.dedupe = dedupe
         self.paused = False
         self.path = path or '.'
         self.save_folder = save
@@ -484,6 +485,7 @@ def main(args=None):
                         help='folder to save to')
 
     parser.add_argument('--date')
+    parser.add_argument('--dedupe', type=int, default=0)
                             
     args = parser.parse_args()
 
@@ -494,7 +496,7 @@ def main(args=None):
         farm.add(
             TankRain,
             dict(path=args.path, version=args.version, date=args.date,
-                 save=args.save))
+                 save=args.save, dedupe=args.dedupe))
 
         from karmapi.mclock2 import GuidoClock
         farm.add(GuidoClock)
