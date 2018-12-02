@@ -208,3 +208,7 @@ def main(args=None):
         meta = dict(path=apath, timestamp=timestamp.isoformat())
         base.save_meta(cpath.parent, meta)
 
+
+if __name__ == '__main__':
+
+    main()
