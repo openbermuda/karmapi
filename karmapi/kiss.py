@@ -11,7 +11,9 @@ share
 """
 import argparse
 
-from karmapi import checksum, base
+from karmapi import checksum
+
+from pathlib import Path
 
 from curio import run, tcp_server, open_connection
 
@@ -24,7 +26,7 @@ async def goodbye(data, **meta):
 
     # check meta data etc -- see checksum module
 
-    path = meta.getdefault('path', base.Path('.'))
+    path = meta.getdefault('path', Path('.'))
 
     # any matches?  Somebody else's problem?
     #     run delta for each match?
