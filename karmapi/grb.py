@@ -119,6 +119,10 @@ import curio
 
 from karmapi import base, cpr, pigfarm
 
+
+# Much thanks for all involved in this:
+OBSERVATIONS = 'https://www.gw-openscience.org/catalog/GWTC-1-confident/json/'
+
 def angle(d, m, s):
 
     a = s
