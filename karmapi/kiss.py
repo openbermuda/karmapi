@@ -13,7 +13,7 @@ import argparse
 
 from karmapi import checksum, base
 
-from curio import run, tcp_server
+from curio import run, tcp_server, open_connection
 
 PORT = 8008
 
@@ -46,13 +46,14 @@ async def echo_client(client, addr):
     print('Connection from', addr)
     s = client.as_stream()
     async for line in s:
+        print(line)
         await s.write(line)
     print('Connection closed')
     await s.close()
 
 
 async def client(host, port):
-    sock = await curio.open_connection(
+    sock = await open_connection(
         host, port)
     async with sock:
         await sock.sendall(b'kiss\r\nWOW HERE I AM\r\n\r\n')
