@@ -107,6 +107,9 @@ For now the goal is given a time and a place in the sky P, draw a picture?
 import math
 import numpy as np
 import argparse
+import requests
+import json
+from pathlib import Path
 
 from datetime import datetime as dt
 
@@ -122,6 +125,13 @@ from karmapi import base, cpr, pigfarm
 
 # Much thanks for all involved in this:
 OBSERVATIONS = 'https://www.gw-openscience.org/catalog/GWTC-1-confident/json/'
+
+GRB_20170818_0224 = """
+
+J1243.9-1135	07012051001	12 43 51.26	-11 35 06.28	Aug 18, 2017 02:22:00	Aug 28, 2017	120.341	119.873	128	Aug 29, 2017
+J1245.4-1154	07012052001	12 45 22.41	-11 54 01.4	    Aug 18, 2017 02:25:00	Aug 28, 2017	123.173	122.995	130	Aug 29, 2017
+J1246.9-1213	07012053001	12 46 53.91	-12 12 34.99	Aug 18, 2017 02:27:00	Aug 28, 2017	122.849	120.104	128
+"""
 
 def angle(d, m, s):
 
@@ -454,6 +464,24 @@ def jupiter(t=None):
 
     return get_body('jupiter', t)
 
+
+def get_waves(path=None):
+
+    if path.exists():
+        with path.open() as infile:
+            return json.load(infile)
+
+    resp = requests.get(OBSERVATIONS)
+
+    data = json.loads(resp.content.decode('utf-8'))
+    print(type(data))
+
+    if path is not None:
+        with path.open('w') as outfile:
+            json.dump(data, outfile, indent=True)
+
+    return data
+
 def main():
 
     parser = argument_parser(cpr.argument_parser())
@@ -494,5 +522,20 @@ def main():
 
 if __name__ == '__main__':
 
+    waves = get_waves(Path('./gw.json'))
+
+    data = waves['data']
+
+    print(json.dumps(waves['parameters'], indent=True))
+    
+    for name, fields in data.items():
+        print()
+        print(name)
+        for k, v in fields.items():
+            print(k, v['best'])
+              
+
+    
+    1/0
     main()
         
