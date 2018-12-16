@@ -527,15 +527,31 @@ if __name__ == '__main__':
     data = waves['data']
 
     print(json.dumps(waves['parameters'], indent=True))
-    
+
+    rows = []
     for name, fields in data.items():
         print()
         print(name)
-        for k, v in fields.items():
-            print(k, v['best'])
+        row = dict(name=name)
+        
+        #fields['name'] = name
+        
+        #for k, v in fields.items():
+        #    print(k, v['best'])
               
 
+        for k, v in fields.items():
+            row[k] = v.setdefault('best')
+            print(f"{v['best']}", end=', ')
+        print()
+
+        rows.append(row)
+
+    import pandas
+
+    df = pandas.DataFrame(rows)
+    print(df.describe())
     
-    1/0
-    main()
+    #1/0
+    #main()
         
