@@ -536,8 +536,8 @@ if __name__ == '__main__':
         
         #fields['name'] = name
         
-        #for k, v in fields.items():
-        #    print(k, v['best'])
+        for k, v in fields.items():
+            print(k, v['best'])
               
 
         for k, v in fields.items():
