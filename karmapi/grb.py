@@ -553,5 +553,5 @@ if __name__ == '__main__':
     print(df.describe())
     
     #1/0
-    #main()
+    main()
         

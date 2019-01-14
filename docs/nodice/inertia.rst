@@ -143,12 +143,24 @@ I am not sure how much difference the metric will make in this case,
 but at least I can take a look and in the process get a better feel
 for state of the art black hole collision ideas.
 
+Deciding how *m_1* and *m_2* might be distributed is likely biassed by
+the model that is being used for the universe.
+
+Just what sized objects do we actually expect to spiral into each
+other?
+
+Is it the case that some particular masses spiral more rapidly than
+others which will very gently coalesce over time?
+
+How are the current models handling the influence of the black holes
+on propogation of any gravitational wave that the collision emits?
+
 
 Neutron stars too
 -----------------
 
 There have been detections thought to be due to a neutron star
-colliding with a black hole, or possibly another neutron star.  
+colliding with a black hole, or possibly another neutron star.
 
 
 Gamma ray bursts
@@ -210,10 +222,15 @@ the work to detect these gravitational waves.
 
 It is a truly stunning achievement.
 
-The interpretation that what we are seeing is actually caused by
-distant collisions of black holes is open to question, although such
-question should be supported by another explanation for the waves,
-preferably one that is testable by experiment.
+The LIGO (and Virgo) observatories are indeed detecting stunning
+ripples in space time.   
+
+The accepted interpretation is that the waves we are seeing are actually
+caused by distant collisions of black holes.
+
+This is open to question, although such question should be supported
+by another explanation for the waves, preferably one that is testable
+by experiment.
 
 Pending the arrival of more observations, it may be useful to run some
 simulations to see in what ways the various models and assumptions
@@ -222,7 +239,6 @@ vary in terms of the observations we see.
 I believe that it will soon become clear whether there really is a
 deficit of local events.   This would likely be the first indication
 that the current explanation is incorrect.
-
 
 Virgo
 =====
@@ -233,11 +249,81 @@ More recently a third detector has become operational, based in Italy.
 Spring 2019
 ===========
 
-Expecting lots of new data to come from the spring LIGO production runs.
+Expecting lots of new data to come from the spring LIGO production
+runs.
+
+With multiple detectors running there will also be better sky
+localisation of the source of any waves.
+
+Foot note
+=========
+
+I have been re-reading *Another Paradigm for the Universe*, particular
+chapter two, which talks about inertial drag fields and develops a
+model where the influence a distant mass has on the local inertial
+frame is proportional to that mass and inversely proportional to its
+*distance*.
+
+Or, to put another way, the effect of the gravitational wave drops off
+linearly with distance.
+
+Now consider, a dumbel with the same mass at each end with a bar one
+unit long separating the masses, rotating with some angular velocity,
+$\omega$.
+
+Now imagine how this wave might sweep out to concentric circles of
+diameter 2, 3, 4, 5,.. units away.
+
+Each band is just $\pi$ units longer than the previous band.
+
+Suppose there is a steady source of waves (a nearby rotating black
+hole?).
+
+
+As the wave radiates from the source, little energy is lost as the
+wave moves out to wider and wider circles.  Imagine the ripples on a
+calm pond created by an apple dropping from a tree.
+
+Each band is just one wavelength longer than the previous so there is
+just one extra wave to spread the energy across.
+
+With steady new waves being created at the central ring.
+
+So the energy at a distance n from the source wave is just 1 / n times
+the energy in the inner band.
+
+
+So the energy in the inner, unit circle spread out to a 2-unit
+circle, the wave height halving.
+
+From 2 to 3 the energy for unit area drops to 2/3 of level 2.
+
+In general, going from level n to n + 1, the energy drops by
+$n / (n + 1)$.
+
+Sum (n / (n + 1)) for i in 1, 2, 3, ...., n
+
 
 
 References
 ==========
+
+For Colin's work, I recommend his home page at Warwick University::
+
+  http://msp.warwick.ac.uk/~cpr
+
+
+  
+  https://arxiv.org/abs/astro-ph/0311033
+
+
+For data and information on gravitational waves, the Gravitational
+Wave Open Science Centre is invaluable::
+
+   https://www.gw-openscience.org/
+  
+
+  
 
 For more details, https://wikipedia.org has been an invaluable
 starting point.  
