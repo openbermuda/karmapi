@@ -265,11 +265,21 @@ frame is proportional to that mass and inversely proportional to its
 *distance*.
 
 Or, to put another way, the effect of the gravitational wave drops off
-linearly with distance.
+linearly with distance.  There is a lot in this chapter to support the
+$1/r$ relationship.
+
+When I have read this before I was happy to take this as a given and
+now I had to think why so?
+
+I had been thinking of concentric circles (slices along a great circle
+through nested spheres), with the diameter of the n'th circle being
+$n$.
+
 
 Now consider, a dumbel with the same mass at each end with a bar one
 unit long separating the masses, rotating with some angular velocity,
 $\omega$.
+
 
 Now imagine how this wave might sweep out to concentric circles of
 diameter 2, 3, 4, 5,.. units away.
@@ -278,11 +288,13 @@ Each band is just $\pi$ units longer than the previous band.
 
 Suppose there is a steady source of waves (a nearby rotating black
 hole?).
-
-
+ 
+ 
 As the wave radiates from the source, little energy is lost as the
-wave moves out to wider and wider circles.  Imagine the ripples on a
-calm pond created by an apple dropping from a tree.
+wave moves out to wider and wider circles.  Energy, in the form of
+gravitational waves dissipates into the surrounding region, but each
+shell of unit size contains the same energy.
+
 
 Each band is just one wavelength longer than the previous so there is
 just one extra wave to spread the energy across.
@@ -301,8 +313,33 @@ From 2 to 3 the energy for unit area drops to 2/3 of level 2.
 In general, going from level n to n + 1, the energy drops by
 $n / (n + 1)$.
 
-Sum (n / (n + 1)) for i in 1, 2, 3, ...., n
+Prod (i / (i + 1)) for i in 1, 2, 3, ...., n
 
+But isn't it just 1 / n?
+
+Forgot about time?
+
+
+Or maybe
+--------
+
+Imagine the ripples on a calm pond created by an apple dropping from a
+tree.  Or rather a ripples created by the tip of a long branch,
+dipping into a calm pond.  You can gently rock the branch to create
+waves.
+
+
+Arrival of a new galaxy
+=======================
+
+There is something rather elegant in the idea that when a new galaxy
+enters our visible universe it greets us, at a respectful distance of
+12 billion light years with an update on it's entire history prior to
+this, or our last meeting if per chance we have met before.
+
+This update could be viewed as an adjustment to our inertial frame to
+represent the distant matter that is just now beginning to affect our
+inertial frame.
 
 
 References
