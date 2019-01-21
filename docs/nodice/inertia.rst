@@ -237,8 +237,10 @@ simulations to see in what ways the various models and assumptions
 vary in terms of the observations we see.
 
 I believe that it will soon become clear whether there really is a
-deficit of local events.   This would likely be the first indication
-that the current explanation is incorrect.
+deficit of local events.   This would likely be a first indication
+that the current explanation is incorrect, although the picture may be
+murky for a while longer.
+
 
 Virgo
 =====
