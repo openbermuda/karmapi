@@ -40,7 +40,7 @@ Rinse repeat times five.
 
 Now take the five and find just 3 to add back into the pie.
 
-No all gather round, and make a circle,
+Now all gather round, and make a circle,
 
 It never ends, goes on and on,
 
