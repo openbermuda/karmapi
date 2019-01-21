@@ -275,6 +275,9 @@ I had been thinking of concentric circles (slices along a great circle
 through nested spheres), with the diameter of the n'th circle being
 $n$.
 
+In short assuming the amplitude of the wave would drop from the n-th
+to the (n+1)th circle by just enough to add an extra copy of the wave.
+
 
 Now consider, a dumbel with the same mass at each end with a bar one
 unit long separating the masses, rotating with some angular velocity,
@@ -284,7 +287,8 @@ $\omega$.
 Now imagine how this wave might sweep out to concentric circles of
 diameter 2, 3, 4, 5,.. units away.
 
-Each band is just $\pi$ units longer than the previous band.
+Each band is just $\pi$ units longer than the previous band.  Rather
+think of the wave itself spiralling outwards.
 
 Suppose there is a steady source of waves (a nearby rotating black
 hole?).
@@ -311,22 +315,39 @@ circle, the wave height halving.
 From 2 to 3 the energy for unit area drops to 2/3 of level 2.
 
 In general, going from level n to n + 1, the energy drops by
-$n / (n + 1)$.
+$n / (n + 1)$. But now there are n+1 waves, so the total energy is preserved.
 
 Prod (i / (i + 1)) for i in 1, 2, 3, ...., n
 
-But isn't it just 1 / n?
+But isn't it just 1 / n?  Yes, in the sense of n waves going round a
+circle of length n, each with amplitude 1/n of the inner wave.
 
-Forgot about time?
+Did I forget about time?
+
+If we get too close to the black hole we see the effects of general
+relativity and things get complicated very quickly.
+
+Fortunately, we can set our unit of distance so that we start a
+respectable distance from the centre of the black hole, where we can
+assume that the gravitational waves are propogating at close to the
+speed of light, relative to the black hole.
+
+Within a few radii, the effect will be negligible.
+
+
+
 
 
 Or maybe
 --------
 
-Imagine the ripples on a calm pond created by an apple dropping from a
+Imagine the ripples on a calm lake created by an apple dropping from a
 tree.  Or rather a ripples created by the tip of a long branch,
 dipping into a calm pond.  You can gently rock the branch to create
 waves.
+
+Swirl it round in a gentle circle and watch the waves move out across
+the lake, a self-supporting spiral of waves.
 
 
 Arrival of a new galaxy
