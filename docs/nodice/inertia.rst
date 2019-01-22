@@ -273,18 +273,18 @@ $1/r$ relationship.
 When I have read this before I was happy to take this as a given and
 now I had to think why so?
 
+At the centre of it all is the giant black hole.  Matter, trapped in a
+tiny vortex.  It generates a gravitational wave, a repeating ripple in
+space time that propogates in all directions.
+
 I had been thinking of concentric circles (slices along a great circle
 through nested spheres), with the diameter of the n'th circle being
-$n$.
+$n$.  As the circles get bigger, the amplitude gets smaller, but each
+circle has just one more wave as it wraps around the central mass.
+
 
 In short assuming the amplitude of the wave would drop from the n-th
 to the (n+1)th circle by just enough to add an extra copy of the wave.
-
-
-Now consider, a dumbel with the same mass at each end with a bar one
-unit long separating the masses, rotating with some angular velocity,
-$\omega$.
-
 
 Now imagine how this wave might sweep out to concentric circles of
 diameter 2, 3, 4, 5,.. units away.
@@ -292,11 +292,8 @@ diameter 2, 3, 4, 5,.. units away.
 Each band is just $\pi$ units longer than the previous band.  Rather
 think of the wave itself spiralling outwards.
 
-Suppose there is a steady source of waves (a nearby rotating black
-hole?).
  
- 
-As the wave radiates from the source, little energy is lost as the
+As the wave radiates from the source, no energy is lost as the
 wave moves out to wider and wider circles.  Energy, in the form of
 gravitational waves dissipates into the surrounding region, but each
 shell of unit size contains the same energy.
@@ -336,7 +333,17 @@ speed of light, relative to the black hole.
 
 Within a few radii, the effect will be negligible.
 
+Caveat
+------
 
+Shouldn't we be looking at surfaces of nested spheres, rather than
+great circle slices through them?
+
+In that case the amplitude would drop in proportion to $1/r^2$, not
+$1/r$.
+
+Yet the great circle argument feels sound.  There are waves travelling
+outward in every direction.
 
 
 
@@ -352,6 +359,7 @@ Swirl it round in a gentle circle and watch the waves move out across
 the lake, a self-supporting spiral of waves.
 
 
+
 Arrival of a new galaxy
 =======================
 
@@ -363,7 +371,6 @@ this, or our last meeting if per chance we have met before.
 This update could be viewed as an adjustment to our inertial frame to
 represent the distant matter that is just now beginning to affect our
 inertial frame.
-
 
 References
 ==========
@@ -387,3 +394,9 @@ Wave Open Science Centre is invaluable::
 
 For more details, https://wikipedia.org has been an invaluable
 starting point.  
+
+
+The binary black hole page has a good summary of the accepted physics
+of binary black hole mergers::
+
+  https://en.wikipedia.org/wiki/Binary_black_hole
