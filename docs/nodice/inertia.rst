@@ -80,7 +80,7 @@ On September 14th 2015 the observatory recorded a signal, the same
 signal being observed at both observatories, with a 7ms delay.
 
 The time difference was following a smooth wave, that rose in
-frequency, until it reached the limit of the equiment sensitivity
+frequency, until it reached the limit of the equipment sensitivity
 (10-500Hz range?).
 
 It had been speculated that black holes colliding with each other,
@@ -241,11 +241,40 @@ deficit of local events.   This would likely be a first indication
 that the current explanation is incorrect, although the picture may be
 murky for a while longer.
 
+I am curious about just how frequent we can expect there to be
+collisions of black holes in our universe, and the sort of sizes those
+bodies might have.
+
+One potential source of black hole collisions are galaxies that are
+colliding with each other.
+
+The universe appears to be generally expansive, so galaxy collisions
+might be expected to be rare.
+
+Binary stars are another potential source, collapsing to black holes
+which get too close and spiral into each other.
+
+Predicting how likely such events are and what sort of gravitational
+waves may be generated when they occur, requires a good theory of
+quantum gravity.
+
+Here *good* is in the sense that it approximates the actual physics
+well enough to create credible simulations of the events.
+ 
 
 Virgo
 =====
 
 More recently a third detector has become operational, based in Italy.
+
+Having a third detector allows for better location of the source of
+the wave.
+
+There is also a network of other observatories that receive alerts
+when there are significant gravitational wave events.
+
+The better location helps with searches for any coincident radiation
+to be detected.
 
 
 Spring 2019
@@ -400,3 +429,4 @@ The binary black hole page has a good summary of the accepted physics
 of binary black hole mergers::
 
   https://en.wikipedia.org/wiki/Binary_black_hole
+
