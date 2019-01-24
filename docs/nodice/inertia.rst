@@ -214,6 +214,53 @@ I believe *anoptu* discusses geodesics can follow a cusp-like path?
 This would allow lots of opportunity for modulation of the wave.
 
 
+Arrival of a new galaxy
+=======================
+
+There is something rather elegant in the idea that when a new galaxy
+enters our visible universe it greets us, at a respectful distance of
+12 billion light years with an update on it's entire history prior to
+this, or our last meeting if per chance we have met before.
+
+This update could be viewed as an adjustment to our inertial frame to
+represent the distant matter that is just now beginning to affect our
+inertial frame.
+
+What might the gravitational wave from such an arrival look like?
+
+Let's begin with what an observer on earth sees when looking at a nearby
+galaxy::
+
+  Let's assume 90% or so of the mass of a galaxy is concentrated in
+  the super massive black hole at it's centre, with a mass of some
+  100's of billions of solar masses.
+
+  Close to the black hole there is a distance where time is slowed so
+  much that waves get nearer and nearer to escaping but never quite
+  manage.
+
+  Beyond this there is a region where waves progress at a small
+  fraction of the speed of light, until a respectful distance from the
+  central mass.
+ 
+  Next we get to much of the remaining 10% of matter that is
+  essentially captured by the black hole and forming dynamic spirals
+  of stars, with matter also falling back and being constantly
+  recycled. 
+
+  And much further out, beyond the visible part of the universe the
+  inertial drag from the black hole will still have an effect.
+
+This allows us to get an idea what a new arrival in our visible
+universe might look like.
+
+A high frequency wave rising in amplitude, but before it gets full
+intensity it is joined by the wave being held back by the black hole
+itself.
+
+Our observatories will see the interference pattern from these waves.
+
+
 Personal View
 =============
 
@@ -374,8 +421,6 @@ $1/r$.
 Yet the great circle argument feels sound.  There are waves travelling
 outward in every direction.
 
-
-
 Or maybe
 --------
 
@@ -389,17 +434,35 @@ the lake, a self-supporting spiral of waves.
 
 
 
-Arrival of a new galaxy
-=======================
+Addendum
+--------
 
-There is something rather elegant in the idea that when a new galaxy
-enters our visible universe it greets us, at a respectful distance of
-12 billion light years with an update on it's entire history prior to
-this, or our last meeting if per chance we have met before.
 
-This update could be viewed as an adjustment to our inertial frame to
-represent the distant matter that is just now beginning to affect our
-inertial frame.
+In three space we really do have nested spheres and we might expect a
+1/(r^2) relationship if the energy in the wave is preserved across the
+surface of each nested sphere.
+
+Suppose we think of the energy as being the sum::
+
+
+  $$\Sigma_i \omega_i * m_i
+  
+
+But we are dealing with waves and great circles that are close to each
+other will vary smoothly.  And across this surface we just need to
+preserve the number of waves multiplied by the number of waves being
+supported, which in any plane just has to increase as r increases, so
+amplitude dropping as 1/r.
+
+Any obsemver is just a point on the surface of the sphere equidistant
+from the body.  Observers nearby will see a very similar picture,
+since the wave is moving smoothly.
+
+
+I think now is a good time for me to take another look at the spiral
+code in the cpr.py module.
+
+
 
 References
 ==========
