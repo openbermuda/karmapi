@@ -10,10 +10,15 @@ ancient universe, but constant recycling of matter.
 
 de Sciama principle.
 
+and de Sitter space. 
+
 symmetry: the sum of the bodies in my universe's influence on my inertial
 frame is equal to my influence in return.
 
 distribution of galactic angular velocities?
+
+elliptic curves as geodesics?
+
 
 
 Intro
