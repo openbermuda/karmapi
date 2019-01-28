@@ -38,4 +38,3 @@ But not a proof that can be patched, no matter how many patches are
 applied?
 
 So let's wind back the clock and see where we might have gone astray?
-
