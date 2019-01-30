@@ -99,7 +99,7 @@ The software also gives an estimate of the distance based on the
 intensity of the wave when received at LIGO compared to that at the
 actual collision.
 
-Ligo Observations::
+Ligo Observations to date (january 2019)::
 
     n   E_rad  mass1  mass2  redshift
     0    3.10  35.60  30.60      0.09
@@ -115,16 +115,18 @@ Ligo Observations::
     10   3.30  39.60  29.40      0.34
 
 
+
 Black holes colliding
 =====================
 
 
-*m_1* mass of larger object
+*mass1* or *m_1* mass of larger object.
 
 
-*m_2* mass of smaller object
+*mass2* or *m_2* mass of smaller object
 
-*r* distance from observatory
+*redshift* or *r* distance from observatory, based on observed versus
+ emitted intensity.
 
 Events are assumed to be rare, hence none so far none have been near to home.
 
@@ -178,6 +180,16 @@ Neutron stars too
 There have been detections thought to be due to a neutron star
 colliding with a black hole, or possibly another neutron star.
 
+Update:  I did a bit of digging into binary star collisions.
+
+Apparently, there is a *final parsec* problem, which turns out to be a
+final 0.01 - 0.001 of a parsec.
+
+In short, whilst there is an explanation how they could approach
+within 1 parsec of each other, the final 0.01 or 0.001 could take a
+very long time.
+
+
 
 Gamma ray bursts
 ================
@@ -198,7 +210,7 @@ A New Paradigm
 
 Colin Rourke's *A new paradigm for the universe* suggests that
 gamma-ray bursts may in fact an optical illusion, as we see the
-*quasi-infinite* past of a universe just arriving in our visible
+*quasi-infinite* past of a galaxy just arriving in our visible
 universe.
 
 It is all a result of the paths of the *geodesics* in the *de Sitter*
@@ -323,6 +335,15 @@ quantum gravity.
 
 Here *good* is in the sense that it approximates the actual physics
 well enough to create credible simulations of the events.
+
+Expanding and contracting
+=========================
+
+TODO: add note from Colin explaining how our conclusion that our entire
+universe is expanding is an extreme example of *observer selection
+bias*.
+
+More to come.
  
 
 Virgo
@@ -470,7 +491,7 @@ preserve the number of waves multiplied by the number of waves being
 supported, which in any plane just has to increase as r increases, so
 amplitude dropping as 1/r.
 
-Any obsemver is just a point on the surface of the sphere equidistant
+Any observer is just a point on the surface of the sphere equidistant
 from the body.  Observers nearby will see a very similar picture,
 since the wave is moving smoothly.
 
@@ -496,8 +517,6 @@ For data and information on gravitational waves, the Gravitational
 Wave Open Science Centre is invaluable::
 
    https://www.gw-openscience.org/
-  
-
   
 
 For more details, https://wikipedia.org has been an invaluable
