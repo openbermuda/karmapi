@@ -11,7 +11,7 @@ idea?
 Things that once took months or years now could be done in a day.
 
 Spreadsheets were a revelation to many and made it easy to find new
-in-sights.
+insights.
 
 The tools helped you learn what could be done.
 
@@ -24,8 +24,10 @@ then an avalanche of new ideas as ridges are reached.
 A paradigm shift, climb up a higher mountain and see what could only
 be dreamed of before.
 
+From on high you can see the answer to riddles you have long taken as law.
+
 The new paradigm explains much, assumptions turn into facts, or rather
-disappear from the discourse.
+disappear from the discourse.  
 
 Take, *The big bang theory*, the universe is expanding, it must have been tiny
 once, not so very long ago.
@@ -39,8 +41,8 @@ And expanding and contracting at one and the same?
 Now for some history of gravitational waves.
 
 
-Michelsson-Morley experiment
-============================
+Michelson-Morley experiment
+===========================
 
 In 1887, Albert A. Michelson and Edward W. Morley conducted an
 experiment in Cleveland, Ohio.
@@ -97,6 +99,20 @@ The software also gives an estimate of the distance based on the
 intensity of the wave when received at LIGO compared to that at the
 actual collision.
 
+Ligo Observations::
+
+    n   E_rad  mass1  mass2  redshift
+    0    3.10  35.60  30.60      0.09
+    1    1.50  23.30  13.60      0.21
+    2    1.00  13.70   7.70      0.09
+    3    2.20  31.00  20.10      0.19
+    4    0.90  10.90   7.60      0.07
+    5    4.80  50.60  34.30      0.48
+    6    2.70  35.20  23.80      0.20
+    7    2.70  30.70  25.30      0.12
+    8    0.04   1.46   1.27      0.01
+    9    2.70  35.50  26.80      0.20
+    10   3.30  39.60  29.40      0.34
 
 
 Black holes colliding
@@ -177,10 +193,10 @@ It is suggested that with a neutron star involved all sorts of
 additional radiation could be expected.
 
 
-Another Paradigm
-================
+A New Paradigm
+==============
 
-Colin Rourke's *Another paradigm for the universe* suggests that
+Colin Rourke's *A new paradigm for the universe* suggests that
 gamma-ray bursts may in fact an optical illusion, as we see the
 *quasi-infinite* past of a universe just arriving in our visible
 universe.
@@ -209,7 +225,7 @@ and lower bound on the frequency that they can detect.
 I am also not sure how the waves get modulated when you take into
 account the way the central black hole itself distorts space time.
 
-I believe *anoptu* discusses geodesics can follow a cusp-like path?
+I believe *anpftu* discusses geodesics can follow a cusp-like path?
 
 This would allow lots of opportunity for modulation of the wave.
 
