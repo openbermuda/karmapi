@@ -209,8 +209,8 @@ A New Paradigm
 
 Colin Rourke's *A new paradigm for the universe* suggests that
 gamma-ray bursts may in fact an optical illusion, as we see the
-*quasi-infinite* past of a galaxy just arriving in our visible
-universe.
+*quasi-infinite* past of a light source, perhaps a galaxy, just
+arriving in our visible universe.
 
 It is all a result of the paths of the *geodesics* in the *de Sitter*
 space used to model our part of the universe, our visible universe.
@@ -226,6 +226,31 @@ arrival of any light from the galaxy.
 Further, it should be noted that the gravitational wave also modulates
 the light, as it is in essence, part of the carrier wave.
 
+It is noted that coincident with the first gravitational wave
+detection on 14th September 2015 the Fermi Gamma-Ray space telescope
+reported that a gamma-ray burst monitor instrument detected a weak
+burst above 50 keV, starting 0.4 seconds after the LIGO event.
+
+It also had a positional uncertainty overlapping that of the LIGO
+event.
+
+However, the black hole/black hole collision that is assumed to have
+given rise to the event was not expected to create a GRB, so this
+observation is largely ignored.
+
+In contrast, the 17th August 2017 event, involving smaller bodies,
+deemed closer to earth was subsequently views across the
+electromagnetic spectrum::
+
+
+    https://en.wikipedia.org/wiki/GW170817
+
+Here, the masses of the bodies involved were each less than 1.5 solar
+masses.
+
+It seems this whole arena is rife with observer bias issues, of all
+sorts of flavours.
+ 
 
 Why no gravitational waves for long duration gamma-ray bursts?
 --------------------------------------------------------------
