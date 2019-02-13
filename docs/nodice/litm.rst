@@ -39,6 +39,11 @@ The first word on the first track is *Johnny*::
 
 The track is called *Window Dressing*.
 
+I'm not great at picking out lyrics, so it took me a while to pick up
+the words, not least it seemed to be following my life... or rather
+there's enough here to weave a lot of coincidence into a story.
+
+
 And the second track is solstice::
 
   It was the solstice, it was a nice day
@@ -68,3 +73,9 @@ And the second track is solstice::
 
 
   ...
+
+  
+Again it feels personal, there's coincidence a plenty here a mixing of
+universal stories.
+
+And there is more of course.
