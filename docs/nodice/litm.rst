@@ -63,7 +63,7 @@ And the second track is solstice::
 
   It was the solstice, 2016
 
-  Still inthe sweetd dream of romance
+  Still in the sweet dream of romance
 
   your hearts going to do just exactly what it's going to do
 
