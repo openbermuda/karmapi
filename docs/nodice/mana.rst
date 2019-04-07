@@ -123,13 +123,19 @@ surroundings and will have been emitting energy (seen as CMB) for a
 good while.  As far as the graitational wave that arrives, there is no
 surprise.
 
-Geodesic version:
+Geodesic version:::
+
 
     Thing in terms of light following a geodesic in de Sitter Space.
     It will be subject to any harmonics in the inertial field.
 
     In short, galaxies release energy in terms of the modulations that
     the galaxy makes to the background inertial field.
+
+    Idea is de Sitter space with a 500 million year wobble.
+
+    Limitting factor is inertial effect a black hole can have on
+    terminal speed of matter in its galaxy.
 
 Note that the geodesics are the de Sitter field after it has been
 modulated by the black holes, which are moving in a universal wave.
