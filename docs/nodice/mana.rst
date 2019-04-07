@@ -155,12 +155,26 @@ This in turn is limited by the size of the black hole.
 
 In the limit, appears to be around 300km/s.
 
-
 At this point there are lots of levels of these systems where we reach
-a point of equilibrium.   Many just adabpt to their environment.
+a point of equilibrium.   Many have just adapted to their environment,
+but the adaptation may be so good it is barely noticeable.
+
+Whenever you get to the point where gravity is the key force then
+matter starts to move in harmony, that's just how matter works, it is
+how waves work, waves of same frequency interfere and support each
+other. Waves of differing frequencies degenerate into which noise,
+or rather randomly support the underlying wave.
+
+distorting space time is tough.
 
 Maybe all do?
 
+So the energy produced by all the galaxies is causing space time to
+resonate.
+
+The base frequency determined by the distribution of distances
+travelled in the Hubble time, relative to the inertial field of the
+surrounding universe.
 
 Fundamental
 ===========
@@ -184,7 +198,7 @@ Now we see a 500 million year wobble in the CMB.
 This is the sum of new arrivals over all departures in the life of a
 universe.
 
-There are lots of levels througout our universe where stable systems
+There are lots of levels throughout our universe where stable systems
 can emerge.  By stable, structures that can potentially sustain
 themselves for billions of years.
 
@@ -192,13 +206,50 @@ As well of systems that exist for a fraction of a second, in a
 localised area.
 
 System: anything that affects the inertial field.
-   
+
+
+Equilibria
+==========
+
+Planet orbitting sun.
+
+Spiral galaxy arms.
+
+Conservation of angular momentum, tangential inertial drag.
+
+There are so many of these points of equilibria.
+
+On closer inspection, the reason relates to the size of some
+fundamental particle, a proton for example.
+
+So whilst we have answered the question, we now have a new question,
+why protons?
+
+There should be a relation between the variation in temperature of the
+CMB and wavelength of that variation.  And is there a point where the
+CMB almost exactly balances the inertial effect of the black holes?
+
+And it does so because each adjustment to a gravitational field,
+arrives as a gravitational wave from that body, a burst of energy as
+it becomes visible, with smooth updates thereafter.
+
+But also as the CMB background.
+
+This wave is modulated by the intervening matter, and being microwave
+will be modulated by water and ice.
+
+Interesting to consider implications for water based life forms.
+
+But some of these waves may be invisible to us on earth due to the
+oceans we have.
+
+Rather earth will modulate the field, as will any tidal body.
 
 Conservation of momentum
 ========================
 
 Even with the tangential inertial drag, the momentum of the whole
-system is maintained as 
+system is just a wave of wavelength equal to the orbit time of the body.
 
 Note round trip time between bodies: period for harmonics?
 
@@ -214,6 +265,15 @@ LIGO
 
 My guess is galactic arrivals are lower frequency than current
 technology detects.
+
+The reasoning is that the modulation of de Sitter that an arriving
+galaxy creates is low frequency.
+
+Whereas a moderate sized quasar arriving would likely have a field
+differing significantly to its associated galaxy.
+
+Indeed should consider modelling this: interaction between inertial
+field for a galaxy and a nearby quasar.
 
 Wil see what turns up this year as I think new science runs are due.
 
