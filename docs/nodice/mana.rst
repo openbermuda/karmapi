@@ -64,7 +64,8 @@ things into three bodies:::
   
    \omega_U = \omega_G + \omega_B
 
-Where::
+Where:::
+  
   $U$ represents universe's inertial effect on the galaxy.
   $G$ represents the galaxies inertial effect on the universe.
   $B$ represents central black hole's inertial effect on the Universe.
