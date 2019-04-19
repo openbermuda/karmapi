@@ -116,8 +116,6 @@ from datetime import datetime as dt
 from astropy import coordinates, constants
 from astropy.time import Time
 
-from matplotlib import pyplot as pp
-
 import curio
 
 from karmapi import base, cpr, pigfarm
@@ -234,6 +232,8 @@ class SolarSystem(cpr.NestedWaves):
         
         
 def gamma_hack():
+
+    from matplotlib import pyplot as pp
 
     T = 1000
     k = 10000
