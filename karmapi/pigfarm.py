@@ -694,7 +694,7 @@ class MagicCarpet(Space):
             colColours=col_colours,
             cellText=cells,
             cellColours=colours,
-            cellEdgeColours=colours,
+            #cellEdgeColours=colours,
             bbox=bbox,
             loc=loc)
 

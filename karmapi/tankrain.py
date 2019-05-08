@@ -132,6 +132,7 @@ class TankRain(pigfarm.Yard):
             ball = cpr.Sphere(im.size)
 
             ball.rgb = np.array(im)
+            print('brs', ball.rgb.shape)
         else:
             # FIXME -- create an image that shows there is no data
             # for now, lets just show a rainbow

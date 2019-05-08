@@ -10,10 +10,6 @@ import math
 import sys
 import inspect
 
-from multiprocessing import cpu_count
-
-from concurrent.futures import ProcessPoolExecutor
-
 import curio
 
 # import this early, I like pandas.

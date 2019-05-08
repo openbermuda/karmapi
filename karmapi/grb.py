@@ -40,7 +40,7 @@ story.
 
 Now if a gamma-ray burst indicates a new galaxy arriving in our visible
 universe, with the burst representing the, finite, but unbounded history of the
-universe, including the histlory of its inertial drag field.
+universe, including the history of its inertial drag field.
 
 This latter, is hypothesised to be driven by a super-massive object (~10^11
 solar masses) at the centre of the galaxy.

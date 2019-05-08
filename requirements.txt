@@ -3,8 +3,8 @@
 astropy  # so we can find jupiter and more
 
 
-matplotlib==2.1  # jupyter should provide this.. maybe it doesn't
-pandas       # this might provide matplotib
+#matplotlib==2.1  # jupyter should provide this.. maybe it doesn't
+#pandas       # this might provide matplotib
 #pyaudio      # for sound
 curio        # for async magic
 
