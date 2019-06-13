@@ -284,6 +284,7 @@ def argument_parser(parser=None):
     parser.add_argument('--date', default='2017/08/17')
 
     parser.add_argument('--grb', default='170817A')
+    parser.add_argument('--gw', help="file for latest ligo data")
 
     return parser
 
@@ -482,11 +483,8 @@ def get_waves(path=None):
 
     return data
 
-def main():
+def main(args):
 
-    parser = argument_parser(cpr.argument_parser())
-    
-    args = parser.parse_args()
 
     print(args.date)
     args.date = base.parse_date(args.date)
@@ -504,7 +502,7 @@ def main():
     # pass list of balls into NestedWaves
     spheres = args_to_spheres(args, t)
 
-    dump(spheres)
+    #dump(spheres)
     
     farm = pigfarm.sty(SolarSystem, dict(balls=spheres, fade=args.fade,
                                          twist=args.twist),
@@ -518,11 +516,9 @@ def main():
 
     curio.run(farm.run, with_monitor=True)
 
-
-
-if __name__ == '__main__':
-
-    waves = get_waves(Path('./gw.json'))
+def gravity_waves(path):
+    """ Read or download gravity wave observations """
+    waves = get_waves(path)
 
     data = waves['data']
 
@@ -547,11 +543,23 @@ if __name__ == '__main__':
 
         rows.append(row)
 
-    import pandas
-
-    df = pandas.DataFrame(rows)
-    print(df.describe())
+    return rows
     
-    #1/0
-    main()
+
+if __name__ == '__main__':
+
+
+    parser = argument_parser(cpr.argument_parser())
+    
+    args = parser.parse_args()
+
+    if args.gw:
+        rows = gravity_waves(Path(args.gw))
+
+        import pandas
+
+        df = pandas.DataFrame(rows)
+        print(df.describe())
+    else:
+        main(args)
         

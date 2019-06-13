@@ -88,3 +88,40 @@ Mach and de Sciama
 
 de Sitter Space
 ===============
+
+New Edition
+===========
+
+::
+   
+   Thus, unlike the dark matter hypothesis, the inertial drag
+   hypothesis is a necessary part of a complete theory. Furthermore,
+   the inertial drag hypothesis also underlies a good model for the
+   dynamics of spiral galaxies, whereas the dark matter hypothesis
+   leaves this problem unsolved.
+
+
+Indeed, the inertial drag model shows how the dark matter would need
+to be arranged.
+
+
+::
+
+   Here it is explained how inertial drag allows black holes to absorb
+   the angular momentum in infalling gas/plasma and to grow by
+   accretion.
+
+
+This bit always my head hurt until now.
+
+So momentum is conserved overall, it just passes from infalling matter
+to the black hole.
+
+So momentum conserved overall (in-falling matter + black hole).
+
+
+
+Re Sag A*::
+
+   This misunderstanding will be cleared up at a later stage.
+

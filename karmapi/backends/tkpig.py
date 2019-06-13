@@ -14,20 +14,11 @@ from multiprocessing import cpu_count
 
 import curio
 
-# import this early, I like pandas.
-import pandas
-random = pandas.np.random
-
 import tkinter
 from tkinter import Tk, ttk, Text, messagebox
 
-from matplotlib.backends.backend_tkagg import FigureCanvas, FigureManager
-
-from matplotlib.backends import tkagg
-
-from matplotlib.figure import Figure
-from matplotlib import pyplot as plt
 import numpy as np
+random = np.random
 
 from PIL import Image, ImageDraw, ImageTk
 
@@ -286,6 +277,9 @@ class PlotImage(Pig):
     """
     def __init__(self, parent, axes=[111], dpi=100, **kwargs):
 
+        from matplotlib.figure import Figure
+        from matplotlib.backends.backend_tkagg import FigureCanvas
+
         super().__init__(parent)
 
         fig = Figure(dpi=dpi, **kwargs)
@@ -342,9 +336,8 @@ class XKCD(PlotImage):
 
     def plot(self):
         """ Display plot xkcd style """
+        from matplotlib import pyplot as plt
         with plt.xkcd():
-
-            np = pandas.np
 
             data = np.ones(100)
             data[70:] -= np.arange(30)

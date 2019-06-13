@@ -17,9 +17,11 @@ elif joy.BACKEND == 'hat':
 
     from .backends.hatpig import *
 
-else:
-
+elif joy.BACKEND == 'tk':
     from .backends.tkpig import *
+
+else:
+    from .backends.pipig import *
 
 global YQ
 
