@@ -668,7 +668,7 @@ class MagicCarpet(Space):
         """ Draw a table on the axes """
 
         from matplotlib import colors, cm, table
-        from karmapi.table import table
+        from mpltable.table import table
         norm = colors.Normalize()
 
         stats, cells, rows, cols = self.frame_to_stats(data)
@@ -696,7 +696,8 @@ class MagicCarpet(Space):
             cellText=cells,
             cellColours=colours,
             cellEdgeColours=colours,
-            edges=['clos', 'ed'],
+            edges=['TL'],
+            max_col_label_width=0.1,
             bbox=bbox,
             loc=loc)
 
