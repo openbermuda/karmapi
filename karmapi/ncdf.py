@@ -16,24 +16,23 @@ from pathlib import Path
 
 from random import randint
 
+from karmapi import base, tpot, cpr, pigfarm
+
 import netCDF4
 import numpy as np
 
 import curio
 
+import pyshtools
+
 from matplotlib import pyplot
 from matplotlib.pyplot import show, imshow, title, colorbar
 
-from karmapi import base, sonogram, tpot, cpr, pigfarm
 
 def load(path):
 
     return netCDF4.Dataset(path)
 
-
-def images(path, folder):
-
-    df = load(path)
 
 def current_epoch():
 
@@ -53,7 +52,6 @@ def stamps_to_datetime(stamps, epoch=None):
     for stamp in stamps:
         yield epoch + datetime.timedelta(hours=int(stamp))
 
-    
 
 def generate_data(stamps, values, epoch=None):
 
@@ -278,12 +276,9 @@ class WorldView(cpr.Sphere):
         state.update(dict(stamps=None, values=None))
         return state
 
-    def update(self, ball):
-
-        super().update(ball)
-
+    def show_date(self):
+        
         print(self.current_date())
-        self.next_frame()
 
     def tick(self):
 
@@ -294,6 +289,15 @@ class WorldView(cpr.Sphere):
             im.save(f'{self.save}/{now}.png')
             
         return self
+
+    async def run(self):
+
+        while True:
+            self.tick()
+
+            self.next_frame()
+            await curio.sleep(self.sleep)
+
 
     def current(self):
 
