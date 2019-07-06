@@ -341,7 +341,7 @@ class Sphere:
 
         return self.poleview(pixels, wind=-1)
 
-    async def run(self):
+    async def run(self, elsewhere=False):
         """Run the sphere 
 
         Really want to just add to queue and let something else
@@ -362,22 +362,41 @@ class Sphere:
 
         should something else supervise when balls run?
 
+        Latest arun() run here, prun() try another process.
+
+        elsewhere decides which, default here.
         """
 
+        if elsewhere:
+            return await self.prun()
+
+        return await self.arun()
+
+    async def arun(self):
+        """ Run in current process """
         while True:
+            self.tick()
+            await curio.sleep(self.sleep())
+
+
+    async def prun(self):
+    
+        while True:
+    
             if not self.paused:
                 ball = await curio.run_in_process(self.tick)
                 #print(f'{self} sleep:{self.sleep}')
 
-                self.update(ball)
+                # hack, just move stuff around
+                self.post_run_update(ball)
             
             #ball = await tick.join()
             #print('joined', ball, self.sleep)
             await curio.sleep(self.sleep)
 
 
-    def update(self, ball):
-
+    def post_run_update(self, ball):
+        """ Hack running in process """
         self.rgb = ball.rgb
 
         self.t = ball.t

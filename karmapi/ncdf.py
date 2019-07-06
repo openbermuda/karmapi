@@ -8,6 +8,16 @@ Simulate future
 n c d f
 
 natural circular data field?
+
+OK time for an update.
+
+I discovered *pyshtools* in my explorations.
+
+Spherical harmonic analysis.   Fourier transforms for spheres.
+
+Explore global harmonics.
+
+But first I need to unravel what is here.
 """
 import datetime
 import math
@@ -271,7 +281,7 @@ class WorldView(cpr.Sphere):
 
 
     def __getstate__(self):
-        """ """
+        """ Don't try and save stamps or values """
         state = self.__dict__.copy()
         state.update(dict(stamps=None, values=None))
         return state
@@ -288,16 +298,9 @@ class WorldView(cpr.Sphere):
             im = self.project()
             im.save(f'{self.save}/{now}.png')
             
+        self.next_frame()
+
         return self
-
-    async def run(self):
-
-        while True:
-            self.tick()
-
-            self.next_frame()
-            await curio.sleep(self.sleep)
-
 
     def current(self):
 
@@ -414,6 +417,10 @@ class World(cpr.NestedWaves):
         #self.add_event_map('w', self.less_spin)
 
         super().__init__(parent, balls=balls, **kwargs)
+
+
+
+
 
 
 def argument_parser(parser=None):        
