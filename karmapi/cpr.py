@@ -341,7 +341,7 @@ class Sphere:
 
         return self.poleview(pixels, wind=-1)
 
-    async def run(self, elsewhere=False):
+    async def run(self, elsewhere=True):
         """Run the sphere 
 
         Really want to just add to queue and let something else
