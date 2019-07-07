@@ -452,7 +452,7 @@ class CircularField:
         stamps = self.df.variables['time']
         self.values = self.df.variables[args.value]
 
-        print(self.df.variables)
+        print(self.df.variables.keys())
         
         self.stamps = stamp_sort(stamps)
 
@@ -494,6 +494,7 @@ if __name__ == '__main__':
     
     spheres = cpr.args_to_spheres(args)
 
+    print(f'Number of spheres {len(spheres)}')
     parms = dict(stamps=cf.stamps, values=cf.values, save=args.save,
                  balls=spheres)
     

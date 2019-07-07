@@ -376,7 +376,7 @@ class Sphere:
         """ Run in current process """
         while True:
             self.tick()
-            await curio.sleep(self.sleep())
+            await curio.sleep(self.sleep)
 
 
     async def prun(self):
