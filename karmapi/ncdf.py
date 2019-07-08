@@ -69,9 +69,7 @@ def generate_data(stamps, values, epoch=None):
     
     for ix, stamp in enumerate(stamps):
 
-        date = epoch + datetime.timedelta(hours=int(stamp))
-
-        yield values[ix], date
+        yield values[ix], stamp
     
 
         
@@ -298,9 +296,13 @@ class WorldView(cpr.Sphere):
             im = self.project()
             im.save(f'{self.save}/{now}.png')
             
+        return self
+
+
+    def post_tick(self):
+        """ stuff that has to happen on this processor """
         self.next_frame()
 
-        return self
 
     def current(self):
 
@@ -318,27 +320,41 @@ class WorldView(cpr.Sphere):
 
     def next_frame(self):
 
+        red = self.current()
+        print(f'RED SHAPE {red.shape}')
+        red = to_sha(red[1:])
+        print(f'RED SHAPE {red.shape}')
+        red = red.flatten()
+        print(f'RED SHAPE {red.shape}')
 
-        red = self.scale(self.current())
-        red = red[self.spin:] + red[0:self.spin]
+        red = np.concatenate((red[self.spin:], red[0:self.spin]))
 
         self.forward()
-        green = self.scale(self.current())
-        green = green[self.spin:] + green[0:self.spin]
+        green = self.current()
+        green = to_sha(green[1:])
+        green = green.flatten()
+        green = np.concatenate((green[self.spin:], green[0:self.spin]))
 
         self.forward()
-        blue = self.scale(self.current())
-        blue = blue[self.spin:] + blue[0:self.spin]
+        blue = self.current()
+        blue = to_sha(blue[1:])
+        blue = blue.flatten()
+        blue = np.concatenate((blue[self.spin:], blue[0:self.spin]))
+
+        self.rgb = np.array(list(zip(red,
+                                     green,
+                                     blue)))
 
         self.spin += 5
         self.spin %= self.size[0]
-        
-        self.rgb = np.array(list(zip(red, green, blue)))
+
+        #print(red[0][50])
+        #print(red[1][50])
 
         height, width = self.size
-        self.rgb.resize((height, width, 3))
+        self.rgb.resize((height-1, width, 3))
 
-        self.sample_current()
+        #self.sample_current()
         
         self.forward()
 
@@ -389,6 +405,14 @@ class WorldView(cpr.Sphere):
         data = [max(min((2 * x) - 1.0, 1.0), 0.0) for x in data]
 
         return data
+
+
+def to_sha(data):
+
+    from pyshtools.expand import SHExpandDH
+
+    print(data.shape)
+    return SHExpandDH(data, sampling=2)
 
 
 class World(cpr.NestedWaves):

@@ -376,6 +376,7 @@ class Sphere:
         """ Run in current process """
         while True:
             self.tick()
+            self.post_tick()
             await curio.sleep(self.sleep)
 
 
@@ -389,6 +390,8 @@ class Sphere:
 
                 # hack, just move stuff around
                 self.post_run_update(ball)
+                self.post_tick()
+                
             
             #ball = await tick.join()
             #print('joined', ball, self.sleep)
@@ -400,7 +403,11 @@ class Sphere:
         self.rgb = ball.rgb
 
         self.t = ball.t
-        
+
+
+    def post_tick(self):
+        """ Do any post tick stuff that is not cpu blocking """
+        pass
 
     def tick(self):
         """ Do one tick for the sphere
