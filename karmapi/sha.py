@@ -1,5 +1,5 @@
 
-from karmapi import ncdf
+from karmapi import ncdf, tpot
 
 import pyshtools
 
@@ -8,6 +8,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 import datetime
+from collections import Counter
 
 def spectrum(value):
 
@@ -17,13 +18,26 @@ def spectrum(value):
     return clm, pyshtools.spectralanalysis.spectrum(clm)
 
 
-def main():
+def generate_spectra(df):
 
-    parser = ncdf.argument_parser()
+    spectra = []
+    last = None
+    for value, stamp in ncdf.generate_data(df.stamps, df.values):
+        ss, date, ix = stamp
 
-    args = parser.parse_args()
+        if last is None:
+            last = value
+            continue
 
-    df = ncdf.CircularField(args)
+        delta = last - value
+
+        clm, spect = spectrum(delta)
+        spectra.append(spect)
+
+    return spectra
+
+
+def plots(df):    
 
     last = None
 
@@ -90,6 +104,139 @@ def main():
     print(sp.var(axis=0))
     print(sp.shape)
     
+def stats(data):
+    """ Return some standard stats """
+    print(data.shape)
+    print(data.mean())
+    print(data.var())
+    print(np.percentile(data.cumsum(), [0.25, 0.5, 0.75, 0.9, 0.99]))
+
+    means = data.mean(axis=0)
+    print(f'means: {means.shape}')
+    stds = data.std(axis=0)
+    print(f'stds:  {stds.shape}') 
+
+    for x in range(12):
+        print(means[10*x:10 + (10 * x)])
+        print()
+
+
+def random_sample(data, n):
+
+    norm = np.random.normal
+    means = data.mean(axis=0)
+    stds = data.std(axis=0)
+
+    shape = [n] + list(means.shape)
+    return norm(size=shape)
+
+    # old code below scales to original distro
+    print(samp.shape)
+
+    samp *= stds
+    samp += means
+
+    return samp
+
+def normalise(data):
+
+    means = data.mean(axis=0)
+    stds = data.std(axis=0)
+
+    data -= means
+    data /=stds
+
+    return data
+
+
+def stamp_stats(stamps):
+
+    dates = [x[1] for x in stamps]
+    hours = Counter(x.hour for x in dates)
+    hhours = Counter(x.hour for x in dates[:int(len(dates)/2)])
+    months = Counter((x.year, x.month) for x in dates)
+
+    print(hours)
+    print(hhours)
+    print(months)
+
+def brew(spectra, nstates=10):
+    """ Perform tpot algorithm """
+
+    sample = random_sample(spectra, nstates)
+
+    # calculate probs given observations
+    B = np.zeros(size=(nstates, len(spectra)))
+    
+    for spect in spectra:
+         = 0.0
+        for ss, state in enumerate(sample):
+            dist = spect.dot(ss)
+            distance 
+
+        distance /= (ss + 1) ** 0.5
+
+        # FIXME? need to convert distance to prob
+        # but teapot will deal with any linear scaling
+        # so prob e ** x or log(x) here ... or all ok?
+        
+
+        # need to turn spectra into observations (tpot states)
+        
+
+    # generate random eh?
+    A = np.random.random(size=(nstates, nstates))
+
+    P0 = np.random.random(size=nstates)
+
+    tpot.A = A
+    tpot.B = B
+    tpot.P0 = P0
+
+    # Now need to turn our observations into states
+    # ... need to figure that one out
+
+    tpot.OBSERVATIONS = observations
+    
+    tpot.brew()
+
+    
+        
+        
+    
+    
+
+def main():
+
+    parser = ncdf.argument_parser()
+
+    parser.add_argument('--plot', action='store_true')
+
+    args = parser.parse_args()
+
+    df = ncdf.CircularField(args)
+
+    if args.plot:
+        plots(df)
+        return
+
+    stamp_stats(df.stamps)
+    spectra = np.array(generate_spectra(df))
+
+    # fixme - save spectra somewhere and do faster load.
+    # cf repeatability too.
+
+    stats(spectra)
+
+    # maybe just normalise spectra? 
+    nspectra = normalise(spectra)
+    stats(nspectra)
+
+    sample = random_sample(spectra, 10)
+
+    stats(sample)
+
+    brew(nspectra, 10)
 
 
 if __name__ == '__main__':

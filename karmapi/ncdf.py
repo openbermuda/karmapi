@@ -411,7 +411,7 @@ def to_sha(data):
 
     from pyshtools.expand import SHExpandDH
 
-    print(data.shape)
+    #print(data.shape)
     return SHExpandDH(data, sampling=2)
 
 
