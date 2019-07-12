@@ -160,32 +160,37 @@ def stamp_stats(stamps):
     print(hhours)
     print(months)
 
+def make_bmatrix(spectra, states):
+    """ """
+    nstates = len(states)
+    # calculate probs given observations
+    B = np.zeros(shape=(len(spectra), nstates), dtype=float)
+
+    observations = []
+    for obs, spect in enumerate(spectra):
+        observations.append(obs)
+
+        for state, ss in enumerate(states):
+            dist = spect.dot(ss)
+
+            #distance /= (ss + 1) ** 0.5
+
+            # FIXME? need to convert distance to prob
+            # but teapot will deal with any linear scaling
+            # so prob e ** x or log(x) here ... or all ok?
+            
+            #print(obs, state, dist)
+            B[obs, state] = (abs(dist) ** 0.5)
+
+    return observations, B        
+
+
 def brew(spectra, nstates=10):
     """ Perform tpot algorithm """
 
     sample = random_sample(spectra, nstates)
 
-    # calculate probs given observations
-    B = np.zeros(shape=(len(spectra), nstates), dtype=float)
-    observations = []
-    for obs, spect in enumerate(spectra):
-        observations.append(obs)
-
-        for state, ss in enumerate(sample):
-            dist = spect.dot(ss)
-
-            #print(obs, state, dist)
-            B[obs, state] = (abs(dist) ** 0.5)
-
-            
-
-        #distance /= (ss + 1) ** 0.5
-
-        # FIXME? need to convert distance to prob
-        # but teapot will deal with any linear scaling
-        # so prob e ** x or log(x) here ... or all ok?
-        
-
+    observations, B = make_bmatrix(spectra, sample)
 
     # generate random eh?
     A = np.random.random(size=(nstates, nstates))
@@ -205,12 +210,56 @@ def brew(spectra, nstates=10):
     tpot.OBSERVATIONS = observations
 
     print('TPOT filled, away we go')
-    tpot.brew()
+    nsteps = 10
+    for step in range(nsteps):
+
+        tpot.brew()
+
+        print(f'Step {step} score {tpot.SCORE}')
+
+        # re-estimage A, B, P0
+        rebrew(spectra, nstates)
+
+        tpot.beer()
+        tpot.stir()
+
+        bottom = np.zeros(len(spectra))
+        index = list(range(len(spectra)))
+        for i in range(nstates):
+            plt.bar(index, tpot.GAMMA[:, i], bottom=bottom)
+            bottom += tpot.GAMMA[:, i]
+        plt.show()
+        
 
     for x in tpot.GAMMA[:10]:
         print(f'Gamma: {x}')
 
     # Now need to write code to re-estimate A, B and states.
+
+def lager(spectra, nstates):
+    """ Generate new set of states using tpot.GAMMA """
+
+    states = np.zeros(shape=(nstates, len(spectra[0])), dtype=float)
+
+    for obs, gam in zip(spectra, tpot.GAMMA):
+        for state in range(nstates):
+            states[state] += gam[state] * obs
+
+    for i in range(nstates):
+        states[i] /= sum(tpot.GAMMA[:, i])
+            
+    return states
+
+def rebrew(spectra, nstates):
+    """ Do re-estimation """
+    # re-estimate states based on gamma
+    states = lager(spectra, nstates)
+        
+    observations, B = make_bmatrix(spectra, states)
+
+    tpot.B = B
+    tpot.OBSERVATIONS = observations
+
 
 def main():
 
