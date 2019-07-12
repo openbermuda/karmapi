@@ -166,23 +166,26 @@ def brew(spectra, nstates=10):
     sample = random_sample(spectra, nstates)
 
     # calculate probs given observations
-    B = np.zeros(size=(nstates, len(spectra)))
-    
-    for spect in spectra:
-         = 0.0
-        for ss, state in enumerate(sample):
-            dist = spect.dot(ss)
-            distance 
+    B = np.zeros(shape=(len(spectra), nstates), dtype=float)
+    observations = []
+    for obs, spect in enumerate(spectra):
+        observations.append(obs)
 
-        distance /= (ss + 1) ** 0.5
+        for state, ss in enumerate(sample):
+            dist = spect.dot(ss)
+
+            #print(obs, state, dist)
+            B[obs, state] = (abs(dist) ** 0.5)
+
+            
+
+        #distance /= (ss + 1) ** 0.5
 
         # FIXME? need to convert distance to prob
         # but teapot will deal with any linear scaling
         # so prob e ** x or log(x) here ... or all ok?
         
 
-        # need to turn spectra into observations (tpot states)
-        
 
     # generate random eh?
     A = np.random.random(size=(nstates, nstates))
@@ -195,16 +198,19 @@ def brew(spectra, nstates=10):
 
     # Now need to turn our observations into states
     # ... need to figure that one out
+    # need to turn spectra into observations (tpot states)
+    # In fact, 
+        
 
     tpot.OBSERVATIONS = observations
-    
+
+    print('TPOT filled, away we go')
     tpot.brew()
 
-    
-        
-        
-    
-    
+    for x in tpot.GAMMA[:10]:
+        print(f'Gamma: {x}')
+
+    # Now need to write code to re-estimate A, B and states.
 
 def main():
 
