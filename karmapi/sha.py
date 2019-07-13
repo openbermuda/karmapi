@@ -4,6 +4,7 @@ from karmapi import ncdf, tpot
 import pyshtools
 
 from matplotlib import pyplot as plt
+from blume.table import table
 
 import numpy as np
 
@@ -22,6 +23,7 @@ def generate_spectra(df):
 
     spectra = []
     last = None
+    lastdate = None
     for value, stamp in ncdf.generate_data(df.stamps, df.values):
         ss, date, ix = stamp
 
@@ -33,6 +35,10 @@ def generate_spectra(df):
 
         clm, spect = spectrum(delta)
         spectra.append(spect)
+
+        if lastdate and lastdate > date:
+            break
+        lastdate = date
 
     return spectra
 
@@ -201,16 +207,10 @@ def brew(spectra, nstates=10):
     tpot.B = B
     tpot.P0 = P0
 
-    # Now need to turn our observations into states
-    # ... need to figure that one out
-    # need to turn spectra into observations (tpot states)
-    # In fact, 
-        
-
     tpot.OBSERVATIONS = observations
 
     print('TPOT filled, away we go')
-    nsteps = 10
+    nsteps = 100
     for step in range(nsteps):
 
         tpot.brew()
@@ -218,23 +218,50 @@ def brew(spectra, nstates=10):
         print(f'Step {step} score {tpot.SCORE}')
 
         # re-estimage A, B, P0
-        rebrew(spectra, nstates)
-
         tpot.beer()
+        rebrew(spectra, nstates)
         tpot.stir()
 
-        bottom = np.zeros(len(spectra))
-        index = list(range(len(spectra)))
-        for i in range(nstates):
-            plt.bar(index, tpot.GAMMA[:, i], bottom=bottom)
-            bottom += tpot.GAMMA[:, i]
-        plt.show()
-        
+        if step % 25 == 0:
+            print(tpot.A)
+            gamma_plot()
 
+
+    gamma_plot()
     for x in tpot.GAMMA[:10]:
         print(f'Gamma: {x}')
 
-    # Now need to write code to re-estimate A, B and states.
+
+def gamma_plot():
+
+    T, nstates = tpot.GAMMA.shape
+    
+    bottom = np.zeros(T, dtype=float)
+    index = list(range(T))
+    fig = plt.figure()
+    ax = fig.add_subplot(211)
+    data = tpot.GAMMA
+    print(f'data shape {data.shape}')
+    for i in range(nstates):
+        ax.bar(index, data[:, i], bottom=bottom)
+        bottom += data[:, i]
+
+
+    from matplotlib import colors, cm
+    norm = colors.Normalize()
+
+    colours = cm.get_cmap()(norm(tpot.A))
+    alpha = 0.2
+    colours[:, :, 3] = alpha
+        
+    ax = fig.add_subplot(212)
+    ax.axis('off')
+    tab = table(ax,
+                cellColours=colours,
+                cellEdgeColours=colours,
+                bbox=(0, 0, 1, 1))
+    plt.show()
+
 
 def lager(spectra, nstates):
     """ Generate new set of states using tpot.GAMMA """
@@ -277,6 +304,7 @@ def main():
 
     stamp_stats(df.stamps)
     spectra = np.array(generate_spectra(df))
+    spectra = spectra[:250]
 
     # fixme - save spectra somewhere and do faster load.
     # cf repeatability too.

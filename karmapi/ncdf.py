@@ -183,7 +183,7 @@ def delta(stamps, values):
 
         data -= out
         #xx = pyplot.subplot(8, 4, 1 + x - window)
-        #xx.set_axis_off()ga
+        #xx.set_axis_off()
         
         print(f'{dt[48*ix]} {data.mean()}, {data.max()}, {data.min()}')
         xx = imshow(data / window, vmin=-3, vmax=3, cmap='rainbow')
