@@ -66,10 +66,22 @@ def stamps_to_datetime(stamps, epoch=None):
 def generate_data(stamps, values, epoch=None):
 
     epoch = epoch or current_epoch()
-    
-    for ix, stamp in enumerate(stamps):
 
+    for ix, stamp in enumerate(stamps):
         yield values[ix], stamp
+    return
+
+    print(f'ncdf.gnerate_data len stamps: {len(stamps)}')
+    lastix = 0
+    for stamp in stamps:
+        ss, date, ix = stamp
+
+        print('ncdf.generate_data', ix)
+        yield values[ix], stamp
+
+        if ix < lastix:
+            print(f'whoaa {ix} {lastix}')
+        lastix = ix
     
 
         
@@ -481,7 +493,21 @@ class CircularField:
         self.stamps = stamp_sort(stamps)
 
         print("number of observations:", len(stamps))
-        
+
+    def filter_stamps(self, hour=None, day=None):
+
+        good = []
+        for stamp in self.stamps:
+            s, d, ix = stamp
+            if hour is not None:
+                if d.hour != hour:
+                    continue
+            if day is not None:
+                if d.day != day:
+                    continue
+            good.append(stamp)
+
+        self.stamps = good
 
 if __name__ == '__main__':
 

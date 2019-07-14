@@ -19,27 +19,57 @@ def spectrum(value):
     return clm, pyshtools.spectralanalysis.spectrum(clm)
 
 
-def generate_spectra(df):
+def generate_spectra(df, lmax=10, mmax=10, power=False, delta=False,
+                     topn=0):
 
     spectra = []
     last = None
     lastdate = None
-    for value, stamp in ncdf.generate_data(df.stamps, df.values):
-        ss, date, ix = stamp
+    for ix, (value, stamp) in enumerate(ncdf.generate_data(df.stamps, df.values)):
+        ss, date, nix = stamp
 
         if last is None:
             last = value
             continue
 
-        delta = last - value
+        if delta:
+            value = last - value
 
-        clm, spect = spectrum(delta)
-        spectra.append(spect)
+        clm, spect = spectrum(value)
+        if power:
+            print('SPECT:', spect)
+            value = spect
+        else:
+            value = np.append(clm[0][:lmax, :lmax],
+                              clm[1][:lmax, :lmax])
+            junk, ww, hh = clm.shape
+
+            start = 20
+            clm[:, start:ww, start:hh] = 0.0
+            
+            xxxx = pyshtools.expand.MakeGridDH(clm)
+            print(type(xxxx), xxxx.shape)
+            print(date)
+            if date.month == 1:
+                fig = plt.figure()
+                ax = fig.add_axes((0,0,1,1), projection='mollweide')
+                ax.imshow(xxxx)
+                plt.show()
+            
+
+            #value = value.flatten()
+            #print('ix, value.shape', ix, value.shape)
+            
+        spectra.append(value)
 
         if lastdate and lastdate > date:
             break
         lastdate = date
 
+        if topn and ix > topn:
+            break
+
+    print(f'FULL SET OF SPECTRA {len(spectra)} {len(spectra[0])}')
     return spectra
 
 
@@ -61,7 +91,7 @@ def plots(df):
         clm, spect = spectrum(delta)
         spectra.append(spect)
 
-        print(f'SPECT {spect.cumsum()/spect.sum()}')
+        #print(f'SPECT {spect.cumsum()/spect.sum()}')
 
         if date >= datetime.datetime(1990, 1, 1):
             break
@@ -112,11 +142,12 @@ def plots(df):
     
 def stats(data):
     """ Return some standard stats """
+    print("DATA STAtS (shape, mean, var, percentiles)")
     print(data.shape)
     print(data.mean())
     print(data.var())
     print(np.percentile(data.cumsum(), [0.25, 0.5, 0.75, 0.9, 0.99]))
-
+    print()
     means = data.mean(axis=0)
     print(f'means: {means.shape}')
     stds = data.std(axis=0)
@@ -124,7 +155,7 @@ def stats(data):
 
     for x in range(12):
         print(means[10*x:10 + (10 * x)])
-        print()
+    print()
 
 
 def random_sample(data, n):
@@ -148,9 +179,10 @@ def normalise(data):
 
     means = data.mean(axis=0)
     stds = data.std(axis=0)
-
+    print(f'normalise {means}')
+    print(f'normalise {stds}')
     data -= means
-    data /=stds
+    data /= stds
 
     return data
 
@@ -200,8 +232,11 @@ def brew(spectra, nstates=10):
 
     # generate random eh?
     A = np.random.random(size=(nstates, nstates))
+    for i in range(nstates):
+        A[i, :] /= A[i, :].sum()
 
     P0 = np.random.random(size=nstates)
+    P0 /= P0.sum()
 
     tpot.A = A
     tpot.B = B
@@ -211,6 +246,7 @@ def brew(spectra, nstates=10):
 
     print('TPOT filled, away we go')
     nsteps = 100
+    lastscore = None
     for step in range(nsteps):
 
         tpot.brew()
@@ -226,7 +262,12 @@ def brew(spectra, nstates=10):
             print(tpot.A)
             gamma_plot()
 
+        if step > 25:
+            if (tpot.SCORE - lastscore) < 1.0:
+                break
 
+        lastscore = tpot.SCORE
+        
     gamma_plot()
     for x in tpot.GAMMA[:10]:
         print(f'Gamma: {x}')
@@ -293,33 +334,47 @@ def main():
     parser = ncdf.argument_parser()
 
     parser.add_argument('--plot', action='store_true')
+    parser.add_argument('--topn', type=int, default=0)
+    parser.add_argument('--power', action='store_true')
+    parser.add_argument('--norm', action='store_true')
+    parser.add_argument('--day', type=int)
+    parser.add_argument('--hour', type=int)
 
     args = parser.parse_args()
 
     df = ncdf.CircularField(args)
 
+    df.filter_stamps(hour=args.hour, day=args.day)
+
     if args.plot:
         plots(df)
         return
 
-    stamp_stats(df.stamps)
-    spectra = np.array(generate_spectra(df))
-    spectra = spectra[:250]
+    topn = 20
+    #stamp_stats(df.stamps)
+    spectra = np.array(generate_spectra(
+        df,
+        topn=args.topn,
+        power=args.power,
+        delta=args.delta))
+    print(f'spectra zero shape {spectra[0].shape}')
 
     # fixme - save spectra somewhere and do faster load.
     # cf repeatability too.
 
     stats(spectra)
 
-    # maybe just normalise spectra? 
-    nspectra = normalise(spectra)
-    stats(nspectra)
+    # maybe just normalise spectra?
+    if args.norm:
+        nspectra = normalise(spectra)
+        stats(nspectra)
+        spectra = nspectra
 
     sample = random_sample(spectra, 10)
 
     stats(sample)
 
-    brew(nspectra, 10)
+    brew(spectra, 10)
 
 
 if __name__ == '__main__':
