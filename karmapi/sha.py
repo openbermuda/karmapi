@@ -44,17 +44,21 @@ def generate_spectra(df, lmax=10, mmax=10, power=False, delta=False,
                               clm[1][:lmax, :lmax])
             junk, ww, hh = clm.shape
 
-            start = 20
+            start = 40
             clm[:, start:ww, start:hh] = 0.0
             
             xxxx = pyshtools.expand.MakeGridDH(clm)
-            print(type(xxxx), xxxx.shape)
+            #print(type(xxxx), xxxx.shape)
             print(date)
-            if date.month == 1:
-                fig = plt.figure()
-                ax = fig.add_axes((0,0,1,1), projection='mollweide')
-                ax.imshow(xxxx)
-                plt.show()
+
+            fig = plt.figure()
+            ax = fig.add_axes((0,0,1,1), projection='mollweide')
+            lon = np.linspace(-np.pi, np.pi, xxxx.shape[1])
+            lat = np.linspace(-np.pi/2, np.pi/2, xxxx.shape[0])
+            lon, lat = np.meshgrid(lon, lat)
+            ax.pcolormesh(lon, lat, xxxx[::-1], cmap=plt.cm.jet)
+            plt.grid(True)
+            plt.show()
             
 
             #value = value.flatten()
@@ -337,6 +341,7 @@ def main():
     parser.add_argument('--topn', type=int, default=0)
     parser.add_argument('--power', action='store_true')
     parser.add_argument('--norm', action='store_true')
+    parser.add_argument('--nstates', type=int, default=10)
     parser.add_argument('--day', type=int)
     parser.add_argument('--hour', type=int)
 
@@ -370,11 +375,11 @@ def main():
         stats(nspectra)
         spectra = nspectra
 
-    sample = random_sample(spectra, 10)
+    sample = random_sample(spectra, args.nstates)
 
     stats(sample)
 
-    brew(spectra, 10)
+    brew(spectra, args.nstates)
 
 
 if __name__ == '__main__':
