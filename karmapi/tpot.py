@@ -13,7 +13,7 @@ import numpy as np
 class TeaPlot:
 
     def __init__(self,
-                 A=None, B=None, P0):
+                 A=None, B=None, P0=None):
         
         self.A = A
         self.B = B
@@ -56,7 +56,7 @@ class TeaPlot:
 
         observations = self.OBSERVATIONS
         
-        T = len(OBSERVATIONS)
+        T = len(observations)
         A = self.A
         B = self.B
         P0 = self.P0
@@ -140,6 +140,7 @@ class TeaPlot:
         """ Re-estimate B matrix """
         
         # spin through observations to re-estimate B
+        B = self.B 
         bdash = np.zeros(shape=B.shape)
 
         for obs, gam in zip(self.OBSERVATIONS, self.GAMMA):
@@ -152,23 +153,24 @@ class TeaPlot:
 
         self.R_B = bdash
 
-
-    def am_rest(self):
-        pass
-
     def p0_rest(self):
         """ Re-estimate initial state probabilities """
         self.R_P0 = self.GAMMA[0] / sum(self.GAMMA[0])
 
     def am_rest(self):
         """ Re-estimate A matrix. """
+        A = self.A
+        B = self.B
+        ALPHA = self.ALPHA
+        BETA = self.BETA
+        SCALE = self.SCALE
         
         ksi = np.zeros(shape=A.shape)
         T = ALPHA.shape[0]
         n = A.shape[0]
         
         for t in range(1, T):
-            obs = OBSERVATIONS[t]
+            obs = self.OBSERVATIONS[t]
             totweight = 0.
             weights = np.zeros(shape=A.shape)
 
@@ -186,8 +188,7 @@ class TeaPlot:
         ksi = (ksi.T / ksi.T.sum(0)).T
 
         # Save the re-estimate
-        global R_A
-        R_A = ksi
+        self.R_A = ksi
 
 
     def fill(self, parms):
@@ -236,17 +237,17 @@ class TeaPlot:
 
         xscore = None
         for iter in range(iters):
-            brew()
-            beer()
-            stir()
-
+            self.brew()
+            self.beer()
+            self.stir()
+            print(f'SCORE {self.SCORE}')
             # check in case we seem to have converged
             if xscore is not None:
-                delta = SCORE - xscore
+                delta = self.SCORE - xscore
                 if delta < epsilon:
                     break
             
-            xscore = SCORE
+            xscore = self.SCORE
 
 
     def ferment():

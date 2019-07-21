@@ -262,14 +262,27 @@ def make_bmatrix(spectra, states):
 
     return observations, B        
 
+class TeaPlot(tpot.TeaPlot):
+
+    def beer(self):
+        
+        super().beer()
+        rebrew(self)
+
+        
 
 def brew(spectra, nstates=10):
     """ Perform tpot algorithm """
 
+    tplot = TeaPlot()
+
     sample = random_sample(spectra, nstates)
 
     observations, B = make_bmatrix(spectra, sample)
-
+    tplot.OBSERVATIONS = observations
+    tplot.spectra = spectra
+    tplot.nstates = nstates
+    
     # generate random eh?
     A = np.random.random(size=(nstates, nstates))
     for i in range(nstates):
@@ -277,43 +290,24 @@ def brew(spectra, nstates=10):
 
     P0 = np.random.random(size=nstates)
     P0 /= P0.sum()
+    tplot.A = A
+    tplot.B = B
+    tplot.P0 = P0
 
-    tpot.A = A
-    tpot.B = B
-    tpot.P0 = P0
 
-    tpot.OBSERVATIONS = observations
+    tplot.OBSERVATIONS = observations
+
 
     print('TPOT filled, away we go')
-    nsteps = 100
-    lastscore = None
-    for step in range(nsteps):
+    print(tplot.A)
+    tplot.stew(iters=100)
 
-        tpot.brew()
-
-        print(f'Step {step} score {tpot.SCORE}')
-
-        # re-estimage A, B, P0
-        tpot.beer()
-        rebrew(spectra, nstates)
-        tpot.stir()
-
-        if step % 25 == 0:
-            print(tpot.A)
-            gamma_plot()
-
-        if step > 25:
-            if (tpot.SCORE - lastscore) < 1.0:
-                break
-
-        lastscore = tpot.SCORE
-        
-    gamma_plot()
+    gamma_plot(tplot)
     for x in tpot.GAMMA[:10]:
         print(f'Gamma: {x}')
 
 
-def gamma_plot():
+def gamma_plot(tpot):
 
     T, nstates = tpot.GAMMA.shape
     
@@ -344,26 +338,30 @@ def gamma_plot():
     plt.show()
 
 
-def lager(spectra, nstates):
+def lager(tplot):
     """ Generate new set of states using tpot.GAMMA """
 
+
+    spectra, nstates = tplot.spectra, tplot.states
+    nstates = tplot.nstates
+    
     states = np.zeros(shape=(nstates, len(spectra[0])), dtype=float)
 
-    for obs, gam in zip(spectra, tpot.GAMMA):
+    for obs, gam in zip(spectra, tplot.GAMMA):
         for state in range(nstates):
             states[state] += gam[state] * obs
 
     for i in range(nstates):
-        states[i] /= sum(tpot.GAMMA[:, i])
+        states[i] /= sum(tplot.GAMMA[:, i])
             
     return states
 
-def rebrew(spectra, nstates):
+def rebrew(tplot):
     """ Do re-estimation """
     # re-estimate states based on gamma
-    states = lager(spectra, nstates)
+    states = lager(tplot)
         
-    observations, B = make_bmatrix(spectra, states)
+    observations, B = make_bmatrix(tplot.spectra, states)
 
     tpot.B = B
     tpot.OBSERVATIONS = observations
