@@ -1,3 +1,11 @@
+"""
+Spherical Harmonic Analysis and markov models.
+
+And also, plotting as you go.
+
+Navigating data.
+"""
+
 
 from karmapi import ncdf, tpot
 
@@ -19,12 +27,34 @@ def spectrum(value):
     return clm, pyshtools.spectralanalysis.spectrum(clm)
 
 
+def molly(xxxx, ax=None, vmax=None, vmin=None):
+    """ yet another plot """
+    if vmax is None:
+        vmax = xxxx.max()
+        vmin = xxxx.min()
+
+    if ax is None:
+        fig = plt.figure()
+
+    ax = fig.add_axes((0,0,1,1), projection='mollweide')
+    lon = np.linspace(-np.pi, np.pi, xxxx.shape[1])
+    lat = np.linspace(-np.pi/2, np.pi/2, xxxx.shape[0])
+    lon, lat = np.meshgrid(lon, lat)
+    ax.pcolormesh(lon, lat, xxxx[::-1], cmap=plt.cm.jet,
+                  vmin=vmin, vmax=vmax)
+
+    # the next two don't belong here
+    plt.grid(True)
+    plt.show()
+    
+
 def generate_spectra(df, lmax=10, mmax=10, power=False, delta=False,
                      topn=0):
 
     spectra = []
     last = None
     lastdate = None
+    vmax = vmin = None
     for ix, (value, stamp) in enumerate(ncdf.generate_data(df.stamps, df.values)):
         ss, date, nix = stamp
 
@@ -51,14 +81,20 @@ def generate_spectra(df, lmax=10, mmax=10, power=False, delta=False,
             #print(type(xxxx), xxxx.shape)
             print(date)
 
-            fig = plt.figure()
-            ax = fig.add_axes((0,0,1,1), projection='mollweide')
-            lon = np.linspace(-np.pi, np.pi, xxxx.shape[1])
-            lat = np.linspace(-np.pi/2, np.pi/2, xxxx.shape[0])
-            lon, lat = np.meshgrid(lon, lat)
-            ax.pcolormesh(lon, lat, xxxx[::-1], cmap=plt.cm.jet)
-            plt.grid(True)
-            plt.show()
+            if vmax is None:
+                vmax = xxxx.max()
+                vmin = xxxx.min()
+
+            if date.month == 6 and 0 == date.year % 10:
+                fig = plt.figure()
+                ax = fig.add_axes((0,0,1,1), projection='mollweide')
+                lon = np.linspace(-np.pi, np.pi, xxxx.shape[1])
+                lat = np.linspace(-np.pi/2, np.pi/2, xxxx.shape[0])
+                lon, lat = np.meshgrid(lon, lat)
+                ax.pcolormesh(lon, lat, xxxx[::-1], cmap=plt.cm.jet,
+                              vmin=vmin, vmax=vmax)
+                plt.grid(True)
+                plt.show()
             
 
             #value = value.flatten()
