@@ -85,6 +85,9 @@ class TeaPlot:
         self.ALPHA = alpha
         self.SCALE = scale
 
+        print('SCALE')
+        for x in range(10):
+            print(x, np.log(scale[x]))
         self.SCORE = sum(np.log(scale))
 
     def beta(self):

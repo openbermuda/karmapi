@@ -63,188 +63,6 @@ def stamps_to_datetime(stamps, epoch=None):
         yield epoch + datetime.timedelta(hours=int(stamp))
 
 
-def generate_data(stamps, values, epoch=None):
-
-    epoch = epoch or current_epoch()
-
-    for ix, stamp in enumerate(stamps):
-        yield values[ix], stamp
-    return
-
-    print(f'ncdf.gnerate_data len stamps: {len(stamps)}')
-    lastix = 0
-    for stamp in stamps:
-        ss, date, ix = stamp
-
-        print('ncdf.generate_data', ix)
-        yield values[ix], stamp
-
-        if ix < lastix:
-            print(f'whoaa {ix} {lastix}')
-        lastix = ix
-    
-
-        
-def images(path, stamps, values):
-
-    lastdate = None
-    for data, date in generate_data(stamps, values):
-
-        print(date)
-        pyplot.imshow(data)
-
-        item  = Path(f'{path}/{date.year}/1/1/').expanduser()
-
-        item.mkdir(exist_ok=True, parents=True)
-
-        filename = f'{date.month:02}{date.day:02}_'
-        filename += f'{date.hour:02}{date.minute:02}{date.second:02}.jpg'
-
-        print(filename)
-        item = item / filename
-
-        pyplot.savefig(str(item), bbox_inches='tight', pad_inches=0)
-
-
-def totals(stamps, values):
-
-    totals = []
-    for data, date in generate_data(stamps, values):
-        total = sum(sum(data))
-        totals.append(total)
-
-    return totals
-
-def pcs(stamps, values, n=None):
-    """ Get principal components for each longitude 
-
-    See how picture changes if we just use first 2 components.
-    """
-
-    if n:
-        stamps = stamps[:n]
-
-    records = []
-    for lon in range(1):
-        for data, date in generate_data(stamps, values):
-            print(date)
-            records.append(data[lon])
-
-    records = np.array(records)
-
-    print(records.shape)
-
-    pca = sonogram.Principals(records, standardize=True)
-
-    print(pca.Wt)
-    
-    return pca
-
-
-def downsample(stamps, values, k=15):
-
-    
-    for data, date in generate_data(stamps, values):
-    
-        xx = values[0]
-        width, height = xx.shape
-
-    nn = len(stamps)
-    
-
-
-def delta(stamps, values):
-
-    nn = 37
-    totals = values[0]
-    for x in range(1, nn * 48):
-        totals += values[x]
-
-    totals /= (nn * 48)
-    print(totals.shape)
-
-    dt = list(stamps_to_datetime(stamps))
-    
-    rolling = None
-    alpha = .3
-
-    results = []
-    for x in range(nn):
-
-        data = values[x * 48]
-        for offset in range(1, 48):
-            ix = (x * 48) + offset
-            data += values[ix]
-        data /= 48
-        data -= totals
-
-        results.append(data)
-
-
-    print(len(results))
-    window = 5
-    data = results[0].copy()
-    for w in range(1, window):
-        data += results[w]
-        print(data.mean())
-
-    print('start')
-    for ix, (inn, out) in enumerate(zip(results[window:], results)):
-
-        data += inn
-
-        data -= out
-        #xx = pyplot.subplot(8, 4, 1 + x - window)
-        #xx.set_axis_off()
-        
-        print(f'{dt[48*ix]} {data.mean()}, {data.max()}, {data.min()}')
-        xx = imshow(data / window, vmin=-3, vmax=3, cmap='rainbow')
-        #for x in dir(xx):
-        #    print(x)
-
-        #colorbar()
-        title(str(dt[48*(ix + window)]))
-        saveimage('karmapi/ecmwf/anomaly', dt[48 * ix])
-
-
-
-def saveimage(path, date):
-
-    item  = Path(f'{path}/1979/1/1').expanduser()
-    
-    item.mkdir(exist_ok=True, parents=True)
-
-    filename = f'{date.year:02}{date.month:02}.jpg'
-
-    print(filename)
-    item = item / filename
-
-    pyplot.savefig(str(item), bbox_inches='tight', pad_inches=0)
-
-
-def model(stamps, values):
-    """ Build a model """
-    stamps = list(stamps)
-    xx = values[stamps[0]]
-
-    print(xx.shape)
-
-
-def model(stamps, values):
-    """ fit a model """
-
-    dt = list(stamps_to_datetime(stamps))
-
-    data = pcs(stamps, values)
-
-def xxx(stamps, ix, n=10):
-
-    for x in stamps[ix: ix + n]:
-        print(x)
-
-    print([x % 24 for x in stamps[ix: ix + n]])
-
-
 def stamp_sort(stamps):
     """ FIXME: use this to go through images in order """
     ss = sorted(zip(stamps,
@@ -455,27 +273,6 @@ class World(cpr.NestedWaves):
         super().__init__(parent, balls=balls, **kwargs)
 
 
-
-
-
-
-def argument_parser(parser=None):        
-            
-    parser = cpr.argument_parser(parser)
-    parser.add_argument('--path', default='karmapi/ecmwf')
-    parser.add_argument('--value', default='t2m')
-    parser.add_argument('--raw', default='temperature.nc')
-    parser.add_argument(
-        '--pc', action='store_true',
-        help='do principal components')
-
-    parser.add_argument('--delta', action='store_true')
-    parser.add_argument('--model', action='store_true')
-    parser.add_argument('--offset', type=int, default=0)
-    parser.add_argument('--save')
-
-    return parser
-
 class CircularField:
 
     def __init__(self, args):
@@ -494,6 +291,10 @@ class CircularField:
 
         print("number of observations:", len(stamps))
 
+        # totals across years
+        self.totals = {}
+
+
     def filter_stamps(self, hour=None, day=None):
 
         good = []
@@ -508,6 +309,54 @@ class CircularField:
             good.append(stamp)
 
         self.stamps = good
+
+    def generate_data(self, epoch=None):
+        """ spin through frames in stamp order """
+        epoch = epoch or current_epoch()
+
+        for ix, stamp in enumerate(self.stamps):
+            ss, date, nix = stamp
+            yield date, self.values[nix]
+
+
+    def sum_years(self):
+        """ Build totals across years """
+        counts = {}
+        for date, value in self.generate_data():
+            key = (date.month, date.day, date.hour)
+
+            if key in self.totals:
+                self.totals[key] += value
+                counts[key] += 1
+            else:
+                self.totals[key] = value
+                counts[key] = 1
+                
+        for key in self.totals.keys():
+            self.totals[key] /= counts[key]
+
+    def deviation(self, date, value):
+        """ Return defiation from monthly mean """
+        key = (date.month, date.day, date.hour)
+        return value - self.totals[key]
+
+
+def argument_parser(parser=None):        
+            
+    parser = cpr.argument_parser(parser)
+    parser.add_argument('--path', default='karmapi/ecmwf')
+    parser.add_argument('--value', default='t2m')
+    parser.add_argument('--raw', default='temperature.nc')
+    parser.add_argument(
+        '--pc', action='store_true',
+        help='do principal components')
+
+    parser.add_argument('--delta', action='store_true')
+    parser.add_argument('--model', action='store_true')
+    parser.add_argument('--offset', type=int, default=0)
+    parser.add_argument('--save')
+
+    return parser
 
 if __name__ == '__main__':
 

@@ -18,6 +18,8 @@ import numpy as np
 
 import datetime
 from collections import Counter
+import math
+import time
 
 def spectrum(value):
 
@@ -48,15 +50,21 @@ def molly(xxxx, ax=None, vmax=None, vmin=None):
     plt.show()
     
 
-def generate_spectra(df, lmax=10, mmax=10, power=False, delta=False,
+def generate_spectra(df, lmax=20, mmax=10, power=False, delta=False,
                      topn=0):
 
+    print('Calculating means across years')
+    df.sum_years()
+    print('Done means across years')
+    
     spectra = []
     last = None
     lastdate = None
     vmax = vmin = None
-    for ix, (value, stamp) in enumerate(ncdf.generate_data(df.stamps, df.values)):
-        ss, date, nix = stamp
+    plots = []
+    for ix, (date, value) in enumerate(df.generate_data()):
+
+        value = df.deviation(date, value)
 
         if last is None:
             last = value
@@ -76,30 +84,17 @@ def generate_spectra(df, lmax=10, mmax=10, power=False, delta=False,
 
             start = 40
             clm[:, start:ww, start:hh] = 0.0
-            
+        
             xxxx = pyshtools.expand.MakeGridDH(clm)
             #print(type(xxxx), xxxx.shape)
-            print(date)
 
-            if vmax is None:
-                vmax = xxxx.max()
-                vmin = xxxx.min()
-
-            if date.month == 6 and 0 == date.year % 10:
-                fig = plt.figure()
-                ax = fig.add_axes((0,0,1,1), projection='mollweide')
-                lon = np.linspace(-np.pi, np.pi, xxxx.shape[1])
-                lat = np.linspace(-np.pi/2, np.pi/2, xxxx.shape[0])
-                lon, lat = np.meshgrid(lon, lat)
-                ax.pcolormesh(lon, lat, xxxx[::-1], cmap=plt.cm.jet,
-                              vmin=vmin, vmax=vmax)
-                plt.grid(True)
-                plt.show()
-            
-
+            if date.month == 9 and date.year % 5 == 0:
+                print('lmax:', lmax)
+                plots.append((date, xxxx))
             #value = value.flatten()
             #print('ix, value.shape', ix, value.shape)
             
+
         spectra.append(value)
 
         if lastdate and lastdate > date:
@@ -108,6 +103,41 @@ def generate_spectra(df, lmax=10, mmax=10, power=False, delta=False,
 
         if topn and ix > topn:
             break
+
+    vmax = -np.inf
+    vmin = np.inf
+    
+    for date, plot in plots:
+
+        vmax = max(plot.max(), vmax)
+        vmin = min(plot.min(), vmin)
+
+    print('vmax/vmin', vmax, vmin)
+
+    ix = 1
+    for date, plot in plots:
+        fig = plt.figure()
+
+        print(date, plot.min(), plot.max(), np.percentile(plot, 50), plot.mean())
+        ax = fig.add_axes((0,0,1,1), projection='mollweide')
+        #ax = fig.add_subplot(2, len(plots)//2, ix,
+        #                     projection='mollweide')
+        ix += 1
+        
+        lon = np.linspace(-np.pi, np.pi, xxxx.shape[1])
+        lat = np.linspace(-np.pi/2, np.pi/2, xxxx.shape[0])
+        lon, lat = np.meshgrid(lon, lat)
+        ax.pcolormesh(lon, lat, plot[::-1], cmap=plt.cm.jet,
+                      vmax=vmax, vmin=vmin)
+        ax.set_title(str(date))
+        plt.grid(True)
+        
+
+        plt.show()
+        #for x in range(5):
+        #    print('sleeping..', x)
+        #    time.sleep(1)
+
 
     print(f'FULL SET OF SPECTRA {len(spectra)} {len(spectra[0])}')
     return spectra
@@ -118,8 +148,7 @@ def plots(df):
     last = None
 
     spectra = []
-    for value, stamp in ncdf.generate_data(df.stamps, df.values):
-        ss, date, ix = stamp
+    for date, value in df.generate_data():
         print(date)
 
         if last is None:
@@ -167,8 +196,6 @@ def plots(df):
 
         last = value
         
-        if ix >= 12:
-            break
         
 
 
@@ -182,7 +209,7 @@ def plots(df):
     
 def stats(data):
     """ Return some standard stats """
-    print("DATA STAtS (shape, mean, var, percentiles)")
+    print("DATA STATS (shape, mean, var, percentiles)")
     print(data.shape)
     print(data.mean())
     print(data.var())
@@ -205,7 +232,7 @@ def random_sample(data, n):
     stds = data.std(axis=0)
 
     shape = [n] + list(means.shape)
-    return norm(size=shape)
+    samp = norm(size=shape)
 
     # old code below scales to original distro
     print(samp.shape)
@@ -219,8 +246,11 @@ def normalise(data):
 
     means = data.mean(axis=0)
     stds = data.std(axis=0)
-    print(f'normalise {means}')
-    print(f'normalise {stds}')
+    #print(f'normalise {means}')
+    #print(f'normalise {stds}')
+    stds = np.where(stds==0.0,
+                    np.ones(shape=stds.shape),
+                    stds)
     data -= means
     data /= stds
 
@@ -258,7 +288,9 @@ def make_bmatrix(spectra, states):
             # so prob e ** x or log(x) here ... or all ok?
             
             #print(obs, state, dist)
-            B[obs, state] = (abs(dist) ** 0.5)
+            #B[obs, state] = (abs(dist) ** 0.5)
+            #print('B', obs, state, dist, math.e ** (-1 * dist))
+            B[obs, state] = math.e ** (-1 * dist)
 
     return observations, B        
 
@@ -279,6 +311,7 @@ def brew(spectra, nstates=10):
     sample = random_sample(spectra, nstates)
 
     observations, B = make_bmatrix(spectra, sample)
+    print('b matrix:', B[0])
     tplot.OBSERVATIONS = observations
     tplot.spectra = spectra
     tplot.nstates = nstates
@@ -294,16 +327,19 @@ def brew(spectra, nstates=10):
     tplot.B = B
     tplot.P0 = P0
 
-
     tplot.OBSERVATIONS = observations
 
-
+    tplot.brew()
+    tplot.beer()
+    tplot.stir()
+    
     print('TPOT filled, away we go')
     print(tplot.A)
+    print(tplot.P0)
     tplot.stew(iters=100)
 
     gamma_plot(tplot)
-    for x in tpot.GAMMA[:10]:
+    for x in tplot.GAMMA[:10]:
         print(f'Gamma: {x}')
 
 
@@ -342,7 +378,7 @@ def lager(tplot):
     """ Generate new set of states using tpot.GAMMA """
 
 
-    spectra, nstates = tplot.spectra, tplot.states
+    spectra, nstates = tplot.spectra, tplot.nstates
     nstates = tplot.nstates
     
     states = np.zeros(shape=(nstates, len(spectra[0])), dtype=float)
