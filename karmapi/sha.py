@@ -50,7 +50,7 @@ def molly(xxxx, ax=None, vmax=None, vmin=None):
     plt.show()
     
 
-def generate_spectra(df, lmax=20, mmax=10, power=False, delta=False,
+def generate_spectra(df, lmax=200, mmax=10, power=False, delta=False,
                      topn=0):
 
     print('Calculating means across years')
