@@ -50,7 +50,7 @@ def molly(xxxx, ax=None, vmax=None, vmin=None):
     plt.show()
     
 
-def generate_spectra(df, lmax=200, mmax=10, power=False, delta=False,
+def generate_spectra(df, lmax=10, mmax=10, power=False, delta=False,
                      topn=0):
 
     print('Calculating means across years')
@@ -119,17 +119,28 @@ def generate_spectra(df, lmax=200, mmax=10, power=False, delta=False,
         fig = plt.figure()
 
         print(date, plot.min(), plot.max(), np.percentile(plot, 50), plot.mean())
-        ax = fig.add_axes((0,0,1,1), projection='mollweide')
-        #ax = fig.add_subplot(2, len(plots)//2, ix,
-        #                     projection='mollweide')
-        ix += 1
-        
-        lon = np.linspace(-np.pi, np.pi, xxxx.shape[1])
-        lat = np.linspace(-np.pi/2, np.pi/2, xxxx.shape[0])
+        #ax = fig.add_axes((0,0,1,1), projection='mollweide')
+        ax = fig.add_subplot(2, 1, 1,
+                             projection='mollweide')
+        lon = np.linspace(-np.pi, np.pi, plot.shape[1])
+        lat = np.linspace(-np.pi/2, np.pi/2, plot.shape[0])
         lon, lat = np.meshgrid(lon, lat)
         ax.pcolormesh(lon, lat, plot[::-1], cmap=plt.cm.jet,
                       vmax=vmax, vmin=vmin)
         ax.set_title(str(date))
+        ax.axis('off')
+        key = (date.month, date.day, date.hour)
+        ax = fig.add_subplot(2, 1, 2,
+                             projection='mollweide')
+
+        xxxx = df.totals[key][1:]
+        lon = np.linspace(-np.pi, np.pi, xxxx.shape[1])
+        lat = np.linspace(-np.pi/2, np.pi/2, xxxx.shape[0])
+        lon, lat = np.meshgrid(lon, lat)
+        ax.axis('off')
+        ax.pcolormesh(lon, lat, xxxx[::-1], cmap=plt.cm.jet)
+                      #vmax=vmax, vmin=vmin)
+
         plt.grid(True)
         
 
