@@ -82,7 +82,7 @@ def generate_spectra(df, lmax=10, mmax=10, power=False, delta=False,
                               clm[1][:lmax, :lmax])
             junk, ww, hh = clm.shape
 
-            start = 40
+            start = lmax
             clm[:, start:ww, start:hh] = 0.0
         
             xxxx = pyshtools.expand.MakeGridDH(clm)
@@ -104,21 +104,22 @@ def generate_spectra(df, lmax=10, mmax=10, power=False, delta=False,
         if topn and ix > topn:
             break
 
-    vmax = -np.inf
-    vmin = np.inf
     
-    for date, plot in plots:
-
-        vmax = max(plot.max(), vmax)
-        vmin = min(plot.min(), vmin)
-
-    print('vmax/vmin', vmax, vmin)
-
+    vmax = None
+    vmin = None
     ix = 1
     for date, plot in plots:
         fig = plt.figure()
+        fig.set_facecolor('black')
+        fig.set_edgecolor('black')
+        if vmax is None:
+            vmax = plot.max()
+            vmin = plot.min()
+            print('vmax/vmin', vmax, vmin)
 
-        print(date, plot.min(), plot.max(), np.percentile(plot, 50), plot.mean())
+
+        
+        print(date, plot.min(), plot.max(), plot.mean())
         #ax = fig.add_axes((0,0,1,1), projection='mollweide')
         ax = fig.add_subplot(2, 1, 1,
                              projection='mollweide')
@@ -363,10 +364,12 @@ def gamma_plot(tpot):
     fig = plt.figure()
     ax = fig.add_subplot(211)
     data = tpot.GAMMA
+    
     print(f'data shape {data.shape}')
-    for i in range(nstates):
-        ax.bar(index, data[:, i], bottom=bottom)
-        bottom += data[:, i]
+    ax.imshow(data.T, aspect='auto')
+    #for i in range(nstates):
+    #    ax.bar(index, data[:, i], bottom=bottom)
+    #    bottom += data[:, i]
 
 
     from matplotlib import colors, cm
@@ -420,6 +423,7 @@ def main():
 
     parser.add_argument('--plot', action='store_true')
     parser.add_argument('--topn', type=int, default=0)
+    parser.add_argument('--lmax', type=int, default=10)
     parser.add_argument('--power', action='store_true')
     parser.add_argument('--norm', action='store_true')
     parser.add_argument('--nstates', type=int, default=10)
@@ -440,6 +444,7 @@ def main():
     #stamp_stats(df.stamps)
     spectra = np.array(generate_spectra(
         df,
+        lmax=args.lmax,
         topn=args.topn,
         power=args.power,
         delta=args.delta))
