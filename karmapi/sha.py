@@ -51,7 +51,7 @@ def molly(xxxx, ax=None, vmax=None, vmin=None):
     
 
 def generate_spectra(df, lmax=10, mmax=10, power=False, delta=False,
-                     topn=0):
+                     plot_month=None, topn=0):
 
     print('Calculating means across years')
     df.sum_years()
@@ -88,7 +88,7 @@ def generate_spectra(df, lmax=10, mmax=10, power=False, delta=False,
             xxxx = pyshtools.expand.MakeGridDH(clm)
             #print(type(xxxx), xxxx.shape)
 
-            if date.month == 9 and date.year % 5 == 0:
+            if date.month == plot_month and date.year % 5 == 0:
                 print('lmax:', lmax)
                 plots.append((date, xxxx))
             #value = value.flatten()
@@ -111,7 +111,7 @@ def generate_spectra(df, lmax=10, mmax=10, power=False, delta=False,
     for date, plot in plots:
         fig = plt.figure()
         fig.set_facecolor('black')
-        fig.set_edgecolor('black')
+        #fig.set_edgecolor('white')
         if vmax is None:
             vmax = plot.max()
             vmin = plot.min()
@@ -128,7 +128,7 @@ def generate_spectra(df, lmax=10, mmax=10, power=False, delta=False,
         lon, lat = np.meshgrid(lon, lat)
         ax.pcolormesh(lon, lat, plot[::-1], cmap=plt.cm.jet,
                       vmax=vmax, vmin=vmin)
-        ax.set_title(str(date))
+        ax.set_title(str(date), color='white')
         ax.axis('off')
         key = (date.month, date.day, date.hour)
         ax = fig.add_subplot(2, 1, 2,
@@ -427,6 +427,8 @@ def main():
     parser.add_argument('--power', action='store_true')
     parser.add_argument('--norm', action='store_true')
     parser.add_argument('--nstates', type=int, default=10)
+
+    parser.add_argument('--month', type=int)
     parser.add_argument('--day', type=int)
     parser.add_argument('--hour', type=int)
 
@@ -444,6 +446,7 @@ def main():
     #stamp_stats(df.stamps)
     spectra = np.array(generate_spectra(
         df,
+        plot_month=args.month,
         lmax=args.lmax,
         topn=args.topn,
         power=args.power,
