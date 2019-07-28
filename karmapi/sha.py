@@ -51,7 +51,7 @@ def molly(xxxx, ax=None, vmax=None, vmin=None):
     
 
 def generate_spectra(df, lmax=10, mmax=10, power=False, delta=False,
-                     plot_month=None, topn=0):
+                     month=None, topn=0, **kwargs):
 
     print('Calculating means across years')
     df.sum_years()
@@ -88,7 +88,7 @@ def generate_spectra(df, lmax=10, mmax=10, power=False, delta=False,
             xxxx = pyshtools.expand.MakeGridDH(clm)
             #print(type(xxxx), xxxx.shape)
 
-            if date.month == plot_month and date.year % 5 == 0:
+            if date.month == month and date.year % 5 == 0:
                 print('lmax:', lmax)
                 plots.append((date, xxxx))
             #value = value.flatten()
@@ -308,11 +308,60 @@ def make_bmatrix(spectra, states):
 
 class TeaPlot(tpot.TeaPlot):
 
+    def __init__(self, spectra=[], nstates=10, **kwargs):
+        
+        super().__init__(**kwargs)
+        self.spectra = spectra
+        self.nstates = nstates
+
     def beer(self):
         
         super().beer()
         rebrew(self)
 
+    async def start(self):
+
+        spectra = self.spectra
+        nstates = self.nstates
+
+        sample = random_sample(spectra, nstates)
+
+        observations, B = make_bmatrix(spectra, sample)
+        print('b matrix:', B[0])
+        self.OBSERVATIONS = observations
+        
+        # generate random eh?
+        A = np.random.random(size=(nstates, nstates))
+        for i in range(nstates):
+            A[i, :] /= A[i, :].sum()
+
+        P0 = np.random.random(size=nstates)
+        P0 /= P0.sum()
+        self.A = A
+        self.B = B
+        self.P0 = P0
+
+        self.OBSERVATIONS = observations
+
+        # do one tpot round
+        self.brew()
+        self.beer()
+        self.stir()
+
+        # show a plot?
+
+    async def run(self):
+
+        while True:
+        
+            print('TPOT filled, away we go')
+            print(self.A)
+            print(self.P0)
+            self.stew(iters=100)
+
+            gamma_plot(self)
+            for x in self.GAMMA[:10]:
+                print(f'Gamma: {x}')
         
 
 def brew(spectra, nstates=10):
@@ -434,7 +483,7 @@ def main():
 
     args = parser.parse_args()
 
-    df = ncdf.CircularField(args)
+    df = ncdf.CircularField(**args.__dict__)
 
     df.filter_stamps(hour=args.hour, day=args.day)
 
@@ -446,29 +495,23 @@ def main():
     #stamp_stats(df.stamps)
     spectra = np.array(generate_spectra(
         df,
-        plot_month=args.month,
-        lmax=args.lmax,
-        topn=args.topn,
-        power=args.power,
-        delta=args.delta))
+        **args.__dict__))
+
     print(f'spectra zero shape {spectra[0].shape}')
+
 
     # fixme - save spectra somewhere and do faster load.
     # cf repeatability too.
-
-    stats(spectra)
-
     # maybe just normalise spectra?
     if args.norm:
         nspectra = normalise(spectra)
         stats(nspectra)
         spectra = nspectra
 
-    sample = random_sample(spectra, args.nstates)
+    # TeaPlotter
+    tea_plotter = TeaPlot(spectra=spectra,
+                          nstates=args.nstates)
 
-    stats(sample)
-
-    brew(spectra, args.nstates)
 
 
 if __name__ == '__main__':

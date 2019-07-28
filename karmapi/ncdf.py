@@ -275,15 +275,18 @@ class World(cpr.NestedWaves):
 
 class CircularField:
 
-    def __init__(self, args):
+    def __init__(self, path='.', raw='temperature.nc', value='t2m', **kwargs):
         """ Load the file """
 
-        path = Path.home() / Path(args.path)
+        print(path)
+        print(raw)
+        print(value)
+        path = Path.home() / Path(path)
 
-        self.df = load(path / args.raw)
+        self.df = load(path / raw)
 
         stamps = self.df.variables['time']
-        self.values = self.df.variables[args.value]
+        self.values = self.df.variables[value]
 
         print(self.df.variables.keys())
         
