@@ -10,9 +10,11 @@ Navigating data.
 from karmapi import ncdf, tpot
 
 import pyshtools
+import curio
 
 from matplotlib import pyplot as plt
 from blume.table import table
+from blume import magic
 
 import numpy as np
 
@@ -508,11 +510,26 @@ def main():
         stats(nspectra)
         spectra = nspectra
 
+    curio.run(run(spectra, args.nstates))
+
+async def run(spectra, nstates):
+
     # TeaPlotter
     tea_plotter = TeaPlot(spectra=spectra,
-                          nstates=args.nstates)
+                          nstates=nstates)
 
+    carpet = magic.Carpet()
+    iq = await carpet.add_queue('teaplot')
+    tea_plotter.queue = iq
 
+    farm = magic.PigFarm()
+    farm.viewer = carpet
+    farm.piglets.appendleft(tea_plotter)
+    await farm.start()
+    await farm.run()
+    
+
+    
 
 if __name__ == '__main__':
 
