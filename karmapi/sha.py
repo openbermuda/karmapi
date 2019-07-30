@@ -12,7 +12,6 @@ from karmapi import ncdf, tpot
 import pyshtools
 import curio
 import matplotlib
-matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 from blume.table import table
 from blume import magic
@@ -53,8 +52,9 @@ def molly(xxxx, ax=None, vmax=None, vmin=None):
     plt.show()
     
 
-def generate_spectra(df, lmax=10, mmax=10, power=False, delta=False,
-                     month=None, topn=0, **kwargs):
+async def generate_spectra(df, queue=None,
+                           lmax=10, mmax=10, power=False, delta=False,
+                           month=None, topn=0, **kwargs):
 
     print('Calculating means across years')
     df.sum_years()
@@ -64,7 +64,11 @@ def generate_spectra(df, lmax=10, mmax=10, power=False, delta=False,
     last = None
     lastdate = None
     vmax = vmin = None
-    plots = []
+    vmax = None
+    vmin = None
+    fig = plt.figure()
+    fig.set_facecolor('black')
+
     for ix, (date, value) in enumerate(df.generate_data()):
 
         value = df.deviation(date, value)
@@ -89,14 +93,48 @@ def generate_spectra(df, lmax=10, mmax=10, power=False, delta=False,
             clm[:, start:ww, start:hh] = 0.0
         
             xxxx = pyshtools.expand.MakeGridDH(clm)
+            plot = xxxx
             #print(type(xxxx), xxxx.shape)
 
-            if date.month == month and date.year % 5 == 0:
+            if date.month == month:
                 print('lmax:', lmax)
-                plots.append((date, xxxx))
-            #value = value.flatten()
-            #print('ix, value.shape', ix, value.shape)
-            
+
+                if vmax is None:
+                    vmax = np.percentile(plot, 95.)
+                    vmin = np.percentile(plot, 5.)
+                    print('vmax/vmin', vmax, vmin)
+
+                print(date, plot.min(), plot.max(), plot.mean())
+
+                fig.clear()
+                
+                #ax = fig.add_axes((0,0,1,1), projection='mollweide')
+                ax = fig.add_subplot(2, 1, 1,
+                                     projection='mollweide')
+                lon = np.linspace(-np.pi, np.pi, plot.shape[1])
+                lat = np.linspace(-np.pi/2, np.pi/2, plot.shape[0])
+                lon, lat = np.meshgrid(lon, lat)
+                ax.pcolormesh(lon, lat, plot[::-1], cmap=plt.cm.jet,
+                              vmax=vmax, vmin=vmin)
+                ax.set_title(str(date), color='white')
+                ax.axis('off')
+                key = (date.month, date.day, date.hour)
+                ax = fig.add_subplot(2, 1, 2,
+                                     projection='mollweide')
+
+                xxxx = df.totals[key][1:]
+                lon = np.linspace(-np.pi, np.pi, xxxx.shape[1])
+                lat = np.linspace(-np.pi/2, np.pi/2, xxxx.shape[0])
+                lon, lat = np.meshgrid(lon, lat)
+                ax.axis('off')
+
+                ax.pcolormesh(lon, lat, xxxx[::-1], cmap=plt.cm.jet)
+                              #vmax=vmax, vmin=vmin)
+
+                plt.grid(True)
+
+                await queue.put(magic.fig2data(fig))
+                await curio.sleep(0)
 
         spectra.append(value)
 
@@ -106,52 +144,6 @@ def generate_spectra(df, lmax=10, mmax=10, power=False, delta=False,
 
         if topn and ix > topn:
             break
-
-    
-    vmax = None
-    vmin = None
-    ix = 1
-    for date, plot in plots:
-        fig = plt.figure()
-        fig.set_facecolor('black')
-        #fig.set_edgecolor('white')
-        if vmax is None:
-            vmax = np.percentile(plot, 95.)
-            vmin = np.percentile(plot, 5.)
-            print('vmax/vmin', vmax, vmin)
-
-
-        
-        print(date, plot.min(), plot.max(), plot.mean())
-        #ax = fig.add_axes((0,0,1,1), projection='mollweide')
-        ax = fig.add_subplot(2, 1, 1,
-                             projection='mollweide')
-        lon = np.linspace(-np.pi, np.pi, plot.shape[1])
-        lat = np.linspace(-np.pi/2, np.pi/2, plot.shape[0])
-        lon, lat = np.meshgrid(lon, lat)
-        ax.pcolormesh(lon, lat, plot[::-1], cmap=plt.cm.jet,
-                      vmax=vmax, vmin=vmin)
-        ax.set_title(str(date), color='white')
-        ax.axis('off')
-        key = (date.month, date.day, date.hour)
-        ax = fig.add_subplot(2, 1, 2,
-                             projection='mollweide')
-
-        xxxx = df.totals[key][1:]
-        lon = np.linspace(-np.pi, np.pi, xxxx.shape[1])
-        lat = np.linspace(-np.pi/2, np.pi/2, xxxx.shape[0])
-        lon, lat = np.meshgrid(lon, lat)
-        ax.axis('off')
-        ax.pcolormesh(lon, lat, xxxx[::-1], cmap=plt.cm.jet)
-                      #vmax=vmax, vmin=vmin)
-
-        plt.grid(True)
-        
-
-        plt.show()
-        #for x in range(5):
-        #    print('sleeping..', x)
-        #    time.sleep(1)
 
 
     print(f'FULL SET OF SPECTRA {len(spectra)} {len(spectra[0])}')
@@ -371,7 +363,7 @@ class TeaPlot(tpot.TeaPlot):
             print('TPOT filled, away we go')
             print(self.A)
             print(self.P0)
-            self.stew(iters=100, epsilon=2.0)
+            self.stew(iters=1, epsilon=2.0)
 
             plot = gamma_plot(self)
             await self.queue.put(plot)
@@ -381,7 +373,7 @@ class TeaPlot(tpot.TeaPlot):
             #for x in self.GAMMA[:10]:
             #    print(f'Gamma: {x}')
 
-            await curio.sleep(10)
+            await curio.sleep(1)
         
 
 
@@ -467,23 +459,30 @@ def main():
 
     args = parser.parse_args()
 
-    df = ncdf.CircularField(**args.__dict__)
+
+    curio.run(run(args))
+
+async def run(args):
+
+
+    farm = magic.PigFarm()
+
+    carpet = await farm.carpet()
+    iq, width, height = await carpet.add_queue('spectra')
+
+    await farm.start_tasks()
+
+    dargs = args.__dict__
+    df = ncdf.CircularField(**dargs)
 
     df.filter_stamps(hour=args.hour, day=args.day)
 
-    if args.plot:
-        plots(df)
-        return
-
-    topn = 20
     #stamp_stats(df.stamps)
-    spectra = np.array(generate_spectra(
-        df,
-        **args.__dict__))
+    spectra = await generate_spectra(df, iq, **dargs)
+    spectra = np.array(spectra)
 
     print(f'spectra zero shape {spectra[0].shape}')
-
-
+    
     # fixme - save spectra somewhere and do faster load.
     # cf repeatability too.
     # maybe just normalise spectra?
@@ -492,18 +491,11 @@ def main():
         stats(nspectra)
         spectra = nspectra
 
-    curio.run(run(spectra, args.nstates))
-
-async def run(spectra, nstates):
-
+    print(f'spectra zero shape {spectra[0].shape}')
     # TeaPlotter
     tea_plotter = TeaPlot(spectra=spectra,
-                          nstates=nstates)
+                          nstates=args.nstates)
 
-    farm = magic.PigFarm()
-
-    carpet = farm.carpet()
-    
     iq, width, height = await carpet.add_queue('teaplot')
     
     print(f'image queue {width} {height}')
