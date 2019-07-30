@@ -31,27 +31,6 @@ def spectrum(value):
     return clm, pyshtools.spectralanalysis.spectrum(clm)
 
 
-def molly(xxxx, ax=None, vmax=None, vmin=None):
-    """ yet another plot """
-    if vmax is None:
-        vmax = xxxx.max()
-        vmin = xxxx.min()
-
-    if ax is None:
-        fig = plt.figure()
-
-    ax = fig.add_axes((0,0,1,1), projection='mollweide')
-    lon = np.linspace(-np.pi, np.pi, xxxx.shape[1])
-    lat = np.linspace(-np.pi/2, np.pi/2, xxxx.shape[0])
-    lon, lat = np.meshgrid(lon, lat)
-    ax.pcolormesh(lon, lat, xxxx[::-1], cmap=plt.cm.jet,
-                  vmin=vmin, vmax=vmax)
-
-    # the next two don't belong here
-    plt.grid(True)
-    plt.show()
-    
-
 async def generate_spectra(df, queue=None,
                            lmax=10, mmax=10, power=False, delta=False,
                            month=None, topn=0, **kwargs):
@@ -96,6 +75,7 @@ async def generate_spectra(df, queue=None,
             plot = xxxx
             #print(type(xxxx), xxxx.shape)
 
+            #if True:
             if date.month == month:
                 print('lmax:', lmax)
 
@@ -150,70 +130,6 @@ async def generate_spectra(df, queue=None,
     return spectra
 
 
-def plots(df):    
-
-    last = None
-
-    spectra = []
-    for date, value in df.generate_data():
-        print(date)
-
-        if last is None:
-            last = value
-            continue
-
-        delta = last - value
-
-        clm, spect = spectrum(delta)
-        spectra.append(spect)
-
-        #print(f'SPECT {spect.cumsum()/spect.sum()}')
-
-        if date >= datetime.datetime(1990, 1, 1):
-            break
-
-        #continue
-
-        plt.plot(spect.cumsum()/spect.sum())
-        plt.grid(True)
-        plt.show()
-
-
-        grid = pyshtools.SHCoeffs.from_random(spect).expand()
-        plt.subplot(1, 3, 1)
-        plt.imshow(grid.to_array())
-
-        plt.subplot(1, 3, 2)
-        plt.imshow(delta)
-
-        print(type(clm))
-        #clm[:,:,20:] = 0.0
-        fgrid = pyshtools.expand.MakeGridDH(clm)
-        plt.subplot(1, 3, 3)
-        plt.imshow(fgrid)
-        break
-
-        #plt.plot(power[3:])
-        #plt.grid(True)
-        #plt.plot(power)
-        
-        plt.title(date)
-        plt.imshow(grid)
-        break
-
-        last = value
-        
-        
-
-
-    plt.show()
-
-    sp = np.array(spectra)
-
-    print(sp.mean(axis=0))
-    print(sp.var(axis=0))
-    print(sp.shape)
-    
 def stats(data):
     """ Return some standard stats """
     print("DATA STATS (shape, mean, var, percentiles)")
@@ -369,7 +285,7 @@ class TeaPlot(tpot.TeaPlot):
             await self.queue.put(plot)
 
             print(f'q size {self.queue.qsize()}')
-            
+
             #for x in self.GAMMA[:10]:
             #    print(f'Gamma: {x}')
 
@@ -435,6 +351,8 @@ def rebrew(tplot):
     """ Do re-estimation """
     # re-estimate states based on gamma
     states = lager(tplot)
+    for state in states:
+        print('State:', state)
         
     observations, B = make_bmatrix(tplot.spectra, states)
 
@@ -467,10 +385,12 @@ async def run(args):
 
     farm = magic.PigFarm()
 
-    carpet = await farm.carpet()
+    carpet = await farm.create_carpet()
     iq, width, height = await carpet.add_queue('spectra')
 
-    await farm.start_tasks()
+    await farm.start()
+
+    runner = await curio.spawn(farm.run())
 
     dargs = args.__dict__
     df = ncdf.CircularField(**dargs)
@@ -504,9 +424,7 @@ async def run(args):
 
     farm.piglets.appendleft(tea_plotter)
 
-    await farm.start()
-    await farm.run()
-    
+    await runner.join()
 
     
 
