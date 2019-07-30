@@ -11,7 +11,8 @@ from karmapi import ncdf, tpot
 
 import pyshtools
 import curio
-
+import matplotlib
+matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 from blume.table import table
 from blume import magic
@@ -115,8 +116,8 @@ def generate_spectra(df, lmax=10, mmax=10, power=False, delta=False,
         fig.set_facecolor('black')
         #fig.set_edgecolor('white')
         if vmax is None:
-            vmax = plot.max()
-            vmin = plot.min()
+            vmax = np.percentile(plot, 95.)
+            vmin = np.percentile(plot, 5.)
             print('vmax/vmin', vmax, vmin)
 
 
@@ -316,9 +317,17 @@ class TeaPlot(tpot.TeaPlot):
         self.spectra = spectra
         self.nstates = nstates
 
+        self.event_map = dict(
+            t=self.tea)
+
+    async def tea(self):
+
+        print('time for tea')
+
     def beer(self):
         
         super().beer()
+
         rebrew(self)
 
     async def start(self):
@@ -349,8 +358,11 @@ class TeaPlot(tpot.TeaPlot):
         self.brew()
         self.beer()
         self.stir()
+        print("Initial score", self.SCORE)
 
         # show a plot?
+        plot = gamma_plot(self)
+        await self.queue.put(plot)
 
     async def run(self):
 
@@ -359,51 +371,18 @@ class TeaPlot(tpot.TeaPlot):
             print('TPOT filled, away we go')
             print(self.A)
             print(self.P0)
-            self.stew(iters=100)
+            self.stew(iters=100, epsilon=2.0)
 
-            gamma_plot(self)
-            for x in self.GAMMA[:10]:
-                print(f'Gamma: {x}')
+            plot = gamma_plot(self)
+            await self.queue.put(plot)
+
+            print(f'q size {self.queue.qsize()}')
+            
+            #for x in self.GAMMA[:10]:
+            #    print(f'Gamma: {x}')
+
+            await curio.sleep(10)
         
-
-def brew(spectra, nstates=10):
-    """ Perform tpot algorithm """
-
-    tplot = TeaPlot()
-
-    sample = random_sample(spectra, nstates)
-
-    observations, B = make_bmatrix(spectra, sample)
-    print('b matrix:', B[0])
-    tplot.OBSERVATIONS = observations
-    tplot.spectra = spectra
-    tplot.nstates = nstates
-    
-    # generate random eh?
-    A = np.random.random(size=(nstates, nstates))
-    for i in range(nstates):
-        A[i, :] /= A[i, :].sum()
-
-    P0 = np.random.random(size=nstates)
-    P0 /= P0.sum()
-    tplot.A = A
-    tplot.B = B
-    tplot.P0 = P0
-
-    tplot.OBSERVATIONS = observations
-
-    tplot.brew()
-    tplot.beer()
-    tplot.stir()
-    
-    print('TPOT filled, away we go')
-    print(tplot.A)
-    print(tplot.P0)
-    tplot.stew(iters=100)
-
-    gamma_plot(tplot)
-    for x in tplot.GAMMA[:10]:
-        print(f'Gamma: {x}')
 
 
 def gamma_plot(tpot):
@@ -436,8 +415,30 @@ def gamma_plot(tpot):
                 cellColours=colours,
                 cellEdgeColours=colours,
                 bbox=(0, 0, 1, 1))
-    plt.show()
 
+    return fig2data(fig)
+
+
+
+def fig2data (fig):
+    """ Convert a Matplotlib figure to a 4D numpy array with RGBA channels
+
+    fig: a matplotlib figure
+    return: a numpy 3D array of RGBA values
+    """
+
+    # no renderer without this 
+    fig.savefig('foo.png')
+ 
+    # Get the RGBA buffer from the figure
+    w,h = fig.canvas.get_width_height()
+    buf = np.frombuffer(fig.canvas.tostring_argb(), dtype=np.uint8)
+    buf.shape = (w, h, 4)
+ 
+    # canvas.tostring_argb give pixmap in ARGB mode.
+    # Roll the ALPHA channel to have it in RGBA mode
+    buf = np.roll ( buf, 3, axis = 2 )
+    return buf    
 
 def lager(tplot):
     """ Generate new set of states using tpot.GAMMA """
@@ -518,13 +519,18 @@ async def run(spectra, nstates):
     tea_plotter = TeaPlot(spectra=spectra,
                           nstates=nstates)
 
-    carpet = magic.Carpet()
-    iq = await carpet.add_queue('teaplot')
+    farm = magic.PigFarm()
+
+    carpet = farm.carpet()
+    
+    iq, width, height = await carpet.add_queue('teaplot')
+    
+    print(f'image queue {width} {height}')
+    print(f'image queue id {id(iq)}')
     tea_plotter.queue = iq
 
-    farm = magic.PigFarm()
-    farm.viewer = carpet
     farm.piglets.appendleft(tea_plotter)
+
     await farm.start()
     await farm.run()
     
