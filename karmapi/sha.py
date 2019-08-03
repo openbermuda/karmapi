@@ -76,15 +76,17 @@ async def generate_spectra(df, queue=None,
             #print(type(xxxx), xxxx.shape)
 
             #if True:
+            perc = np.percentile
             if date.month == month:
                 print('lmax:', lmax)
 
                 if vmax is None:
-                    vmax = np.percentile(plot, 95.)
-                    vmin = np.percentile(plot, 5.)
+                    vmax = perc(plot, 95.)
+                    vmin = perc(plot, 5.)
                     print('vmax/vmin', vmax, vmin)
 
-                print(date, plot.min(), plot.max(), plot.mean())
+                print(date, perc(plot, 5),
+                      perc(plot, 95), plot.mean())
 
                 fig.clear()
                 
@@ -386,11 +388,14 @@ async def run(args):
     farm = magic.PigFarm()
 
     carpet = await farm.create_carpet()
-    iq, width, height = await carpet.add_queue('spectra')
+    iq = curio.UniversalQueue()
+    await carpet.set_incoming(iq)
+    await carpet.more()
+    await carpet.more()
 
-    await farm.start()
+    await farm.start_tasks()
 
-    runner = await curio.spawn(farm.run())
+    #runner = await curio.spawn(farm.run())
 
     dargs = args.__dict__
     df = ncdf.CircularField(**dargs)
@@ -416,15 +421,19 @@ async def run(args):
     tea_plotter = TeaPlot(spectra=spectra,
                           nstates=args.nstates)
 
-    iq, width, height = await carpet.add_queue('teaplot')
     
-    print(f'image queue {width} {height}')
     print(f'image queue id {id(iq)}')
     tea_plotter.queue = iq
 
     farm.piglets.appendleft(tea_plotter)
+    print('STARTING TEA PLOT')
+    await tea_plotter.start()
 
-    await runner.join()
+    tplot_task = await curio.spawn(tea_plotter.run())
+
+    print(tplot_task)
+
+    await tplot_task.join()
 
     
 
