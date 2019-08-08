@@ -77,7 +77,7 @@ async def generate_spectra(df, queue=None,
 
             #if True:
             perc = np.percentile
-            if date.month == month:
+            if not month or date.month == month:
                 print('lmax:', lmax)
 
                 if vmax is None:
@@ -91,7 +91,7 @@ async def generate_spectra(df, queue=None,
                 fig.clear()
                 
                 #ax = fig.add_axes((0,0,1,1), projection='mollweide')
-                ax = fig.add_subplot(2, 1, 1,
+                ax = fig.add_subplot(1, 1, 1,
                                      projection='mollweide')
                 lon = np.linspace(-np.pi, np.pi, plot.shape[1])
                 lat = np.linspace(-np.pi/2, np.pi/2, plot.shape[0])
@@ -101,17 +101,19 @@ async def generate_spectra(df, queue=None,
                 ax.set_title(str(date), color='white')
                 ax.axis('off')
                 key = (date.month, date.day, date.hour)
-                ax = fig.add_subplot(2, 1, 2,
-                                     projection='mollweide')
 
-                xxxx = df.totals[key][1:]
-                lon = np.linspace(-np.pi, np.pi, xxxx.shape[1])
-                lat = np.linspace(-np.pi/2, np.pi/2, xxxx.shape[0])
-                lon, lat = np.meshgrid(lon, lat)
-                ax.axis('off')
+                if False:
+                    ax = fig.add_subplot(2, 1, 2,
+                                         projection='mollweide')
 
-                ax.pcolormesh(lon, lat, xxxx[::-1], cmap=plt.cm.jet)
-                              #vmax=vmax, vmin=vmin)
+                    xxxx = df.totals[key][1:]
+                    lon = np.linspace(-np.pi, np.pi, xxxx.shape[1])
+                    lat = np.linspace(-np.pi/2, np.pi/2, xxxx.shape[0])
+                    lon, lat = np.meshgrid(lon, lat)
+                    ax.axis('off')
+
+                    ax.pcolormesh(lon, lat, xxxx[::-1], cmap=plt.cm.jet)
+                                  #vmax=vmax, vmin=vmin)
 
                 plt.grid(True)
 
@@ -385,17 +387,23 @@ def main():
 async def run(args):
 
 
-    farm = magic.PigFarm()
+    farm = magic.Farm()
 
-    carpet = await farm.create_carpet()
+    carpet = magic.Carpet()
+    farm.add(carpet, background=True)
+
+    # ??
+    farm.event_map.update(carpet.event_map)
+    
     iq = curio.UniversalQueue()
     await carpet.set_incoming(iq)
+    await carpet.set_outgoing(farm.hatq)
     await carpet.more()
     await carpet.more()
 
-    await farm.start_tasks()
+    await farm.start()
 
-    #runner = await curio.spawn(farm.run())
+    runner = await curio.spawn(farm.run())
 
     dargs = args.__dict__
     df = ncdf.CircularField(**dargs)
@@ -425,7 +433,6 @@ async def run(args):
     print(f'image queue id {id(iq)}')
     tea_plotter.queue = iq
 
-    farm.piglets.appendleft(tea_plotter)
     print('STARTING TEA PLOT')
     await tea_plotter.start()
 
