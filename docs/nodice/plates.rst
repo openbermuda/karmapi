@@ -40,12 +40,12 @@ way.
 
 Closer inspection shows a veritable galactic rotation curve.
 
-Watch a little longer and there is an and at the centre of the vortex.
+Watch a little longer and there is an ant at the centre of the vortex.
 
-It's a bit ant, around 1.5cm long.   And it is spinning like mad with
+It's a big ant, around 1.5cm long.   And it is spinning like mad with
 the same angular velocity as the rest of the vortex.
 
-Sometimes there is a wobble and the and gets off centre, spinning
+Sometimes there is a wobble and the ant gets off centre, spinning
 rapidly.
 
 It rapidly spirals outwards, with its rotation decreasing in the
@@ -61,7 +61,7 @@ the mysterious gravitational waves.
 Is it possible that the time interval between observing a new galaxy
 arriving at the edge of our visible universe and the detection of a
 gravitational wave from the same, rises as the mass of the black hole
-does.
+does?
 
 The key observation is the extent to which the black hole can slow
 down time, or rather the distance at which its inertial drag on time
@@ -69,7 +69,7 @@ is no longer notable.
 
 So it is possible that the time interval in between a gamma ray burst
 and the detection of the gravity wave from same rises as the central
-mass does, posibly rather significantly.
+mass does, posibly rather significantly?
 
 An excellent source of information on gravitational wave information
 for the current operational run can be found here::
@@ -90,3 +90,39 @@ One paper was suggesting we may be seeing reflections from the sun (I
 tend to think this is likely, with also interference from Jupiter.)
 
 But baby steps.
+
+More detections
+===============
+
+It is now August 16th.
+
+Since June 30th, there have been about one or two detections per week.
+
+The most recent detection was on the August 14th.
+
+I have been following the reports.  This global reporting
+collaboration is fascinating.
+
+As far as I can tell, most of the collisions detected have been
+between larger (10-100 solar mass) bodies.
+
+I believe there have been some collisions involving smalle (less than
+3 solar masses?), which would have been neutron star collisions, where
+we might hope to see coincident radiation in other spectra.
+
+Whatever the source of the wrinkles, their shape is characteristic.
+
+An oscillation that slowly (over 1-100 seconds) rises in both
+frequency and intensity, until it hits a sharp peak and is followed by
+a settling down, or ring-down.
+
+Plan
+====
+
+Visualisation of local galaxies and solar system objects.
+
+Raw signals for full set of observations.
+
+Localisation information.
+
+Model for new arrival.

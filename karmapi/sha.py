@@ -38,7 +38,7 @@ async def generate_spectra(df, queue=None,
     print('Calculating means across years')
     df.sum_years()
     print('Done means across years')
-    
+
     spectra = []
     last = None
     lastdate = None
@@ -440,7 +440,9 @@ async def run(args):
 
     print(tplot_task)
 
-    await tplot_task.join()
+    await runner.join()
+
+    tplot_task.cancel()
 
     
 

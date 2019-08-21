@@ -544,7 +544,14 @@ def gravity_waves(path):
         rows.append(row)
 
     return rows
-    
+
+def near_galaxies():
+    """ parse galaxy.txt from 
+
+    https://heasarc.gsfc.nasa.gov/w3browse/all/neargalcat.html
+
+    """
+    pass
 
 if __name__ == '__main__':
 
