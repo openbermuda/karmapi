@@ -38,7 +38,10 @@ try:
     import sense_hat
 except:
     # see if sense hat emulator is around
-    import sense_emu as sense_hat
+    try:
+        import sense_emu as sense_hat
+    except:
+        print('No sense hat libraries')
 
 
 def stats(hat):
