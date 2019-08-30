@@ -152,7 +152,9 @@ import numpy as np
 
 from PIL import Image, ImageTk
 
-from karmapi import base, tpot, prime, pigfarm
+from karmapi import tpot, prime, pigfarm
+
+from blume import magic, mclock2
 
 from random import random, randint, gauss, shuffle
 
@@ -668,7 +670,7 @@ def sample_wave(phase, x):
         
 
 
-class NestedWaves(pigfarm.Yard):
+class NestedWaves(magic.Ball):
     """ Inner and outer spheres 
 
     simulated annealing inspired in between?
@@ -681,10 +683,10 @@ class NestedWaves(pigfarm.Yard):
     and draw slices on the canvas from the yard.
     """
 
-    def __init__(self, parent, balls=None, fade=1, twist=True):
+    def __init__(self, balls=None, fade=1, twist=True):
         """ Initialise the thing """
 
-        super().__init__(parent)
+        super().__init__()
 
         # expect we'll find something to do with a queue
         #self.uq = curio.UniversalQueue()
@@ -694,7 +696,10 @@ class NestedWaves(pigfarm.Yard):
         self.fade = fade
         self.twist = twist
 
+        # interesting -- already magic roundabout could help.
         self.build(balls)
+
+        # event handling
         self.add_event_map(' ', self.pause)
         self.paused = False
         self.add_event_map('r', self.reset)
@@ -709,6 +714,13 @@ class NestedWaves(pigfarm.Yard):
         self.add_event_map('s', self.more_sleepy)
         self.add_event_map('w', self.more_wakey)
         self.add_event_map('t', self.toggle_twist)
+
+        self.sleep = 0.05
+
+
+    def add_event_map(self, key, coro):
+
+        self.event_map[key] = coro
 
 
     async def lessfade(self):
@@ -862,6 +874,18 @@ class NestedWaves(pigfarm.Yard):
 
         self.draw_ball(ball)
 
+
+    async def publish(self, ball):
+
+        width, height = self.width, self.height
+
+        image = ball.project(self.views[self.view])
+        
+        #image = image[::, ::, 1]
+        image = Image.fromarray(image)
+        image = image.resize((int(width), int(height)))
+
+        await self.outgoing.put(image)
             
     def draw_ball(self, ball):
         """ wc has everything???? 
@@ -899,19 +923,19 @@ class NestedWaves(pigfarm.Yard):
             await ball.cancel()
 
 
-    async def run(self):
+    async def runner(self):
         """ Run the waves """
-
-        self.sleep = 0.05
 
         
         self.set_background()
 
         #await self.random_step_some()
 
+        self.spheres
         spheres = await self.start_balls_running()
 
-        print('NESTED WAVES RUNNING')
+
+        print('NESTED WAVES Running')
         while True:
             try:
                 if self.paused:
@@ -1177,23 +1201,54 @@ def args_to_spheres(args):
     return spheres
 
 
-
-def main():
-
-    parser = argument_parser()
-
-    args = parser.parse_args()
-
+async def run(args):
+    
     # pass list of balls into NestedWaves
     spheres = args_to_spheres(args)
     
-    farm = pigfarm.sty(NestedWaves, dict(
+    farm = magic.Farm()
+
+    waves = NestedWaves(
         balls=spheres, fade=args.fade,
-        twist=args.twist), play=args.play)
+        twist=args.twist)
 
-    curio.run(farm.run, with_monitor=True)
+    farm = magic.Farm()
+
+    clock = mclock2.GuidoClock()
+
+    carpet = magic.Carpet()
+
+    iq = curio.UniversalQueue()
+    await carpet.set_incoming(iq)
+    await carpet.set_outgoing(farm.hatq)
+
+    farm.event_map.update(clock.event_map)
+    farm.event_map.update(carpet.event_map)
+
+    await waves.set_outgoing(iq)
+    await clock.set_outgoing(iq)
+
+    waves.incoming = None
+    clock.incoming = None
+
+    farm.add(carpet, background=True)
+    farm.add(waves)
+    farm.add(clock)
 
 
+    starter = await curio.spawn(farm.start())
+
+    print('farm runnnnnnnnnning')
+    runner = await farm.run()
+    
+
+def main():
+    
+    parser = argument_parser()
+
+    args = parser.parse_args()
+    
+    curio.run(run(args), with_monitor=True)
 
 if __name__ == '__main__':
 
