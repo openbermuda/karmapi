@@ -44,6 +44,8 @@ Surely it is just the case, the further light travels the more it is
 red shifted by the intervening matter?  An inertial drag that matter
 has on space time.
 
+What am I missing?  This seems so simple.
+
 
 How does this square with gamma ray bursts?
 ===========================================
