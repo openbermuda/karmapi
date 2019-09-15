@@ -17,8 +17,11 @@ import time
 from collections import defaultdict
 from operator import itemgetter
 
-import pandas
-fft = pandas.np.fft
+try:
+    import pandas
+    fft = pandas.np.fft
+except:
+    print('NO PANDAS')
 
 from karmapi import flash
 

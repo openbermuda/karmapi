@@ -389,29 +389,30 @@ async def run(args):
 
     farm = magic.Farm()
 
-    carpet = magic.Carpet()
-    farm.add(carpet, background=True)
-
-    # ??
-    farm.event_map.update(carpet.event_map)
-    
-    iq = curio.UniversalQueue()
-    await carpet.set_incoming(iq)
-    await carpet.set_outgoing(farm.hatq)
+    carpet = farm.carpet
     await carpet.more()
     await carpet.more()
 
+    farm.setup()
     await farm.start()
 
     runner = await curio.spawn(farm.run())
 
+    # FIXME: fix so teapot waits on a queue for spectra
+    #        need a queue where None means end of data?
+    #
+    #        And have it all just working as edges in the farm 
+
+    # magic to go from argparse to a dict
     dargs = args.__dict__
+
+    # Now passed in as keywords
     df = ncdf.CircularField(**dargs)
 
     df.filter_stamps(hour=args.hour, day=args.day)
 
     #stamp_stats(df.stamps)
-    spectra = await generate_spectra(df, iq, **dargs)
+    spectra = await generate_spectra(df, carpet.incoming, **dargs)
     spectra = np.array(spectra)
 
     print(f'spectra zero shape {spectra[0].shape}')
@@ -430,8 +431,7 @@ async def run(args):
                           nstates=args.nstates)
 
     
-    print(f'image queue id {id(iq)}')
-    tea_plotter.queue = iq
+    tea_plotter.queue = carpet.incoming
 
     print('STARTING TEA PLOT')
     await tea_plotter.start()
@@ -442,7 +442,7 @@ async def run(args):
 
     await runner.join()
 
-    tplot_task.cancel()
+    await tplot_task.cancel()
 
     
 

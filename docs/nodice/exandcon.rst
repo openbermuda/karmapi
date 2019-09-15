@@ -7,10 +7,12 @@
 Within this space, time-like geodesics follow two distinct fields:
 expanding and contracting fields.
 
+[Incorrect at the second sentence].
+
 This is perhaps one of the harder parts of the theory to picture.
 
 Satelite loops of water vapour in the earth's atmosphere may help with
-this.
+this
 
 This site has excellent animations:
 
@@ -55,6 +57,25 @@ has on space time.
 
 Now how does this all square with gamma ray bursts?
 
+The distortion of space time that giant masses create is move complex
+than described above, it contains both expansive and contractive
+fields.
+
+One way to look at this is imaging a 3-dimentsional lattice, with
+nodes of the lattice evenly spaced.
+
+Pick a point and apply a twist to the lattice.   This distorts the
+lattice near the twisting point, lattice cubes become lozenge shaped.
+
+Overall, the contractions and expansions of the lattice balance out.
+
+Now photons following the contractive field will tend to bunch up, in
+effect they are blue shifted.  When we observe the result of this,
+light from a source generated over billions of years, arrives in a
+very short period of time, before reverting to the expanding field (it
+is not possible for a gamma ray burst to last a long period of time
+without breaking causality.
+
 A stream of photons from beyond the Hubble distance ends up slowed to
 a crawl by the intervening matter, so it bursts on the scene, then
 rapidly decays to a distant red?
@@ -64,7 +85,9 @@ things settle down and we have a new distant arrival.
 
 Why so?   The intervening matter modulates the signal, adds harmonics?
 
-Space time is tidal!
+Further note that there is evidence from the harmonics in the CMB that
+space time is tidal.  We should factor out these tides to help our
+understanding of the observations we see.
 
 Returning to cyclones, it is worth further noting the space where this
 all takes place: a thin shell, above the earth's surface.
@@ -78,8 +101,6 @@ inertial field, away from some of the spin.
 
 Space time?
 ===========
-
-What exactly is that?
 
 Here I am concerned, primarily, with the propogation of light through
 space time.
@@ -132,8 +153,8 @@ matter modulate the signal, it will change it's direction and focus
 the signal.
 
 What we observe here on earth is the sum over time of the modulations
-of the incoming wave.  Most of the time we just see a low glow,
-Stretched out photons that zoom by.
+of the incoming wave.  Much of the time we just see the low glow of
+the cosmic microwave background,  stretched out photons that zoom by.
 
 But as we fall into the same path as a focussed beam and we too follow
 that beam, then we see a gamma ray burst.
@@ -251,7 +272,9 @@ Which recalls something I read about short and long gamma ray bursts::
   
   https://iopscience.iop.org/article/10.1088/0004-637X/776/1/18
  
-The paragraph beginning *Therefore,* can largely be ignored.
+The paragraph beginning *Therefore,* can largely be ignored, other
+than noting that GRBs do not sem to occur in regions of star
+formation.
 
 What is happening is light from a distant galaxy being focussed by the
 so called *host* galaxies.
@@ -265,6 +288,24 @@ result of the more intense lensing closer to the galactic centre.
 I believe we may well be seeing the same phenomenom with gravitational
 waves.
 
+Summary
+=======
 
-[1] Another paradigm for the universe.  Colin Rourke.
+It is important to keep in mind that the light waves that we see from
+distant galaxies are just that, photons on a journey from a distant
+source.
 
+The fact that these arrive tired, and red-shifted tells us their
+journey has been expansive, in short the intervening matter is
+creating an expansive field as far as light propogation is concerned.
+
+Now think of a distant source, think of it in its terms, trying to
+shine a torch on earth.   
+
+At some point it is so far from earth it can't reach it.   Or rather,
+source and destination are swirling around too much and any photons
+get blurred out.
+
+
+[1] Another paradigm for the universe.  Colin Rourke.  aka "The Book
+of magic."
