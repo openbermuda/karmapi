@@ -154,7 +154,7 @@ from PIL import Image, ImageTk
 
 from karmapi import tpot, prime, pigfarm
 
-from blume import magic, mclock2
+from blume import magic, farm
 
 from random import random, randint, gauss, shuffle
 
@@ -1206,40 +1206,21 @@ async def run(args):
     # pass list of balls into NestedWaves
     spheres = args_to_spheres(args)
     
-    farm = magic.Farm()
+    land = farm.Farm()
 
     waves = NestedWaves(
         balls=spheres, fade=args.fade,
         twist=args.twist)
 
-    farm = magic.Farm()
-
-    clock = mclock2.GuidoClock()
-
-    carpet = magic.Carpet()
-
-    iq = curio.UniversalQueue()
-    await carpet.set_incoming(iq)
-    await carpet.set_outgoing(farm.hatq)
-
-    farm.event_map.update(clock.event_map)
-    farm.event_map.update(carpet.event_map)
-
-    await waves.set_outgoing(iq)
-    await clock.set_outgoing(iq)
-
-    waves.incoming = None
-    clock.incoming = None
-
-    farm.add(carpet, background=True)
-    farm.add(waves)
-    farm.add(clock)
+    clock = farm.GuidoClock()
+    land.add_edge(clock, land.carpet)
+    land.add_edge(waves, land.carpet)
 
 
-    starter = await curio.spawn(farm.start())
+    starter = await curio.spawn(land.start())
 
     print('farm runnnnnnnnnning')
-    runner = await farm.run()
+    runner = await land.run()
     
 
 def main():

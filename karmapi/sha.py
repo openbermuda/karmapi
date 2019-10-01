@@ -221,13 +221,20 @@ def make_bmatrix(spectra, states):
 
     return observations, B        
 
-class TeaPlot(tpot.TeaPlot):
+class TeaPlot(magic.Ball):
 
-    def __init__(self, spectra=[], nstates=10, **kwargs):
+    def __init__(self, nstates=10, **kwargs):
         
         super().__init__(**kwargs)
-        self.spectra = spectra
+
+        self.tplot = tpot.TeaPlot(**kwargs)
+
+        # Like to change this so input comes over queues
+        # with an end of queue
         self.nstates = nstates
+
+        self.ins.add('spectra')
+        self.outs.add('image')
 
         self.event_map = dict(
             t=self.tea)
@@ -274,26 +281,25 @@ class TeaPlot(tpot.TeaPlot):
 
         # show a plot?
         plot = gamma_plot(self)
-        await self.queue.put(plot)
+        await self.image.put(plot)
 
     async def run(self):
 
-        while True:
         
-            print('TPOT filled, away we go')
-            print(self.A)
-            print(self.P0)
-            self.stew(iters=1, epsilon=2.0)
+        print('TPOT filled, away we go')
+        print(self.A)
+        print(self.P0)
+        self.stew(iters=1, epsilon=2.0)
 
-            plot = gamma_plot(self)
-            await self.queue.put(plot)
+        plot = gamma_plot(self)
+        await self.image.put(plot)
 
-            print(f'q size {self.queue.qsize()}')
+        print(f'q size {self.queue.qsize()}')
 
-            #for x in self.GAMMA[:10]:
-            #    print(f'Gamma: {x}')
+        #for x in self.GAMMA[:10]:
+        #    print(f'Gamma: {x}')
 
-            await curio.sleep(1)
+        await curio.sleep(1)
         
 
 
@@ -364,6 +370,44 @@ def rebrew(tplot):
     tpot.OBSERVATIONS = observations
 
 
+class Sphere(magic.Ball):    
+    # FIXME: fix so teapot waits on a queue for spectra
+    #        need a queue where None means end of data?
+    #
+    #        And have it all just working as edges in the farm 
+
+
+    def __init__(self, **args):
+
+        super().__init__()
+
+        # Now passed in as keywords
+        self.df = ncdf.CircularField(**dargs)
+        self.args = args
+        self.outs.add('image')
+        self.outs.add('spectra')
+
+    async def run(self):
+
+        args = self.args
+        self.filter_stamps(hour=args.hour, day=args.day)
+
+        #stamp_stats(df.stamps)
+        spectra = await generate_spectra(df, self.image, **dargs)
+        spectra = np.array(spectra)
+
+        print(f'spectra zero shape {spectra[0].shape}')
+    
+        # fixme - save spectra somewhere and do faster load.
+        # cf repeatability too.
+        # maybe just normalise spectra?
+        if args.norm:
+            nspectra = normalise(spectra)
+            stats(nspectra)
+            spectra = nspectra
+
+        await self.spectra.put(spectra)
+    
 def main():
 
     parser = ncdf.argument_parser()
@@ -386,45 +430,31 @@ def main():
 
 async def run(args):
 
-
-    farm = magic.Farm()
+    # might be interesting to try to turn args into
+    # coroutines that allow the values in args to be controlled
+    # not sure where all that belongs, but should pass args to Farm?
+    farm = magic.Farm(args)
 
     carpet = farm.carpet
-    await carpet.more()
-    await carpet.more()
+    #await carpet.more()
+    #await carpet.more()
 
     farm.setup()
     await farm.start()
 
     runner = await curio.spawn(farm.run())
 
-    # FIXME: fix so teapot waits on a queue for spectra
-    #        need a queue where None means end of data?
-    #
-    #        And have it all just working as edges in the farm 
-
     # magic to go from argparse to a dict
     dargs = args.__dict__
 
-    # Now passed in as keywords
-    df = ncdf.CircularField(**dargs)
-
-    df.filter_stamps(hour=args.hour, day=args.day)
-
-    #stamp_stats(df.stamps)
-    spectra = await generate_spectra(df, carpet.incoming, **dargs)
-    spectra = np.array(spectra)
-
-    print(f'spectra zero shape {spectra[0].shape}')
+    sphere = Sphere(**dargs)
     
-    # fixme - save spectra somewhere and do faster load.
-    # cf repeatability too.
-    # maybe just normalise spectra?
-    if args.norm:
-        nspectra = normalise(spectra)
-        stats(nspectra)
-        spectra = nspectra
+    farm.add_node(sphere)
 
+
+        
+
+            
     print(f'spectra zero shape {spectra[0].shape}')
     # TeaPlotter
     tea_plotter = TeaPlot(spectra=spectra,

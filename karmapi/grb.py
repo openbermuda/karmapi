@@ -117,8 +117,8 @@ from astropy import coordinates, constants
 from astropy.time import Time
 
 import curio
-
-from karmapi import base, cpr, pigfarm
+import blume
+from karmapi import base, cpr
 
 
 # Much thanks for all involved in this:
@@ -144,14 +144,14 @@ LIGO_LLAT = angle(30, 33, 46.42)
 LIGO_LLON = angle(90, 46, 27.27)
 
 
-class SolarSystem(cpr.NestedWaves):
+class SolarSystem(magic.Ball):
 
     def __init__(self, *args, **kwargs):
 
-        super().__init__(*args, **kwargs)
+        super().__init__()
         self.sleep = 2
 
-        self.add_event_map('r', self.reverse)
+        #self.add_event_map('r', self.reverse)
 
     async def reverse(self):
         """ Rongo Rongo change direction """
@@ -165,11 +165,11 @@ class SolarSystem(cpr.NestedWaves):
         print('current ball', ball.name, ball)
 
         cv = self.canvas
-        cv.create_text(
-            (self.width/2, 50),
-            text=ball.name + f'\n{dt.fromtimestamp(ball.t)}',
-            fill='skyblue',
-            font=pigfarm.BIGLY_FONT)
+        #cv.create_text(
+        #    (self.width/2, 50),
+        #    text=ball.name + f'\n{dt.fromtimestamp(ball.t)}',
+        #    fill='skyblue',
+        #    font=pigfarm.BIGLY_FONT)
         
         for body in self.balls:
             #body.tick()
@@ -285,6 +285,7 @@ def argument_parser(parser=None):
 
     parser.add_argument('--grb', default='170817A')
     parser.add_argument('--gw', help="file for latest ligo data")
+    parser.add_argument('--galaxy', help="file of local galaxy data")
 
     return parser
 
@@ -504,14 +505,16 @@ def main(args):
 
     #dump(spheres)
     
-    farm = pigfarm.sty(SolarSystem, dict(balls=spheres, fade=args.fade,
-                                         twist=args.twist),
-                           play=args.play)
+    farm = Magic.Farm()
 
-    spheres = cpr.args_to_spheres(args)
-    farm.add(cpr.NestedWaves, dict(
-        balls=spheres, fade=args.fade,
-        twist=args.twist))
+    ss = SolarSystem(balls=spheres, fade=args.fade,
+                     twist=args.twist)
+
+    farm.add_edge(ss, farm.carpet)
+    #spheres = cpr.args_to_spheres(args)
+    #farm.add(cpr.NestedWaves, dict(
+    #    balls=spheres, fade=args.fade,
+    #    twist=args.twist))
 
 
     curio.run(farm.run, with_monitor=True)
@@ -545,13 +548,22 @@ def gravity_waves(path):
 
     return rows
 
-def near_galaxies():
+def tokens(line, sep=','):
+    """ Split line into tokens """
+    return [x.strip() for x in line.split(sep)]
+
+def near_galaxies(infile):
     """ parse galaxy.txt from 
 
     https://heasarc.gsfc.nasa.gov/w3browse/all/neargalcat.html
 
     """
-    pass
+    header = tokens(infile.readline())
+    print(header)
+    for row in infile:
+        fields = tokens(row)
+        yield dict(zip(header, fields))
+
 
 if __name__ == '__main__':
 
@@ -559,6 +571,11 @@ if __name__ == '__main__':
     parser = argument_parser(cpr.argument_parser())
     
     args = parser.parse_args()
+
+    if args.galaxy:
+        gals = list(near_galaxies(open(args.galaxy)))
+        print(gals[0])
+        1/0
 
     if args.gw:
         rows = gravity_waves(Path(args.gw))

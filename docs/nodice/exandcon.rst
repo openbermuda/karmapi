@@ -307,5 +307,33 @@ source and destination are swirling around too much and any photons
 get blurred out.
 
 
+Addendum
+========
+
+From wikipedia::
+
+    According to calculations, the current comoving distance—proper
+    distance, which takes into account that the universe has expanded
+    since the light was emitted, to particles from which the cosmic
+    microwave background radiation (CMBR) was emitted, which
+    represents the radius of the visible universe, is about 14.0
+    billion parsecs (about 45.7 billion light-years), while the
+    comoving distance to the edge of the observable universe is about
+    14.3 billion parsecs (about 46.6 billion light-years),[10] about
+    2% larger.
+
+    https://en.wikipedia.org/wiki/Observable_universe#Size
+
+The author is distinguishing between the current distance to the
+objects that emitted the CMBR we see today, noting that due to
+continued expansion etc.
+
+And the distance to the edge of the observable universe.
+
+The author is looking at things from a big bang perspective and the
+assumption that the CMBR is how things were just 380,000 years after
+the big bang.
+
+    
 [1] Another paradigm for the universe.  Colin Rourke.  aka "The Book
 of magic."
