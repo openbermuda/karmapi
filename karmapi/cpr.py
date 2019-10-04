@@ -152,7 +152,7 @@ import numpy as np
 
 from PIL import Image, ImageTk
 
-from karmapi import tpot, prime, pigfarm
+from karmapi import tpot, prime
 
 from blume import magic, farm
 

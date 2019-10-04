@@ -110,6 +110,7 @@ import argparse
 import requests
 import json
 from pathlib import Path
+import datetime
 
 from datetime import datetime as dt
 
@@ -117,8 +118,13 @@ from astropy import coordinates, constants
 from astropy.time import Time
 
 import curio
+
+from matplotlib import pyplot as plt
+
 import blume
-from karmapi import base, cpr
+from blume import magic, farm
+
+from karmapi import cpr
 
 
 # Much thanks for all involved in this:
@@ -146,10 +152,11 @@ LIGO_LLON = angle(90, 46, 27.27)
 
 class SolarSystem(magic.Ball):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, balls, *args, **kwargs):
 
         super().__init__()
         self.sleep = 2
+        self.balls = balls
 
         #self.add_event_map('r', self.reverse)
 
@@ -159,61 +166,37 @@ class SolarSystem(magic.Ball):
         for ball in self.balls:
             ball.inc *= -1
 
-    def draw(self):
+    async def run(self):
         """ Draw the balls """
-        ball = self.balls[self.dball]
-        print('current ball', ball.name, ball)
+        #ball = self.balls[self.dball]
+        #print('current ball', ball.name, ball)
 
-        cv = self.canvas
-        #cv.create_text(
-        #    (self.width/2, 50),
-        #    text=ball.name + f'\n{dt.fromtimestamp(ball.t)}',
-        #    fill='skyblue',
-        #    font=pigfarm.BIGLY_FONT)
+        fig = plt.figure()
+
+        locs = [self.decra2rad(
+            ball.body.dec.value,
+            ball.body.ra.value) for ball in self.balls]
+
+        print(locs[:10])
+
+        fig.clear()
+                
+        #ax = fig.add_axes((0,0,1,1), projection='mollweide')
+        ax = fig.add_subplot(1, 1, 1,
+                             projection='mollweide')
+
+        ax.set_title('galaxy', color='white')
+
+        ax.scatter([xx[0] for xx in locs], [xx[1] for xx in locs], color='r')
+        #ax.axis('off')
+
+        await self.outgoing.put(magic.fig2data(fig))
+
+
+    def decra2rad(self, dec, ra):
+
+        return dec * math.pi / 180, ra * math.pi / 180
         
-        for body in self.balls:
-            #body.tick()
-
-            #if body is ball:
-            #    continue
-            name = body.name
-            wheret = body.body.transform_to(ball.body)
-            where = body.body
-            #print(name, where)
-            print(name.upper(), where.ra, where.dec)
-            print(name,
-                  where.ra - body.body.ra,
-                  where.dec - body.body.dec)
-
-            xx, yy = self.draw_ball(where.dec.value, where.ra.value)
-            cv.create_text(
-                (xx - 30, yy + 20),
-                text=name, fill='cyan')
-
-            
-            xx, yy = self.draw_ball(
-                wheret.dec.value, wheret.ra.value,
-                fill='red')
-            cv.create_text(
-                (xx - 30, yy + 20),
-                text=name, fill='magenta')
-
-            
-        print()
-
-    def draw_ball(self, dec, ra, fill='yellow', size=10,
-             xx=None, yy=None, **kwargs):
-        """ Draw a filled circle at place """
-
-        xx, yy = self.latlon2xy(dec, ra)
-        print(f'drawing oval {ra} {dec} at {xx} {yy} {self.width} {self.height}')
-        self.canvas.create_oval(
-            xx-size,
-            yy-size,
-            xx+size, yy+size, fill=fill)
-
-        return xx, yy
-
 
     def latlon2xy(self, lat, lon):
         """ Convert lat lon to yard coordinates """
@@ -391,29 +374,24 @@ def body_data(name, t):
         body=bod)
 
 
-class Body(cpr.Sphere):
+class Body(magic.Ball):
 
 
     def __init__(self, name, t, size=None):
         """ Initialise the body """
+        super().__init__()
+
         self.name = name
         bd = body_data(name, t)
         self.body = bd['body']
         self.inc = 3600 * 6
 
-        super().__init__(size=size, t=t.timestamp(), m=bd['m'], r=bd['r'])
 
     def tick(self):
 
         self.t += self.inc
         return self
     
-    def update(self, ball):
-
-        super().update(ball)
-
-        self.body = get_body(self.name, dt.fromtimestamp(self.t))
-
     def separation(self, body):
         """ Return distance to body """
         return self.body.separation_3d(body)
@@ -484,11 +462,31 @@ def get_waves(path=None):
 
     return data
 
-def main(args):
+
+def parse_date(date):
+    """ Parse a date """
+    if date is None:
+        return date
+
+    fields = [int(x.strip()) for x in date.split('/')]
+                  
+
+    while len(fields) < 3:
+        fields.append(1)
+
+    while len(fields) < 6:
+        fields.append(0)
+    
+    year, month, day, hour, minute, second = fields
+
+    return datetime.datetime(year, month, day, hour, minute, second)
+
+
+async def run(args):
 
 
     print(args.date)
-    args.date = base.parse_date(args.date)
+    args.date = parse_date(args.date)
 
     t = args.date
 
@@ -500,24 +498,51 @@ def main(args):
         print(f'{k}: {v["moverr"]}')
 
 
+
     # pass list of balls into NestedWaves
     spheres = args_to_spheres(args, t)
 
-    #dump(spheres)
-    
-    farm = Magic.Farm()
+    print("GOT spheres", len(spheres))
+
+    if args.galaxy:
+        gals = list(near_galaxies(open(args.galaxy)))
+
+        gals = [cleanse(gal) for gal in gals]
+
+        print('clean galaxy data')
+        print(gals[0])
+
+        for gal in gals:
+            gbod = Body('sun', t=t)
+            ra = gal['ra']
+            dec = gal['dec']
+            
+            gbod.body = coordinates.SkyCoord(ra, dec, unit='deg')
+
+            gbod.name = gal['name']
+
+            spheres.append(gbod)
+
+    print("GOT spheres", len(spheres))
+
+    the_farm = farm.Farm()
 
     ss = SolarSystem(balls=spheres, fade=args.fade,
                      twist=args.twist)
 
-    farm.add_edge(ss, farm.carpet)
+    the_farm.add_edge(ss, the_farm.carpet)
+    the_farm.add_edge(farm.GuidoClock(), the_farm.carpet)
     #spheres = cpr.args_to_spheres(args)
     #farm.add(cpr.NestedWaves, dict(
     #    balls=spheres, fade=args.fade,
     #    twist=args.twist))
 
+    the_farm.setup()
+    starter = await curio.spawn(the_farm.start())
 
-    curio.run(farm.run, with_monitor=True)
+    print('farm runnnnnnnnnning')
+    runner = await the_farm.run()
+    
 
 def gravity_waves(path):
     """ Read or download gravity wave observations """
@@ -565,6 +590,38 @@ def near_galaxies(infile):
         yield dict(zip(header, fields))
 
 
+def parse_radec(value):
+
+    d, m, s = [float(s) for s in value.split()]
+
+    scale = 1
+    if d < 0:
+        d *= -1
+        scale = -1
+
+    d += m / 60.
+    d += s / 3600.
+
+    return d
+    
+def cleanse(data):
+
+    clean = {}
+
+    for key, value in data.items():
+
+        try:
+            value = float(value)
+        except:
+            pass
+
+        if key in ('ra', 'dec'):
+            value = parse_radec(value)
+            
+        clean[key] = value
+
+    return clean
+
 if __name__ == '__main__':
 
 
@@ -572,10 +629,7 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
 
-    if args.galaxy:
-        gals = list(near_galaxies(open(args.galaxy)))
-        print(gals[0])
-        1/0
+
 
     if args.gw:
         rows = gravity_waves(Path(args.gw))
@@ -585,5 +639,6 @@ if __name__ == '__main__':
         df = pandas.DataFrame(rows)
         print(df.describe())
     else:
-        main(args)
+
+        curio.run(run(args))
         

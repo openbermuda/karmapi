@@ -3,7 +3,7 @@
 import random
 import math
 
-from karmapi.piglet import Video
+from blume import magic
 
 xx = """
                             10   0.500000     0.4343 A
@@ -26,7 +26,7 @@ xx = """
      1,000,000,000,000,000,000   1.000000     0.0241 C
 """
 
-class Prime(Video):
+class Prime(magic.Ball):
 
 
     def compute_data(self):
@@ -34,7 +34,7 @@ class Prime(Video):
         pass
 
 
-    def plot(self):
+    async def run(self):
 
         print('plotting primes')
 
@@ -57,6 +57,8 @@ class Prime(Video):
             y.append(yy)
 
         self.axes.plot(y)
+
+        self.put(magic.fig2data(plt))
 
 
 

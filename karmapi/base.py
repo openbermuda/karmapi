@@ -20,7 +20,8 @@ from operator import itemgetter
 try:
     import pandas
     fft = pandas.np.fft
-except:
+except Exception as e:
+    print(e)
     print('NO PANDAS')
 
 from karmapi import flash
