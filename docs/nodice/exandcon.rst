@@ -7,7 +7,8 @@
 Within this space, time-like geodesics follow two distinct fields:
 expanding and contracting fields.
 
-[Incorrect at the second sentence].
+
+[Incorrect at the second sentence see [2] for follow up..
 
 This is perhaps one of the harder parts of the theory to picture.
 
@@ -334,6 +335,10 @@ The author is looking at things from a big bang perspective and the
 assumption that the CMBR is how things were just 380,000 years after
 the big bang.
 
+
+
     
 [1] Another paradigm for the universe.  Colin Rourke.  aka "The Book
 of magic."
+
+[2] `static.rst`
