@@ -15,6 +15,7 @@ import matplotlib
 from matplotlib import pyplot as plt
 from blume.table import table
 from blume import magic
+from blume import farm as magic_farm
 
 import numpy as np
 
@@ -233,9 +234,6 @@ class TeaPlot(magic.Ball):
         # with an end of queue
         self.nstates = nstates
 
-        self.ins.add('spectra')
-        self.outs.add('image')
-
         self.event_map = dict(
             t=self.tea)
 
@@ -281,7 +279,7 @@ class TeaPlot(magic.Ball):
 
         # show a plot?
         plot = gamma_plot(self)
-        await self.image.put(plot)
+        await self.put(plot, 'image')
 
     async def run(self):
 
@@ -292,7 +290,7 @@ class TeaPlot(magic.Ball):
         self.stew(iters=1, epsilon=2.0)
 
         plot = gamma_plot(self)
-        await self.image.put(plot)
+        await self.put(plot, 'image')
 
         print(f'q size {self.queue.qsize()}')
 
@@ -382,10 +380,8 @@ class Sphere(magic.Ball):
         super().__init__()
 
         # Now passed in as keywords
-        self.df = ncdf.CircularField(**dargs)
+        self.df = ncdf.CircularField(**args)
         self.args = args
-        self.outs.add('image')
-        self.outs.add('spectra')
 
     async def run(self):
 
@@ -406,7 +402,7 @@ class Sphere(magic.Ball):
             stats(nspectra)
             spectra = nspectra
 
-        await self.spectra.put(spectra)
+        await self.put(spectra, 'spectra')
     
 def main():
 
@@ -433,7 +429,7 @@ async def run(args):
     # might be interesting to try to turn args into
     # coroutines that allow the values in args to be controlled
     # not sure where all that belongs, but should pass args to Farm?
-    farm = magic.Farm(args)
+    farm = magic_farm.Farm()
 
     carpet = farm.carpet
     #await carpet.more()
@@ -451,10 +447,6 @@ async def run(args):
     
     farm.add_node(sphere)
 
-
-        
-
-            
     print(f'spectra zero shape {spectra[0].shape}')
     # TeaPlotter
     tea_plotter = TeaPlot(spectra=spectra,
