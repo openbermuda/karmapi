@@ -175,7 +175,7 @@ class SolarSystem(magic.Ball):
 
         locs = [self.decra2rad(
             ball.body.dec.value,
-            ball.body.ra.value) for ball in self.balls]
+            ball.body.ra.value) for ball in self.balls[12:]]
 
         print(locs[:10])
 
@@ -187,10 +187,32 @@ class SolarSystem(magic.Ball):
 
         ax.set_title('galaxy', color='white')
 
-        ax.scatter([xx[0] for xx in locs], [xx[1] for xx in locs], color='r')
+        ax.scatter([xx[1] for xx in locs], [xx[0] for xx in locs],
+                   c=[x.distance for x in self.balls[12:]])
         #ax.axis('off')
 
         await self.outgoing.put(magic.fig2data(fig))
+
+        fig.clear()
+
+        ax = fig.add_subplot(111)
+        rv = [xx.data['radial_velocity'] or 0.0 for xx in self.balls[12:]]
+        
+        ax.scatter(rv,
+                   [xx.data['distance'] for xx in self.balls[12:]])
+
+        await curio.sleep(self.sleep)
+        await self.outgoing.put(magic.fig2data(fig))
+
+        #await self.outgoing.put(magic.fig2data(fig))
+        ax = fig.add_subplot(111)
+        ax.plot([xx[0] for xx in locs])
+        #await self.outgoing.put(magic.fig2data(fig))
+
+        fig.clear()
+        ax = fig.add_subplot(111)
+        ax.plot([xx[1] for xx in locs])
+        #await self.outgoing.put(magic.fig2data(fig))
 
 
     def decra2rad(self, dec, ra):
@@ -321,7 +343,7 @@ def au2earth(value=1):
 
     # earth to sun
     e2s = float(constants.c.to('km/s').value) * 499.0
-    print(e2s)
+    #print(e2s)
     return value * e2s / 6378
     
 
@@ -358,9 +380,10 @@ def get_distance():
     pass
 
 def body_data(name, t):
-    
+
     bod = get_body(name, t)
     mass = get_mass(name)
+
     radius = None
     if name == 'earth':
         radius = 6378 / 1.5e8
@@ -379,10 +402,13 @@ class Body(magic.Ball):
 
     def __init__(self, name, t, size=None):
         """ Initialise the body """
+
         super().__init__()
 
         self.name = name
+
         bd = body_data(name, t)
+
         self.body = bd['body']
         self.inc = 3600 * 6
 
@@ -482,6 +508,11 @@ def parse_date(date):
     return datetime.datetime(year, month, day, hour, minute, second)
 
 
+class Bod(object):
+
+    def __init__(self, ra, dec):
+        self.body = coordinates.SkyCoord(ra, dec, unit='deg')
+
 async def run(args):
 
 
@@ -513,11 +544,13 @@ async def run(args):
         print(gals[0])
 
         for gal in gals:
-            gbod = Body('sun', t=t)
+            #gbod = Body('sun', t=t)
             ra = gal['ra']
             dec = gal['dec']
-            
-            gbod.body = coordinates.SkyCoord(ra, dec, unit='deg')
+            gbod = Bod(ra, dec)
+            gbod.distance = gal['distance']
+            gbod.data = gal
+            #gbod.body = coordinates.SkyCoord(ra, dec, unit='deg')
 
             gbod.name = gal['name']
 
@@ -602,7 +635,7 @@ def parse_radec(value):
     d += m / 60.
     d += s / 3600.
 
-    return d
+    return d * scale
     
 def cleanse(data):
 
