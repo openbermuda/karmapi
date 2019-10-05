@@ -110,9 +110,9 @@ import argparse
 import requests
 import json
 from pathlib import Path
-import datetime
 
 from datetime import datetime as dt
+from datetime import timedelta
 
 from astropy import coordinates, constants
 from astropy.time import Time
@@ -155,7 +155,7 @@ class SkyMap(magic.Ball):
     def __init__(self, balls, planets, *args, **kwargs):
 
         super().__init__()
-        self.sleep = 2
+        self.sleep = 1
         self.balls = balls
         self.planets = planets
 
@@ -186,8 +186,9 @@ class SkyMap(magic.Ball):
         ax = fig.add_subplot(1, 1, 1,
                              projection='mollweide')
 
-        ax.set_title('galaxy', color='white')
+        ax.set_title(str(self.planets[0].t), color='white')
         for planet in self.planets:
+            planet.tick()
             print(planet.body)
 
         print([x.body.ra for x in self.planets])
@@ -224,7 +225,7 @@ class SkyMap(magic.Ball):
 
         ax.scatter(dd, rrv)
 
-        await curio.sleep(self.sleep)
+        #await curio.sleep(self.sleep)
         #await self.outgoing.put(magic.fig2data(fig))
         #await curio.sleep(self.sleep)
 
@@ -358,7 +359,7 @@ BODIES = [
     'earth',
     'mars', 'jupiter', 'saturn',
     'neptune', 'uranus']
-BODIES = coordinates.solar_system_ephemeris.bodies
+#BODIES = coordinates.solar_system_ephemeris.bodies
 
 RADIUS_OF_EARTH = 6378.
 RADIUS_OF_SUN =   1.391e6
@@ -431,18 +432,25 @@ class Body(magic.Ball):
         super().__init__()
 
         self.name = name
-
-        bd = body_data(name, t)
-
-        self.body = bd['body']
+        self.t = t
         self.inc = 3600 * 6
-        self.data = bd
 
+        self.set_body()
+
+    def set_body(self):
+
+        bd = body_data(self.name, self.t)
+        self.body = bd['body']
+        self.data = bd
 
     def tick(self):
 
-        self.t += self.inc
-        return self
+        self.t += timedelta(seconds=self.inc)
+        return self.set_body()
+
+    async def run(self):
+
+        self.tick()
     
     def separation(self, body):
         """ Return distance to body """
@@ -534,7 +542,7 @@ def parse_date(date):
     
     year, month, day, hour, minute, second = fields
 
-    return datetime.datetime(year, month, day, hour, minute, second)
+    return dt(year, month, day, hour, minute, second)
 
 
 class Bod(object):
