@@ -158,6 +158,7 @@ class SkyMap(magic.Ball):
         self.sleep = 1
         self.balls = balls
         self.planets = planets
+        self.offset = 0
 
         #self.add_event_map('r', self.reverse)
 
@@ -176,7 +177,8 @@ class SkyMap(magic.Ball):
 
         locs = [self.decra2rad(
             ball.body.dec.value,
-            ball.body.ra.value) for ball in self.balls]
+            ball.body.ra.value, rotate=self.offset) for ball in self.balls]
+        self.offset += math.pi / 10
 
         print(locs[:10])
 
@@ -192,8 +194,10 @@ class SkyMap(magic.Ball):
             print(planet.body)
 
         print([x.body.ra for x in self.planets])
+
         ax.scatter([xx[1] for xx in locs], [xx[0] for xx in locs],
-                   c=[x.distance for x in self.balls])
+                   c=[x.distance for x in self.balls],
+                   s=[x.data['major_axis'] or 1 for x in self.balls])
 
         ax.scatter([x.body.ra.radian - math.pi for x in self.planets],
                    [x.body.dec.radian for x in self.planets], color='r')
@@ -241,9 +245,14 @@ class SkyMap(magic.Ball):
         #await self.outgoing.put(magic.fig2data(fig))
 
 
-    def decra2rad(self, dec, ra):
+    def decra2rad(self, dec, ra, rotate=0):
 
-        return dec * math.pi / 180, (ra - 12) * math.pi / 12.
+        ra = (ra - 12) * math.pi / 12.
+        ra += rotate
+        while ra > math.pi:
+            ra -= 2 * math.pi
+        
+        return dec * math.pi / 180., ra
         
 
     def latlon2xy(self, lat, lon):
