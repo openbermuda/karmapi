@@ -150,13 +150,14 @@ LIGO_LLAT = angle(30, 33, 46.42)
 LIGO_LLON = angle(90, 46, 27.27)
 
 
-class SolarSystem(magic.Ball):
+class SkyMap(magic.Ball):
 
-    def __init__(self, balls, *args, **kwargs):
+    def __init__(self, balls, planets, *args, **kwargs):
 
         super().__init__()
         self.sleep = 2
         self.balls = balls
+        self.planets = planets
 
         #self.add_event_map('r', self.reverse)
 
@@ -186,9 +187,19 @@ class SolarSystem(magic.Ball):
                              projection='mollweide')
 
         ax.set_title('galaxy', color='white')
+        for planet in self.planets:
+            print(planet.body)
 
+        print([x.body.ra for x in self.planets])
         ax.scatter([xx[1] for xx in locs], [xx[0] for xx in locs],
                    c=[x.distance for x in self.balls])
+
+        ax.scatter([x.body.ra.radian - math.pi for x in self.planets],
+                   [x.body.dec.radian for x in self.planets], color='r')
+
+        for pp in self.planets:
+            ax.text(pp.body.ra.radian - math.pi, pp.body.dec.radian + math.pi/10,
+                    pp.name, color='yellow')
         ax.axis('off')
 
         await self.outgoing.put(magic.fig2data(plt))
@@ -210,10 +221,10 @@ class SolarSystem(magic.Ball):
                 vel = dist * 70.
             rrv.append(vel)
             dd.append(dist)
-        
+
         ax.scatter(dd, rrv)
 
-        #await curio.sleep(self.sleep)
+        await curio.sleep(self.sleep)
         #await self.outgoing.put(magic.fig2data(fig))
         #await curio.sleep(self.sleep)
 
@@ -549,10 +560,11 @@ async def run(args):
 
 
     # pass list of balls into NestedWaves
-    spheres = args_to_spheres(args, t)
+    planets = args_to_spheres(args, t)
 
-    print("GOT spheres", len(spheres))
+    print("GOT solar system", len(planets))
 
+    spheres = []
     if args.galaxy:
         gals = list(near_galaxies(open(args.galaxy)))
 
@@ -578,8 +590,8 @@ async def run(args):
 
     the_farm = farm.Farm()
 
-    ss = SolarSystem(balls=spheres, fade=args.fade,
-                     twist=args.twist)
+    ss = SkyMap(balls=spheres, planets=planets, fade=args.fade,
+                twist=args.twist)
 
     the_farm.add_edge(ss, the_farm.carpet)
     the_farm.add_edge(farm.GuidoClock(), the_farm.carpet)
