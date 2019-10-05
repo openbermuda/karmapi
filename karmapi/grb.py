@@ -175,7 +175,7 @@ class SolarSystem(magic.Ball):
 
         locs = [self.decra2rad(
             ball.body.dec.value,
-            ball.body.ra.value) for ball in self.balls[12:]]
+            ball.body.ra.value) for ball in self.balls]
 
         print(locs[:10])
 
@@ -188,25 +188,39 @@ class SolarSystem(magic.Ball):
         ax.set_title('galaxy', color='white')
 
         ax.scatter([xx[1] for xx in locs], [xx[0] for xx in locs],
-                   c=[x.distance for x in self.balls[12:]])
-        #ax.axis('off')
+                   c=[x.distance for x in self.balls])
+        ax.axis('off')
 
-        await self.outgoing.put(magic.fig2data(fig))
+        await self.outgoing.put(magic.fig2data(plt))
 
         fig.clear()
 
         ax = fig.add_subplot(111)
-        rv = [xx.data['radial_velocity'] or 0.0 for xx in self.balls[12:]]
-        
-        ax.scatter(rv,
-                   [xx.data['distance'] for xx in self.balls[12:]])
+        rv = [xx.data.get('radial_velocity', 0.0) or 0. for xx in self.balls]
+        distance = [xx.data.get('distance', 0.0) or 0. for xx in self.balls]
 
-        await curio.sleep(self.sleep)
-        await self.outgoing.put(magic.fig2data(fig))
+        rrv = []
+        dd = []
+        for vel, dist in zip(rv, distance):
+            if dist > 12:
+                continue
+            
+            if vel == 0.0:
+                # use Hubble relationship
+                vel = dist * 70.
+            rrv.append(vel)
+            dd.append(dist)
+        
+        ax.scatter(dd, rrv)
+
+        #await curio.sleep(self.sleep)
+        #await self.outgoing.put(magic.fig2data(fig))
+        #await curio.sleep(self.sleep)
 
         #await self.outgoing.put(magic.fig2data(fig))
+        fig.clear()
         ax = fig.add_subplot(111)
-        ax.plot([xx[0] for xx in locs])
+        ax.plot(distance)
         #await self.outgoing.put(magic.fig2data(fig))
 
         fig.clear()
@@ -217,7 +231,7 @@ class SolarSystem(magic.Ball):
 
     def decra2rad(self, dec, ra):
 
-        return dec * math.pi / 180, ra * math.pi / 180
+        return dec * math.pi / 180, (ra - 12) * math.pi / 12.
         
 
     def latlon2xy(self, lat, lon):
@@ -411,6 +425,7 @@ class Body(magic.Ball):
 
         self.body = bd['body']
         self.inc = 3600 * 6
+        self.data = bd
 
 
     def tick(self):
@@ -427,7 +442,9 @@ def args_to_spheres(args, t):
 
     spheres = []
     for body in BODIES:
-        spheres.append(Body(body, t=t))
+        bod = Body(body, t=t)
+        bod.distance = 0
+        spheres.append(bod)
 
     grb = {}
     grb['170817A'] = (176.8, -39.8)  # RA DEC
@@ -437,6 +454,7 @@ def args_to_spheres(args, t):
 
         gbod = Body('sun', t=t)
         gbod.body = coordinates.SkyCoord(ra, dec, unit='deg')
+        gbod.distance = 0.0
         gbod.name = args.grb
         spheres.append(gbod)
 
