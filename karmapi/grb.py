@@ -120,6 +120,7 @@ from astropy.time import Time
 import curio
 
 from matplotlib import pyplot as plt
+from matplotlib import colors
 
 import blume
 from blume import magic, farm
@@ -175,11 +176,6 @@ class SkyMap(magic.Ball):
 
         fig = plt.figure()
 
-        locs = [self.decra2rad(
-            ball.body.dec.value,
-            ball.body.ra.value)
-                    for ball in self.balls]
-            
         fig.clear()
                 
         #ax = fig.add_axes((0,0,1,1), projection='mollweide')
@@ -189,6 +185,11 @@ class SkyMap(magic.Ball):
         if self.planets:
             ax.set_title(str(self.planets[0].t), color='white')
 
+        locs = [self.decra2rad(
+            ball.body.dec.value,
+            ball.body.ra.value)
+                    for ball in self.balls]
+            
         sun = None
         for planet in self.planets:
             planet.tick()
@@ -201,23 +202,41 @@ class SkyMap(magic.Ball):
 
             
 
+        ball_colours = [x.distance for x in self.balls]
+        
         ax.scatter([self.spinra(xx[1]) for xx in locs],
                    [xx[0] for xx in locs],
-                   c=[x.distance for x in self.balls],
+                   c=ball_colours,
                    s=[x.data['major_axis'] or 1 for x in self.balls])
+
+        norm = colors.Normalize(min(ball_colours), max(ball_colours))
+        cm = plt.get_cmap()
+        for ball, loc, colour in zip(self.balls, locs, ball_colours):
+            ma = ball.data['major_axis']
+            if (ma or 1) > 5:
+                constellation = coordinates.get_constellation(ball.body)
+
+                print()
+                print(constellation)
+                print(ball)
+                ax.text(self.spinra(loc[1]), loc[0], constellation,
+                        color=cm(1.0-norm(colour)), fontsize=10 * math.log(max(ma, 10)) / 10)
+                                   
 
         #self.planets = []
         planet_xx = [x.body.ra.radian - math.pi for x in self.planets]
+        planet_yy = [x.body.dec.radian for x in self.planets]
         #planet_xx = [self.spinra(x) for x in planet_xx]
 
         planet_colors = dict(
-            sun='gold',
+            earth='gold',
+            sun='brown',
             mercury='silver',
             venus='orange',
             moon='lightblue',
             mars='crimson',
-            jupiter='brick',
-            saturn='saphire',
+            jupiter='grey',
+            saturn='skyblue',
             neptune='green',
             uranus='indigo',
             pluto='violet')
@@ -225,12 +244,32 @@ class SkyMap(magic.Ball):
         pcs = [math.log(x.body.distance.au + 1) for x in self.planets]
         planet_sizes = [min(p.data['m'], 1000.0) for p in self.planets]
         print(planet_sizes)
+
+        pcs = [planet_colors[p.name] for p in self.planets]
+        #pcs = [planet_colors['saturn'] for p in self.planets]
+        #pcs = ['brick'] * len(pcs)
+
         
         cc = ax.scatter(planet_xx,
-                    [x.body.dec.radian for x in self.planets],
+                    planet_yy,
                     c=pcs,
                     s=planet_sizes,
                     cmap='rainbow')
+
+        for ball, loc, colour in zip(self.planets,
+                                     zip(planet_xx, planet_yy),
+                                         pcs):
+
+            try:
+                constellation = coordinates.get_constellation(ball.body)
+            except:
+                print('no constellation for', ball)
+
+            print()
+            print(constellation)
+            print(ball)
+            ax.text(loc[0], loc[1], constellation + ball.name,
+                    color=colour, fontsize=12)
 
         if False:
             for pp in self.planets:
