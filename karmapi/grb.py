@@ -177,34 +177,68 @@ class SkyMap(magic.Ball):
 
         locs = [self.decra2rad(
             ball.body.dec.value,
-            ball.body.ra.value, rotate=self.offset) for ball in self.balls]
-        self.offset += math.pi / 10
-
-        print(locs[:10])
-
+            ball.body.ra.value)
+                    for ball in self.balls]
+            
         fig.clear()
                 
         #ax = fig.add_axes((0,0,1,1), projection='mollweide')
         ax = fig.add_subplot(1, 1, 1,
                              projection='mollweide')
 
-        ax.set_title(str(self.planets[0].t), color='white')
+        if self.planets:
+            ax.set_title(str(self.planets[0].t), color='white')
+
+        sun = None
         for planet in self.planets:
             planet.tick()
-            print(planet.body)
+            if planet.name == 'sun':
+                sun = planet
 
-        print([x.body.ra for x in self.planets])
+        if sun:
+            self.offset = (sun.body.ra.rad - math.pi) * -1
+            print("WITH SUN", self.offset / math.pi)
 
-        ax.scatter([xx[1] for xx in locs], [xx[0] for xx in locs],
+            
+
+        ax.scatter([self.spinra(xx[1]) for xx in locs],
+                   [xx[0] for xx in locs],
                    c=[x.distance for x in self.balls],
                    s=[x.data['major_axis'] or 1 for x in self.balls])
 
-        ax.scatter([x.body.ra.radian - math.pi for x in self.planets],
-                   [x.body.dec.radian for x in self.planets], color='r')
+        #self.planets = []
+        planet_xx = [x.body.ra.radian - math.pi for x in self.planets]
+        #planet_xx = [self.spinra(x) for x in planet_xx]
 
-        for pp in self.planets:
-            ax.text(pp.body.ra.radian - math.pi, pp.body.dec.radian + math.pi/10,
-                    pp.name, color='yellow')
+        planet_colors = dict(
+            sun='gold',
+            mercury='silver',
+            venus='orange',
+            moon='lightblue',
+            mars='crimson',
+            jupiter='brick',
+            saturn='saphire',
+            neptune='green',
+            uranus='indigo',
+            pluto='violet')
+            
+        pcs = [math.log(x.body.distance.au + 1) for x in self.planets]
+        planet_sizes = [min(p.data['m'], 1000.0) for p in self.planets]
+        print(planet_sizes)
+        
+        cc = ax.scatter(planet_xx,
+                    [x.body.dec.radian for x in self.planets],
+                    c=pcs,
+                    s=planet_sizes,
+                    cmap='rainbow')
+
+        if False:
+            for pp in self.planets:
+                ax.text(pp.body.ra.radian - math.pi,
+                        pp.body.dec.radian + math.pi/10,
+                        pp.name, color='yellow')
+
+        #plt.colorbar(cc)
         ax.axis('off')
 
         await self.outgoing.put(magic.fig2data(plt))
@@ -218,7 +252,7 @@ class SkyMap(magic.Ball):
         rrv = []
         dd = []
         for vel, dist in zip(rv, distance):
-            if dist > 12:
+            if dist > 11:
                 continue
             
             if vel == 0.0:
@@ -245,10 +279,21 @@ class SkyMap(magic.Ball):
         #await self.outgoing.put(magic.fig2data(fig))
 
 
-    def decra2rad(self, dec, ra, rotate=0):
+    def spinra(self, ra):
+
+        ra += self.offset
+        while ra > math.pi:
+            ra -= 2 * math.pi
+
+        while ra < math.pi * -1:
+            ra += 2 * math.pi
+
+        return ra
+        
+    def decra2rad(self, dec, ra):
 
         ra = (ra - 12) * math.pi / 12.
-        ra += rotate
+
         while ra > math.pi:
             ra -= 2 * math.pi
         
@@ -442,7 +487,10 @@ class Body(magic.Ball):
 
         self.name = name
         self.t = t
-        self.inc = 3600 * 6
+
+        self.inc = 3600 * 6   # 6 hours
+        self.inc = 3600 * 24 * 28   # 1 month
+        self.inc = 3600 * 24 *  7   # 1 week
 
         self.set_body()
 
