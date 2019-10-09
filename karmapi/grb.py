@@ -213,7 +213,7 @@ class SkyMap(magic.Ball):
         cm = plt.get_cmap()
         for ball, loc, colour in zip(self.balls, locs, ball_colours):
             ma = ball.data['major_axis']
-            if (ma or 1) > 5:
+            if (ma or 1) > 20:
                 constellation = coordinates.get_constellation(ball.body)
 
                 print()
@@ -242,7 +242,8 @@ class SkyMap(magic.Ball):
             pluto='violet')
             
         pcs = [math.log(x.body.distance.au + 1) for x in self.planets]
-        planet_sizes = [min(p.data['m'], 1000.0) for p in self.planets]
+        planet_sizes = [math.log(min(p.data['m'], 1000.0) + 1)
+                            for p in self.planets]
         print(planet_sizes)
 
         pcs = [planet_colors[p.name] for p in self.planets]
@@ -268,8 +269,8 @@ class SkyMap(magic.Ball):
             print()
             print(constellation)
             print(ball)
-            ax.text(loc[0], loc[1], constellation + ball.name,
-                    color=colour, fontsize=12)
+            ax.text(loc[0], loc[1], constellation + '\n' + ball.name,
+                    color=colour, fontsize=8)
 
         if False:
             for pp in self.planets:
@@ -405,9 +406,11 @@ def argument_parser(parser=None):
 
     #parser.add_argument('--date', default='2015/09/14/09/50/45')
     #parser.add_argument('--date', default='2017/08/14')
-    parser.add_argument('--date', default='2017/08/17')
+    parser.add_argument('--date')
 
-    parser.add_argument('--grb', default='170817A')
+    #parser.add_argument('--grb', default='170817A')
+    parser.add_argument('--grb',
+                        help="fixme get gamma ray burst data")
     parser.add_argument('--gw', help="file for latest ligo data")
     parser.add_argument('--galaxy', help="file of local galaxy data")
 
@@ -625,7 +628,7 @@ def get_waves(path=None):
 def parse_date(date):
     """ Parse a date """
     if date is None:
-        return date
+        return dt.now()
 
     fields = [int(x.strip()) for x in date.split('/')]
                   

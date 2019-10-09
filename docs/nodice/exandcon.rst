@@ -13,7 +13,7 @@ expanding and contracting fields.
 This is perhaps one of the harder parts of the theory to picture.
 
 Satelite loops of water vapour in the earth's atmosphere may help with
-this
+this.
 
 This site has excellent animations:
 
@@ -43,22 +43,22 @@ they clear space, allowing light to pass.
 Now the progess of that light is modulated by the intervening matter,
 the vast majority of which lies at the centre of, or close to, a galaxy.
 
-So what of the increasing red shift as we get deeper into the galaxy,
+So what of the increasing red shift as we get deeper into the universe,
 does that not mean that those galaxies are receding faster?
 
 Is not that just how space time works, when you saturate it with giant
 rotating masses?
 
-Remember the galaxy is saturated, in fact appears to be in an almost
+Remember the universe is saturated, in fact appears to be in an almost
 perfect equilibrium, like clouds of water vapour in our atmosphere.
 
 Surely it is just the case, the further light travels the more it is
 red shifted by the intervening matter?  An inertial drag that matter
-has on space time.
+has on space time?
 
 Now how does this all square with gamma ray bursts?
 
-The distortion of space time that giant masses create is move complex
+The distortion of space time that giant masses create is more complex
 than described above, it contains both expansive and contractive
 fields.
 
@@ -68,7 +68,9 @@ nodes of the lattice evenly spaced.
 Pick a point and apply a twist to the lattice.   This distorts the
 lattice near the twisting point, lattice cubes become lozenge shaped.
 
-Overall, the contractions and expansions of the lattice balance out.
+Overall, the contractions and expansions of the lattice balance out,
+or rather they serve to provide an overall expansion in space, a world
+within worlds.
 
 Now photons following the contractive field will tend to bunch up, in
 effect they are blue shifted.  When we observe the result of this,
