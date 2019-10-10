@@ -199,6 +199,8 @@ class SkyMap(magic.Ball):
         if sun:
             self.offset = (sun.body.ra.rad - math.pi) * -1
             print("WITH SUN", self.offset / math.pi)
+        else:
+            self.offset += math.pi/10
 
             
 
@@ -212,18 +214,26 @@ class SkyMap(magic.Ball):
         norm = colors.Normalize(min(ball_colours), max(ball_colours))
         cm = plt.get_cmap()
         for ball, loc, colour in zip(self.balls, locs, ball_colours):
-            ma = ball.data['major_axis']
-            if (ma or 1) > 20:
-                constellation = coordinates.get_constellation(ball.body)
+            ma = ball.data['major_axis'] or 1
+            ngn = ball.data.get('neighbor_galaxy_name', '')
+            constellation = coordinates.get_constellation(ball.body)
+            #if (ma or 1) > 20:
+            #if 'ilky' in ngn or 'ilky' in constellation:
+            if 'ilky' in ball.name:
 
                 print()
                 print(constellation)
                 print(ball)
-                ax.text(self.spinra(loc[1]), loc[0], constellation,
-                        color=cm(1.0-norm(colour)), fontsize=10 * math.log(max(ma, 10)) / 10)
+                
+                ax.text(
+                    self.spinra(loc[1]), loc[0],
+                    '\n'.join((ball.name)),
+                    color='red',
+                    #color=cm(1.0-norm(colour)),
+                    fontsize=15 * math.log(max(ma, 10)) / 10)
                                    
 
-        #self.planets = []
+        self.planets = []
         planet_xx = [x.body.ra.radian - math.pi for x in self.planets]
         planet_yy = [x.body.dec.radian for x in self.planets]
         #planet_xx = [self.spinra(x) for x in planet_xx]
@@ -272,11 +282,6 @@ class SkyMap(magic.Ball):
             ax.text(loc[0], loc[1], constellation + '\n' + ball.name,
                     color=colour, fontsize=8)
 
-        if False:
-            for pp in self.planets:
-                ax.text(pp.body.ra.radian - math.pi,
-                        pp.body.dec.radian + math.pi/10,
-                        pp.name, color='yellow')
 
         #plt.colorbar(cc)
         ax.axis('off')
@@ -680,6 +685,8 @@ async def run(args):
         print('clean galaxy data')
         print(gals[0])
 
+        
+        
         for gal in gals:
             #gbod = Body('sun', t=t)
             ra = gal['ra']
@@ -688,9 +695,12 @@ async def run(args):
             gbod.distance = gal['distance']
             gbod.data = gal
             #gbod.body = coordinates.SkyCoord(ra, dec, unit='deg')
+            #if 'neighbor_galaxy_name' in gal:
+            #    gbod.
 
             gbod.name = gal['name']
 
+            
             spheres.append(gbod)
 
     print("GOT spheres", len(spheres))
