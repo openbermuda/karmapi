@@ -56,6 +56,9 @@ Spiral galaxies as far as the eye can see.
 Our immediate vicinity (say withing 50-100 million light years) is
 a well catalogued collection of some 800 or so galaxies.
 
+So let's assume the rest of the universe is more of the same, at least
+for the next 40 billion light years or so.
+
 There is a peculiarity with red-shift in our observations.  The
 further away a galaxy is the redder it looks.
 
@@ -67,17 +70,20 @@ galaxies get further away.
 
 How does this square with the PCP?
 
-In short it does not.
+In short it does not.  In some parts of the universe, galaxies zipping
+by at close to the speed of light, whereas in our vicinity the average
+speed is about one thousandth of that.
 
 This does not mean that the red shift is not real, rather that the
 interpretation that it means the distant galaxies are receding at
-super-luminal speed, is in-correct.
+super-luminal speed, may be in-correct.
 
 However, for the purpose of calculation in *de Sitter space* is ideal
 as it nicely models this expansion.
 
-Now, I would argue that in reality, over longer distances redshift
-accumulates.
+I would suggest that in reality, that space itself creates a drag on
+time and red shift accumulates as light passes longer and longer
+distances. 
 
 This is indistinguishable from the case that more distant sources are
 receding faster and the intervening space is not changing anything.
@@ -104,9 +110,9 @@ arrives at the reciever in the same order that it leaves the emitter.
 The *Minkowski* metric is important here (cf Zeeman Causality implies
 Lorentz group).
 
-In [1] shows how in de Sitter space light arriving from a distant
-emitter to an observer always follows the same pattern, due to
-symmetries within de Sitter space.
+[1] shows how in de Sitter space light arriving from a distant emitter
+to an observer always follows the same pattern, due to symmetries
+within de Sitter space.
 
 
 Static Universe
@@ -162,8 +168,8 @@ de Sitter Space
 Cosmic Microwave Background Radiation
 =====================================
 
-Gravitational Waves
-===================
+Gravitational Waves update
+==========================
 
 The *O3* observation run is now well underway.
 
@@ -186,8 +192,18 @@ I have spent considerable time puzzling over gravitational waves and
 whether they will show the same propogation peculiarities that light
 does.
 
-I feel they will and that the some (perhaps all) of the events that
+I feel they will and that some, perhaps all, of the events that
 LIGO is detecting are in fact new cosmic arrivals.
+
+This would raise a puzzle over why we are not routinely seeing
+coincident gamma ray bursts.  It is something I have puzzled over
+without fully resolving.
+
+It is early days for gravitational wave detection.  Presumably, the
+current detections are the larger end of the event spectrum, so that
+may give a clue.
+
+
 
 Why am I skeptical of colliding black holes?
 --------------------------------------------
@@ -274,6 +290,44 @@ Magnetism and the speed of a stream of electrons?
 Plan
 ====
 
+Mass times angular velocity over distance.
+
+We know the mass and the distance, but what is the actual angular
+velocity of the galaxy?
+
+Assume on average, there is a shift in space time, amounting to
+~70km/s over a distance of 3.2 million light years (= 1 mega parsec).
+
+A change in velocity of about c/4000 where c is the speed of light.
+
+Now if we approximate things and assume the nearest galaxies account
+for the major part of this change, then we can look at the path that
+the light takes from each galaxy and calculate the aggregate effect of
+all the galaxies on that light as it makes its journey to us.
+
+For this to give a useful estimate we would need good estimates for a
+number of parameters for each galaxy in the neighbourhood::
+
+  mass
+
+  distance
+
+  velocity of the galaxy
+
+  redshift
+
+There is likely enough information to estimate each of these, although
+in many cases the various parameters are inter-twined.
+
+We can also take a statistical approach, including computer
+simulation, to model either the local galaxies or a larger universe.
+
+Constrain the simulation to obey Hubble expansion.
+
+    k omega mass / r
+
+galaxies.
+
 Hubble constant.   Allows calibration of inertial drag.
 
 Observations in nearby galaxies alone should be plenty to get a
@@ -286,6 +340,21 @@ I suspect fully resolving this would involve some understanding of
 galactic tidal effects and harmonics.
 
 I also suspect that magnetism, protons and electrons may play a role.
+
+Software
+--------
+
+Understand the software used in gravitational wave processing.
+
+Specifically, the `bayefits` used in creating sky maps for the source
+of gravitational waves.
+
+More generally, work more with `astropy`.
+
+In particular,  `astropy.coordinates`.
+
+Karmapi and Blume
+-----------------
 
 
 [1] Another paradigm for the universe.  Colin Rourke.  aka "The Book

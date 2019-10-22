@@ -201,7 +201,7 @@ class SkyMap(magic.Ball):
             print("WITH SUN", self.offset / math.pi)
         else:
             self.offset += math.pi/10
-
+        self.offset = 0
             
 
         ball_colours = [x.distance for x in self.balls]
@@ -216,10 +216,11 @@ class SkyMap(magic.Ball):
         for ball, loc, colour in zip(self.balls, locs, ball_colours):
             ma = ball.data['major_axis'] or 1
             ngn = ball.data.get('neighbor_galaxy_name', '')
-            constellation = coordinates.get_constellation(ball.body)
+            #constellation = coordinates.get_constellation(ball.body)
+            constellation = ''
             #if (ma or 1) > 20:
-            #if 'ilky' in ngn or 'ilky' in constellation:
-            if 'ilky' in ball.name:
+            if 'ilky' in ngn or 'ilky' in constellation:
+            #if 'ilky' in ball.name:
 
                 print()
                 print(constellation)
@@ -227,13 +228,13 @@ class SkyMap(magic.Ball):
                 
                 ax.text(
                     self.spinra(loc[1]), loc[0],
-                    '\n'.join((ball.name)),
+                    '\n'.join((ball.name, constellation)),
                     color='red',
                     #color=cm(1.0-norm(colour)),
                     fontsize=15 * math.log(max(ma, 10)) / 10)
                                    
 
-        self.planets = []
+        #self.planets = []
         planet_xx = [x.body.ra.radian - math.pi for x in self.planets]
         planet_yy = [x.body.dec.radian for x in self.planets]
         #planet_xx = [self.spinra(x) for x in planet_xx]
