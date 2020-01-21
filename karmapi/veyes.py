@@ -53,7 +53,7 @@ def random_picture(cam):
     return cam
     
 
-def as_pil(camera)
+def as_pil(camera):
     """ Capture an image and return as PIL.Image """
     # Create the in-memory stream
     stream = BytesIO()
