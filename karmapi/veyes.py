@@ -85,8 +85,8 @@ async def capture(args):
         path = path / f'{now.hour:02}{now.minute:02}{now.second:02}.jpg'
 
         print(path)
-        #camera.capture(str(path))
-        image = as_pil(camera)
+        camera.capture(str(path))
+        #image = as_pil(camera)
         await curio.sleep(args.sleep)
 
         if self.dedupe:
@@ -94,7 +94,7 @@ async def capture(args):
             pass
 
         # save the image
-        image.save(path)
+        #image.save(path)
 
         if args.random:
             camera = random_picture(camera)
