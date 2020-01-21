@@ -123,7 +123,8 @@ from matplotlib import pyplot as plt
 from matplotlib import colors
 
 import blume
-from blume import magic, farm
+from blume import magic
+from blume import farm as fm
 
 from karmapi import cpr
 
@@ -287,7 +288,7 @@ class SkyMap(magic.Ball):
         #plt.colorbar(cc)
         ax.axis('off')
 
-        await self.outgoing.put(magic.fig2data(plt))
+        await self.put(magic.fig2data(plt))
 
         fig.clear()
 
@@ -706,23 +707,23 @@ async def run(args):
 
     print("GOT spheres", len(spheres))
 
-    the_farm = farm.Farm()
+    farm = fm.Farm()
 
     ss = SkyMap(balls=spheres, planets=planets, fade=args.fade,
                 twist=args.twist)
-
-    the_farm.add_edge(ss, the_farm.carpet)
-    the_farm.add_edge(farm.GuidoClock(), the_farm.carpet)
+    farm.add_node(ss, background=True)
+    farm.add_edge(ss, farm.carpet)
+    farm.add_edge(fm.GuidoClock(), farm.carpet)
     #spheres = cpr.args_to_spheres(args)
     #farm.add(cpr.NestedWaves, dict(
     #    balls=spheres, fade=args.fade,
     #    twist=args.twist))
 
-    the_farm.setup()
-    starter = await curio.spawn(the_farm.start())
+    #farm.setup()
+    starter = await curio.spawn(farm.start())
 
     print('farm runnnnnnnnnning')
-    runner = await the_farm.run()
+    runner = await farm.run()
     
 
 def gravity_waves(path):

@@ -70,9 +70,9 @@ galaxies get further away.
 
 How does this square with the PCP?
 
-In short it does not.  In some parts of the universe, galaxies zipping
-by at close to the speed of light, whereas in our vicinity the average
-speed is about one thousandth of that.
+In short it does not seem to.  In some parts of the universe, galaxies
+zipping by at close to the speed of light, whereas in our vicinity the
+average speed is about one thousandth of that.
 
 This does not mean that the red shift is not real, rather that the
 interpretation that it means the distant galaxies are receding at
@@ -81,9 +81,8 @@ super-luminal speed, may be in-correct.
 However, for the purpose of calculation in *de Sitter space* is ideal
 as it nicely models this expansion.
 
-I would suggest that in reality, that space itself creates a drag on
-time and red shift accumulates as light passes longer and longer
-distances. 
+Colin suggests it that space itself creates a drag on time and red
+shift accumulates as light passes longer and longer distances.
 
 This is indistinguishable from the case that more distant sources are
 receding faster and the intervening space is not changing anything.
@@ -168,6 +167,26 @@ de Sitter Space
 Cosmic Microwave Background Radiation
 =====================================
 
+Thermal with a temperature of 2.7 degrees Kelvin.
+
+This is the temperature of pretty much all of the intergalactic dust.
+
+So as light from distant galaxies looming over the horizon is shifted
+red as it passes to us.   At the Hubble distance it tends towards
+being infinitely red shifted.
+
+There seems to be a contradiction in the model that views a gamma ray
+burst as our first view of a distant source, and yet says that we see
+galaxies looming in the distance in the form of the CMB.
+
+It is important to realise that the reason that the CMB is in such
+good agreement with thermal equilibrium is because the universe itself
+is in such a state of thermal equilibrium.
+
+Once light rays get shifted to microwave, they just add to this
+thermal background.  
+
+  
 Gravitational Waves update
 ==========================
 

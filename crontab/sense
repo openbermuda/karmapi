@@ -1,4 +1,4 @@
-@reboot pi /usr/local/bin/python3.6 -m karmapi.sense --path /home/pi/karmapi/sensehat
+@reboot pi /usr/bin/python3 -m karmapi.sense --path /home/pi/karmapi/sensehat
 
 # crashes at 1 second past midnight, so start a new day
-0 0 * * * pi /usr/local/bin/python3.6 -m karmapi.sense --path /home/pi/karmapi/sensehat
+0 0 * * * pi /usr/bin/python3 -m karmapi.sense --path /home/pi/karmapi/sensehat
