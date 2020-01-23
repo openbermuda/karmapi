@@ -89,7 +89,7 @@ async def capture(args):
         #image = as_pil(camera)
         await curio.sleep(args.sleep)
 
-        if self.dedupe:
+        if args.dedupe:
             # Compare image to last and save if it is different enough
             pass
 
@@ -107,6 +107,7 @@ def main():
     parser.add_argument('path', nargs='?', default='.')
     parser.add_argument('--long', action='store_true')
     parser.add_argument('--random', action='store_true')
+    parser.add_argument('--dedupe', action='store_true')
 
     args = parser.parse_args()
 
