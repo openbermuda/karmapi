@@ -17,9 +17,11 @@ import time
 from collections import defaultdict
 from operator import itemgetter
 
+import numpy as np
+fft = np.fft
+
 try:
     import pandas
-    fft = pandas.np.fft
 except Exception as e:
     print(e)
     print('NO PANDAS')

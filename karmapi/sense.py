@@ -343,7 +343,7 @@ def timewarp_timestamps(data):
         
         if lasttime and timestamp < lasttime:
             timewarp = lasttime - timestamp
-            print(ix, timewarp)
+            print('timewarp', ix, timewarp)
 
         elif timewarp:
             mc = deltas.most_common(1)[0][0]

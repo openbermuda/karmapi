@@ -6,7 +6,8 @@ Pigs are windows, piglets are things running in the pig farm.
 
 """
 import pandas   # piglets and pandas together
-np = pandas.np
+import numpy as np
+
 try:
 
     from pandas.core.indexes.datetimes import DatetimeIndex
@@ -730,7 +731,7 @@ class MagicCarpet(Space):
         # sort columns on mean
         mean = frame.mean()
         mean.sort_values(inplace=True)
-        frame = frame.ix[:, mean.index]
+        frame = frame[mean.index]
 
         # subtract the mean
         if self.subtract_means:
