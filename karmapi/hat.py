@@ -20,17 +20,18 @@ class HatInfo:
     def run(self):
 
         h = self.hat
-        messages = [
-            f'Temp: {h.temp:0.1f}',
-            f'Pres: {h.pressure:0.1f}',
-            f'Humi: {h.humidity:0.1f}',
-            f'Time: {self.whattimeisit()}']        
-
         while True:
-            ix = random.randint(0, len(messages)-1)
 
-            h.show_message(messages[ix],
-                           scroll_speed=0.2)
+            messages = [
+                f'T: {h.temp:0.1f}',
+                f'P: {h.pressure:0.1f}',
+                f'H: {h.humidity:0.1f}',
+                f'TT: {self.whattimeisit()}']        
+
+
+            for message in messages:
+                h.show_message(message,
+                               scroll_speed=0.2)
 
 
 if __name__ == '__main__':
