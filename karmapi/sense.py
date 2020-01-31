@@ -284,13 +284,10 @@ def drop_bad_rows(infile):
     
     print(fields)
     nn = len(fields)
-    
+
+    lasttime = 0.0
     for ix, row in enumerate(infile):
 
-        # sometimes get nulls in data eg when pi not shutdown cleanly
-        if null in row:
-            continue
-        
         values = row.split(',')
         values = [x.strip() for x in values]
 
@@ -298,12 +295,25 @@ def drop_bad_rows(infile):
             print(ix, len(fields), len(values))
             continue
 
-        result.append(dict(zip(fields, values)))
+        # turn values into a dictionary
+        data = dict(zip(fields, values))
 
-    return result
+        timestamp = float(data.get('timestamp', 0))
+        
+        # sometimes get nulls in data eg when pi not shutdown cleanly
+        if null in row or timestamp < lasttime:
+            yield result
+            result = []
+            lasttime = 0
+            continue
+        
+        lasttime = timestamp
+        result.append(data)
 
-def xtimewarp_timestamps(data):
-    """ Don't let data go backwards in time """
+    yield result
+
+def check_timestamps(data):
+    """ See if data go backwards in time """
 
     lasttime = None
     timewarp = 0.0
@@ -312,14 +322,12 @@ def xtimewarp_timestamps(data):
         timestamp = float(row['timestamp'])
         
         if lasttime and timestamp < lasttime:
-            timewarp = lasttime - timestamp
-            print(ix, timewarp)
+            print('timewarp', ix, timestamp-lasttime, timestamp, lasttime)
 
-        row['timestamp'] = str(timestamp + timewarp)
+        #row['timestamp'] = str(timestamp + timewarp)
 
         lasttime = timestamp
 
-    return data
 
 def timewarp_timestamps(data):
     """ Don't let data go backwards in time """
@@ -363,31 +371,40 @@ def clean(path):
     put clean files in clean subfolder.
     """
     (path / 'clean').mkdir(exist_ok=True, parents=True)
-    
+
     for name in path.glob('*'):
 
         if name.is_dir(): continue
         
         with name.open() as dirty:
-            data = drop_bad_rows(dirty)
-            data = timewarp_timestamps(data)
+            for part, data in enumerate(drop_bad_rows(dirty)):
+                print(part, name)
+                if not(data):
+                    continue
+                
+                fields = data[0].keys()
 
-        fields = data[0].keys()
-        clean_name = path / 'clean' / name.name
-        with clean_name.open('w') as cleaner:
-            writer = csv.DictWriter(cleaner, fieldnames=fields)
-            writer.writeheader()
-            writer.writerows(data)
+                if 'timestamp' in fields:
+                    check_timestamps(data)
+                
+                clean_name = path / 'clean' / name.name
+                if part:
+                    clean_name = path / 'clean' / (name.name + f'{part}')
+                    
+                with clean_name.open('w') as cleaner:
+                    writer = csv.DictWriter(cleaner, fieldnames=fields)
+                    writer.writeheader()
+                    writer.writerows(data)
 
-        df = base.load(clean_name)
+                df = base.load(clean_name)
 
-        # change pressure to altitude if it exists
-        if hasattr(df, 'pressure'):
-            df['altitude'] = df.pressure.map(pressure_to_altitude)
+                # change pressure to altitude if it exists
+                if hasattr(df, 'pressure'):
+                    df['altitude'] = df.pressure.map(pressure_to_altitude)
 
-            df = df.drop('pressure', axis=1)
+                    df = df.drop('pressure', axis=1)
 
-            base.save(clean_name, df)
+                    base.save(clean_name, df)
 
 class HatShow:
     """ Show things on a Sense Hat """
