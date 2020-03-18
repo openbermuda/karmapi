@@ -86,6 +86,7 @@ class TankRain(pigfarm.Yard):
         self.add_event_map('X', self.switcheroo)
         self.add_event_map('S', self.save)
         self.add_event_map('T', self.toggle_title)
+        self.add_event_map('G', self.create_gif)
 
     def load_images(self):
         
@@ -226,6 +227,27 @@ class TankRain(pigfarm.Yard):
         print('saving to', target)
         target.parent.mkdir(parents=True, exist_ok=True)
         self.data.save(target)
+
+    async def create_gif(self):
+        """ Turn images into a gif """
+        frames = []
+        for path in self.paths:
+            frames.append(Image.open(path))
+
+        when = self.when()
+        target = Path(self.save_folder or '.')
+        target /= f'{when.year}{when.month}{when.day}.gif'
+
+        # fixme -- where's the path
+        print('saving to', target)
+        target.parent.mkdir(parents=True, exist_ok=True)
+
+
+        frames[0].save(
+            str(target),
+            format='GIF',
+            append_images=frames[1:], save_all=True, duration=100, loop=0)
+
 
     async def switcheroo(self):
         """ switcheroo
