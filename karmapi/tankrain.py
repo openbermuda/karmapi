@@ -235,18 +235,24 @@ class TankRain(pigfarm.Yard):
             frames.append(Image.open(path))
 
         when = self.when()
+        time = 20   # seconds
         target = Path(self.save_folder or '.')
-        target /= f'{when.year}{when.month}{when.day}.gif'
+        target /= f'{when.year}{when.month:02d}{when.day:02d}.gif'
 
         # fixme -- where's the path
         print('saving to', target)
         target.parent.mkdir(parents=True, exist_ok=True)
 
+        duration = 1000 * self.sleep
+
+        n = time // duration
 
         frames[0].save(
             str(target),
             format='GIF',
-            append_images=frames[1:], save_all=True, duration=100, loop=0)
+            append_images=frames[1:n],
+            save_all=True,
+            duration=duration, loop=0)
 
 
     async def switcheroo(self):
@@ -501,7 +507,7 @@ def main(args=None):
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--pig', action='store_false', default=True)
-    parser.add_argument('--minutes', type=int, default=30)
+    parser.add_argument('--minutes', type=int, default=0.33)
     parser.add_argument('path', nargs='?', default='.')
     parser.add_argument('--version', default='')
     parser.add_argument('--save',

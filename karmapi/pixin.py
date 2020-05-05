@@ -29,7 +29,7 @@ def parse(item):
 
 def pparse(pitem):
     """ Convert path into date time """
-    fields = pitem.stem.split('_')
+    fields = pitem.stem.replace('~', '_').split('_')
     print(fields)
 
     name, day, second = fields[:3]
@@ -44,7 +44,7 @@ def pparse(pitem):
     second = int(second[4:])
 
     when = datetime.datetime(year, month, day, hour, minute, second)
-    print(when)
+
     return when
 
 if __name__ == '__main__':
@@ -76,4 +76,5 @@ if __name__ == '__main__':
             if where:
                 where.parent.mkdir(exist_ok=True, parents=True)
                 print(what, where)
-                shutil.copyfile(what, where)
+                if not where.exists():
+                    shutil.copyfile(what, where)

@@ -151,12 +151,13 @@ class Pigs(Pig):
     async def run(self):
         """ Make the pig run """
         # spawn task for each runner
-        coros = []
-        for item in self.runners:
-            if inspect.iscoroutine(item):
-                coros.append(await(curio.spawn(item)))
 
-        await curio.gather(coros)
+        async with curio.TaskGroup() as coros:
+
+            for item in self.runners:
+                if inspect.iscoroutine(item):
+                    await coros.spawn(item)
+
 
 class Grid(Pig):
     """ A grid of widgets """
@@ -418,18 +419,15 @@ class EventLoop(AppEventLoop):
 
     async def run(self):
 
-        poll_task = await curio.spawn(self.poll())
+        async with curio.TaskGroup() as tasks:
+            poll_task = await tasks.spawn(self.poll())
 
-        flush_task = await curio.spawn(self.flush())
+            flush_task = await tasks.spawn(self.flush())
 
-        yosser_tasks = []
-        for yosser in range(cpu_count()):
+            yosser_tasks = []
+            for yosser in range(cpu_count()):
         
-            yosser_tasks.append(await curio.spawn(self.yosser(YQ)))
-
-        tasks = [flush_task, poll_task] +  yosser_tasks
-
-        await curio.gather(tasks)
+                yosser_tasks.append(await tasks.spawn(self.yosser(YQ)))
 
 
 class Piglet(Pig):
