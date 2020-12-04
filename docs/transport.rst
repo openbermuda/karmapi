@@ -67,3 +67,63 @@ Dual: bike/ski routes?   At least one should be good.
 
 How to get from here to there?
 ==============================
+
+I wrote the above in December 2019.
+
+It's now mid-May and still snowing.
+
+How to make transit less risky with covid-19.
+
+Distancing is hard on a bus.
+
+Some things that may help:
+
+* open windows
+
+* fewer passengers
+
+* give the driver space and open windows.
+
+* less time on the bus.
+
+How can we have less time on the bus?
+
+With less traffic we can create bus priority routes.
+
+With more buses we can have more serving each route, so they don't all
+stop at every stop.
+
+So how can we get more buses?
+
+One option is to divide the area into a number of segments.
+
+Now suppose you rotate the buses round the segments.  They all work
+one segment.  So if there were ten segments, you would get ten times
+the number of buses, with long gaps in between.
+
+Typical buses, you wait 30 minutes then 8 come along at once.
+
+Most buses will miss most stops, so you get down town faster, less
+time to share air.
+
+If distancing is in force, keep all the buses running to reduce spread.
+
+
+Contact tracing and the transit pass
+------------------------------------
+
+Many transit systems have some sort of payment card such as *Presto*
+or *Oyster*.
+
+In many cases there is a high percentage of riders that are using the
+cards. 
+
+Each time a user taps, the system knows where they are.  If they take
+the bus, the system presumably knows the bus number and route.
+
+For rail, things are more ambiguous, since tapping is often enough to
+get to a platform, but there is no information on which train is
+taken.
+
+
+

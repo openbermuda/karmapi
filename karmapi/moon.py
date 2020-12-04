@@ -22,6 +22,7 @@ And orongo.
 
 
 """
+from blume import magic, farm
 
 import datetime
 
@@ -197,3 +198,5 @@ if __name__ == '__main__':
         images(path, stamps, values)
     
         
+if __name__ == '__main__':
+    pass

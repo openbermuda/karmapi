@@ -235,7 +235,7 @@ class TankRain(pigfarm.Yard):
             frames.append(Image.open(path))
 
         when = self.when()
-        time = 20   # seconds
+        time = 10e3   # micro seconds
         target = Path(self.save_folder or '.')
         target /= f'{when.year}{when.month:02d}{when.day:02d}.gif'
 
@@ -245,7 +245,10 @@ class TankRain(pigfarm.Yard):
 
         duration = 1000 * self.sleep
 
-        n = time // duration
+        n = int(time // duration)
+
+        n = min(n, len(self.paths))
+        print(target, n, time, duration)
 
         frames[0].save(
             str(target),
