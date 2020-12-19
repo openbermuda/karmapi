@@ -26,6 +26,8 @@ from blume import magic, farm
 
 import datetime
 
+import netCDF4
+
 NEW = datetime.datetime(1900, 1, 1, 5, 50)
 
 NEXTNEW = datetime.datetime(1900, 1, 30, 5, 22)
@@ -145,17 +147,8 @@ if __name__ == '__main__':
 
     ORIGIN=AHU['orongo']
 
-    parser.add_argument('--path', default='karmapi/ecmwf')
-    parser.add_argument('--value', default='t2m')
-    parser.add_argument('--raw', default='temperature.nc')
-    parser.add_argument('--date')
-    parser.add_argument(
-        '--pc', action='store_true',
-        help='do principal components')
-
-    parser.add_argument('--delta', action='store_true')
-    parser.add_argument('--model', action='store_true')
-    parser.add_argument('--offset', type=int, default=0)
+    parser.add_argument('-path', default='karmapi/moai')
+    parser.add_argument('-dem', default='easter_island_3_isl_2016.nc')
 
     args = parser.parse_args()
 
@@ -199,4 +192,8 @@ if __name__ == '__main__':
     
         
 if __name__ == '__main__':
-    pass
+
+    animal = farm.Farm()
+
+    # animal.add(???)
+    animal.run()

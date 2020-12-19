@@ -29,8 +29,9 @@ class HatInfo:
                 f'TT: {self.whattimeisit()}']        
 
 
-            for message in messages:
-                h.show_message(message,
+            for message, colour in zip(messages, colours):
+                
+                h.show_message(message, text_colour=colour,
                                scroll_speed=0.2)
 
 

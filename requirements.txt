@@ -1,5 +1,7 @@
 #jupyter for added goodness
 
+blume # for the blooming table and the magic farm
+
 astropy  # so we can find jupiter and more
 
 
