@@ -28,6 +28,13 @@ class HatInfo:
                 f'H: {h.humidity:0.1f}',
                 f'TT: {self.whattimeisit()}']        
 
+            colours = [
+                [255, 255, 0],
+                [255, 0, 255],
+                [0, 255, 255],
+                [255, 255, 255],
+            ]
+                 
 
             for message, colour in zip(messages, colours):
                 
