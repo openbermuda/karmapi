@@ -135,17 +135,38 @@ class RapaNui(magic.Ball):
         spell = magic.Spell()
         spell.find_casts(records)
         self.moai = list(spell.spell(records))
-        
+
+        self.extent = (
+            self.dem.geospatial_lon_min, self.dem.geospatial_lon_max,
+            self.dem.geospatial_lat_min, self.dem.geospatial_lat_max)
+                       
+
+    def zoomit(self, data):
+
+        if self.zoom <= 1.:
+            return data, self.extent
+
+        width, height = data.shape
+        ww = int(width // self.zoom)
+        hh = int(height // self.zoom)
+        wstart = (width - ww) // 2
+        hstart = (height - hh) // 2
+        lats, lons = self.dem['lat'], self.dem['lon']
+        extent = (lons[hstart], lons[hstart + hh-1],
+                  lats[wstart], lats[wstart + ww-1])
+        extent = [float(x) for x in extent]
+
+        return data[wstart:wstart+ww, hstart:hstart+hh], extent
                             
     async def run(self):
 
-        data = self.dem['Band1'][::-1]
-        extent = (
-            self.dem.geospatial_lon_min, self.dem.geospatial_lon_max,
-            self.dem.geospatial_lat_min, self.dem.geospatial_lat_max)
-                  
+        data = self.dem['Band1']
+
+        zdata, extent = self.zoomit(data)
+        zdata = zdata[::-1]
+
         plt.imshow(
-            data, extent=extent, vmin=self.vmin, vmax=self.vmax,
+            zdata, extent=extent, vmin=self.vmin, vmax=self.vmax,
             cmap=magic.random_colour())
 
         #plt.imshow(data, extent=extent)
@@ -153,9 +174,11 @@ class RapaNui(magic.Ball):
 
         lats = [x['lat'] for x in self.moai]
         lons = [x['lon'] for x in self.moai]
-        plt.scatter(lons, lats)
+        plt.scatter(lons, lats, s=1)
 
-        # add ahu?
+        plt.scatter([ahu.x for ahu in self.ahu.values()],
+                    [ahu.y for ahu in self.ahu.values()],
+                    s=1, c='r')
         
         await self.put()
 
@@ -185,12 +208,14 @@ if __name__ == '__main__':
     ORIGIN=AHU['orongo']
 
     parser.add_argument('-moai', default='moai.csv')
-    parser.add_argument('-vmin', default=-4000)
-    parser.add_argument('-vmax', default=500)
+    parser.add_argument('-vmin', type=float, default=-4000)
+    parser.add_argument('-vmax', type=float, default=500)
+    parser.add_argument('-zoom', type=float, default=2.0)
     parser.add_argument('-dem', default='easter_island_3_isl_2016.nc')
 
     args = parser.parse_args()
 
+    #magic.modes.rotate()
     animal = farm.Farm()
 
     rapanui = RapaNui()
