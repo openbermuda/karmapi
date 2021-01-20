@@ -22,43 +22,51 @@ And orongo.
 
 
 """
+from pathlib import Path
+from matplotlib import pyplot as plt
+
 from blume import magic, farm
 
 import datetime
 
 import netCDF4
 
-NEW = datetime.datetime(1900, 1, 1, 5, 50)
+def puzzle():
+    """ No idea what this is about 
+    
+    New moons?
+    """
+    NEW = datetime.datetime(1900, 1, 1, 5, 50)
 
-NEXTNEW = datetime.datetime(1900, 1, 30, 5, 22)
-
-
-delta = (NEXTNEW - NEW)
-
-deltas = delta.days * 24 * 3600
-
-print(delta.days)
-
-deltas += delta.seconds
-
-print(deltas)
+    NEXTNEW = datetime.datetime(1900, 1, 30, 5, 22)
 
 
-latest = datetime.datetime(2017, 11, 18, 3, 43)
+    delta = (NEXTNEW - NEW)
 
-ldelta = latest - NEW
+    deltas = delta.days * 24 * 3600
+
+    print(delta.days)
+
+    deltas += delta.seconds
+
+    print(deltas)
 
 
-seconds = ldelta.days * 24 * 3600
-seconds += ldelta.seconds
+    latest = datetime.datetime(2017, 11, 18, 3, 43)
 
-print(seconds, seconds / deltas)
+    ldelta = latest - NEW
 
-current = NEW
-for x in range(100):
-    print(current)
 
-    current += delta
+    seconds = ldelta.days * 24 * 3600
+    seconds += ldelta.seconds
+
+    print(seconds, seconds / deltas)
+
+    current = NEW
+    for x in range(100):
+        print(current)
+
+        current += delta
 
 from collections import deque
 from math import pi
@@ -103,24 +111,53 @@ class stop:
         # fixme push according to direction of travel
         self.queue.push(moai)
 
-class moai:
+def data_to_rows(data):
+    
+    # figure out what we have
+    import csv
+    for row in csv.reader(data):
+        keys = [x.strip() for x in row]
+        break
 
-    def __init__(self, m=1, x=0, y=0, z=0, t=0):
+    for row in csv.DictReader(data[1:], keys):
+        yield row
+    
 
-        self.x = x
-        self.y = y
-        self.z = z
-        self.t = t
+        
+class RapaNui(magic.Ball):
 
-    async def tick(self):
+    async def start(self):
+        
+        print('Starting Rapa Nui')
+        self.dem = netCDF4.Dataset(self.dem)
 
-        self.t += 1
+        records = list(data_to_rows(open(self.moai).readlines()))
+        spell = magic.Spell()
+        spell.find_casts(records)
+        self.moai = list(spell.spell(records))
+        
+                            
+    async def run(self):
 
-        # loop to t udating position
-        for d in range(self.t):
-            # magnus magnus son needed
-            pass    
-            
+        data = self.dem['Band1'][::-1]
+        extent = (
+            self.dem.geospatial_lon_min, self.dem.geospatial_lon_max,
+            self.dem.geospatial_lat_min, self.dem.geospatial_lat_max)
+                  
+        plt.imshow(
+            data, extent=extent, vmin=self.vmin, vmax=self.vmax,
+            cmap=magic.random_colour())
+
+        #plt.imshow(data, extent=extent)
+        plt.colorbar()
+
+        lats = [x['lat'] for x in self.moai]
+        lons = [x['lon'] for x in self.moai]
+        plt.scatter(lons, lats)
+
+        # add ahu?
+        
+        await self.put()
 
 if __name__ == '__main__':
 
@@ -147,53 +184,19 @@ if __name__ == '__main__':
 
     ORIGIN=AHU['orongo']
 
-    parser.add_argument('-path', default='karmapi/moai')
+    parser.add_argument('-moai', default='moai.csv')
+    parser.add_argument('-vmin', default=-4000)
+    parser.add_argument('-vmax', default=500)
     parser.add_argument('-dem', default='easter_island_3_isl_2016.nc')
 
     args = parser.parse_args()
 
-    path = Path(args.path)
-
-    for name, ahu in AHU.items():
-        print(name, ahu)
-
-    overandout
-
-    df = load(path / args.raw)
-
-    stamps = df.variables['time']
-
-    args.date = base.parse_date(args.date)
-
-    if args.date:
-        stamps = stamp_filter(stamps, args.date)
-
-    values = df.variables[args.value]
-
-    path = path / args.value
-
-    if args.pc:
-        pca = pcs(stamps, values, 48*35)
-
-        pca.show_fracs(0.1)
-
-        for x in dir(pca):
-            print(x)
-
-    elif args.delta:
-        delta(stamps, values)
-
-    elif args.model:
-
-        model(stamps, values)
-        
-    else:
-        images(path, stamps, values)
-    
-        
-if __name__ == '__main__':
-
     animal = farm.Farm()
 
-    # animal.add(???)
-    animal.run()
+    rapanui = RapaNui()
+    rapanui.update(args)
+    rapanui.ahu = AHU
+    animal.add(rapanui)
+    animal.shep.path.append(rapanui)
+
+    farm.run(animal)

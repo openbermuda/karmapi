@@ -61,7 +61,10 @@ No door problems.
 
 Experiment with winter routes which take advantage of snow and ice.
 
-Dual: bike/ski routes?   At least one should be good.
+Dual: bike/ski routes?   At least one should be good, whatever the
+weather.
+
+Some days, you should just stay home and shovel.
 
 
 
@@ -124,6 +127,34 @@ the bus, the system presumably knows the bus number and route.
 For rail, things are more ambiguous, since tapping is often enough to
 get to a platform, but there is no information on which train is
 taken.
+
+2021 vision
+===========
+
+So what happened to transit in 2020?
+
+Where I live.  People stayed home.
+
+Transit use was way down.  Town was quiet.  Too quiet.
+
+This allowed those relying on transport to get to essential work in
+un-crowded buses, with open windows.
+
+In my city a combination ...
+
+Bus service cut and buses kept to timetable, it is still common to see
+buses waiting to avoid being early.
+
+When you factor in apps that work with open data feeds giving bus
+location information, sticking to the timetable makes less and less
+sense, the more regular a service becomes.
+
+Decisions to reduce spending on transport at this time, have missed an
+opportunity to experiment with a contrarian approach to see just how
+good the transport can be.
+
+Over the summer efforts focussed on active transport.  Many cities
+have seen a boom in cycling, in particular.
 
 
 
