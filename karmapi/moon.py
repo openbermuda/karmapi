@@ -124,13 +124,15 @@ def data_to_rows(data):
     
 
         
-class RapaNui(magic.Ball):
+class RongoRongo(magic.Ball):
 
     async def start(self):
         
-        print('Starting Rapa Nui')
+        print('Rapa Nui')
         self.dem = netCDF4.Dataset(self.dem)
 
+        # this should just be: self.moai = magic.Spell(open(self.moai))
+        # just need an init method for spell
         records = list(data_to_rows(open(self.moai).readlines()))
         spell = magic.Spell()
         spell.find_casts(records)
@@ -139,6 +141,9 @@ class RapaNui(magic.Ball):
         self.extent = (
             self.dem.geospatial_lon_min, self.dem.geospatial_lon_max,
             self.dem.geospatial_lat_min, self.dem.geospatial_lat_max)
+
+        print(self.dem)
+        print(self.extent)
                        
 
     def zoomit(self, data):
@@ -149,9 +154,13 @@ class RapaNui(magic.Ball):
         width, height = data.shape
         ww = int(width // self.zoom)
         hh = int(height // self.zoom)
-        wstart = (width - ww) // 2
-        hstart = (height - hh) // 2
+
+        xoff, yoff = self.xoff, self.yoff
+        
+        wstart = int((xoff + width - ww) // 2)
+        hstart = int((yoff + height - hh) // 2)
         lats, lons = self.dem['lat'], self.dem['lon']
+
         extent = (lons[hstart], lons[hstart + hh-1],
                   lats[wstart], lats[wstart + ww-1])
         extent = [float(x) for x in extent]
@@ -167,20 +176,35 @@ class RapaNui(magic.Ball):
 
         plt.imshow(
             zdata, extent=extent, vmin=self.vmin, vmax=self.vmax,
+            interpolation=self.interpolation[0],
             cmap=magic.random_colour())
 
         #plt.imshow(data, extent=extent)
         plt.colorbar()
 
-        lats = [x['lat'] for x in self.moai]
-        lons = [x['lon'] for x in self.moai]
-        plt.scatter(lons, lats, s=1)
+        moai = select_moai(self.moai, extent)
+        lats = [x['lat'] for x in moai]
+        lons = [x['lon'] for x in moai]
+        plt.scatter(lons, lats, s=.1, c='r')
 
-        plt.scatter([ahu.x for ahu in self.ahu.values()],
-                    [ahu.y for ahu in self.ahu.values()],
-                    s=1, c='r')
+        #plt.scatter([ahu.x for ahu in self.ahu.values()],
+        #            [ahu.y for ahu in self.ahu.values()],
+        #            s=1, c='r')
         
         await self.put()
+
+def select_moai(moai, extent):
+
+    minlon, maxlon, minlat, maxlat = extent
+
+    result = []
+    for mo in moai:
+        lat, lon = mo['lat'], mo['lon']
+        
+        if minlon <= lon and lon <= maxlon and minlat <= lat and lat <= maxlat:
+            result.append(mo)
+    return result
+
 
 if __name__ == '__main__':
 
@@ -210,18 +234,25 @@ if __name__ == '__main__':
     parser.add_argument('-moai', default='moai.csv')
     parser.add_argument('-vmin', type=float, default=-4000)
     parser.add_argument('-vmax', type=float, default=500)
+    parser.add_argument('-xoff', type=float, default=0.0)
+    parser.add_argument('-yoff', type=float, default=0.0)
     parser.add_argument('-zoom', type=float, default=2.0)
     parser.add_argument('-dem', default='easter_island_3_isl_2016.nc')
 
     args = parser.parse_args()
 
-    #magic.modes.rotate()
+    magic.modes.rotate()
     animal = farm.Farm()
 
-    rapanui = RapaNui()
-    rapanui.update(args)
-    rapanui.ahu = AHU
-    animal.add(rapanui)
-    animal.shep.path.append(rapanui)
+    rongo = RongoRongo()
+    rongo.update(args)
+    rongo.ahu = AHU
+    rongo.interpolation = deque([
+        None, 'none', 'nearest', 'bilinear', 'bicubic', 'spline16',
+        'spline36', 'hanning', 'hamming', 'hermite', 'kaiser', 'quadric',
+        'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc', 'lanczos'])
+    
+    animal.add(rongo)
+    animal.shep.path.append(rongo)
 
     farm.run(animal)

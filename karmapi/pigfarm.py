@@ -737,6 +737,7 @@ class MagicCarpet(Space):
         if self.subtract_means:
             plot_frame = frame - mean
             plot_frame /= frame.std()
+            plot_frame = plot_frame.clip(-3, 3)
         else:
             plot_frame = frame
         
