@@ -154,7 +154,53 @@ opportunity to experiment with a contrarian approach to see just how
 good the transport can be.
 
 Over the summer efforts focussed on active transport.  Many cities
-have seen a boom in cycling, in particular.
+have seen a boom in cycling, in particular, there has been spectacular
+change in many European cities, Paris being a very notable example.
+
+In Ottawa there have been significant efforts by the National Capital
+Commission to make safe outdoor space available.
+
+There have been glimpses of what the city might be with a little
+imagination.
+
+*Menard Laning* is a thing.  This is the practice of building
+temporary pop-up bike lanes courtesy of a local counciller buying a
+few hundred traffic cones.
+
+It is disappointing that the city did not do more to encourage
+more experiments during this period when traffic was dramatically
+reduced.
+
+There are challenges in Ottawa, with severe winters and hot humid
+summer days.  The range of temperatures under which equipment has to
+operate is some 80 degrees centigrade.  A range which is likely to
+increase as the planet warms.
+
+To compensate for this variation, the good news is that the short
+range weather forecasts are generally very good.  By short range, I
+mean 1-3 days.   Beyond that there is also a good general indication
+of what the next 10 days will be like.
+
+Through the recent crisis we have learnt that much of society can
+adjust to work in a new environment.
+
+As the climate changes the impacts on events such as Winterlude could
+be significant.
+
+Rather than focus on a fixed time each year, it would make sense to
+introduce events as certain milestones are reached each season.
+
+* the opening of the first stretch of the canal.
+* the first un-interrupted 3km stretch
+* Dow's lake open
+
+Arrange events for the opening.
+
+Use the forecast to predict likely schedule for the next week, adjust
+as necessary.
+
+After heavy snow, close certain roads to traffic, build ski trails.
+
 
 
 
