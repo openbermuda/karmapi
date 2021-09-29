@@ -2,7 +2,7 @@
 import random
 import datetime
 import sense_hat
-
+import time
 
 class HatInfo:
 
@@ -13,6 +13,10 @@ class HatInfo:
         
         self.hat.rotation = 90
 
+        self.colour = (220, 100, 100)
+
+        self.stats = False
+
     def whattimeisit(self):
 
         return f'{datetime.datetime.now():%H:%M}'
@@ -22,6 +26,11 @@ class HatInfo:
         h = self.hat
         while True:
 
+            if not self.stats:
+                self.hat.set_pixels([self.colour] * 64)
+                
+                time.sleep(2)
+            
             messages = [
                 f'T: {h.temp:0.1f}',
                 f'P: {h.pressure:0.1f}',
