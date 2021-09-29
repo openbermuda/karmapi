@@ -33,7 +33,7 @@ def long_exposure(length=6,
     # speed to 6s and ISO to 800
     camera = PiCamera(resolution=resolution, framerate=Fraction(1, framerate))
     camera.shutter_speed = length * 1000000
-    camera.iso = 800
+    camera.framerate = 1 / camera.shutter_speed
 
     camera.exposure_mode = 'off'
 
