@@ -74,7 +74,7 @@ async def capture(args):
         camera = PiCamera()
 
     camera.start_preview()
-    curio.sleep(2)
+    await curio.sleep(2)
 
     last = None
     while True:
