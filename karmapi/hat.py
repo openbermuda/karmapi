@@ -13,7 +13,7 @@ class HatInfo:
         
         self.hat.rotation = 90
 
-        self.colour = (220, 100, 100)
+        self.colour = (170, 80, 80)
 
         self.stats = False
 
