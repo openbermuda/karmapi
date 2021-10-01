@@ -38,6 +38,9 @@ import curio
 from karmapi import show, base, cpr
 
 from karmapi import pigfarm, checksum
+from blume import magic, farm
+
+from matplotlib import figure
 
 # Paths to data
 url = 'http://weather.bm/images/'
@@ -51,11 +54,13 @@ local_chart = 'surfaceAnalysis/Latest/Local.gif'
 target = 'tankrain/{date.year}/{date.month}/{date.day}/{name}_{date:%H%M}{suffix}'
 
 
-class TankRain(pigfarm.Yard):
+class TankRain(magic.Ball):
     """ Widget to show tankrain images """
 
-    def __init__(self, parent, path=None, version='local', date=None,
+    def __init__(self, path=None, version='local', date=None,
                  save=None, dedupe=0, *args):
+
+        super().__init__()
         
         self.version = version
         self.dedupe = dedupe
@@ -73,8 +78,6 @@ class TankRain(pigfarm.Yard):
 
         self.load_images()
 
-        super().__init__(parent, axes=[111])
-
         self.add_event_map('r', self.reverse)
         self.add_event_map(' ', self.pause)
 
@@ -87,6 +90,10 @@ class TankRain(pigfarm.Yard):
         self.add_event_map('S', self.save)
         self.add_event_map('T', self.toggle_title)
         self.add_event_map('G', self.create_gif)
+
+    def add_event_map(self, key, coro):
+
+        self.add_filter(key, coro)
 
     def load_images(self):
         
@@ -386,20 +393,26 @@ class TankRain(pigfarm.Yard):
                 title = f'{self.ix} : {len(self.paths)} {self.path}'
 
             self.compute_data()
-            #self.axes.clear()
+
+
             print('TITLE:', title)
             try:
                 #self.axes.set_title(title, color=self.title)
                 #self.axes.set_title(title, color=self.title or 'k')
 
-                self.draw_ball(self.ball)
+                #fig = figure.Figure()
+                #ax = fig.add_subplot()
+                #ax.imshow(self.data)
+                #ax.set_title(title)
+                #self.draw_ball(self.ball)
+
+                await self.put(self.data)
                 #self.axes.imshow(self.data)
             except OSError:
                 print('dodgy image:', self.paths[self.ix])
 
 
             #self.draw()
-
             await curio.sleep(self.sleep)
 
 
@@ -524,16 +537,15 @@ def main(args=None):
     args.date = base.parse_date(args.date)
 
     if args.pig:
-        farm = pigfarm.PigFarm()
-        farm.add(
-            TankRain,
-            dict(path=args.path, version=args.version, date=args.date,
-                 save=args.save, dedupe=args.dedupe))
+        frm = farm.Farm()
 
-        from karmapi.mclock2 import GuidoClock
-        farm.add(GuidoClock)
+        tankrain = TankRain(path=args.path, version=args.version, date=args.date,
+                            save=args.save, dedupe=args.dedupe)
 
-        pigfarm.run(farm)
+        frm.add(tankrain)
+        frm.shep.path.append(tankrain)
+        curio.run(farm.start_and_run(frm))
+
         sys.exit()
     else:
         curio.run(fetch(args.minutes))
