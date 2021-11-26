@@ -74,11 +74,11 @@ the new normal and many rather like it.
 
 Organisations too have adapted too.  I suspect the most successful
 companies will be hybrid, with a decline in the demand for office
-space.
+space.  But many will need a large space for occasional gatherings.
 
-I would also expect that this time has very much changed how many
-organisations run, as people adapt to varying degrees and this changes
-dynamics within an organisation.
+I would also expect that the move to remote has very much changed how
+many organisations run, as people adapt to varying degrees and this
+changes dynamics within an organisation.
 
 Many were no doubt much more comfortable with the old world and are
 hoping to a return.   In general, those exercising power and control
@@ -108,7 +108,9 @@ and mini conferences.
 Back to the city, how to get people to want to go and visit there?
 
 The key is surely to create spaces where people want to go because of
-the others they will find there.  
+the others they will find there.  Whilst few want to spend 40 hours a
+week plus 10 hours commuting, many would be happy with a couple of
+afternoons, mornings or evenings a week.
 
 In such work spaces it would be natural to have an extended working
 day,  so the facility will be in use for more hours of the day and
@@ -130,12 +132,9 @@ The city could allocate some of its spare office space to groups
 interested in problems, such as the software controlling our traffic
 lights.
 
-How will all people to get to the city?
-
-No-one is going to go there unless it is cheap, easy, fast and fun to
-move around.   But imagine there is a whole variety of spaces you can
-choosed to go to work remotely for a while.   Not Jamaica, but rather
-the old city offices where nobody wants to go.
+Imagine there is a whole variety of spaces you can choosed to go to
+work remotely for a while.  Not Jamaica, but rather the old city
+offices where nobody wants to go.
 
 We have just gone through the publishing of an official plan and it is
 notably lacking of any evidence that any alternative futures have been
@@ -152,11 +151,15 @@ Open up the planning department, organise regular lunch-and-learns
 in the new shared space.  Truly, move to and being an open
 organisation, designed as a place where the default is open to all.
 
+Stop out-sourcing everything to consultants, rather build internal
+expertise and collaboration across different local communities.
+
 Create spaces where people can share there experiences during the
 pandemic, how their outlook on the world may have changed and new
 visions for the future.
 
-Planes where people can ask, what could we do if we reclaim some space from cars?
+Places where people can ask, what could we do if we reclaim some space
+from cars?
 
 Create the bike lanes where you don't stop rolling until you get where
 you are going, pathways just merge and flow.
@@ -165,8 +168,8 @@ Instead of wondering if the capacitance of your statusesque existence
 is stable enough to turn a light red as you wait for the inevitable
 revert.
 
-We can't make a car stop, we can't afford to burn the extra oil a few
-stops might cause.
+
+
 
 
 
