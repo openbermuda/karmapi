@@ -35,9 +35,8 @@ from collections import defaultdict
 
 import curio
 
-from karmapi import show, base, cpr
+from karmapi import base, cpr
 
-from karmapi import pigfarm, checksum
 from blume import magic, farm
 
 from matplotlib import figure
@@ -64,7 +63,6 @@ class TankRain(magic.Ball):
         
         self.version = version
         self.dedupe = dedupe
-        self.paused = False
         self.path = path or '.'
         self.save_folder = save
         self.timewarp = 0
@@ -79,7 +77,6 @@ class TankRain(magic.Ball):
         self.load_images()
 
         self.add_event_map('r', self.reverse)
-        self.add_event_map(' ', self.pause)
 
         self.add_event_map('b', self.previous_day)
         self.add_event_map('v', self.next_day)
@@ -382,38 +379,39 @@ class TankRain(magic.Ball):
         #await pigfarm.aside(runfetch)
 
         #self.dark()
-        while True:
-            if self.paused:
-                await curio.sleep(self.sleep)
-                continue
+        if self.paths:
+            title = self.paths[self.ix]
+        else:
+            title = f'{self.ix} : {len(self.paths)} {self.path}'
 
-            if self.paths:
-                title = self.paths[self.ix]
-            else:
-                title = f'{self.ix} : {len(self.paths)} {self.path}'
-
-            self.compute_data()
+        self.compute_data()
 
 
-            print('TITLE:', title)
-            try:
-                #self.axes.set_title(title, color=self.title)
-                #self.axes.set_title(title, color=self.title or 'k')
+        print('TITLE:', title)
+        try:
+            #self.axes.set_title(title, color=self.title)
+            #self.axes.set_title(title, color=self.title or 'k')
 
-                #fig = figure.Figure()
-                #ax = fig.add_subplot()
-                #ax.imshow(self.data)
-                #ax.set_title(title)
-                #self.draw_ball(self.ball)
+            #fig = figure.Figure()
+            #ax = fig.add_subplot()
+            #ax.imshow(self.data)
+            #ax.set_title(title)
+            #self.draw_ball(self.ball)
 
-                await self.put(self.data)
-                #self.axes.imshow(self.data)
-            except OSError:
-                print('dodgy image:', self.paths[self.ix])
+            print(type(self.data))
+            #await self.put(self.data)
+            ax = await self.get()
+            print('sps', ax.get_subplotspec())
+            print('margins', ax.margins())
+            print('pos', ax.get_position())
+            ax.imshow(self.data)
 
+            # need to trigger an axes draw???
+            ax.show()
+            #self.axes.imshow(self.data)
+        except OSError:
+            print('dodgy image:', self.paths[self.ix])
 
-            #self.draw()
-            await curio.sleep(self.sleep)
 
 
 
