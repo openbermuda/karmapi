@@ -8,15 +8,68 @@ import random
 
 from io import BytesIO
 
-from picamera import PiCamera
 import time
 import curio
 
 from PIL import Image
 
+from blume import farm, magic, Ball
+
+
+class PiCamera(Ball):
+    """ The new kid in town is libcamera-still 
+
+    It does everything I need, except...
+
+    So the plan here is to just call libcamera-still with a bunch of options 
+    and see how it goes.
+    """
+    def __init__(self):
+
+        super().__init__()
+
+        self.timestamp = False
+        self.datetime = True
+        self.latest = 'latest.jpg'
+        self.shutter = 0
+        self.nopreview = 1
+        self.output = 'preview.jpg'
+
+
+    def make_cmd(self):
+
+        cmd = ['libcamera-still']
+
+        for flag in ['timestamp', 'datetime', 'preview']:
+            if getattr(self, flag):
+                cmd.append('--' + flag)
+                
+        if self.shutter:
+            cmd.append(f'--shutter {self.shutter}')
+
+        if self.output:
+            cmd.append(f'--output {self.output}')
+
+        if self.nopreview:
+            cmd.append(f'--nopreview')
+            
+        
+    async def run(self):
+        """ Make one call to libcamera"""
+
+        subprocess.run(self.make_cmd())
+
+        image = Image.open(self.output)
+
+        ax = await self.get()
+
+        ax.imshow(image)
+
+        ax.show()
+
+        
 
 from fractions import Fraction
-
 
 def long_exposure(length=6,
                   framerate=6,
@@ -98,7 +151,7 @@ async def capture(args):
             camera = random_picture(camera)
 
 
-def main():
+def xmain():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--sleep', type=float, default=60)
@@ -111,6 +164,14 @@ def main():
 
     curio.run(capture(args))
 
+def main():
+
+    fm = farm.Farm()
+
+    camera = PiCamera()
+    fm.add(camera)
+    fm.shep.path.append(camera)
+    farm.run(fm)
 
 if __name__ == '__main__':
 
