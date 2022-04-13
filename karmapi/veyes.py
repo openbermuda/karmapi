@@ -34,6 +34,7 @@ class PiCamera(magic.Ball):
         self.latest = 'latest.jpg'
         self.shutter = 0
         self.qtpreview = 1
+        self.nopreview = 0
         self.output = 'preview.jpg'
         self.timelapse = 0
         self.timeout = 5000
@@ -43,16 +44,16 @@ class PiCamera(magic.Ball):
 
         cmd = ['libcamera-still']
 
-        for flag in ['timestamp', 'datetime', 'nopreview', 'qt-preview']:
-            value = getattr(self, key.replace('_', ''))
+        for key in ['timestamp', 'datetime', 'nopreview', 'qt-preview']:
+            value = getattr(self, key.replace('-', ''))
             
-            if getattr(self, flag):
-                cmd.append('--' + flag)
+            if value:
+                cmd.append('--' + key)
 
         keys = ('shutter', 'output', 'timelapse', 'timeout')
         for key in keys:
 
-            value = getattr(self, key.replace('_', ''))
+            value = getattr(self, key.replace('-', ''))
             if value:
                 cmd.append('--' + key)
                 cmd.append(str(value))
