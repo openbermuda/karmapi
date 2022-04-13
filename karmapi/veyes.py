@@ -53,7 +53,8 @@ class PiCamera(magic.Ball):
 
         if self.nopreview:
             cmd.append(f'--nopreview')
-            
+
+        return ' '.join(cmd)
         
     async def run(self):
         """ Make one call to libcamera"""
