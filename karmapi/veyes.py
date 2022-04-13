@@ -35,27 +35,27 @@ class PiCamera(magic.Ball):
         self.shutter = 0
         self.qtpreview = 1
         self.output = 'preview.jpg'
-        self.timelapse
+        self.timelapse = 0
+        self.timeout = 5000
 
 
     def make_cmd(self):
 
         cmd = ['libcamera-still']
 
-        for flag in ['timestamp', 'datetime', 'nopreview']:
+        for flag in ['timestamp', 'datetime', 'nopreview', 'qt-preview']:
+            value = getattr(self, key.replace('_', ''))
+            
             if getattr(self, flag):
                 cmd.append('--' + flag)
-                
-        if self.shutter:
-            cmd.append('--shutter')
-            cmd.append(str(self.shutter))
 
-        if self.output:
-            cmd.append('--output')
-            cmd.append(str(self.output))
+        keys = ('shutter', 'output', 'timelapse', 'timeout')
+        for key in keys:
 
-        if self.qtpreview:
-            cmd.append(f'--qt-preview')
+            value = getattr(self, key.replace('_', ''))
+            if value:
+                cmd.append('--' + key)
+                cmd.append(str(value))
 
         return cmd
 
