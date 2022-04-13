@@ -41,7 +41,7 @@ class PiCamera(magic.Ball):
 
         cmd = ['libcamera-still']
 
-        for flag in ['timestamp', 'datetime', 'preview']:
+        for flag in ['timestamp', 'datetime', 'nopreview']:
             if getattr(self, flag):
                 cmd.append('--' + flag)
                 
