@@ -35,7 +35,7 @@ from collections import defaultdict
 
 import curio
 
-from karmapi import base, cpr
+from karmapi import base
 
 from blume import magic, farm
 
@@ -134,18 +134,12 @@ class TankRain(magic.Ball):
 
         if ix < len(self.paths):
             im = Image.open(self.paths[ix])
-            ball = cpr.Sphere(im.size)
-
-            ball.rgb = np.array(im)
-            print('brs', ball.rgb.shape)
         else:
             # FIXME -- create an image that shows there is no data
             # for now, lets just show a rainbow
             rainbow = [x for x in range(100)]
             im = np.array([rainbow] * 100, dtype=np.uint8)
             im.resize((100, 100))
-            ball = cpr.Sphere(im.shape)
-            ball.rgb = im
 
         n = len(self.paths)
         ix = ix + self.inc
@@ -156,7 +150,6 @@ class TankRain(magic.Ball):
             
         self.ix = ix
         print('ixixixi', ix, self.ix, n, self.inc)
-        self.ball = ball
         self.data = im
 
     def tonp(self, data):
