@@ -56,7 +56,6 @@ class PiCamera(magic.Ball):
         if self.nopreview:
             cmd.append(f'--nopreview')
 
-        subprocess.run(cmd)
 
         
     async def run(self):
@@ -64,7 +63,7 @@ class PiCamera(magic.Ball):
 
         cmd = self.make_cmd()
 
-        await curio.run_in_process(self.make_cmd())
+        subprocess.run(cmd)
 
         image = Image.open(self.output)
 
