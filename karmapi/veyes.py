@@ -56,6 +56,7 @@ class PiCamera(magic.Ball):
         if self.nopreview:
             cmd.append(f'--nopreview')
 
+        return cmd
 
         
     async def run(self):
