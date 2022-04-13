@@ -33,8 +33,9 @@ class PiCamera(magic.Ball):
         self.datetime = False
         self.latest = 'latest.jpg'
         self.shutter = 0
-        self.nopreview = 1
+        self.qtpreview = 1
         self.output = 'preview.jpg'
+        self.timelapse
 
 
     def make_cmd(self):
@@ -53,8 +54,8 @@ class PiCamera(magic.Ball):
             cmd.append('--output')
             cmd.append(str(self.output))
 
-        if self.nopreview:
-            cmd.append(f'--nopreview')
+        if self.qtpreview:
+            cmd.append(f'--qt-preview')
 
         return cmd
 
