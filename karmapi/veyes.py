@@ -30,7 +30,7 @@ class PiCamera(magic.Ball):
         super().__init__()
 
         self.timestamp = False
-        self.datetime = True
+        self.datetime = False
         self.latest = 'latest.jpg'
         self.shutter = 0
         self.nopreview = 1
@@ -56,12 +56,15 @@ class PiCamera(magic.Ball):
         if self.nopreview:
             cmd.append(f'--nopreview')
 
-        return cmd
+        subprocess.run(cmd)
+
         
     async def run(self):
         """ Make one call to libcamera"""
 
-        subprocess.run(self.make_cmd())
+        cmd = self.make_cmd()
+
+        await curio.run_in_process(self.make_cmd())
 
         image = Image.open(self.output)
 
