@@ -13,10 +13,10 @@ import curio
 
 from PIL import Image
 
-from blume import farm, magic, Ball
+from blume import farm, magic
 
 
-class PiCamera(Ball):
+class PiCamera(magic.Ball):
     """ The new kid in town is libcamera-still 
 
     It does everything I need, except...
