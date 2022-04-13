@@ -46,15 +46,17 @@ class PiCamera(magic.Ball):
                 cmd.append('--' + flag)
                 
         if self.shutter:
-            cmd.append(f'--shutter {self.shutter}')
+            cmd.append('--shutter')
+            cmd.append(str(self.shutter))
 
         if self.output:
-            cmd.append(f'--output {self.output}')
+            cmd.append('--output')
+            cmd.append(str(self.output))
 
         if self.nopreview:
             cmd.append(f'--nopreview')
 
-        return ' '.join(cmd)
+        return cmd
         
     async def run(self):
         """ Make one call to libcamera"""
