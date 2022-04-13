@@ -22,7 +22,7 @@ import argparse
 import random
 import sys
 import numpy as np
-from PIL import Image, ImageTk
+from PIL import Image
 
 
 import datetime
@@ -347,30 +347,6 @@ class TankRain(magic.Ball):
             self.title = 'gold'
         else:
             self.title = 'k'
-
-    async def start(self):
-        """ FIXME: get yosser to run? """
-        #farm.yosser.run(fetch, minutes=20, sleep=300)
-        
-        pass
-
-    def draw_ball(self, ball):
-        """ wc has everything???? 
-
-        feels like I have written this bit 20 times
-        """
-        width, height = self.width, self.height
-
-        image = ball.project('', quantise=False)
-        print('xxxxxxxxxx', type(image), image.shape)
-        image = Image.fromarray(image)
-        image = image.resize((int(width), int(height)))
-
-        self.phim = phim = ImageTk.PhotoImage(image)
-
-        xx = int(width / 2)
-        yy = int(height / 2)
-        self.canvas.create_image(xx, yy, image=phim)
 
 
     async def run(self):

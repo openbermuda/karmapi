@@ -35,13 +35,9 @@ import pandas
 from karmapi import pigfarm, base
 
 try:
-    import sense_hat
+    import pisense
 except:
-    # see if sense hat emulator is around
-    try:
-        import sense_emu as sense_hat
-    except:
-        print('No sense hat libraries')
+    print('No sense hat libraries')
 
 
 def stats(hat):
@@ -69,8 +65,8 @@ def get_weather(hat):
 
     while True:
         data = dict(
-            humidity = hat.humidity,
-            pressure = hat.pressure,
+            humidity = hat.environ.humidity,
+            pressure = hat.environ.pressure,
             
             temperature = (
                 hat.get_temperature_from_pressure() +
@@ -236,7 +232,7 @@ async def record(path='.', sleep=1, tasks=None, names=None, hat=None):
     """ Record everything from the hat """
 
     if hat is None:
-        hat = sense_hat.SenseHat()
+        hat = pisense.SenseHAT()
 
     weather = get_weather
     compass = get_compass
@@ -440,7 +436,7 @@ def main():
 
     farm = pigfarm.PigFarm()
 
-    hat = sense_hat.SenseHat()
+    hat = pisense.SenseHAT()
     
     farm.add(WeatherHat)
     farm.add(OrientHat)
