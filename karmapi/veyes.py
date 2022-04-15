@@ -50,7 +50,7 @@ class PiCamera(magic.Ball):
             if value:
                 cmd.append('--' + key)
 
-        keys = ('shutter', 'output', 'timelapse', 'timeout')
+        keys = ('shutter', 'timelapse', 'timeout')
         for key in keys:
 
             value = getattr(self, key.replace('-', ''))
