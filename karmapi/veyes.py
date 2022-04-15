@@ -37,7 +37,7 @@ class PiCamera(magic.Ball):
         self.nopreview = 0
         self.output = 'preview.jpg'
         self.timelapse = 0
-        self.timeout = 5000
+        self.timeout = 50000
 
 
     def make_cmd(self):
@@ -68,7 +68,7 @@ class PiCamera(magic.Ball):
 
         subprocess.run(cmd)
 
-        image = Image.open(self.output)
+        image = Image.open(self.latest)
 
         ax = await self.get()
 
