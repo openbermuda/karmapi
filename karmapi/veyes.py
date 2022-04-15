@@ -30,13 +30,13 @@ class PiCamera(magic.Ball):
         super().__init__()
 
         self.timestamp = False
-        self.datetime = False
+        self.datetime = True
         self.latest = 'latest.jpg'
         self.shutter = 0
         self.qtpreview = 1
         self.nopreview = 0
-        self.output = 'preview.jpg'
-        self.timelapse = 0
+        #self.output = 'preview.jpg'
+        self.timelapse = 10000
         self.timeout = 50000
 
 
