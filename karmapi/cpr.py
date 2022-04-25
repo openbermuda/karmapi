@@ -213,7 +213,7 @@ class Sphere:
         # FIXME?
         #self.sleep = self.size[0] / 1000
         self.sleep = self.size[0] / 100
-        self.sleep=.01
+        self.sleep=.5
 
         self.reset(init=True)
 
@@ -343,7 +343,7 @@ class Sphere:
 
         return self.poleview(pixels, wind=-1)
 
-    async def run(self, elsewhere=True):
+    async def run(self, elsewhere=False):
         """Run the sphere 
 
         Really want to just add to queue and let something else
@@ -449,7 +449,7 @@ class Sphere:
         ygrid = list(range(n1))
 
         #cbweight = lbweight = nbweight = 1
-        print(self, 'weights', lbweight, cbweight, nbweight)
+        #print(self, 'weights', lbweight, cbweight, nbweight)
 
         nbc = lbc = (0., 0., 0.)
 
@@ -695,6 +695,7 @@ class NestedWaves(magic.Ball):
         self.view = 0
         self.fade = fade
         self.twist = twist
+        self.spheres = []
 
         # interesting -- already magic roundabout could help.
         self.build(balls)
@@ -702,7 +703,7 @@ class NestedWaves(magic.Ball):
         # event handling
         self.add_event_map(' ', self.pause)
         self.paused = False
-        self.add_event_map('r', self.reset)
+        self.add_event_map('o', self.reset)
         
         self.dball = 0
         self.add_event_map('j', self.backward)
@@ -720,7 +721,7 @@ class NestedWaves(magic.Ball):
 
     def add_event_map(self, key, coro):
 
-        self.event_map[key] = coro
+        self.add_filter(key, coro)
 
 
     async def lessfade(self):
@@ -778,7 +779,7 @@ class NestedWaves(magic.Ball):
         for ball in self.balls:
             ball.reset()
 
-        await self.start_balls_running()
+        await self.start()
 
     async def forward(self):
         """ Move to next sphere """
@@ -877,7 +878,7 @@ class NestedWaves(magic.Ball):
 
     async def publish(self, ball):
 
-        width, height = self.width, self.height
+        width, height = self.size, self.size
 
         image = ball.project(self.views[self.view])
         
@@ -892,22 +893,24 @@ class NestedWaves(magic.Ball):
 
         feels like I have written this bit 20 times
         """
-        width, height = self.width, self.height
+
+        print('DRAW_BALL', type(self))
+        
+        width, height = self.size, self.size
 
         image = ball.project(self.views[self.view])
-        
+
+
         #image = image[::, ::, 1]
         image = Image.fromarray(image)
         image = image.resize((int(width), int(height)))
-        
-        self.phim = phim = ImageTk.PhotoImage(image)
+        self.ax.imshow(image)
 
-        xx = int(self.width / 2)
-        yy = int(self.height / 2)
-        self.canvas.create_image(xx, yy, image=phim)
 
-    async def start_balls_running(self):
+    async def start(self):
 
+        return
+    
         spheres = []
         for ball in self.balls:
             sphere = await curio.spawn(ball.run)
@@ -923,39 +926,33 @@ class NestedWaves(magic.Ball):
             await ball.cancel()
 
 
-    async def runner(self):
+    async def run(self):
         """ Run the waves """
 
         
-        self.set_background()
+        #self.set_background()
 
-        #await self.random_step_some()
-
-        self.spheres
-        spheres = await self.start_balls_running()
-
+        print('RANDOM STEP TIME')
+        await self.random_step_some()
+        
+        spheres = self.spheres
 
         print('NESTED WAVES Running')
-        while True:
-            try:
-                if self.paused:
-                    await curio.sleep(self.sleep)
-                    continue
-            
-                self.canvas.delete('all')
+        try:
+            self.ax = await self.get()
 
-                self.draw()
-                print('ball drawn')
-                #await self.step_balls()
-                await curio.sleep(self.sleep)
+            self.draw()
+            self.ax.show()
+            print('ball drawn')
+            #await self.step_balls()
 
-            except curio.CancelledError:
-                print('cancelling balls from nested waves')
-                for ball in spheres:
-                    print('cancelling', ball)
-                    await ball.cancel()
+        except curio.CancelledError:
+            print('cancelling balls from nested waves')
+            for ball in spheres:
+                print('cancelling', ball)
+                await ball.cancel()
 
-                raise
+            raise
 
 
 def generate_spheres(sizes, clazz=None, mass=None, radii=None,
@@ -1200,7 +1197,6 @@ def args_to_spheres(args):
 
     return spheres
 
-
 async def run(args):
     
     # pass list of balls into NestedWaves
@@ -1212,15 +1208,11 @@ async def run(args):
         balls=spheres, fade=args.fade,
         twist=args.twist)
 
-    clock = farm.GuidoClock()
-    land.add_edge(clock, land.carpet)
-    land.add_edge(waves, land.carpet)
+    land.add(waves)
+    land.shep.path.append(waves)
 
+    await farm.start_and_run(land)
 
-    starter = await curio.spawn(land.start())
-
-    print('farm runnnnnnnnnning')
-    runner = await land.run()
     
 
 def main():
@@ -1229,7 +1221,7 @@ def main():
 
     args = parser.parse_args()
     
-    curio.run(run(args), with_monitor=True)
+    curio.run(run(args))
 
 if __name__ == '__main__':
 
