@@ -32,12 +32,13 @@ class PiCamera(magic.Ball):
         self.timestamp = False
         self.datetime = True
         self.latest = 'latest.jpg'
-        self.shutter = 0
-        self.qtpreview = 1
-        self.nopreview = 0
+        self.shutter = 1e6   # micro seconds
+        self.qtpreview = 0
+        self.nopreview = 1
         #self.output = 'preview.jpg'
-        self.timelapse = 10000
-        self.timeout = 50000
+        self.framerate = 2
+        self.timelapse = 2000
+        self.timeout = 10000
 
 
     def make_cmd(self):
@@ -50,7 +51,7 @@ class PiCamera(magic.Ball):
             if value:
                 cmd.append('--' + key)
 
-        keys = ('shutter', 'timelapse', 'timeout')
+        keys = ('shutter', 'timelapse', 'timeout', 'framerate', 'latest')
         for key in keys:
 
             value = getattr(self, key.replace('-', ''))
@@ -65,9 +66,9 @@ class PiCamera(magic.Ball):
         """ Make one call to libcamera"""
 
         cmd = self.make_cmd()
-
+        print('running:', ' '.join(cmd))
         subprocess.run(cmd)
-
+        print('DONE libcamera call')
         image = Image.open(self.latest)
 
         ax = await self.get()
