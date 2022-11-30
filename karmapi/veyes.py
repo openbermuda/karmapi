@@ -43,7 +43,7 @@ class PiCamera(magic.Ball):
         self.timelapse = 2000
         self.timeout = 10000
         self.gain = 10
-        self.sizes = deque(0, 256, 512, 1024)
+        self.sizes = deque((0, 256, 512, 1024))
 
     def normal(self):
 
@@ -84,25 +84,31 @@ class PiCamera(magic.Ball):
         cmd = self.make_cmd()
         pipe = asyncio.subprocess.PIPE
         print('running:', ' '.join(cmd))
+        import time
+        t1 = time.time()
         proc = await asyncio.create_subprocess_shell(
             ' '.join(cmd),
             stdout=pipe, stderr=pipe)
         #subprocess.run(cmd, capture_output=True)
         print(proc)
         await proc.wait()
-        print('DONE libcamera call')
+        t2 = time.time()
+        print(f'DONE libcamera call {t2-t1}')
         image = Image.open(self.latest)
 
-        if sizes[0] != 0:
-            x, y = sizes[0]
+        size = self.sizes[0]
+        if  size != 0:
+            x, y = image.size
             scale = size / max(x, y)
-            image = image.resize((int(x * scale), int(y * scale))
+            image = image.resize((int(x * scale), int(y * scale)))
 
         ax = await self.get()
 
         ax.imshow(image)
 
         ax.show()
+        t3 = time.time()
+        print(f'done imshow {t3-t2}')
 
         
 
