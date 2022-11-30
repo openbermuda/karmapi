@@ -7,6 +7,8 @@ from pathlib import Path
 import random
 import subprocess
 
+from collections import deque
+
 from io import BytesIO
 
 import time
@@ -38,9 +40,9 @@ class PiCamera(magic.Ball):
         #self.output = 'preview.jpg'
         self.framerate = 2
         self.timelapse = 2000
-        self.timeout = 10000
-
-
+        self.timeout = 0
+        self.sizes = deque(0, 256, 512, 1024)
+        
     def make_cmd(self):
 
         cmd = ['libcamera-still']
@@ -70,6 +72,11 @@ class PiCamera(magic.Ball):
         subprocess.run(cmd)
         print('DONE libcamera call')
         image = Image.open(self.latest)
+
+        if sizes[0] != 0:
+            x, y = sizes[0]
+            scale = size / max(x, y)
+            image = image.resize((int(x * scale), int(y * scale))
 
         ax = await self.get()
 
