@@ -6,6 +6,7 @@ import datetime
 from pathlib import Path
 import random
 import subprocess
+import asyncio
 
 from io import BytesIO
 
@@ -39,26 +40,36 @@ class PiCamera(magic.Ball):
         self.framerate = 2
         self.timelapse = 2000
         self.timeout = 10000
+        self.gain = 10
 
+    def normal(self):
+
+        self.shutter = 0
+        self.gain = 0
+        self.timelapse = 0
+        self.immediate = True
 
     def make_cmd(self):
 
         cmd = ['libcamera-still']
 
-        for key in ['timestamp', 'datetime', 'nopreview', 'qt-preview']:
+        flags = ['timestamp', 'datetime', 'nopreview', 'qt-preview']
+        flags += ['immediate']
+        for key in flags:
             value = getattr(self, key.replace('-', ''))
             
             if value:
                 cmd.append('--' + key)
 
         keys = ('shutter', 'timelapse', 'timeout', 'framerate', 'latest')
+        keys += ('gain', )
         for key in keys:
 
             value = getattr(self, key.replace('-', ''))
             if value:
                 cmd.append('--' + key)
                 cmd.append(str(value))
-
+                
         return cmd
 
         
@@ -66,8 +77,14 @@ class PiCamera(magic.Ball):
         """ Make one call to libcamera"""
 
         cmd = self.make_cmd()
+        pipe = asyncio.subprocess.PIPE
         print('running:', ' '.join(cmd))
-        subprocess.run(cmd)
+        proc = await asyncio.create_subprocess_shell(
+            ' '.join(cmd),
+            stdout=pipe, stderr=pipe)
+        #subprocess.run(cmd, capture_output=True)
+        print(proc)
+        await proc.wait()
         print('DONE libcamera call')
         image = Image.open(self.latest)
 
@@ -179,6 +196,7 @@ def main():
     fm = farm.Farm()
 
     camera = PiCamera()
+    camera.normal()
     fm.add(camera)
     fm.shep.path.append(camera)
     farm.run(fm)
