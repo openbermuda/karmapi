@@ -76,7 +76,7 @@ class TankRain(magic.Ball):
 
         self.load_images()
 
-        self.add_event_map('r', self.reverse)
+        self.add_event_map('o', self.reverse)
 
         self.add_event_map('b', self.previous_day)
         self.add_event_map('v', self.next_day)
@@ -84,7 +84,6 @@ class TankRain(magic.Ball):
         self.add_event_map('l', self.fewer_images)
         self.add_event_map('m', self.more_images)
         self.add_event_map('X', self.switcheroo)
-        self.add_event_map('S', self.save)
         self.add_event_map('T', self.toggle_title)
         self.add_event_map('G', self.create_gif)
 
