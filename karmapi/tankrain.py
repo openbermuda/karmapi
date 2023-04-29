@@ -21,6 +21,7 @@ import itertools
 import argparse
 import random
 import sys
+import asyncio
 import numpy as np
 from PIL import Image
 
@@ -32,8 +33,6 @@ import requests
 from pathlib import Path
 
 from collections import defaultdict
-
-import curio
 
 from karmapi import base
 
@@ -510,11 +509,11 @@ def main(args=None):
 
         frm.add(tankrain)
         frm.shep.path.append(tankrain)
-        curio.run(farm.start_and_run(frm))
+        farm.run(frm)
 
         sys.exit()
     else:
-        curio.run(fetch(args.minutes))
+        asyncio.run(fetch(args.minutes))
 
 if __name__ == '__main__':
     # Radar
