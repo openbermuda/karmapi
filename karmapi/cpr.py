@@ -146,7 +146,8 @@ import argparse
 
 from collections import deque, defaultdict, Counter, namedtuple
 
-import curio
+import asyncio
+curio = asyncio
 
 import numpy as np
 
@@ -343,7 +344,7 @@ class Sphere:
 
         return self.poleview(pixels, wind=-1)
 
-    async def run(self, elsewhere=False):
+    async def run(self, elsewhere=True):
         """Run the sphere 
 
         Really want to just add to queue and let something else
@@ -384,21 +385,16 @@ class Sphere:
 
     async def prun(self):
     
-        while True:
-    
-            if not self.paused:
-                ball = await curio.run_in_process(self.tick)
-                #print(f'{self} sleep:{self.sleep}')
+        if not self.paused:
+            #XSball = await curio.run_in_process(self.tick)
+            print('TICKING', self)
+            ball = self.tick()
+            print('TICKING', ball)
+            #print(f'{self} sleep:{self.sleep}')
 
-                # hack, just move stuff around
-                self.post_run_update(ball)
-                self.post_tick()
-                
-            
-            #ball = await tick.join()
-            #print('joined', ball, self.sleep)
-            await curio.sleep(self.sleep)
-
+            # hack, just move stuff around
+            self.post_run_update(ball)
+            self.post_tick()
 
     def post_run_update(self, ball):
         """ Hack running in process """
@@ -831,7 +827,7 @@ class NestedWaves(magic.Ball):
         balls = self.balls[:]
         while balls:
             ix = randint(0, len(balls)-1)
-
+            print('stepping ball', ix)
             await balls[ix].run()
 
             del balls[ix]
@@ -896,7 +892,9 @@ class NestedWaves(magic.Ball):
 
         print('DRAW_BALL', type(self))
         
-        width, height = self.size, self.size
+        #width, height = self.size, self.size
+
+        width, height = ball.size
 
         image = ball.project(self.views[self.view])
 
