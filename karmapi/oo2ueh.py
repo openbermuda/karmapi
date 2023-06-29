@@ -53,13 +53,13 @@ def find_images(data):
 if __name__ == '__main__':
 
     #print(help(requests.get))
-
+    print(URL)
     result = requests.get(URL, PARMS)
 
     print(result)
     print(type(result.content))
     print(len(result.content))
-    find_images(result.content)
+    find_images(result.content.decode())
 
     1/0
     print(result.content.decode())
